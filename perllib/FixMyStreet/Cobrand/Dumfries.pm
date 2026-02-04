@@ -255,4 +255,112 @@ sub state_groups_inspect {
 }
 
 
+=head2 validate_response_template_external_status_code
+
+Validates that an external_status_code entered in the admin templates page
+conforms to Dumfries format rules:
+
+- Must have exactly 3 colon-separated segments (status:outcome:priority)
+- Each segment must be either empty, a '*' wildcard, a '+' wildcard, or an Alloy ID
+- Wildcards (* and +) cannot be mixed with other text in a segment
+- At least one segment must be a concrete Alloy ID (not empty or wildcard)
+  i.e. '::' and '*:*:*' are not valid
+
+Wildcard meanings:
+- '*' matches any value including empty ("don't care")
+- '+' matches any non-empty value ("must have a value")
+
+Returns an error message string if invalid, undef if valid.
+
+=cut
+
+sub validate_response_template_external_status_code {
+    my ($self, $ext_code) = @_;
+
+    return unless defined $ext_code && $ext_code ne '';
+
+    my @parts = split /:/, $ext_code, -1;
+
+    if (@parts != 3) {
+        return _('External status code must have exactly 3 colon-separated parts (status:outcome:priority).');
+    }
+
+    for my $i (0..2) {
+        my $part = $parts[$i];
+        # Each part must be: empty, exactly '*', exactly '+', or a non-wildcard value (Alloy ID)
+        if ($part ne '' && $part ne '*' && $part ne '+' && ($part =~ /\*/ || $part =~ /\+/)) {
+            return _('Wildcards (* and +) cannot be mixed with other text. Each segment must be empty, a single *, a single +, or an Alloy ID.');
+        }
+    }
+
+    # Must have at least one non-empty, non-wildcard segment
+    my @concrete = grep { $_ ne '' && $_ ne '*' && $_ ne '+' } @parts;
+    if (!@concrete) {
+        return _('External status code must have at least one concrete value (not empty or wildcard).');
+    }
+
+    return;  # Valid
+}
+
+
+=head2 response_template_external_status_code_regex_match
+
+Returns a SQL clause for matching response templates by external_status_code
+using PostgreSQL regex matching.
+
+Dumfries external status codes from Alloy are colon-separated values
+(status:outcome:priority). Templates can use wildcards:
+
+- '*' matches any value including empty ("don't care")
+- '+' matches any non-empty value ("must have a value")
+
+Examples:
+- Template '123:*:*' matches any update with status 123, regardless of
+  whether outcome/priority are set or what their values are
+- Template '123:+:+' matches updates with status 123 that have values
+  set for both outcome and priority
+- Template '123::' matches updates with status 123 that have empty
+  outcome and priority
+
+Returns a hashref with:
+- sql: the SQL WHERE clause fragment
+- bind: arrayref of bind parameters
+- order: the ORDER BY clause for specificity ranking
+
+=cut
+
+sub response_template_external_status_code_regex_match {
+    my ($self, $ext_code) = @_;
+
+    # Convert the template's wildcard pattern to a regex:
+    # - '*' becomes '[^:]*' (match any chars except colon, including empty)
+    # - '+' becomes '[^:]+' (match one or more chars except colon)
+    # We do this in SQL so we can match against all templates in one query
+    my $sql = q{
+        ? ~ ('^' ||
+             REPLACE(REPLACE(me.external_status_code, '*', '[^:]*'), '+', '[^:]+') ||
+             '$')
+    };
+
+    # Order by most specific match first:
+    # 1. Fewest total wildcards (* and +)
+    # 2. Fewest '*' wildcards ('+' is more specific than '*')
+    # 3. Longer codes (tiebreaker)
+    my $order = q{
+        (
+            (LENGTH(me.external_status_code) - LENGTH(REPLACE(me.external_status_code, '*', ''))) +
+            (LENGTH(me.external_status_code) - LENGTH(REPLACE(me.external_status_code, '+', '')))
+        ) ASC,
+        (LENGTH(me.external_status_code) - LENGTH(REPLACE(me.external_status_code, '*', ''))) ASC,
+        me.external_status_code DESC NULLS LAST, contact.category
+    };
+
+    return {
+        sql => $sql,
+        bind => [$ext_code],
+        order => $order,
+    };
+}
+
+
 1;
