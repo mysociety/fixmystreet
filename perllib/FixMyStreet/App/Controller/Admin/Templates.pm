@@ -175,6 +175,13 @@ sub edit : Path : Args(2) {
     } }
 
     $c->stash->{response_template} = $template;
+
+    # Load Dumfries external status codes config if this is a Dumfries body
+    my $body_cobrand = $c->stash->{body}->get_cobrand_handler;
+    if ($body_cobrand && $body_cobrand->moniker eq 'dumfries') {
+        $c->stash->{dumfries_external_status_codes} =
+            $c->model('DB::Config')->get('dumfries_external_status_codes');
+    }
 }
 
 sub load_template_body : Private {

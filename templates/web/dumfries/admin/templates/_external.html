@@ -1,0 +1,197 @@
+[% IF errors.external_status_code %]
+    <div class="form-error">[% errors.external_status_code %]</div>
+[% END %]
+
+[%# Check if the body's cobrand needs custom help text for external status codes %]
+[% body_cobrand = body.get_cobrand_handler %]
+
+[% IF dumfries_external_status_codes %]
+    [%# Parse existing external_status_code into parts %]
+    [% ext_parts = rt.external_status_code ? rt.external_status_code.split(':') : ['', '', ''] %]
+    [% ext_status = ext_parts.0 || '' %]
+    [% ext_outcome = ext_parts.1 || '' %]
+    [% ext_priority = ext_parts.2 || '' %]
+
+    [%# Sort options by label for each category %]
+    [% status_sorted = [] %]
+    [% FOREACH code IN dumfries_external_status_codes.status.keys %]
+        [% status_sorted.push({ code => code, label => dumfries_external_status_codes.status.$code }) %]
+    [% END %]
+    [% status_sorted = status_sorted.sort('label') %]
+
+    [% outcome_sorted = [] %]
+    [% FOREACH code IN dumfries_external_status_codes.outcome.keys %]
+        [% outcome_sorted.push({ code => code, label => dumfries_external_status_codes.outcome.$code }) %]
+    [% END %]
+    [% outcome_sorted = outcome_sorted.sort('label') %]
+
+    [% priority_sorted = [] %]
+    [% FOREACH code IN dumfries_external_status_codes.priority.keys %]
+        [% priority_sorted.push({ code => code, label => dumfries_external_status_codes.priority.$code }) %]
+    [% END %]
+    [% priority_sorted = priority_sorted.sort('label') %]
+
+    <div class="admin-hint">
+      <p>
+        For [% body_cobrand.council_name %], external status codes from Alloy have 3 colon-separated parts:
+        <strong>status:outcome:priority</strong>
+      </p>
+      <p>
+        Use the dropdowns below to select values for each part. The special options are:
+      </p>
+      <ul>
+        <li><strong>Any value, including empty</strong> &ndash; matches any value (or no value) in this segment</li>
+        <li><strong>Any value, not empty</strong> &ndash; matches any non-empty value in this segment</li>
+      </ul>
+      <p>
+        The most specific template will be used when multiple templates match.
+        At least one segment must be a concrete Alloy ID (not a wildcard).
+      </p>
+    </div>
+
+    <p><label>[% loc('External status code') %]</label></p>
+
+    <div id="dumfries_external_code_error" class="form-error" style="display:none;">At least one field must have a specific Alloy ID value (not a wildcard).</div>
+
+    <div style="margin-left: 3em;">
+      <p>
+        <label for="dumfries_status">[% loc('Status') %]</label>
+        <select class="form-control" name="dumfries_status" id="dumfries_status" onchange="updateDumfriesExternalCode(true)">
+          <optgroup label="Wildcards">
+            <option value="*"[% ' selected' IF ext_status == '*' %]>Any value, including empty</option>
+            <option value="+"[% ' selected' IF ext_status == '+' %]>Any value, not empty</option>
+          </optgroup>
+          <optgroup label="Status values">
+          [% FOR item IN status_sorted %]
+            <option value="[% item.code | html %]"[% ' selected' IF ext_status == item.code %]>[% item.label | html %]</option>
+          [% END %]
+          </optgroup>
+        </select>
+      </p>
+
+      <p>
+        <label for="dumfries_outcome">[% loc('Outcome') %]</label>
+        <select class="form-control" name="dumfries_outcome" id="dumfries_outcome" onchange="updateDumfriesExternalCode(true)">
+          <optgroup label="Wildcards">
+            <option value="*"[% ' selected' IF ext_outcome == '*' %]>Any value, including empty</option>
+            <option value="+"[% ' selected' IF ext_outcome == '+' %]>Any value, not empty</option>
+          </optgroup>
+          <optgroup label="Outcome values">
+          [% FOR item IN outcome_sorted %]
+            <option value="[% item.code | html %]"[% ' selected' IF ext_outcome == item.code %]>[% item.label | html %]</option>
+          [% END %]
+          </optgroup>
+        </select>
+      </p>
+
+      <p>
+        <label for="dumfries_priority">[% loc('Priority') %]</label>
+        <select class="form-control" name="dumfries_priority" id="dumfries_priority" onchange="updateDumfriesExternalCode(true)">
+          <optgroup label="Wildcards">
+            <option value="*"[% ' selected' IF ext_priority == '*' %]>Any value, including empty</option>
+            <option value="+"[% ' selected' IF ext_priority == '+' %]>Any value, not empty</option>
+          </optgroup>
+          <optgroup label="Priority values">
+          [% FOR item IN priority_sorted %]
+            <option value="[% item.code | html %]"[% ' selected' IF ext_priority == item.code %]>[% item.label | html %]</option>
+          [% END %]
+          </optgroup>
+        </select>
+      </p>
+    </div>
+
+    <input type="hidden" id="external_status_code" name="external_status_code" value="[% rt.external_status_code | html %]">
+
+    <script>
+    var dumfriesUserInteracted = false;
+
+    function isWildcard(val) {
+        return val === '*' || val === '+';
+    }
+
+    function getStateValue() {
+        var stateEl = document.querySelector('select[name="state"]');
+        return stateEl ? stateEl.value : '';
+    }
+
+    function updateDumfriesExternalCode(fromUserInteraction) {
+        if (fromUserInteraction) {
+            dumfriesUserInteracted = true;
+        }
+
+        var stateValue = getStateValue();
+        var errorEl = document.getElementById('dumfries_external_code_error');
+
+        // If state has a value, clear external_status_code and hide error
+        if (stateValue) {
+            document.getElementById('external_status_code').value = '';
+            errorEl.style.display = 'none';
+            return;
+        }
+
+        var status = document.getElementById('dumfries_status').value;
+        var outcome = document.getElementById('dumfries_outcome').value;
+        var priority = document.getElementById('dumfries_priority').value;
+        document.getElementById('external_status_code').value = status + ':' + outcome + ':' + priority;
+
+        // Validate: at least one must be a concrete value (not wildcard)
+        // Only show error if user has interacted with the dropdowns
+        if (dumfriesUserInteracted && isWildcard(status) && isWildcard(outcome) && isWildcard(priority)) {
+            errorEl.style.display = 'block';
+        } else {
+            errorEl.style.display = 'none';
+        }
+    }
+
+    function validateDumfriesExternalCode(e) {
+        // If state has a value, skip validation for external status code
+        if (getStateValue()) {
+            return true;
+        }
+
+        var status = document.getElementById('dumfries_status').value;
+        var outcome = document.getElementById('dumfries_outcome').value;
+        var priority = document.getElementById('dumfries_priority').value;
+
+        if (isWildcard(status) && isWildcard(outcome) && isWildcard(priority)) {
+            e.preventDefault();
+            document.getElementById('dumfries_external_code_error').style.display = 'block';
+            document.getElementById('dumfries_status').focus();
+            return false;
+        }
+        return true;
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        updateDumfriesExternalCode(false);
+        // Add form validation
+        var form = document.getElementById('dumfries_status').closest('form');
+        if (form) {
+            form.addEventListener('submit', validateDumfriesExternalCode);
+        }
+        // Also update when state changes
+        var stateEl = document.querySelector('select[name="state"]');
+        if (stateEl) {
+            stateEl.addEventListener('change', function() { updateDumfriesExternalCode(false); });
+        }
+    });
+    </script>
+
+[% ELSE %]
+    [%# Fallback to text field if no config found %]
+    <div class="admin-hint">
+      <p>
+        For [% body_cobrand.council_name %], external status codes from Alloy have 3 colon-separated parts:
+        <strong>status:outcome:priority</strong>
+      </p>
+      <p>
+        You can use <code>*</code> as a wildcard to match any value including empty, or <code>+</code> to match any non-empty value.
+        The most specific template will be used when multiple templates match.
+      </p>
+    </div>
+    <p>
+      <label for="external_status_code">[% loc('External status code') %]</label>
+      <input type="text" id="external_status_code" name="external_status_code" class="form-control" size="30" value="[% rt.external_status_code | html %]">
+    </p>
+[% END %]

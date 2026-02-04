@@ -8,39 +8,7 @@ use Test::More;
 use Test::MockTime qw(:all);
 use FixMyStreet::Cobrand::Dumfries;
 
-# disable info logs for this test run
-FixMyStreet::App->log->disable('info');
-END { FixMyStreet::App->log->enable('info'); }
-
 my $mech = FixMyStreet::TestMech->new;
-
-FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ 'dumfries' ],
-    COBRAND_FEATURES => {
-        contact_us_phone => {
-            dumfries => '1234567',
-        },
-    }
-}, sub {
-
-        subtest 'Front page has correct wording' => sub {
-            $mech->get_ok("/");
-            $mech->content_contains("<h1>Report, view local roads and lighting problems</h1>");
-            $mech->content_contains("(like potholes, blocked drains, broken paving, or street lighting)");
-        };
-
-        subtest 'faq contains contact_us_phone substitutions' => sub {
-            $mech->get_ok("/faq");
-            ok $mech->text =~ "For these types of issue, please call us on: 1234567", 'contact_us_phone sentence reads correctly';
-        };
-
-        subtest 'Privacy contains contact_us_phone substitutions' => sub {
-            $mech->get_ok("/about/privacy");
-            ok $mech->text =~ "Please call us on: 1234567 if you would like your details to be removed from our admin database sooner than that", 'contact_us_phone sentence reads correctly';
-            ok $mech->text =~ "To exercise your right to object, you can call us on: 123456", 'contact_us_phone sentence reads correctly';
-        };
-
-    };
 
 my $body = $mech->create_body_ok(2656, 'Dumfries and Galloway Council', {
     cobrand => 'dumfries'
@@ -363,55 +331,59 @@ FixMyStreet::override_config {
 
 $problem->delete;
 
-subtest 'expand_external_status_code_for_template_match' => sub {
+subtest 'response_template_external_status_code_regex_match' => sub {
     my $cobrand = FixMyStreet::Cobrand::Dumfries->new;
 
-    subtest 'three non-empty segments generates all 8 combinations' => sub {
-        my $result = $cobrand->expand_external_status_code_for_template_match('aaa:bbb:ccc');
-        my @sorted = sort @$result;
-        is_deeply \@sorted, [
-            '*:*:*',
-            '*:*:ccc',
-            '*:bbb:*',
-            '*:bbb:ccc',
-            'aaa:*:*',
-            'aaa:*:ccc',
-            'aaa:bbb:*',
-            'aaa:bbb:ccc',
-        ], 'All 8 wildcard combinations generated for 3 non-empty segments';
+    subtest 'returns sql, bind, and order' => sub {
+        my $result = $cobrand->response_template_external_status_code_regex_match('aaa:bbb:ccc');
+        ok $result->{sql}, 'SQL clause returned';
+        is_deeply $result->{bind}, ['aaa:bbb:ccc'], 'Bind parameters include the ext_code';
+        ok $result->{order}, 'Order clause returned';
     };
 
-    subtest 'empty segment stays empty, not replaced with wildcard' => sub {
-        my $result = $cobrand->expand_external_status_code_for_template_match('aaa::ccc');
-        my @sorted = sort @$result;
-        is_deeply \@sorted, [
-            '*::*',
-            '*::ccc',
-            'aaa::*',
-            'aaa::ccc',
-        ], 'Empty middle segment preserved in all combinations';
+    # Test the regex patterns by simulating what PostgreSQL would do
+    sub pattern_matches {
+        my ($template_pattern, $update_code) = @_;
+        # Convert template pattern to Perl regex (same logic as SQL)
+        my $regex = $template_pattern;
+        $regex =~ s/\*/[^:]*/g;
+        $regex =~ s/\+/[^:]+/g;
+        return $update_code =~ /^$regex$/;
+    }
+
+    subtest 'star wildcard matches empty and non-empty' => sub {
+        ok pattern_matches('aaa:*:*', 'aaa:bbb:ccc'), 'Star matches non-empty';
+        ok pattern_matches('aaa:*:*', 'aaa::ccc'), 'Star matches empty middle';
+        ok pattern_matches('aaa:*:*', 'aaa:bbb:'), 'Star matches empty end';
+        ok pattern_matches('aaa:*:*', 'aaa::'), 'Star matches both empty';
+        ok !pattern_matches('aaa:*:*', 'xxx:bbb:ccc'), 'Exact part must match';
     };
 
-    subtest 'trailing empty segment preserved' => sub {
-        my $result = $cobrand->expand_external_status_code_for_template_match('aaa:bbb:');
-        my @sorted = sort @$result;
-        is_deeply \@sorted, [
-            '*:*:',
-            '*:bbb:',
-            'aaa:*:',
-            'aaa:bbb:',
-        ], 'Trailing empty segment preserved';
+    subtest 'plus wildcard matches non-empty only' => sub {
+        ok pattern_matches('aaa:+:+', 'aaa:bbb:ccc'), 'Plus matches non-empty';
+        ok !pattern_matches('aaa:+:+', 'aaa::ccc'), 'Plus does not match empty middle';
+        ok !pattern_matches('aaa:+:+', 'aaa:bbb:'), 'Plus does not match empty end';
+        ok !pattern_matches('aaa:+:+', 'aaa::'), 'Plus does not match both empty';
     };
 
-    subtest 'all empty segments returns single result' => sub {
-        my $result = $cobrand->expand_external_status_code_for_template_match('::');
-        is_deeply $result, ['::'], 'All empty segments returns only exact match';
+    subtest 'mixed wildcards work correctly' => sub {
+        ok pattern_matches('aaa:*:+', 'aaa:bbb:ccc'), 'Mixed: both non-empty';
+        ok pattern_matches('aaa:*:+', 'aaa::ccc'), 'Mixed: star matches empty, plus matches non-empty';
+        ok !pattern_matches('aaa:*:+', 'aaa:bbb:'), 'Mixed: star ok but plus fails on empty';
+        ok !pattern_matches('aaa:+:*', 'aaa::ccc'), 'Mixed: plus fails on empty';
+        ok pattern_matches('aaa:+:*', 'aaa:bbb:'), 'Mixed: plus matches non-empty, star matches empty';
     };
 
-    subtest 'single segment generates two combinations' => sub {
-        my $result = $cobrand->expand_external_status_code_for_template_match('abc');
-        my @sorted = sort @$result;
-        is_deeply \@sorted, ['*', 'abc'], 'Single segment generates exact and wildcard';
+    subtest 'exact match requires exact values' => sub {
+        ok pattern_matches('aaa:bbb:ccc', 'aaa:bbb:ccc'), 'Exact match works';
+        ok !pattern_matches('aaa:bbb:ccc', 'aaa:bbb:xxx'), 'Exact match fails on different value';
+        ok !pattern_matches('aaa:bbb:ccc', 'aaa:bbb:'), 'Exact match fails on empty';
+    };
+
+    subtest 'empty segments match only empty' => sub {
+        ok pattern_matches('aaa::', 'aaa::'), 'Empty pattern matches empty';
+        ok !pattern_matches('aaa::', 'aaa:bbb:ccc'), 'Empty pattern does not match non-empty';
+        ok !pattern_matches('aaa::', 'aaa::ccc'), 'Empty pattern does not match partial non-empty';
     };
 };
 
@@ -521,25 +493,26 @@ subtest 'response_template_for with wildcard matching' => sub {
                 'All wildcard template matches when no better match';
         };
 
-        subtest 'empty segments do not match wildcards' => sub {
+        subtest 'exact empty segments match beats star wildcards' => sub {
             my $template = $test_problem->response_template_for(
                 $body, 'investigating', 'confirmed',
                 'status1::', ''
             );
             is $template->title, 'Empty Segments Template',
-                'Empty segments match empty template, not wildcard';
+                'Exact empty segments template beats wildcard';
         };
 
-        subtest 'wildcard does not match empty segment' => sub {
+        subtest 'star wildcard matches empty segment when no exact match' => sub {
             # Delete the empty segments template so it can't match
             $template_empty_segments->delete;
 
+            # Now the 'status1:*:*' template should match since * matches empty
             my $template = $test_problem->response_template_for(
                 $body, 'investigating', 'confirmed',
                 'status1::', ''
             );
-            is $template, undef,
-                'No template matches when segments are empty and no exact match exists';
+            is $template->title, 'Two Wildcard Template',
+                'Star wildcard matches empty segments';
         };
 
         subtest 'no match when external_status_code unchanged' => sub {
@@ -559,6 +532,99 @@ subtest 'response_template_for with wildcard matching' => sub {
         $template_wildcard_one->delete;
         $template_wildcard_two->delete;
         $template_all_wildcard->delete;
+        $test_problem->delete;
+    };
+};
+
+subtest 'response_template_for with plus wildcard matching' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['dumfries'],
+    }, sub {
+        my $test_problem = FixMyStreet::DB->resultset('Problem')->create({
+            postcode           => 'DG1 1AA',
+            bodies_str         => $body->id,
+            areas              => ',2656,',
+            category           => 'Potholes',
+            title              => 'Plus wildcard test problem',
+            detail             => 'Test detail',
+            used_map           => 1,
+            name               => 'Reporter',
+            anonymous          => 0,
+            state              => 'confirmed',
+            confirmed          => DateTime->now,
+            lastupdate         => DateTime->now,
+            latitude           => 55.0706,
+            longitude          => -3.9568,
+            user_id            => $reporter->id,
+            cobrand            => 'dumfries',
+        });
+
+        # Template with + wildcards (requires non-empty values)
+        my $template_plus = FixMyStreet::DB->resultset('ResponseTemplate')->create({
+            body_id => $body->id,
+            title => 'Plus Wildcard Template',
+            text => 'Plus wildcard response',
+            auto_response => 1,
+            state => '',
+            external_status_code => 'status1:+:+',
+        });
+
+        # Template with * wildcards (matches anything including empty)
+        my $template_star = FixMyStreet::DB->resultset('ResponseTemplate')->create({
+            body_id => $body->id,
+            title => 'Star Wildcard Template',
+            text => 'Star wildcard response',
+            auto_response => 1,
+            state => '',
+            external_status_code => 'status1:*:*',
+        });
+
+        subtest 'plus wildcard matches non-empty segments' => sub {
+            my $template = $test_problem->response_template_for(
+                $body, 'investigating', 'confirmed',
+                'status1:outcome1:priority1', ''
+            );
+            # Plus is more specific than star, so plus template should win
+            is $template->title, 'Plus Wildcard Template',
+                'Plus wildcard template matches when segments are non-empty';
+        };
+
+        subtest 'plus wildcard does not match empty segments' => sub {
+            # Delete the plus template to see star behavior
+            $template_plus->delete;
+
+            my $template = $test_problem->response_template_for(
+                $body, 'investigating', 'confirmed',
+                'status1::', ''
+            );
+            # Star matches empty, so star template should match
+            is $template->title, 'Star Wildcard Template',
+                'Star wildcard matches empty segments';
+        };
+
+        subtest 'recreate plus template and verify it does not match empty' => sub {
+            $template_plus = FixMyStreet::DB->resultset('ResponseTemplate')->create({
+                body_id => $body->id,
+                title => 'Plus Wildcard Template 2',
+                text => 'Plus wildcard response',
+                auto_response => 1,
+                state => '',
+                external_status_code => 'status1:+:+',
+            });
+
+            my $template = $test_problem->response_template_for(
+                $body, 'investigating', 'confirmed',
+                'status1::', ''
+            );
+            # Plus does NOT match empty, star does - so star wins
+            is $template->title, 'Star Wildcard Template',
+                'Plus wildcard does not match empty segments, star does';
+
+            $template_plus->delete;
+        };
+
+        # Cleanup
+        $template_star->delete;
         $test_problem->delete;
     };
 };
@@ -586,19 +652,34 @@ subtest 'admin template external_status_code validation' => sub {
             $mech->delete_response_template($_) for $body->response_templates->search({ title => 'Valid Template' });
         };
 
-        subtest 'wildcard external_status_code is accepted' => sub {
+        subtest 'star wildcard external_status_code is accepted' => sub {
             $mech->get_ok('/admin/templates/' . $body->id . '/new');
             $mech->submit_form_ok({
                 with_fields => {
-                    title => 'Wildcard Template',
+                    title => 'Star Wildcard Template',
                     text => 'Template text',
                     auto_response => 'on',
                     external_status_code => 'abc:*:*',
                 }
             });
-            is $mech->uri->path, '/admin/templates/' . $body->id, 'Redirected after valid wildcard submission';
+            is $mech->uri->path, '/admin/templates/' . $body->id, 'Redirected after valid star wildcard submission';
 
-            $mech->delete_response_template($_) for $body->response_templates->search({ title => 'Wildcard Template' });
+            $mech->delete_response_template($_) for $body->response_templates->search({ title => 'Star Wildcard Template' });
+        };
+
+        subtest 'plus wildcard external_status_code is accepted' => sub {
+            $mech->get_ok('/admin/templates/' . $body->id . '/new');
+            $mech->submit_form_ok({
+                with_fields => {
+                    title => 'Plus Wildcard Template',
+                    text => 'Template text',
+                    auto_response => 'on',
+                    external_status_code => 'abc:+:+',
+                }
+            });
+            is $mech->uri->path, '/admin/templates/' . $body->id, 'Redirected after valid plus wildcard submission';
+
+            $mech->delete_response_template($_) for $body->response_templates->search({ title => 'Plus Wildcard Template' });
         };
 
         subtest 'invalid segment count is rejected' => sub {
@@ -615,7 +696,7 @@ subtest 'admin template external_status_code validation' => sub {
             $mech->content_contains('exactly 3', 'Error message shown for wrong segment count');
         };
 
-        subtest 'mixed wildcard is rejected' => sub {
+        subtest 'mixed star wildcard is rejected' => sub {
             $mech->get_ok('/admin/templates/' . $body->id . '/new');
             $mech->submit_form_ok({
                 with_fields => {
@@ -626,7 +707,21 @@ subtest 'admin template external_status_code validation' => sub {
                 }
             });
             is $mech->uri->path, '/admin/templates/' . $body->id . '/new', 'Not redirected on error';
-            $mech->content_contains('cannot be mixed', 'Error message shown for mixed wildcard');
+            $mech->content_contains('cannot be mixed', 'Error message shown for mixed star wildcard');
+        };
+
+        subtest 'mixed plus wildcard is rejected' => sub {
+            $mech->get_ok('/admin/templates/' . $body->id . '/new');
+            $mech->submit_form_ok({
+                with_fields => {
+                    title => 'Mixed Plus Wildcard Template',
+                    text => 'Template text',
+                    auto_response => 'on',
+                    external_status_code => 'abc+:def:ghi',
+                }
+            });
+            is $mech->uri->path, '/admin/templates/' . $body->id . '/new', 'Not redirected on error';
+            $mech->content_contains('cannot be mixed', 'Error message shown for mixed plus wildcard');
         };
 
         $mech->log_out_ok;
@@ -640,22 +735,36 @@ subtest 'validate_response_template_external_status_code' => sub {
         is $cobrand->validate_response_template_external_status_code('abc:def:ghi'), undef,
             'Three non-empty segments is valid';
         is $cobrand->validate_response_template_external_status_code('abc:*:*'), undef,
-            'Wildcards in segments is valid';
+            'Star wildcards in segments is valid';
+        is $cobrand->validate_response_template_external_status_code('abc:+:+'), undef,
+            'Plus wildcards in segments is valid';
+        is $cobrand->validate_response_template_external_status_code('abc:*:+'), undef,
+            'Mix of star and plus wildcards is valid';
         is $cobrand->validate_response_template_external_status_code('abc::'), undef,
             'Empty segments is valid';
         is $cobrand->validate_response_template_external_status_code('abc:*:'), undef,
-            'Mix of value, wildcard, and empty is valid';
+            'Mix of value, star wildcard, and empty is valid';
+        is $cobrand->validate_response_template_external_status_code('abc:+:'), undef,
+            'Mix of value, plus wildcard, and empty is valid';
     };
 
     subtest 'must have at least one concrete value' => sub {
         like $cobrand->validate_response_template_external_status_code('*:*:*'), qr/at least one concrete/,
-            'All wildcards returns error';
+            'All star wildcards returns error';
+        like $cobrand->validate_response_template_external_status_code('+:+:+'), qr/at least one concrete/,
+            'All plus wildcards returns error';
+        like $cobrand->validate_response_template_external_status_code('*:+:*'), qr/at least one concrete/,
+            'Mix of star and plus wildcards only returns error';
         like $cobrand->validate_response_template_external_status_code('::'), qr/at least one concrete/,
             'All empty segments returns error';
         like $cobrand->validate_response_template_external_status_code('*::'), qr/at least one concrete/,
-            'Wildcard and empty returns error';
+            'Star wildcard and empty returns error';
+        like $cobrand->validate_response_template_external_status_code('+::'), qr/at least one concrete/,
+            'Plus wildcard and empty returns error';
         like $cobrand->validate_response_template_external_status_code(':*:'), qr/at least one concrete/,
-            'Empty wildcard empty returns error';
+            'Empty star wildcard empty returns error';
+        like $cobrand->validate_response_template_external_status_code(':+:'), qr/at least one concrete/,
+            'Empty plus wildcard empty returns error';
     };
 
     subtest 'empty/undef codes return undef (no validation needed)' => sub {

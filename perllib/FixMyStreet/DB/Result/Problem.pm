@@ -936,22 +936,28 @@ sub response_template_for {
             push @$state_params, { 'me.state' => $state, 'me.external_status_code' => ["", undef] };
         }
         if ($ext_code_changed) {
-            # The double comma option here dates from Echo updates with only a
-            # resolution code ID being stored in the database as "CODE,,". Once
-            # they're all updated to only be CODE, this can be removed.
-            my @ext_codes = ($ext_code, "$ext_code,,");
-
-            # Allow cobrands to expand the external status code to include wildcard variants
             my $cobrand = $body->get_cobrand_handler;
-            if (my $expanded = $cobrand && $cobrand->call_hook(
-                expand_external_status_code_for_template_match => $ext_code
-            )) {
-                @ext_codes = @$expanded;
-                # Order by fewest wildcards first (most specific match wins)
-                $order = { order_by => \"(LENGTH(me.external_status_code) - LENGTH(REPLACE(me.external_status_code, '*', ''))) ASC, me.external_status_code DESC NULLS LAST, contact.category" };
-            }
 
-            push @$state_params, { 'me.state' => '', 'me.external_status_code' => \@ext_codes };
+            # Allow cobrands to use regex matching for wildcard patterns in templates
+            if (my $regex_match = $cobrand && $cobrand->call_hook(
+                response_template_external_status_code_regex_match => $ext_code
+            )) {
+                # Use regex matching - the template's pattern is converted to a regex
+                # and matched against the update's external_status_code
+                push @$state_params, {
+                    'me.state' => '',
+                    'me.external_status_code' => { '!=' => '' },  # Must have a pattern
+                    # Use -bool with a literal SQL ref for the regex match
+                    -bool => \[$regex_match->{sql}, @{$regex_match->{bind}}],
+                };
+                $order = { order_by => \$regex_match->{order} };
+            } else {
+                # The double comma option here dates from Echo updates with only a
+                # resolution code ID being stored in the database as "CODE,,". Once
+                # they're all updated to only be CODE, this can be removed.
+                my @ext_codes = ($ext_code, "$ext_code,,");
+                push @$state_params, { 'me.state' => '', 'me.external_status_code' => \@ext_codes };
+            }
         };
 
         $template = $self->response_templates->search({
