@@ -57,9 +57,9 @@ sub index : Path( '' ) : Args(0) {
                         FixMyStreet::DB->resultset("Config")->set($new_key, $json->decode($new_value));
                     } catch {
                         my $e = $_;
-                        $e =~ s/ at \/.*$//;
+                        $e =~ s/ at \/.*$//; # trim the filename/lineno
                         $c->stash->{errors}->{new} =
-                            sprintf(_("Error adding configuration: %s"), $e);
+                            sprintf(_("Not a valid JSON string: %s"), $e);
                         $c->stash->{new_config_key} = $new_key;
                         $c->stash->{new_config_value} = $new_value;
                     };

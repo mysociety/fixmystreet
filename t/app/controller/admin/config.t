@@ -1,8 +1,4 @@
-use FixMyStreet;
-BEGIN { FixMyStreet->test_mode(1); }
-
 use FixMyStreet::TestMech;
-use Test::More;
 use Capture::Tiny 'capture_stderr';
 
 FixMyStreet::App->log->disable('info');
@@ -79,7 +75,7 @@ FixMyStreet::override_config {
                 }
             });
         };
-        $mech->content_contains('Error adding configuration');
+        $mech->content_contains('Not a valid JSON string');
         $mech->content_lacks('Updated!');
 
         $mech->content_contains('value="invalid_json_key"', 'key preserved in form');
