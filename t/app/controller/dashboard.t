@@ -224,6 +224,10 @@ FixMyStreet::override_config {
         $mech->content_contains('www.example.org-body-' . $body->id . '-category-Litter,Potholes-start_date-2014-01-02.csv');
         $mech->get_ok("/dashboard?category=Litter&category=Potholes&category=Traffic+lights+%26+bells&export=2");
         $mech->content_contains('www.example.org-body-' . $body->id . '-category-multiple-categories-start_date-2014-01-02.csv');
+        $mech->get_ok("/dashboard?ward=1&export=2");
+        $mech->content_contains('www.example.org-body-' . $body->id . '-start_date-2014-01-02-ward-1.csv');
+        $mech->get_ok("/dashboard?ward=1&ward=2&ward=3&ward=4&ward=5&ward=6&export=2");
+        $mech->content_contains('www.example.org-body-' . $body->id . '-start_date-2014-01-02-ward-multiple-wards.csv');
         $mech->get_ok("/dashboard?category=Litter&category=Potholes&export=1");
         my @rows = $mech->content_as_csv;
         is scalar @rows, 8, '1 (header) + 7 (reports) found = 8 lines';

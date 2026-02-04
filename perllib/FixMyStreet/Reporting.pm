@@ -91,10 +91,10 @@ has filename => ( is => 'rw', isa => Str, lazy => 1, default => sub {
     my $self = shift;
     my %where = (
         state => $self->state,
-        ward => join(',', @{$self->wards}),
         start_date => $self->start_date,
         end_date => $self->end_date,
     );
+    $where{ward} = @{$self->wards} <= 5 ? join(',', @{$self->wards}) : 'multiple-wards';
     $where{category} = @{$self->category} < 3 ? join(',', @{$self->category}) : 'multiple-categories';
     $where{body} = $self->body->id if $self->body;
     $where{role} = $self->role_id if $self->role_id;
