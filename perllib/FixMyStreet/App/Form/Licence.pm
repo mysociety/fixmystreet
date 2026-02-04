@@ -80,6 +80,13 @@ has_page dates => (
         return 'times' if $form->type eq 'pit-lane';
         return 'applicant';
     },
+    tags => {
+        hide => sub {
+            my $self = shift;
+            my $form = $self->form;
+            return $form->type eq 'mobile-apparatus';
+        },
+    },
 );
 
 has_field proposed_start_date => (

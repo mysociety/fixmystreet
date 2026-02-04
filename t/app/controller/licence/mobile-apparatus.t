@@ -43,12 +43,28 @@ subtest 'Mobile apparatus form submission - smoke test' => sub {
             postcode => 'NW1 1AA',
         }});
 
-        # Dates page (using dynamic dates calculated at test start)
+        # Dates pages
         $mech->submit_form_ok({ with_fields => {
-            'proposed_start_date.day' => $start_date->day,
-            'proposed_start_date.month' => $start_date->month,
-            'proposed_start_date.year' => $start_date->year,
-            proposed_duration => 4,
+            date_choice => 'week',
+        }});
+        $mech->content_contains('Applicant');
+        $mech->back;
+
+        $mech->submit_form_ok({ with_fields => {
+            date_choice => 'dates',
+        }});
+
+        $mech->submit_form_ok({ with_fields => {
+            'date1.day' => $start_date->day,
+            'date1.month' => $start_date->month,
+            'date1.year' => $start_date->year,
+            start_time1 => '9am',
+            end_time1 => '5pm',
+            'date2.day' => $start_date->day,
+            'date2.month' => $start_date->month,
+            'date2.year' => $start_date->year,
+            start_time2 => '9am',
+            end_time2 => '4pm',
         }});
 
         # Applicant page
