@@ -104,6 +104,16 @@ sub edit : Path : Args(2) {
             $ext_code ||= $c->get_param('external_status_code');
             $template->external_status_code($ext_code);
 
+            # Allow cobrands to validate the external_status_code format
+            # Use the body's cobrand handler, not the page cobrand
+            my $body_cobrand = $c->stash->{body}->get_cobrand_handler;
+            if ($body_cobrand && (my $error = $body_cobrand->call_hook(
+                validate_response_template_external_status_code => $ext_code
+            ))) {
+                $c->stash->{errors} ||= {};
+                $c->stash->{errors}->{external_status_code} = $error;
+            }
+
             if ( $template->state && $template->external_status_code && !$c->cobrand->admin_templates_state_and_external_status_code ) {
                 $c->stash->{errors} ||= {};
                 $c->stash->{errors}->{state} = _("State and external status code cannot be used simultaneously.");
@@ -165,6 +175,13 @@ sub edit : Path : Args(2) {
     } }
 
     $c->stash->{response_template} = $template;
+
+    # Load Dumfries external status codes config if this is a Dumfries body
+    my $body_cobrand = $c->stash->{body}->get_cobrand_handler;
+    if ($body_cobrand && $body_cobrand->moniker eq 'dumfries') {
+        $c->stash->{dumfries_external_status_codes} =
+            $c->model('DB::Config')->get('dumfries_external_status_codes');
+    }
 }
 
 sub load_template_body : Private {

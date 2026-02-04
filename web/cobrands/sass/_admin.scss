@@ -156,7 +156,7 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
     -moz-border-radius: 0.333em;
     -webkit-border-radius: 0.333em;
     border-radius: 0.333em;
-    p {
+    p, ul {
         display:none;
     }
     &:before { content: "?" }
@@ -168,7 +168,7 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
         margin:1em 0;
         &:before { content: "" }
         background-color: inherit !important;
-        p {
+        p, ul {
             font-weight: normal;
             display: block;
             background-color: #ff9;
@@ -179,6 +179,9 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
             border-color: #f93;
             padding:1em;
             margin: 0;
+        }
+        ul {
+            list-style-position: inside;
         }
     }
 }
