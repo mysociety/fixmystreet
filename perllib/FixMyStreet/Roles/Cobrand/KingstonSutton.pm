@@ -232,15 +232,24 @@ around booked_check_missed_collection => sub {
                 $missed->{$guid}{escalations}{missed_open} = $missed_event;
             }
         } elsif ($locked_out) {
-            $missed->{$guid}{dispute_allowed} = $self->_check_date_within_dispute_window(
+            my $within_window = $self->_check_date_within_dispute_window(
                 $missed->{$guid}{report_locked_out_date}
             );
+            my $resolution_valid = $self->waste_check_can_raise_dispute(
+                $missed->{$guid}{service_id},
+                $missed->{$guid}{report_locked_out_reason}
+            );
+            if ($within_window && $resolution_valid) {
+                $missed->{$guid}{dispute_allowed} = 1
+            }
         }
     }
 };
 
 # default to never allowing disputes
 sub _check_date_within_dispute_window { 0; }
+sub waste_check_can_raise_dispute { 0; }
+sub _setup_container_request_disputes_for_service {}
 
 sub munge_bin_services_for_address {
     my ($self, $rows) = @_;
@@ -249,6 +258,7 @@ sub munge_bin_services_for_address {
     foreach (@$rows) {
         $self->_setup_missed_collection_escalations_for_service($_);
         $self->_setup_container_request_escalations_for_service($_);
+        $self->_setup_container_request_disputes_for_service($_);
     }
 }
 

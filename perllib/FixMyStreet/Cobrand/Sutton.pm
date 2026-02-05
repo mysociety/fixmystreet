@@ -217,6 +217,35 @@ sub waste_munge_bin_services_open_requests {
     }
 }
 
+sub _check_date_within_dispute_window {
+    my ($self, $date) = @_;
+
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    # And two working days (from 6pm) have passed
+    my $wd = FixMyStreet::WorkingDays->new();
+    my $start = $wd->add_days($date, 0)->set_hour(18);
+    my $end = $wd->add_days($start, 3)->set_hour(0);
+
+    if ($now >= $start && $now < $end) {
+        return 1;
+    }
+
+    return 0;
+}
+
+=head2 waste_check_can_raise_dispute
+
+Checks if disputes can be raised for the service and resolution text.
+
+=cut
+
+sub waste_check_can_raise_dispute {
+    my ($self, $service_id, $resolution) = @_;
+
+    # currently we allow disputes on all resolution codes
+    return 1;
+}
+
 =head2 Disputes
 
 =cut
