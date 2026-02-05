@@ -269,9 +269,16 @@ around booked_check_missed_collection => sub {
                 }
             }
         } elsif ($locked_out) {
-            $missed->{$guid}{dispute_allowed} = $self->_check_date_within_dispute_window(
+            my $within_window = $self->_check_date_within_dispute_window(
                 $missed->{$guid}{report_locked_out_date}
             );
+            my $resolution_valid = $self->waste_check_can_raise_dispute(
+                $missed->{$guid}{service_id},
+                $missed->{$guid}{report_locked_out_reason}
+            );
+            if ($within_window && $resolution_valid) {
+                $missed->{$guid}{dispute_allowed} = 1
+            }
         }
     }
 };
@@ -381,6 +388,18 @@ sub _setup_container_request_escalations_for_service {
     }
 }
 
+=head2 waste_check_can_raise_dispute
+
+Checks if disputes can be raised for the service and resolution text.
+
+=cut
+
+sub waste_check_can_raise_dispute {
+    my ($self, $service_id, $resolution) = @_;
+
+    # currently we allow disputes on all resolution codes
+    return 1;
+}
 =head2 Disputes
 
 =cut
@@ -393,14 +412,17 @@ sub munge_waste_task_resolutions {
 
     # check if a dispute is allowed on reports that have been marked as unable to be collected
     if ($row->{last}->{completed} && $row->{report_locked_out}) {
-        my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-        my $wd = FixMyStreet::WorkingDays->new();
-        my $start = $wd->add_days($row->{last}->{completed}, $start_days)->set_hour(18);
-        my $end = $wd->add_days($start, $window_days + 1)->set_hour(0); # Before this
+        # and then check if we can open a dispute for this resolution
+        if ( $self->waste_check_can_raise_dispute($row->{service_id}, $row->{last}->{resolution}) ) {
+            my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+            my $wd = FixMyStreet::WorkingDays->new();
+            my $start = $wd->add_days($row->{last}->{completed}, $start_days)->set_hour(18);
+            my $end = $wd->add_days($start, $window_days + 1)->set_hour(0); # Before this
 
-        # check window
-        if ($now >= $start && $now < $end) {
-            $row->{dispute_allowed} = 1;
+            # check window
+            if ($now >= $start && $now < $end) {
+                $row->{dispute_allowed} = 1;
+            }
         }
     }
 }
