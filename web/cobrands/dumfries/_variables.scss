@@ -124,6 +124,8 @@ $front-main-color-desktop: $primary_b;
 // $front-main-background-desktop:;
 $front-main-container-background-desktop: $cobrand_white;
 
+$postcodeform-max-width: 45%;
+
 @mixin white-outline-btn {
     border-radius: $button-border-radius;
     padding: $button-padding-top $button-padding-left !important; // Overrides _layout rule
