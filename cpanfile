@@ -18,6 +18,7 @@ requires 'PkgConfig'; # If you don't have pkg-config installed, XML::LibXML won'
 requires 'CryptX', '0.087';
 requires 'JSON::XS', '4.04';
 requires 'Cpanel::JSON::XS', '4.40';
+requires 'HTML::TreeBuilder', '5.07'; # Demanded by PDF::Builder
 # For perl 5.20/5.22 support
   requires 'Guard', '1.023';
   requires 'PadWalker', '2.2';
@@ -150,6 +151,7 @@ feature 'uk', 'FixMyStreet.com specific requirements' => sub {
     requires 'SOAP::Lite', '1.20';
     # TfL
     requires 'Net::Subnet';
+    requires 'PDF::Builder',
     # Bromley
     requires 'Data::ICal';
     # Echo
