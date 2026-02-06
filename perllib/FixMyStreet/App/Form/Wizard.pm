@@ -537,7 +537,7 @@ sub format_for_display {
         if ( ref $value eq 'HASH' && $value->{filenames} ) {
             return join( ', ', @{ $value->{filenames} } );
         }
-        return "";
+        return "Not attached";
     } elsif ( $field->{type} eq 'Photo' ) {
         my $num = split /,/, $value;
         return sprintf(mySociety::Locale::nget("%d photo", "%d photos", $num), $num);
