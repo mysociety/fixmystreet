@@ -5,7 +5,10 @@ use DateTime;
 use FixMyStreet::TestMech;
 use Catalyst::Test 'FixMyStreet::App';
 use Test::More;
+use Test::MockModule;
 use Test::MockTime qw(:all);
+use LWP::Protocol::PSGI;
+use t::Mock::MyGovScotOIDC;
 use FixMyStreet::Cobrand::Dumfries;
 
 my $mech = FixMyStreet::TestMech->new;
@@ -792,6 +795,99 @@ subtest 'validate_response_template_external_status_code' => sub {
             'Wildcard at end of text returns error';
         like $cobrand->validate_response_template_external_status_code('abc:**:ghi'), qr/cannot be mixed/,
             'Double wildcard returns error';
+    };
+};
+
+my $social = Test::MockModule->new('FixMyStreet::App::Controller::Auth::Social');
+$social->mock('generate_nonce', sub { 'MyAwesomeRandomValue' });
+
+my $mygov_oidc_config = {
+    ALLOWED_COBRANDS => ['dumfries'],
+    MAPIT_URL => 'http://mapit.uk/',
+    COBRAND_FEATURES => {
+        oidc_login => {
+            dumfries => {
+                client_id => 'example_client_id',
+                secret => 'example_secret_key',
+                auth_uri => 'http://mygov-oidc.example.org/oauth2/v2.0/authorize',
+                token_uri => 'http://mygov-oidc.example.org/oauth2/v2.0/token',
+                logout_uri => 'http://mygov-oidc.example.org/oauth2/v2.0/logout',
+                userinfo_uri => 'http://mygov-oidc.example.org/userinfo',
+                display_name => 'mygovscot',
+            },
+        },
+    },
+};
+
+sub do_oidc_login {
+    $mech->log_out_ok;
+    $mech->cookie_jar({});
+    $mech->host('mygov-oidc.example.org');
+    $mech->get_ok('/my');
+    $mech->form_with_fields('social_sign_in');
+    $mech->submit_form(button => 'social_sign_in');
+    is $mech->res->previous->code, 302, 'OIDC button redirected';
+    like $mech->res->previous->header('Location'),
+        qr{mygov-oidc\.example\.org/oauth2/v2\.0/authorize},
+        'Redirected to MyGovScot OIDC';
+    $mech->get_ok('/auth/OIDC?code=response-code&state=login');
+}
+
+subtest 'MyGovScot OIDC login sets name and email from userinfo' => sub {
+    my $mock_oidc = t::Mock::MyGovScotOIDC->new;
+    $mock_oidc->returns_email(1);
+    $mock_oidc->returns_phone(0);
+    LWP::Protocol::PSGI->register($mock_oidc->to_psgi_app, host => 'mygov-oidc.example.org');
+
+    FixMyStreet::override_config $mygov_oidc_config, sub {
+        $mech->delete_user('simon.neil@example.org');
+        do_oidc_login();
+
+        my $user = FixMyStreet::DB->resultset('User')->find({ email => 'simon.neil@example.org' });
+        ok $user, 'User created from MyGovScot OIDC login';
+        is $user->name, 'Simon Neil', 'Name set from userinfo fname/lname';
+        is $user->phone, undef, 'Phone not set when not in userinfo';
+
+        $mech->delete_user('simon.neil@example.org');
+    };
+};
+
+subtest 'MyGovScot OIDC login sets phone from userinfo mobilenumber' => sub {
+    my $mock_oidc = t::Mock::MyGovScotOIDC->new;
+    $mock_oidc->returns_email(1);
+    $mock_oidc->returns_phone(1);
+    LWP::Protocol::PSGI->register($mock_oidc->to_psgi_app, host => 'mygov-oidc.example.org');
+
+    FixMyStreet::override_config $mygov_oidc_config, sub {
+        $mech->delete_user('simon.neil@example.org');
+        do_oidc_login();
+
+        my $user = FixMyStreet::DB->resultset('User')->find({ email => 'simon.neil@example.org' });
+        ok $user, 'User created from MyGovScot OIDC login';
+        is $user->name, 'Simon Neil', 'Name set from userinfo';
+        is $user->phone, '+447700900000', 'Phone set from userinfo mobilenumber';
+
+        $mech->delete_user('simon.neil@example.org');
+    };
+};
+
+subtest 'MyGovScot OIDC login falls back to payload sub for email' => sub {
+    my $mock_oidc = t::Mock::MyGovScotOIDC->new;
+    $mock_oidc->returns_email(0);
+    $mock_oidc->returns_phone(1);
+    LWP::Protocol::PSGI->register($mock_oidc->to_psgi_app, host => 'mygov-oidc.example.org');
+
+    FixMyStreet::override_config $mygov_oidc_config, sub {
+        $mech->delete_user('mygov_user_id');
+        do_oidc_login();
+
+        # When no email in userinfo, falls back to payload sub
+        my $user = FixMyStreet::DB->resultset('User')->find({ email => 'mygov_user_id' });
+        ok $user, 'User created with email from payload sub';
+        is $user->name, 'Simon Neil', 'Name still set from userinfo';
+        is $user->phone, '+447700900000', 'Phone still set from userinfo';
+
+        $mech->delete_user('mygov_user_id');
     };
 };
 
