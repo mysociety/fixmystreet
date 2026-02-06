@@ -29,6 +29,7 @@ sub user_from_oidc {
 
     my $name = '';
     my $email = '';
+    my $phone = '';
 
     # Payload doesn't include user's name so fetch it from
     # the OIDC userinfo endpoint.
@@ -46,13 +47,16 @@ sub user_from_oidc {
         if ($user->{emailaddress}) {
             $email = $user->{emailaddress};
         }
+        if ($user->{mobilenumber}) {
+            $phone = $user->{mobilenumber};
+        }
     }
 
     # In case we didn't get email from the claims above, default to value
     # present in payload. NB name is not available in this manner.
     $email ||= $payload->{sub} ? lc($payload->{sub}) : '';
 
-    return ($name, $email);
+    return ($name, $email, $phone);
 }
 
 1;

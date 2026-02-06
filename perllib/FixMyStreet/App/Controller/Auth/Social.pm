@@ -352,7 +352,7 @@ sub oidc_callback: Path('/auth/OIDC') : Args(0) {
     $c->session->{oauth}{id_token} = $id_token->token_string;
 
     # Cobrands can use different fields for name and email
-    my ($name, $email) = $c->cobrand->call_hook(user_from_oidc => $id_token->payload, $access_token);
+    my ($name, $email, $phone) = $c->cobrand->call_hook(user_from_oidc => $id_token->payload, $access_token);
     $name = '' if $name && $name !~ /\w/;
 
     # There's a chance that a user may have multiple OIDC logins, so build a namespaced uid to prevent collisions
@@ -365,7 +365,7 @@ sub oidc_callback: Path('/auth/OIDC') : Args(0) {
     # TfL would like to set the user's roles when logging in through oidc
     my $roles = $id_token->payload->{roles} || ();
 
-    $c->forward('oauth_success', [ 'oidc', $uid, $name, $email, $extra, $roles ]);
+    $c->forward('oauth_success', [ 'oidc', $uid, $name, $email, $extra, $roles, $phone ]);
 }
 
 # Just a wrapper around random_token to make mocking easier.
@@ -389,7 +389,7 @@ sub oauth_failure : Private {
 }
 
 sub oauth_success : Private {
-    my ($self, $c, $type, $uid, $name, $email, $extra, $roles) = @_;
+    my ($self, $c, $type, $uid, $name, $email, $extra, $roles, $phone) = @_;
 
     my $user;
     if ($email) {
@@ -416,6 +416,7 @@ sub oauth_success : Private {
             $user->add_oidc_id($uid);
         }
         $user->name($name) if $name;
+        $user->phone($phone) if $phone;
         if ($extra) {
             $user->extra({
                 %{ $user->get_extra() },
@@ -436,6 +437,7 @@ sub oauth_success : Private {
         if ($user) {
             # Matching ID in our database
             $user->name($name) if $name;
+            $user->phone($phone) if $phone;
             if ($extra) {
                 $user->extra({
                     %{ $user->get_extra() },
