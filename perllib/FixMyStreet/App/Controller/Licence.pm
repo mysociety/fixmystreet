@@ -127,6 +127,22 @@ sub process_licence : Private {
     return 1;
 }
 
+=head2 view
+
+When someone views their licence application, we reconstruct the
+summary page they were shown during the application.
+
+=cut
+
+sub view : Private {
+    my ($self, $c) = @_;
+    my $p = $c->stash->{problem};
+    my $type = $p->get_extra_metadata('licence_type');
+    $c->forward('show', [ $type ]);
+    $c->stash->{form}->saved_data($p->extra);
+    $c->stash->{template} = 'licence/summary.html';
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
