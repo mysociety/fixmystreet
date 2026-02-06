@@ -3271,6 +3271,86 @@ DISTRIBUTIONS
       Test::More 0
       Test::SharedFork 0
       perl 5.008001
+  Font-TTF-1.06
+    pathname: B/BH/BHALLISSY/Font-TTF-1.06.tar.gz
+    provides:
+      Font::TTF 1.06
+      Font::TTF::AATKern undef
+      Font::TTF::AATutils undef
+      Font::TTF::Anchor undef
+      Font::TTF::Bsln undef
+      Font::TTF::Cmap undef
+      Font::TTF::Coverage undef
+      Font::TTF::Cvt_ 0.0001
+      Font::TTF::DSIG undef
+      Font::TTF::Delta undef
+      Font::TTF::Dumper undef
+      Font::TTF::EBDT undef
+      Font::TTF::EBLC undef
+      Font::TTF::Fdsc undef
+      Font::TTF::Feat undef
+      Font::TTF::Features::Cvar undef
+      Font::TTF::Features::Size undef
+      Font::TTF::Features::Sset undef
+      Font::TTF::Fmtx undef
+      Font::TTF::Font 0.39
+      Font::TTF::Fpgm 0.0001
+      Font::TTF::GDEF undef
+      Font::TTF::GPOS undef
+      Font::TTF::GSUB undef
+      Font::TTF::Glat undef
+      Font::TTF::Gloc undef
+      Font::TTF::Glyf undef
+      Font::TTF::Glyph undef
+      Font::TTF::GrFeat undef
+      Font::TTF::Hdmx undef
+      Font::TTF::Head undef
+      Font::TTF::Hhea undef
+      Font::TTF::Hmtx undef
+      Font::TTF::Kern undef
+      Font::TTF::Kern::ClassArray undef
+      Font::TTF::Kern::CompactClassArray undef
+      Font::TTF::Kern::OrderedList undef
+      Font::TTF::Kern::StateTable undef
+      Font::TTF::Kern::Subtable undef
+      Font::TTF::LTSH undef
+      Font::TTF::Loca undef
+      Font::TTF::Maxp undef
+      Font::TTF::Mort undef
+      Font::TTF::Mort::Chain undef
+      Font::TTF::Mort::Contextual undef
+      Font::TTF::Mort::Insertion undef
+      Font::TTF::Mort::Ligature undef
+      Font::TTF::Mort::Noncontextual undef
+      Font::TTF::Mort::Rearrangement undef
+      Font::TTF::Mort::Subtable undef
+      Font::TTF::Name 1.1
+      Font::TTF::OS_2 undef
+      Font::TTF::OTTags undef
+      Font::TTF::OldCmap undef
+      Font::TTF::OldMort undef
+      Font::TTF::PCLT undef
+      Font::TTF::PSNames undef
+      Font::TTF::Post 0.01
+      Font::TTF::Prep 0.0001
+      Font::TTF::Prop undef
+      Font::TTF::Segarr 0.0001
+      Font::TTF::Silf undef
+      Font::TTF::Sill undef
+      Font::TTF::Table 0.0001
+      Font::TTF::Ttc 0.0001
+      Font::TTF::Ttopen undef
+      Font::TTF::Utils 0.0001
+      Font::TTF::Vhea undef
+      Font::TTF::Vmtx undef
+      Font::TTF::Win32 undef
+      Font::TTF::Woff undef
+      Font::TTF::Woff::MetaData undef
+      Font::TTF::Woff::PrivateData undef
+      Font::TTF::XMLparse undef
+    requirements:
+      ExtUtils::MakeMaker 0
+      IO::String 0
   Function-Parameters-2.001003
     pathname: M/MA/MAUKE/Function-Parameters-2.001003.tar.gz
     provides:
@@ -3589,15 +3669,15 @@ DISTRIBUTIONS
       HTML::Tagset 3.20
     requirements:
       ExtUtils::MakeMaker 0
-  HTML-Tree-5.03
-    pathname: C/CJ/CJM/HTML-Tree-5.03.tar.gz
+  HTML-Tree-5.07
+    pathname: K/KE/KENTNL/HTML-Tree-5.07.tar.gz
     provides:
-      HTML::AsSubs 5.03
-      HTML::Element 5.03
-      HTML::Element::traverse 5.03
-      HTML::Parse 5.03
-      HTML::Tree 5.03
-      HTML::TreeBuilder 5.03
+      HTML::AsSubs 5.07
+      HTML::Element 5.07
+      HTML::Element::traverse 5.07
+      HTML::Parse 5.07
+      HTML::Tree 5.07
+      HTML::TreeBuilder 5.07
     requirements:
       Carp 0
       Encode 0
@@ -6162,6 +6242,127 @@ DISTRIBUTIONS
       File::Path 0
       File::Spec 0
       File::Temp 0
+  PDF-Builder-3.028
+    pathname: P/PM/PMPERRY/PDF-Builder-3.028.tar.gz
+    provides:
+      PDF::Builder 3.028
+      PDF::Builder::Annotation 3.028
+      PDF::Builder::Basic::PDF 3.028
+      PDF::Builder::Basic::PDF::Array 3.028
+      PDF::Builder::Basic::PDF::Bool 3.028
+      PDF::Builder::Basic::PDF::Dict 3.028
+      PDF::Builder::Basic::PDF::File 3.028
+      PDF::Builder::Basic::PDF::Filter 3.028
+      PDF::Builder::Basic::PDF::Filter::ASCII85Decode 3.028
+      PDF::Builder::Basic::PDF::Filter::ASCIIHexDecode 3.028
+      PDF::Builder::Basic::PDF::Filter::FlateDecode 3.028
+      PDF::Builder::Basic::PDF::Filter::LZWDecode 3.028
+      PDF::Builder::Basic::PDF::Filter::RunLengthDecode 3.028
+      PDF::Builder::Basic::PDF::Literal 3.028
+      PDF::Builder::Basic::PDF::Name 3.028
+      PDF::Builder::Basic::PDF::Null 3.028
+      PDF::Builder::Basic::PDF::Number 3.028
+      PDF::Builder::Basic::PDF::Objind 3.028
+      PDF::Builder::Basic::PDF::Page 3.028
+      PDF::Builder::Basic::PDF::Pages 3.028
+      PDF::Builder::Basic::PDF::String 3.028
+      PDF::Builder::Basic::PDF::Utils 3.028
+      PDF::Builder::Content 3.028
+      PDF::Builder::Content::Column_docs 3.028
+      PDF::Builder::Content::Hyphenate_basic 3.028
+      PDF::Builder::Content::Text 3.028
+      PDF::Builder::Docs 3.028
+      PDF::Builder::FontManager 3.028
+      PDF::Builder::Lite 3.028
+      PDF::Builder::Matrix 3.028
+      PDF::Builder::NamedDestination 3.028
+      PDF::Builder::Outline 3.028
+      PDF::Builder::Outlines 3.028
+      PDF::Builder::Page 3.028
+      PDF::Builder::Resource 3.028
+      PDF::Builder::Resource::BaseFont 3.028
+      PDF::Builder::Resource::CIDFont 3.028
+      PDF::Builder::Resource::CIDFont::CJKFont 3.028
+      PDF::Builder::Resource::CIDFont::TrueType 3.028
+      PDF::Builder::Resource::CIDFont::TrueType::FontFile 3.028
+      PDF::Builder::Resource::ColorSpace 3.028
+      PDF::Builder::Resource::ColorSpace::DeviceN 3.028
+      PDF::Builder::Resource::ColorSpace::Indexed 3.028
+      PDF::Builder::Resource::ColorSpace::Indexed::ACTFile 3.028
+      PDF::Builder::Resource::ColorSpace::Indexed::Hue 3.028
+      PDF::Builder::Resource::ColorSpace::Indexed::WebColor 3.028
+      PDF::Builder::Resource::ColorSpace::Separation 3.028
+      PDF::Builder::Resource::Colors 3.028
+      PDF::Builder::Resource::ExtGState 3.028
+      PDF::Builder::Resource::Font 3.028
+      PDF::Builder::Resource::Font::BdFont 3.028
+      PDF::Builder::Resource::Font::CoreFont 3.028
+      PDF::Builder::Resource::Font::CoreFont::bankgothic 3.028
+      PDF::Builder::Resource::Font::CoreFont::courier 3.028
+      PDF::Builder::Resource::Font::CoreFont::courierbold 3.028
+      PDF::Builder::Resource::Font::CoreFont::courierboldoblique 3.028
+      PDF::Builder::Resource::Font::CoreFont::courieroblique 3.028
+      PDF::Builder::Resource::Font::CoreFont::georgia 3.028
+      PDF::Builder::Resource::Font::CoreFont::georgiabold 3.028
+      PDF::Builder::Resource::Font::CoreFont::georgiabolditalic 3.028
+      PDF::Builder::Resource::Font::CoreFont::georgiaitalic 3.028
+      PDF::Builder::Resource::Font::CoreFont::helvetica 3.028
+      PDF::Builder::Resource::Font::CoreFont::helveticabold 3.028
+      PDF::Builder::Resource::Font::CoreFont::helveticaboldoblique 3.028
+      PDF::Builder::Resource::Font::CoreFont::helveticaoblique 3.028
+      PDF::Builder::Resource::Font::CoreFont::symbol 3.028
+      PDF::Builder::Resource::Font::CoreFont::timesbold 3.028
+      PDF::Builder::Resource::Font::CoreFont::timesbolditalic 3.028
+      PDF::Builder::Resource::Font::CoreFont::timesitalic 3.028
+      PDF::Builder::Resource::Font::CoreFont::timesroman 3.028
+      PDF::Builder::Resource::Font::CoreFont::trebuchet 3.028
+      PDF::Builder::Resource::Font::CoreFont::trebuchetbold 3.028
+      PDF::Builder::Resource::Font::CoreFont::trebuchetbolditalic 3.028
+      PDF::Builder::Resource::Font::CoreFont::trebuchetitalic 3.028
+      PDF::Builder::Resource::Font::CoreFont::verdana 3.028
+      PDF::Builder::Resource::Font::CoreFont::verdanabold 3.028
+      PDF::Builder::Resource::Font::CoreFont::verdanabolditalic 3.028
+      PDF::Builder::Resource::Font::CoreFont::verdanaitalic 3.028
+      PDF::Builder::Resource::Font::CoreFont::webdings 3.028
+      PDF::Builder::Resource::Font::CoreFont::wingdings 3.028
+      PDF::Builder::Resource::Font::CoreFont::zapfdingbats 3.028
+      PDF::Builder::Resource::Font::Postscript 3.028
+      PDF::Builder::Resource::Font::SynFont 3.028
+      PDF::Builder::Resource::Glyphs 3.028
+      PDF::Builder::Resource::PaperSizes 3.028
+      PDF::Builder::Resource::Pattern 3.028
+      PDF::Builder::Resource::Shading 3.028
+      PDF::Builder::Resource::UniFont 3.028
+      PDF::Builder::Resource::XObject 3.028
+      PDF::Builder::Resource::XObject::Form 3.028
+      PDF::Builder::Resource::XObject::Form::BarCode 3.028
+      PDF::Builder::Resource::XObject::Form::BarCode::codabar 3.028
+      PDF::Builder::Resource::XObject::Form::BarCode::code128 3.028
+      PDF::Builder::Resource::XObject::Form::BarCode::code3of9 3.028
+      PDF::Builder::Resource::XObject::Form::BarCode::ean13 3.028
+      PDF::Builder::Resource::XObject::Form::BarCode::int2of5 3.028
+      PDF::Builder::Resource::XObject::Form::Hybrid 3.028
+      PDF::Builder::Resource::XObject::Image 3.028
+      PDF::Builder::Resource::XObject::Image::GD 3.028
+      PDF::Builder::Resource::XObject::Image::GIF 3.028
+      PDF::Builder::Resource::XObject::Image::JPEG 3.028
+      PDF::Builder::Resource::XObject::Image::PNG 3.028
+      PDF::Builder::Resource::XObject::Image::PNG_IPL 3.028
+      PDF::Builder::Resource::XObject::Image::PNM 3.028
+      PDF::Builder::Resource::XObject::Image::SVG 3.028
+      PDF::Builder::Resource::XObject::Image::TIFF 3.028
+      PDF::Builder::Resource::XObject::Image::TIFF::File 3.028
+      PDF::Builder::Resource::XObject::Image::TIFF::File_GT 3.028
+      PDF::Builder::Resource::XObject::Image::TIFF_GT 3.028
+      PDF::Builder::UniWrap 3.028
+      PDF::Builder::Util 3.028
+      PDF::Builder::ViewerPreferences 3.028
+      PDF::Builder::Win32 3.028
+    requirements:
+      Compress::Zlib 1
+      ExtUtils::MakeMaker 6.66
+      Font::TTF 1.04
+      perl 5.028000
   POSIX-strftime-Compiler-0.42
     pathname: K/KA/KAZEBURO/POSIX-strftime-Compiler-0.42.tar.gz
     provides:
