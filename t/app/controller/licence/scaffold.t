@@ -234,6 +234,35 @@ subtest 'Scaffold form submission - smoke test' => sub {
             like $email_parts[4][0]{'Content-Type'}, qr{image/gif};
             like $email_parts[4][0]{'Content-Disposition'}, qr{email-logo.gif};
         };
+
+        subtest 'PDF token access' => sub {
+            my $id = $problem->id;
+
+            my $pdf_link = "/licence/pdf/$id?token=" . $problem->confirmation_token;
+            $mech->content_contains($pdf_link, 'Confirmation page has PDF download link');
+            $mech->content_contains("download=\"scaffold-licence-application-FMS$id.pdf\"", 'PDF link has download attribute');
+
+            $mech->get_ok($pdf_link);
+            is $mech->res->header('Content-Type'), 'application/pdf', 'Valid token returns PDF';
+
+            $mech->get("/licence/pdf/$id?token=wrong");
+            is $mech->res->code, 404, 'Invalid token returns 404';
+
+            $mech->log_out_ok;
+            $mech->get("/licence/pdf/$id");
+            is $mech->res->code, 404, 'No token and not logged in returns 404';
+
+            my $user = $problem->user;
+            $user->password('secret');
+            $user->update;
+            $mech->get_ok('/auth');
+            $mech->submit_form_ok(
+                { with_fields => { username => $user->email, password_sign_in => 'secret' } },
+                "sign in as problem creator"
+            );
+            $mech->get_ok("/licence/pdf/$id");
+            is $mech->res->header('Content-Type'), 'application/pdf', 'Logged-in creator gets PDF';
+        };
     };
 };
 
