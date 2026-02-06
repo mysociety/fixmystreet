@@ -146,7 +146,11 @@ sub form : Private {
 
     # If the form has the already_submitted_error flag set, show the already_submitted template
     if ($form->already_submitted_error) {
-        $c->stash->{template} = 'waste/already_submitted.html';
+        if ($form =~ /Licence/) {
+            $c->stash->{template} = 'licence/already_submitted.html';
+        } else {
+            $c->stash->{template} = 'waste/already_submitted.html';
+        }
     } else {
         # If we have sent a confirmation email, that function will have
         # set a template that we need to show
