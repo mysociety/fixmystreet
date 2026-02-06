@@ -143,6 +143,31 @@ sub view : Private {
     $c->stash->{template} = 'licence/summary.html';
 }
 
+=head2 pdf
+
+We want to generate a PDF version of the summary
+page they were shown during the application.
+
+=cut
+
+sub pdf : Local : Args(1) {
+    my ($self, $c, $id) = @_;
+    my $p = FixMyStreet::DB->resultset("Problem")->find($id);
+
+    my $token_ok = ($c->get_param('token') || '') eq ($p ? $p->confirmation_token : '');
+    $c->detach('/page_error_404_not_found')
+        unless $p && (
+            $token_ok
+            || ($c->user_exists && ($c->user->is_superuser || $c->user->id == $p->user_id))
+        );
+
+    my $pdf = FixMyStreet::App::Form::Licence->generate_pdf($p);
+    $c->detach('/page_error_404_not_found') unless $pdf;
+
+    $c->res->content_type('application/pdf');
+    $c->res->body($pdf);
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
