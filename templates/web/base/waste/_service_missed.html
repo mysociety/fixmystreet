@@ -1,4 +1,4 @@
-[% IF unit.report_open %]
+[% IF unit.report_open || unit.report_open_non_actionable %]
   <span class="waste-service-descriptor">
     [% PROCESS 'waste/_service_missed_open.html' %]
   </span>
@@ -9,6 +9,8 @@
     <input type="hidden" name="service-[% unit.service_id %]" value="1">
     <input type="submit" value="Report a [% unit.service_name FILTER lower %] collection as missed" class="waste-service-descriptor waste-service-link">
   </form>
+[% ELSIF unit.report_allowed_non_actionable %]
+  <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Report+out-of-time+missed+collection&amp;service_id=[% unit.service_id %]" class="waste-service-link">Report a [% unit.service_name FILTER lower %] collection as missed</a>
 [% ELSIF unit.report_locked_out %]
   <span class="waste-service-descriptor">A missed collection cannot be reported;
     [% IF unit.report_locked_out_reason %]
@@ -24,4 +26,3 @@
       [% PROCESS 'waste/_service_missed_fallback.html' %]
   </span>
 [% END %]
-

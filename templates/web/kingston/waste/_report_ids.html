@@ -1,7 +1,7 @@
 [% IF report.get_extra_metadata('grouped_ids') %]
     Your reference numbers
     <br><strong>RBK-[% report.id %], RBK-[% report.get_extra_metadata('grouped_ids').join(', RBK-') %]</strong>
-[% ELSE %]
+[% ELSIF report.category != 'Report out-of-time missed collection' %]
     Your reference number
     <br><strong>RBK-[% report.id %]</strong>
 [% END %]
