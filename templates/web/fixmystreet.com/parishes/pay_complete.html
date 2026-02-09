@@ -1,4 +1,8 @@
+[% SET bodyclass = 'parish-page' %]
 [% INCLUDE 'header.html' title = 'Payment complete' %]
+
+<!-- <link rel="stylesheet" href="[% version('/vendor/lite-youtube-embed/lite-yt-embed.css') %]">
+<script src="[% version('/vendor/lite-youtube-embed/lite-yt-embed.min.js') %]" type="module"></script> -->
 
 <div class="govuk-panel govuk-panel--confirmation">
   <h1 class="govuk-panel__title">
@@ -11,34 +15,37 @@
   </div>
 </div>
 
-<p>
-  A confirmation email has been sent to the address you provided. Please allow a few minutes for this to appear in your inbox, and be sure to check your junk mail box in case it ends up in there.
+<div class="text-content" style="margin-top: 2em">
+  <p>A confirmation email has been sent to the address you provided. Please allow a few minutes for this to appear in your inbox, and be sure to check your junk mail box in case it ends up in there.</p>
 
-<h2>What now?</h2>
+  <h2>What now?</h2>
 
-<p>
-You will now receive any reports made via FixMyStreet within the boundary and categories selected.
+  <p>You will now receive any reports made via FixMyStreet within the boundary and categories selected.</p>
 
-<p>
-First, we recommend watching the below video to help you get to grips with using FixMyStreet for Parish &amp; Town Councils.
+  <!-- <p>First, we recommend watching the below video to help you get to grips with using FixMyStreet for Parish &amp; Town Councils.</p> -->
 
-<p>
-[Video]
+  <!-- <lite-youtube videoid="S8XhhDKvcmQ">
+    <a href="https://youtube.com/watch?v=S8XhhDKvcmQ" class="lty-playbtn" title="Play Video">
+      <span class="lyt-visually-hidden">Play Video: Parishes</span>
+    </a>
+  </lite-youtube> -->
 
-<p>
-Please refer to our FAQs for guidance and information about how to use and get the best out of your subscription.
+  <h3>Manage your account</h3>
 
-<p>
-<a href="/about/faq-parishes">Read our FAQs</a>
+  <p>Please <a href="/about/faq-parishes">refer to our FAQs</a> for guidance and information about how to manage your council’s settings.</p>
 
-<p>
-Finally, spread the word! Below are some assets to help you promote your FixMyStreet service within your local area.
+  <h3>Let everyone know</h3>
 
-<ul>
-    <li> A poster you can print out and physically distribute in the local area (noticeboards, libraries etc)
-    <li> An image to share on your social media channels
-    <li> An email signature banner to signpost people to the service
-    <li> A website badge perhaps?
-</ul>
+  <p>Finally, spread the word! Below are some assets to help you promote your FixMyStreet service within your local area.</p>
+
+  <ul>
+    <li>Four posters/flyers you can print out and physically distribute in the local area (noticeboards, libraries etc)</li>
+    <li>An image to share on your social media channels</li>
+    <li>An email signature banner to signpost people to the service</li>
+    <li>A badge you can add to your parish website</li>
+  </ul>
+
+  <a href="/cobrands/fixmystreet.com/posters/parishes-pack.zip" data-goodielink="parishes-pack" class="govuk-button govuk-button--secondary">Download promotional materials</a>
+</div>
 
 [% INCLUDE footer.html %]
