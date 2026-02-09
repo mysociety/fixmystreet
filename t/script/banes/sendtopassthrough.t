@@ -58,6 +58,22 @@ FixMyStreet::override_config {
     is $comment->get_extra_metadata('sent_to_banes_passthrough'), '1', "Comment registered as sent to passthrough";
     is $comment->get_extra_metadata('passthrough_id'), 'pass_update1', "Passthrough id stored on comment";
     is $comment->problem->get_extra_metadata('customer_reference'), undef, "Problem customer_reference not stored";
+
+    $graffiti_report->set_extra_metadata( passthrough_id => 'Passthrough-' );
+    $graffiti_report->update;
+
+    $comment = $mech->create_comment_for_problem($graffiti_report, $graffiti_report->user, 'Name', 'Update', 0, 'confirmed', 'confirmed');
+    $comment->external_id('update2');
+    $comment->update;
+
+    $script->send_comments;
+
+    $comment->discard_changes;
+    $comment->problem->discard_changes;
+    is $comment->external_id, 'update2', "Confirm external_id same";
+    is $comment->get_extra_metadata('sent_to_banes_passthrough'), '1', "Comment registered as sent to passthrough";
+    is $comment->get_extra_metadata('passthrough_id'), '-', "Blank ID stored";
+    is $comment->problem->get_extra_metadata('customer_reference'), undef, "Problem customer_reference not stored";
 };
 
 done_testing;

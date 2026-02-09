@@ -283,8 +283,8 @@ user: see ‘[moderating reports](#deal-undesirable-content)’.
 <span class="admin-task__permissions">Permissions required: User must be marked as staff, ‘Edit users’ must be ticked.</span>
 
 You can add an abusive user's email to the abuse list, which automatically hides any reports they
-create, and means that their reports are not sent. Instead, the user sees a message that there was
-an error in confirming their report.
+create, and means that their reports and updates are not sent. Instead, the user sees a message that there was
+an error in confirming their report or update.
 
 Staff with the required permissions can ban a user directly from their user admin page, using the ‘Ban user’
 button.

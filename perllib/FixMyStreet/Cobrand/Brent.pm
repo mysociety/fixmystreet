@@ -1101,9 +1101,6 @@ sub waste_extra_service_info {
 
         $_->{timeband} = _timeband_for_schedule($schedules->{next});
 
-        # Brent has two overlapping schedules for food
-        $schedules->{description} =~ s/other\s*// if $_->{ServiceId} == $SERVICE_IDS{domestic_food} || $_->{ServiceId} == $SERVICE_IDS{communal_refuse};
-
         # Check calendar allocation
         if (($_->{ServiceId} == $SERVICE_IDS{domestic_refuse} || $_->{ServiceId} == $SERVICE_IDS{garden} || $_->{ServiceId} == $SERVICE_IDS{domestic_paper}) && ($schedules->{description} =~ /every other/i || $schedules->{description} =~ /every \d+ week/i) && $schedules->{next}{schedule}) {
             my $allocation = $schedules->{next}{schedule}{Allocation};
@@ -1297,7 +1294,8 @@ sub waste_munge_request_data {
     for (qw(how_long_lived contamination_reports ordered_previously property_people property_children)) {
         $c->set_param("request_$_", $data->{$_} || '');
     }
-    if (request_referral($id, $data)) {
+    my $referral = request_referral($id, $data);
+    if ($referral) {
         $c->set_param('request_referral', 1);
     }
 
@@ -1334,6 +1332,13 @@ sub waste_munge_request_data {
     $data->{detail} = "Quantity: 1\n\n$address";
     $data->{detail} .= "\n\nReason: $nice_reason" if $nice_reason;
 
+    if ($id == $CONTAINER_IDS{rubbish_grey_bin} && $reason eq 'extra') {
+        if ($referral) {
+            $data->{detail} = "Request forwarded to Brent Council by email\n\n$data->{detail}";
+        } else {
+            $data->{detail} = "Request automatically calculated\n\n$data->{detail}";
+        }
+    }
     my $notes;
     $c->set_param('Container_Request_Notes', $notes) if $notes;
 
@@ -1538,11 +1543,8 @@ sub waste_post_report_creation {
         && $data->{request_reason} eq 'extra'
         ) {
 
-        if ($report->get_extra_field_value('request_referral')) {
-            $report->detail('Request forwarded to Brent Council by email');
-        } else {
+        if (!$report->get_extra_field_value('request_referral')) {
             $self->{c}->stash->{brent_request_automatic} = 1;
-            $report->detail('Request automatically calculated');
             $report->state('fixed - council');
         }
         $report->update;

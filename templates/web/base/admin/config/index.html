@@ -151,16 +151,14 @@ running version <strong>[% git_version || 'unknown' %]</strong>.
 
 </table>
 
+<h2 id="db">Database site configuration</h2>
+[% db_status_message %]
+<form method="post" action="#db">
+<table class="admin--config">
+<tr><th width="20%">Key</th>
+    <th>Value</th>
+</tr>
 [% FOREACH c IN db_config %]
-  [% IF loop.first %]
-    <h2 id="db">Database site configuration</h2>
-    [% db_status_message %]
-    <form method="post" action="#db">
-    <table class="admin--config">
-    <tr><th width="20%">Key</th>
-        <th>Value</th>
-    </tr>
-  [% END %]
   [% SET value = c.value.size ? c.value.join(', ') : c.value %]
     <tr>
         <td>[% c.key %]</td>
@@ -177,14 +175,27 @@ running version <strong>[% git_version || 'unknown' %]</strong>.
             </textarea>
         </p>
     </details>
+        </td>
     </tr>
-  [% IF loop.last %]
-        </table>
-        <input type="hidden" name="token" value="[% csrf_token %]">
-        <input type="submit" class="btn" value="Update">
-    </form>
-  [% END %]
 [% END %]
+    <tr>
+        <td>
+            <input type="text" name="new-config-key"
+                   placeholder="new_config_key" size="30"
+                   value="[% new_config_key %]">
+        </td>
+        <td>
+            <textarea name="new-config-value" rows="3" cols="60"
+                   placeholder='e.g. true or ["value1","value2"]' class="code">[% new_config_value %]</textarea>
+            [% IF errors.new %]
+            <div class="form-error">[% errors.new %]</div>
+            [% END %]
+        </td>
+    </tr>
+</table>
+<input type="hidden" name="token" value="[% csrf_token %]">
+<input type="submit" class="btn" value="[% loc('Update') %]">
+</form>
 
 <h2>Cobrand module</h2>
 
