@@ -1309,3 +1309,33 @@ textarea.form-error {
 .map-keyboard-drop-pin .keyboard-pin { display: block; }
 .map-keyboard-drop-pin .keyboard-pulsating-dot { display: block; }
 .map-keyboard-remove-pin #keyboard-instructions-remove-pin { display: block; display: flex; }
+
+.parish-page {
+  $content-padding: 3.5em;
+
+  .content {
+    padding: $content-padding;
+
+    .text-content {
+      max-width: 40rem;
+    }
+  }
+
+  .parishes-usp-section {
+    margin: 2em (-$content-padding) 2.5em;
+    padding: 2em $content-padding;
+
+    .parishes-usp-grid {
+      $column-gap: 1.5rem;
+      column-gap: $column-gap;
+  
+      &--card {
+        flex: 1 1 calc(33.333% - #{$column-gap * 2 / 3});
+      }
+    }
+  }
+
+  .parish-category-list {
+    column-count: 3;
+  }
+}

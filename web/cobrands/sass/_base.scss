@@ -3492,6 +3492,58 @@ $site-message-border: 1px solid #525252 !default;
   display: none;
 }
 
+.parish-page {
+  $content-padding: 1em;
+
+  input[type=text], input[type=password], input[type=email], textarea, .autocomplete__wrapper {
+    max-width: 22rem;
+  }
+
+  h1.govuk-heading-xl {
+    // Decreased margin considering we have a "change your previous answer" button right below
+    margin-bottom: 0.5rem;
+  }
+
+  .js-photo-label {
+    p {
+      margin-bottom: 0.5rem;
+    }
+  }
+  
+  .dropzone {
+    padding: 1.5em 0em;
+    max-width: 22rem;
+  }
+
+  .parishes-usp-section {
+    background-color: $primary;
+    margin: 0 (-$content-padding);
+    padding: 1em $content-padding;
+
+    .parishes-usp-grid {
+      display: flex;
+      flex-wrap: wrap;
+      row-gap: 1.5rem;
+  
+      &--card {
+        flex: 1 1 100%;
+      }
+  
+      h3 {
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+      }
+    }
+  }
+
+  .parish-category-list {
+    column-count: 2;
+    margin-left: 1em;
+    column-gap: 3rem;
+  }
+}
+
+
 @import "_admin";
 @import "_dropzone";
 @import "_multiselect";
