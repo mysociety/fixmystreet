@@ -289,7 +289,7 @@ sub bin_services_for_address {
         my $open_requests = { map { $_->{container} => $_ } $events->filter(
             {
                 type => 'request',
-                containers => $containers,
+                containers => $containers || [],
                 report_not_cancelled => 1,  # Don't include requests which have cancellations pending
             }
         )->list };
