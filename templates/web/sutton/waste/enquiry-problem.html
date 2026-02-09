@@ -21,6 +21,7 @@ IF service.report_allowed AND property.domestic_refuse_bin;
 END;
 
 PROCESS waste/enquiry.html
-    title = 'Report a problem'
-    field_options = f;
+    title = 'Reporting a spillage or bin not returned'
+    field_options = f
+    field_label = 'What problem would you like to report?';
 %]
