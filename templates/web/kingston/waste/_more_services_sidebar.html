@@ -3,7 +3,6 @@
     <p>Please contact your managing agent if you have damaged or missing containers.</p>
 [% END %]
 
-[% IF any_report_allowed OR any_request_allowed OR show_garden_subscribe %]
   <h3>More services</h3>
    <ul>
      [% IF any_report_allowed %]
@@ -23,8 +22,8 @@
           <a href="[% c.uri_for_action('waste/bulky/index', [ property.id ]) %]">Book bulky goods collection</a>
       </li>
     [% END %]
+      <li><a href="https://kingston-self.test.achieveservice.com/service/Update_my_waste_information_in_Kingston">Update or change waste information at this address</a></li>
   </ul>
-[% END %]
 
 [% IF c.user.from_body OR c.user.is_superuser %]
     <h3>Assisted collection</h3>
