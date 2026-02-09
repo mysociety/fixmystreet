@@ -87,6 +87,7 @@ sub parse {
 
 sub filter {
     my ($self, $params) = @_;
+    die "containers must be an arrayref" if exists $params->{containers} && ref $params->{containers} ne 'ARRAY';
     my %containers = map { $_ => 1 } @{$params->{containers} || []};
     my @events = grep {
            ($params->{service} ? $_->{service_id} eq $params->{service} : 1)

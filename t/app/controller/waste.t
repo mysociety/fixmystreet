@@ -321,6 +321,7 @@ FixMyStreet::override_config {
     subtest 'Thing already requested' => sub {
         $mech->get_ok('/waste/12345');
         $mech->content_contains('A new paper &amp; cardboard container request has been made');
+        $mech->content_lacks('A new non-recyclable refuse container request has been made');
     };
     subtest 'General enquiry, bad data' => sub {
         $mech->get_ok('/waste/12345/enquiry');
