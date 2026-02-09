@@ -3493,6 +3493,146 @@ $site-message-border: 1px solid #525252 !default;
   display: none;
 }
 
+.parish-page {
+  $container-padding: 1em;
+
+  .content {
+    padding: 2rem 0 0;
+  }
+
+  h1.govuk-heading-xl {
+    // Decreased margin considering we have a "change your previous answer" button right below
+    margin-bottom: 0.5rem;
+  }
+
+  .js-photo-label {
+    p {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .dropzone {
+    padding: 1.5em 0em;
+
+    .dz-preview {
+      width: 90%;
+      float: none;
+      margin: 0 auto;
+
+      .dz-image img {
+        object-fit: contain;
+      }
+    }
+  }
+
+  .parishes-usp-section {
+    background-color: $primary;
+    margin: $container-padding (-$container-padding);
+    padding: 1em $container-padding;
+
+    .parishes-usp-grid {
+      display: flex;
+      flex-wrap: wrap;
+      row-gap: 1.5rem;
+  
+      &--card {
+        flex: 1 1 100%;
+      }
+
+      h3 {
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+      }
+    }
+  }
+
+  .help-section {
+    background-color: mix($primary, #fff, 25%);
+    margin: 0 (-$container-padding);
+    padding: 1em $container-padding;
+  }
+
+  #parish-map {
+    width: 100%;
+    // Prevents the zero width in some screen sizes.
+    min-width: 17.5rem;
+    max-width: 100%;
+    height: 17.5rem;
+  }
+
+  .parish-category-list {
+    max-height: 220px;
+    overflow: auto;
+    border: 1px solid #767676; // Same border colour as input
+    margin-left: 0;
+    margin-bottom: 0;
+    border-radius: 4px;
+
+    li {
+      list-style: none;
+      padding: 0.5em 1em;
+      margin-bottom: 0;
+      background: #fff;
+
+      &:nth-child(even) {
+        background: #f3f2f1;
+      }
+    }
+
+    ul {
+      margin: 0.5em -1em -0.5em -1em;
+
+      li {
+        padding-left: 2em;
+      }
+    }
+  }
+
+  .columns {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: 1fr;
+  }
+
+  .parish-category-form {
+    margin-top: 2em;
+
+    #continue {
+      margin-bottom: 0;
+    }
+  }
+
+  .hfh-repinst {
+    display: flex;
+    flex-direction: row;
+    gap: 0.75em;
+    align-items: flex-end; // line up "Remove" button with bottom of text input
+    margin-bottom: 1em;
+    background: #f3f3f3;
+    padding: 1em;
+
+    & > div {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+    }
+
+    input[type="text"] {
+      max-width: none;
+    }
+
+    .govuk-button {
+      margin-bottom: 2px; // visually compensate for box-shadow "underline"
+      flex: 0 0 auto;
+      width: auto; // down from the default 100%
+    }
+
+    label {
+      margin-top: 0;
+    }
+  }
+}
+
 @import "_admin";
 @import "_dropzone";
 @import "_multiselect";

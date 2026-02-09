@@ -1,4 +1,4 @@
-[% SET bodyclass = 'formflow govuk';
+[% SET bodyclass = 'formflow govuk parish-page';
    SET title = form.title;
    SET extra_js = version('/vendor/accessible-autocomplete.min.js');
 %]
@@ -7,15 +7,20 @@
 
 [% PROCESS 'govuk/fields.html' %]
 [% PROCESS errors %]
-[% PROCESS title %]
+
+[% IF form.current_page.name != 'categories' %]
+    [% PROCESS title %]
+[% END %]
 
 [% IF form.intro_template %][% PROCESS "parishes/${form.intro_template}" %][% END %]
 
+[% IF form.current_page.name != 'categories' %]
 <form method="post" enctype="multipart/form-data">
   [% PROCESS form %]
 </form>
+[% END %]
 
-[% IF form.current_page.name != 'intro' %]
+[% IF form.current_page.name != 'intro' AND form.current_page.name != 'categories' %]
 <button id='form-back' class="hidden-nojs govuk-button govuk-button--secondary">Back</button>
 [% END %]
 

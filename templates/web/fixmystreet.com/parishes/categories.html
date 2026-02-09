@@ -4,9 +4,128 @@
 <script src="/vendor/mapit.mysociety.org/reqwest.min.c949fe855720.js"></script>
 <script src="/vendor/mapit.mysociety.org/leaflet.f1cc0a70c78b.js"></script>
 
-<div id="parish-map" style="float:right;height:300px;width:300px;"></div>
+<style>
+.parish-category-list ul { margin-bottom: 0; }
+#form-categories-row > div:first-child:last-child .rm_element { display: none; }
+</style>
+
+<h1 class="govuk-heading-xl">What is [% label_for_field(form, 'parish', form.saved_data.parish) %] responsible for?</h1>
+
+<form method="post" style="display:inline">
+    <input type="hidden" name="saved_data" value="[% form.fif.saved_data %]">
+    <input type="hidden" name="goto" value="intro">
+    <input type="submit" class="fake-link govuk-!-margin-bottom-0" value="&#8592; Change your previous answers">
+</form>
+
+<nav aria-label="Form progress bar">
+    <ol class="progress-form is--aligned-left">
+        <li class="progress-form__step is-complete">
+            <div class="progress-form__circle" aria-hidden="true"></div>
+            <div class="progress-form__label">Your details</div>
+        </li>
+
+        <li class="progress-form__step is-active" aria-current="step">
+            <div class="progress-form__circle" aria-hidden="true"></div>
+            <div class="progress-form__label">Select categories</div>
+        </li>
+
+        <li class="progress-form__step">
+            <div class="progress-form__circle" aria-hidden="true"></div>
+            <div class="progress-form__label">Review your answers</div>
+        </li>
+
+        <li class="progress-form__step">
+            <div class="progress-form__circle" aria-hidden="true"></div>
+            <div class="progress-form__label">Payment</div>
+        </li>
+    </ol>
+</nav>
+
+<div id="parish-map"></div>
+
+<section>
+    <h2 class="govuk-heading-m govuk-!-margin-top-6">Selecting categories for: [% label_for_field(form, 'parish', form.saved_data.parish) %]</h2>
+
+    <p>
+    The next step is to pick what things you would like to receive reports about.
+    </p>
+
+    <p>
+    Perhaps you are responsible for all grass cutting within your area, in which case you could add a “Grass cutting” category.
+    Or perhaps you look after a particular playing field, so a “Lifford Lane playing field” category could work for that.
+
+    <p>
+    We understand each parish/town council is different, and you have the freedom
+    to pick what categories work for you.
+    </p>
+
+  [% IF category_groups.size %]
+    <p>
+    To help you decide, we’ve included a list of the categories used by higher-tier
+    councils in you area, so you can see how your categories could fit in alongside them.
+    </p>
+
+    <div class="columns parish-category-form">
+        <div>
+            <h3 class="govuk-heading-s">Higher tier categories</h3>
+            <div class="parish-category-list-wrapper">
+                <ul class="parish-category-list">
+                  [%~ FOREACH group IN category_groups ~%]
+                    [% IF group.name %]<li>[% group.name %]<ul>[% END %]
+                    [%~ FOREACH cat IN group.categories ~%]
+                        [% NEXT IF cat.category_display == '-- Pick a category --' %]
+                        <li>[% cat.category_display %]
+                    [%~ END ~%]
+                    [% IF group.name %]</ul>[% END %]
+                  [% END %]
+                </ul>
+            </div>
+        </div>
+        <div>
+            <h3 class="govuk-heading-s">[% label_for_field(form, 'parish', form.saved_data.parish) %] categories</h3>
+            <form method="post" enctype="multipart/form-data">
+              [% PROCESS form %]
+            </form>
+        </div>
+    </div>
+  [% ELSE %]
+    <h3 class="govuk-heading-s">[% label_for_field(form, 'parish', form.saved_data.parish) %] categories</h3>
+    <form method="post" enctype="multipart/form-data">
+      [% PROCESS form %]
+    </form>
+  [% END %]
+
+</section>
+
+<section class="help-section">
+    <h3 class="govuk-heading-m has-inline-svg has-inline-svg--left-align">[% INCLUDE 'icons/information.html' width='1.5em' height='1.5em' %] Need help?</h3>
+
+    <h4 class="govuk-heading-s govuk-!-margin-bottom-2">If you have devolved responsibilities</h4>
+    <div class="columns">
+        <div>
+            <p>
+            Let’s say you look after all the road signs, but there already is a road signs category - then you can have a
+            category of the same name, and within your boundary you will take precedence and receive reports in that category.
+            </p>
+    
+            <p>
+            If you are only responsible for some of the road signs, you could choose a category name that makes it clearer to the user which category they should pick, like “Road signs on the estate roads”. See some examples:
+            </p>
+        </div>
+
+        <ul>
+            <li><strong>Bridgwater Town Council</strong> in Somerset is responsible for a wide array of things within their area &ndash; their categories include Dog fouling, Flytipping, Graffiti, Grass cutting, Litter/dog bins, Parks, Street lighting in parks, Trees in parks (not roads), and Weed growth.
+            <li><strong>Adstock Parish Council</strong> in Buckinghamshire is responsible for Flyposting, Grass cutting, Hedge problem, Dirty signs and Unauthorised signs.
+        </ul>
+    </div>
+</section>
+
 <script nonce="[% csp_nonce %]">
-    var map = new L.Map("parish-map");
+    var map = new L.Map("parish-map", {
+        dragging: false,
+        scrollWheelZoom: false,
+        touchZoom: false
+    });
     map.attributionControl.setPrefix('');
     var osm = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: 'Map © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -29,65 +148,59 @@
     });
 </script>
 
-<style>
-.hfh-repinst div { display: inline-block; }
-.hfh-repinst .btn { vertical-align: baseline; }
-.parish-category-list ul { margin-bottom: 0; }
-#form-categories-row > div:first-child:last-child .rm_element { display: none; }
-</style>
+<script>
+    // Strikethrough effect for categories
+    document.addEventListener('DOMContentLoaded', function() {
+        const categoryList = document.querySelector('.parish-category-list');
+        const form = document.querySelector('#form-categories-row')?.closest('form');
 
-<h2>[% label_for_field(form, 'parish', form.saved_data.parish) %]</h2>
+        if (!categoryList || !form) return;
 
-<p>
-Thanks! We've included a map of your boundary here, to confirm we've found the right one.
-</p>
+        // Get all categories
+        const categoryItems = categoryList.querySelectorAll('li');
 
-<p>
-The next step is to pick what things you would like to receive reports about.
-</p>
+        // New map so it's not upper or lower case sensitive
+        const categoryMap = new Map();
+        categoryItems.forEach(li => {
+            const text = Array.from(li.childNodes)
+                .filter(node => node.nodeType === Node.TEXT_NODE)
+                .map(node => node.textContent.trim())
+                .join('')
+                .trim();
 
-<p>
-Perhaps you are responsible for all grass cutting within your area, in which case you could have a "Grass cutting" category.
-Or perhaps you look after a particular playing field, so a "Lifford Lane playing field" category could work for that.
+            if (text) {
+                categoryMap.set(text.toLowerCase(), li);
+            }
+        });
 
-[% IF category_groups.size %]
-<p>To help, below we list the existing higher-tier council categories currently covering your area, so you can see how
-your categories could fit in alongside them:
-</p>
+        function updateStrikethroughs() {
+            // Reset all items
+            categoryItems.forEach(li => {
+                li.style.textDecoration = '';
+            });
 
-<ul class='parish-category-list'>
-    [%~ FOREACH group IN category_groups ~%]
-        [% IF group.name %]
-            <li>[% group.name %]
-            <ul>
-        [% END %]
-        [%~ FOREACH cat IN group.categories ~%]
-            [% NEXT IF cat.category_display == '-- Pick a category --' %]
-            <li>[% cat.category_display %]
-        [%~ END ~%]
-        [% IF group.name %]</ul>[% END %]
-    [% END %]
-</ul>
-[% END %]
+            // Get category inputs
+            const inputs = form.querySelectorAll('input[name$=".name"]');
 
-<p>
-If you have devolved responsibility for something in your area - say you look after
-all the road signs, but there already is a road signs category - then you can have a
-category of the same name, and within your boundary you will take precedence
-and receive reports in that category.
-</p>
+            inputs.forEach(input => {
+                const value = input.value.trim().toLowerCase();
+                if (value && categoryMap.has(value)) {
+                    categoryMap.get(value).style.textDecoration = 'line-through';
+                }
+            });
+        }
 
-<p>If you are only responsible for some of the street lights, choose a category name
-that would make it clearer to the user which category they should pick. For example,
-"Road signs on the estate roads".
+        // Listen for input changes on the form
+        form.addEventListener('input', function(e) {
+            if (e.target.name && e.target.name.endsWith('.name')) {
+                updateStrikethroughs();
+            }
+        });
 
-<p>
-As a couple of examples:</p>
+        // When new elements are added/removed
+        const observer = new MutationObserver(updateStrikethroughs);
+        observer.observe(form, { childList: true, subtree: true });
 
-<ul>
-    <li><strong>Bridgwater Town Council</strong> in Somerset is responsible for a wide array of things within their area &ndash; their categories include Dog fouling, Flytipping, Graffiti, Grass cutting, Litter/dog bins, Parks, Street lighting in parks, Trees in parks (not roads), and Weed growth.
-    <li><strong>Adstock Parish Council</strong> in Buckinghamshire is responsible for Flyposting, Grass cutting, Hedge problem, Dirty signs and Unauthorised signs.
-</ul>
-
-<p>We understand each parish/town council is different, and you have the freedom
-to pick what categories work for you. Please add the categories you would like below:</p>
+        updateStrikethroughs();
+    });
+</script>

@@ -44,7 +44,7 @@ has_page intro => (
 
 has_page categories => (
     fields => ['categories', 'add_category', 'continue'],
-    title => 'Pick your categories',
+    title => 'Council categories',
     intro => 'categories.html',
     update_field_list => sub {
         my $form = shift;
@@ -181,16 +181,28 @@ has_field add_category => (
     type => 'AddElement',
     repeatable => 'categories',
     value => 'Add another category',
-    tags => { hide => 1 },
+    do_wrapper => 0,
+    tags => {
+        hide => 1,
+        wrapper_tag => 'button',
+    },
+    element_attr => {
+        class => 'govuk-button govuk-button--secondary',
+        type => 'button',
+    },
 );
 has_field 'categories.rm_category' => (
     type => 'RmElement',
     repeatable => 'categories',
-    value => 'Remove category',
+    value => 'Remove',
     do_wrapper => 0,
     tags => {
         wrapper_tag => 'button',
-    }
+    },
+    element_attr => {
+        class => 'govuk-button govuk-button--warning',
+        type => 'button',
+    },
 );
 
 # From HTML/FormHandler/Render/RepeatableJs.pm altered to not use jQuery and no level
@@ -247,7 +259,7 @@ EOS
 
 
 has_field continue => ( type => 'Submit', value => 'Continue', element_attr => { class => 'govuk-button' } );
-has_field payment => ( type => 'Submit', value => 'Continue to payment', element_attr => { class => 'govuk-button' } );
+has_field payment => ( type => 'Submit', value => 'Continue to payment', element_attr => { class => 'govuk-button govuk-!-margin-bottom-0' } );
 
 sub fields_for_display {
     my ($form) = @_;
