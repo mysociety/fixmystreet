@@ -36,7 +36,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Grass cutting', 'Higher level category shown');
         $mech->content_contains('Potholes');
         $mech->submit_form_ok({
-            form_number => 1,
+            form_number => 2,
             fields => {
                 'categories.0.name' => 'Grass cutting',
                 'categories.1.name' => 'Abbey playing field',
