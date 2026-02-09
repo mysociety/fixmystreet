@@ -269,6 +269,7 @@ FixMyStreet::override_config {
 		$mech->content_contains('Food Waste');
 		$mech->content_contains('Mixed Recycling (Cans, Plastics &amp; Glass)');
 		$mech->content_contains('Non-Recyclable Refuse');
+        $mech->content_contains('close to the pavement');
 		$mech->content_lacks('Paper &amp; Card');
 
         $mech->submit_form_ok({ with_fields => { 'service-954' => 1 } });

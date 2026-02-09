@@ -1103,6 +1103,12 @@ sub enquiry : Chained('property') : Args(0) {
     my $service = $c->get_param('service_id');
     $c->detach('property_redirect') unless $category;
 
+    if ($category eq 'redirect-missed') {
+        my $id = $c->stash->{property}->{id};
+        $c->res->redirect($c->uri_for_action('waste/report', [ $id ]));
+        $c->detach;
+    }
+
     my ($contact) = grep { $_->category eq $category } @{$c->stash->{contacts}};
     $c->detach('property_redirect') unless $contact;
 
