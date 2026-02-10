@@ -13,6 +13,8 @@ use_ok( 'Open311::GetServiceRequestUpdates' );
 use DateTime;
 use DateTime::Format::W3CDTF;
 use File::Temp 'tempdir';
+use Path::Tiny;
+use FixMyStreet::ImageMagick;
 use FixMyStreet::DB;
 
 my $user = FixMyStreet::DB->resultset('User')->find_or_create(
@@ -2081,6 +2083,68 @@ subtest 'Category changes' => sub {
         is $problem->comments->count, 1, 'Only one comment created for update';
         is $problem->comments->first->text, 'Empty string group', 'correct comment text';
     };
+};
+
+subtest 'media_url image has EXIF metadata stripped' => sub {
+  # Image::Magick is disabled in test mode; enable it here so
+  # we can verify that EXIF stripping actually occurs.
+  SKIP: {
+    skip('Image::Magick not available', 7)
+        unless FixMyStreet::ImageMagick::_load_imagemagick();
+
+  my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
+  FixMyStreet::override_config {
+    PHOTO_STORAGE_BACKEND => 'FileSystem',
+    PHOTO_STORAGE_OPTIONS => {
+        UPLOAD_DIR => $UPLOAD_DIR,
+    },
+  }, sub {
+
+    $problem->comments->delete;
+    my $guard = LWP::Protocol::PSGI->register(t::Mock::Static->to_psgi_app, host => 'example.com');
+
+    # Verify the source image actually has GPS EXIF data to strip
+    my $source_img = Image::Magick->new;
+    my $ua = LWP::UserAgent->new;
+    my $res = $ua->get('http://example.com/image-exif.jpeg');
+    ok $res->is_success, 'fetched source image';
+    is $res->content_type, 'image/jpeg', 'source image is JPEG';
+    $source_img->BlobToImage($res->decoded_content);
+    ok $source_img->Get('EXIF:GPSLatitude'), 'source image has GPS EXIF data';
+
+    my $local_requests_xml = setup_xml($problem->external_id, 1, "");
+    $local_requests_xml =~ s#</service_request_id>#</service_request_id>
+        <media_url>http://example.com/image-exif.jpeg</media_url>#;
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/servicerequestupdates.xml', $local_requests_xml);
+
+    $problem->lastupdate( DateTime->now()->subtract( days => 1 ) );
+    $problem->state('confirmed');
+    $problem->update;
+
+    my $update = Open311::GetServiceRequestUpdates->new(
+        system_user => $user,
+        current_open311 => $o,
+        current_body => $bodies{2482},
+    );
+    $update->process_body;
+
+    $problem->discard_changes;
+    is $problem->comments->count, 1, 'comment count';
+    my $c = $problem->comments->first;
+    ok $c->photo, 'photo exists';
+
+    # Read the stored photo back and verify EXIF has been stripped
+    my $stored_file = Path::Tiny::path($UPLOAD_DIR, $c->photo);
+    ok $stored_file->exists, 'photo file exists on disk';
+    my $img = Image::Magick->new;
+    $img->BlobToImage($stored_file->slurp_raw);
+    my $exif = $img->Get('EXIF:GPSLatitude');
+    is $exif, undef, 'no EXIF GPS data in stored image';
+
+    $problem->comments->delete;
+  };
+  } # SKIP
 };
 
 done_testing();

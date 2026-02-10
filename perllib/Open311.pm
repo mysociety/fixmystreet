@@ -15,6 +15,8 @@ use FixMyStreet::DB;
 use Utils;
 use Path::Tiny 'path';
 use FixMyStreet::App::Model::PhotoSet;
+use FixMyStreet::ImageMagick;
+use Try::Tiny;
 
 has jurisdiction => ( is => 'ro', isa => Str );;
 has api_key => ( is => 'ro', isa => Str );
@@ -408,15 +410,24 @@ sub add_media {
 
     my @photos;
     foreach (@$url) {
+        my $photo_blob;
         if ($_ =~ /^data:/) {
             my @parts = split ',', $_, 2;
-            push @photos, $parts[1];
+            $photo_blob = $parts[1];
         } else {
             my $ua = LWP::UserAgent->new;
             my $res = $ua->get($_);
             if ( $res->is_success && $res->content_type =~ m{image/(jpeg|pjpeg|gif|tiff|png)} ) {
-                push @photos, $res->decoded_content;
+                $photo_blob = $res->decoded_content;
             }
+        }
+        if ($photo_blob) {
+            # Strip EXIF metadata and resize, same as user uploads
+            $photo_blob = try {
+                FixMyStreet::ImageMagick->new(blob => $photo_blob)
+                    ->shrink('2048x2048')->as_blob(magick => 'JPEG');
+            } catch { $photo_blob };
+            push @photos, $photo_blob;
         }
     }
     if (@photos) {

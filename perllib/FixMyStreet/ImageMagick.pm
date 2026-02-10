@@ -11,6 +11,19 @@ my $IM = eval {
 
 has blob => ( is => 'ro' );
 
+# Image::Magick is not loaded in test mode (see above). This method
+# allows tests that need real image processing to opt in explicitly.
+# Returns true if Image::Magick is available, false otherwise.
+sub _load_imagemagick {
+    return 1 if $IM;
+    eval {
+        require Image::Magick;
+        Image::Magick->import;
+    };
+    return 0 if $@;
+    $IM = 1;
+}
+
 has image => (
     is => 'rwp',
     lazy => 1,

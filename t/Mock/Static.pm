@@ -7,6 +7,8 @@ my $sample_file = path(__FILE__)->parent->parent->child("app/controller/sample.j
 my $sample_photo = $sample_file->slurp_raw;
 my $sample_gif = path(__FILE__)->parent->parent->child("app/helpers/grey.gif");
 my $sample_gif_data = $sample_gif->slurp_raw;
+my $sample_exif_file = path(__FILE__)->parent->parent->child("app/controller/sample-with-gps-exif.jpg");
+my $sample_exif_photo = $sample_exif_file->slurp_raw;
 
 sub dispatch_request {
     my $self = shift;
@@ -19,6 +21,11 @@ sub dispatch_request {
     sub (GET + /image.gif) {
         my ($self) = @_;
         return [ 200, [ 'Content-Type' => 'image/gif' ], [ $sample_gif_data ] ];
+    },
+
+    sub (GET + /image-exif.jpeg) {
+        my ($self) = @_;
+        return [ 200, [ 'Content-Type' => 'image/jpeg' ], [ $sample_exif_photo ] ];
     },
 }
 
