@@ -42,10 +42,10 @@ SET data = form.saved_data;
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
         [% IF cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston' %]
-          <div class="govuk-warning-text error">
+          <div class="govuk-warning-text info">
             <div class="govuk-warning-text__content">
-              Please carefully read all the details for your booking including the items as you
-              won't be able to amend the booking once submitted.
+              Please check your booking details carefully.
+              You cannot make changes to the booking [% IF small_items %]once submitted[% ELSE %]after you have made your payment[% END %].
             </div>
           </div>
         [% ELSE %]
@@ -108,11 +108,7 @@ SET data = form.saved_data;
       [% IF (!problem AND cobrand.bulky_cancel_enabled == 'public')
         || cobrand.bulky_can_cancel_collection( problem, 1 ) %]
         <div class="govuk-warning-text due">
-          <div class="govuk-warning-text__img">
-            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-          </div>
           <div class="govuk-warning-text__content">
-              <span class="govuk-warning-text__assistive">Warning</span>
               [% IF c.cobrand.moniker == 'brent' %]
                   <p class="govuk-!-margin-bottom-3">If you no longer need the collection you can cancel the booking up to 23:59 on the night before booking.</p>
               [% ELSIF c.cobrand.moniker == 'sutton' || c.cobrand.moniker == 'kingston' %]

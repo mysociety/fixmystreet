@@ -671,7 +671,11 @@ sub bulky_collection_window_start_date {
 =cut
 
 sub bulky_location_text_prompt {
-    "Please tell us where you will place the items for collection (include any access codes the crew will need)";
+    "If you live in a gated road or communal development, please provide any access codes needed for entry.";
 }
+
+sub bulky_show_location_field_mandatory { 0 }
+
+sub bulky_disabled_location_photo { 1 }
 
 1;
