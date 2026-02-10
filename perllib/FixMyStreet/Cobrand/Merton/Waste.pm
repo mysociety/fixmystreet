@@ -385,7 +385,7 @@ sub waste_munge_request_form_fields {
         if ($cost) {
             my $price = sprintf("£%.2f", $cost / 100);
             $price =~ s/\.00$//;
-            $value->{option_hint} = "There is a $price cost for this container";
+            $value->{option_hint} ||= "There is a $price cost for this container";
         }
     }
 }
@@ -504,8 +504,6 @@ sub waste_munge_request_data {
         }
         $c->set_param('payment', $cost || undef); # Want to undefine it if free
     }
-
-    $c->stash->{confirmation_text} = $self->container_request_note($service_id);
 }
 
 sub garden_due_date {
@@ -636,34 +634,6 @@ sub _bulky_collection_overdue {
     $collection_due_date->truncate(to => 'day')->set_hour(18);
     my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
     return $today > $collection_due_date;
-}
-
-=head2 container_request_note
-
-Include special note for domestic_mixed container requests.
-
-=cut
-
-sub container_request_note {
-    my ($self, $service_id) = @_;
-    if ($service_id && $service_id eq $SERVICE_IDS{domestic_mixed}) {
-        return 'Currently out of stock. ' .
-        'Orders will be delievered once stock is available, but we do not know when this will be.';
-    }
-}
-
-=head2 bin_request_form_extra_fields
-
-Include special note for domestic_mixed container requests.
-
-=cut
-
-sub bin_request_form_extra_fields {
-    my ($self, $service, $id, $field_list) = @_;
-    my $note = $self->container_request_note($service->{service_id});
-    return unless $note;
-    my %fields = @$field_list;
-    $fields{"container-$id"}{option_hint} = $note;
 }
 
 1;

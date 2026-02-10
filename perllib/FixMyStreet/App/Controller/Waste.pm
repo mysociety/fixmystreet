@@ -710,6 +710,7 @@ sub construct_bin_request_form {
                 option_label => $c->stash->{containers}->{$id},
                 tags => { toggle => "form-quantity-$id-row" },
                 disabled => $_->{requests_open}{$id} ? 1 : 0,
+                option_hint => $_->{requests_open}{$id} ? 'Unavailable to request as order in progress' : "",
             };
             $name = ''; # Only on first container
             if ($max == 1) {

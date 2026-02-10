@@ -88,6 +88,19 @@ create_contact(
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
 );
 
+create_contact({ category => 'Bin not returned', email => '3135' }, 'Waste',
+    { code => 'NotAssisted', description => 'Thank you for bringing this to our attention. We will use your feedback to improve performance in the future.  Please accept our apologies for the inconvenience caused.', variable => 'false'  },
+    { code => 'AssistedReturned', description => 'Thank you for bringing this to our attention. We will not return to your address on this occasion but we will endeavour to train our collection crew so that containers are returned correctly in the future.', variable => 'false' },
+    { code => 'AssistedNotReturned', description => 'Thank you for bringing this to our attention. We will return to your address as soon as we can to return the bin to its correct location. This may take up to 2 working days.', variable => 'false'  },
+    { code => 'Exact_Location', description => 'Exact location', required => 0, datatype => 'text' },
+    { code => 'details', order => 0, values => [{key => 'Blocking pavement', name => 'Blocking pavement '}, {key => 'Blocking drive', name => 'Blocking drive'}], datatype => 'multivaluelist', required => 'false', variable => 'true', protected => 'false', description => 'If you think your box, bin or caddy was not returned to the place where you left it after being emptied, please let us know what is the issue (select all that apply):'},
+    { code => 'Notes', required => 0, automated => 'hidden_field' },
+);
+create_contact({ category => 'Waste spillage', email => '3227' }, 'Waste',
+    { code => 'Image', description => 'Image', required => 0, datatype => 'image' },
+    { code => 'Notes', description => 'Details of the spillage', required => 0, datatype => 'text' },
+);
+
 # Merton also covers Kingston because of an out-of-area park which is their responsibility
 my $merton = $mech->create_body_ok(2500, 'Merton Council');
 FixMyStreet::DB->resultset('BodyArea')->create({ area_id => 2480, body_id => $merton->id });
@@ -663,7 +676,6 @@ FixMyStreet::override_config {
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
 
-
     subtest 'test report a problem - bin not returned, not assisted' => sub {
         set_fixed_time('2022-09-10T12:00:00Z');
         FixMyStreet::Script::Reports::send();
@@ -681,7 +693,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok( { with_fields => { extra_details => 'Blocking pavement', extra_Exact_Location => 'hello' } } );
         $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
         $mech->submit_form_ok( { with_fields => { submit => '1' } });
-        $mech->content_contains('Thank you for bringing this to our attention');
+        $mech->content_lacks('We will come back to return your bin to the correct location.');
+        $mech->content_contains('Your report will be recorded and used to help improve our service.');
         $mech->content_contains('Return to property details');
         $mech->content_contains('/waste/12345"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
@@ -717,7 +730,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok( { with_fields => { extra_details => 'Blocking drive', extra_Exact_Location => 'hello' } } );
         $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
         $mech->submit_form_ok( { with_fields => { submit => '1' } });
-        $mech->content_contains('Thank you for bringing this to our attention');
+        $mech->content_contains('We will come back to return your bin to the correct location.');
         $mech->content_contains('Return to property details');
         $mech->content_contains('/waste/12345"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
@@ -750,7 +763,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok( { with_fields => { extra_details => 'Blocking drive', extra_Exact_Location => 'hello' } } );
         $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
         $mech->submit_form_ok( { with_fields => { submit => '1' } });
-        $mech->content_contains('Thank you for bringing this to our attention');
+        $mech->content_contains('We will come back to return your bin to the correct location.');
         $mech->content_contains('Return to property details');
         $mech->content_contains('/waste/12345"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
@@ -769,7 +782,6 @@ FixMyStreet::override_config {
    subtest 'test report a problem - waste spillage' => sub {
         $mech->get_ok('/waste/12345');
         $mech->follow_link_ok({ text => 'Report a spillage or bin not returned issue with a non-recyclable refuse collection' });
-        $mech->content_lacks("the spillage is on a public highway");
         $mech->submit_form_ok( { with_fields => { category => 'Waste spillage' } });
         $mech->submit_form_ok( { with_fields => {
             extra_Notes => 'Rubbish left on driveway',
@@ -778,7 +790,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
         $mech->submit_form_ok( { with_fields => { submit => '1' } });
         $mech->content_contains('Your enquiry has been submitted');
-        $mech->content_contains('We will use your information to improve our service');
+        $mech->content_contains('If the spillage is on a public highway, please');
         $mech->content_contains('Return to property details');
         $mech->content_contains('/waste/12345"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;

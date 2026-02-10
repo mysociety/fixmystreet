@@ -271,7 +271,7 @@ sub bin_request_form_extra_fields {
 
     return unless $id == $CONTAINERS{food_outdoor};
     my %fields = @$field_list;
-    $fields{"container-$id"}{option_hint} = 'Only three are allowed per property. Any more than this will not be collected.';
+    $fields{"container-$id"}{option_hint} ||= 'Only three are allowed per property. Any more than this will not be collected.';
 }
 
 =head2 waste_munge_request_form_fields
@@ -292,7 +292,7 @@ sub waste_munge_request_form_fields {
             if (my $cost = $self->container_cost($id)) {
                 my $price = sprintf("£%.2f", $cost / 100);
                 $price =~ s/\.00$//;
-                $value->{option_hint} = "There is a $price cost for this container";
+                $value->{option_hint} ||= "There is a $price cost for this container";
             }
         }
         return;
@@ -771,7 +771,6 @@ sub admin_fee_cost {
     }
     return $cost;
 }
-
 
 =head2 Bulky waste collection
 
