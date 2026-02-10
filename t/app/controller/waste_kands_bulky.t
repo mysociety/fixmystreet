@@ -28,6 +28,14 @@ my $contact = $mech->create_contact_ok(body => $body, ( category => 'Report miss
     );
 $contact->update;
 
+create_contact($body, { category => 'Complaint against time', email => '3134' },
+    { code => 'Notes', required => 1, automated => 'hidden_field' },
+    { code => 'service_id', required => 1, automated => 'hidden_field' },
+    { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
+    { code => 'original_ref', required => 0, automated => 'hidden_field' },
+    { code => 'missed_guid', required => 0, automated => 'hidden_field' },
+);
+
 my $contact_centre_user = $mech->create_user_ok('contact@example.org', from_body => $body, email_verified => 1, name => 'Contact 1');
 
 my $sutton = $mech->create_body_ok( 2498, 'Sutton Borough Council', { cobrand => 'sutton' } );
@@ -835,9 +843,110 @@ FixMyStreet::override_config {
         } ] } );
         $mech->get_ok('/waste/12345');
         $mech->content_contains('A bulky waste collection has been reported as missed');
+        $mech->content_contains('We aim to resolve this by Friday, 7 July');
         $mech->get_ok('/waste/12345/report');
         $mech->content_lacks('Bulky waste collection');
         $echo->mock( 'GetEventsForObject', sub { [] } );
+    };
+
+    subtest 'Escalations of missed collections' => sub {
+        $echo->mock( 'GetEventsForObject', sub { [ {
+            Guid => 'a-guid',
+            Id => '8004',
+            ClientReference => 'LBS-123',
+            ServiceId => 986,
+            EventTypeId => 3130,
+            EventStateId => 19184, # Completed
+            EventDate => { DateTime => '2023-07-03T00:00:00Z' },
+            ResolvedDate => { DateTime => '2023-07-08T00:00:00Z' },
+            ResolutionCodeId => 232, # Completed on Scheduled Day (dunno if used, doesn't matter)
+        }, {
+            Id => '415530',
+            ClientReference => 'LBS-678',
+            ServiceId => 986,
+            EventTypeId => 3145,
+            EventStateId => 19240,
+            Guid => 'guid',
+            EventDate => { DateTime => '2023-07-08T01:00:00Z' },
+        } ] } );
+        my $escalation;
+        subtest 'Open missed collection' => sub {
+            set_fixed_time('2023-07-12T15:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('We aim to resolve this by Tuesday, 11 July', 'missed collection escalation date correct');
+
+            $mech->follow_link_ok({ text => 'please report the problem here' });
+
+            subtest 'actually make the report' => sub {
+                $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
+                $mech->submit_form_ok( { with_fields => { submit => '1' } });
+                $mech->content_contains('Your enquiry has been submitted');
+                $mech->content_contains('Return to property details');
+                $mech->content_contains('/waste/12345"');
+                $escalation = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+                is $escalation->category, 'Complaint against time', "Correct category";
+                is $escalation->detail, "2 Example Street, Kingston, KT1 1AA", "Details of report contain information about problem";
+                is $escalation->user->email, 'schmoe@example.org', 'User details added to report';
+                is $escalation->name, 'Joe Schmoe', 'User details added to report';
+                is $escalation->get_extra_field_value('Notes'), 'Originally Echo Event #415530';
+                is $escalation->get_extra_field_value('missed_guid'), 'guid';
+                is $escalation->get_extra_field_value('original_ref'), 'LBS-678';
+            };
+
+            set_fixed_time('2023-07-11T15:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('please report the problem here', 'before window');
+            set_fixed_time('2023-07-13T15:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('please report the problem here', 'in window');
+            set_fixed_time('2023-07-13T23:59:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('please report the problem here', 'just before window ends');
+            set_fixed_time('2023-07-14T00:01:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('please report the problem here', 'just after window ends');
+        };
+
+        $escalation->update({ external_id => 'escalation-guid' });
+
+        subtest 'Existing escalation event' => sub {
+            # Now mock there is an existing escalation
+            $echo->mock( 'GetEventsForObject', sub { [ {
+                Guid => 'a-guid',
+                Id => '8004',
+                ClientReference => 'LBS-123',
+                ServiceId => 986,
+                EventTypeId => 3130,
+                EventStateId => 19184, # Completed
+                EventDate => { DateTime => '2023-07-03T00:00:00Z' },
+                ResolvedDate => { DateTime => '2023-07-08T00:00:00Z' },
+                ResolutionCodeId => 232, # Completed on Scheduled Day (dunno if used, doesn't matter)
+            }, {
+                Id => '415530',
+                ClientReference => 'LBS-678',
+                ServiceId => 986,
+                EventTypeId => 3145,
+                EventStateId => 19240,
+                Guid => 'guid',
+                EventDate => { DateTime => '2023-07-08T01:00:00Z' },
+            }, {
+                Id => '112112321',
+                Guid => 'escalation-guid',
+                EventTypeId => 3134, # Complaint against time
+                EventStateId => 0,
+                ServiceId => 986, # Bulky
+                EventDate => { DateTime => '2023-07-12T15:00:00Z' },
+            } ] });
+
+            set_fixed_time('2023-07-12T16:01:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('Thank you for reporting an issue with this collection; we are investigating');
+            $mech->content_contains('aim to resolve this by Friday, 14 July', 'contains missed escalation target date');
+            $mech->content_lacks('aim to resolve this by Tuesday, 11 July', 'does not contain missed collection target date');
+            $mech->content_lacks('please report the problem here');
+        };
+
+        $echo->mock('GetEventsForObject', sub { [] }); # reset
     };
 
     subtest 'Bulky goods cheque payment by contact centre' => sub {
@@ -1110,6 +1219,8 @@ FixMyStreet::override_config {
 
             set_fixed_time('2025-04-10T19:00:00Z');
             $mech->get_ok('/waste/12345');
+            $mech->content_contains('We aim to resolve this by Thursday, 10 April');
+
             $mech->follow_link_ok({ text => 'please report the problem here' });
 
             subtest 'actually make the report' => sub {
@@ -1170,7 +1281,7 @@ FixMyStreet::override_config {
 
             set_fixed_time('2025-04-12T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_contains('Thank you for reporting an issue with this collection; we are investigating.');
+            $mech->content_contains('Thank you for reporting an issue with this collection; we are investigating and aim to resolve this by Tuesday, 15 April.');
             $mech->content_lacks('please report the problem here');
         };
 

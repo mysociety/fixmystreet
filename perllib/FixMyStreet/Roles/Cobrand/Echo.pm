@@ -322,8 +322,8 @@ sub bin_services_for_address {
             $self->moniker eq 'brent' ? (timeband => $_->{timeband}) : (),
         };
 
-        if ($self->moniker eq 'sutton') {
-            # Sutton needs to know about events from before the last collection in case
+        if ($self->moniker eq 'sutton' or $self->moniker eq 'kingston') {
+            # Kingston/Sutton need to know about events from before the last collection in case
             # there have been missed container escalations that are still relevant
             $row->{all_events} = $events->filter({ service => $service_id });
         }
