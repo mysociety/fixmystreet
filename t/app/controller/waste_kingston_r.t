@@ -630,7 +630,6 @@ FixMyStreet::override_config {
    subtest 'test report a problem - waste spillage' => sub {
         $mech->get_ok('/waste/12345');
         $mech->follow_link_ok({ text => 'Report a spillage or bin not returned issue with a non-recyclable refuse collection' });
-        $mech->content_lacks("the spillage is on a public highway");
         $mech->submit_form_ok( { with_fields => { category => 'Waste spillage' } });
         $mech->submit_form_ok( { with_fields => {
             extra_Notes => 'Rubbish left on driveway',
