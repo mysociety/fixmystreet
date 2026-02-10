@@ -11,6 +11,7 @@ use Hash::Util qw(lock_hash);
 use Integrations::Echo;
 use BromleyParks;
 use FixMyStreet::App::Form::Waste::Request::Bromley;
+use FixMyStreet::App::Form::Waste::Enquiry::Bromley;
 use FixMyStreet::DB;
 use Moo;
 use WasteWorks::Costs;
@@ -56,6 +57,7 @@ my %EVENT_TYPE_IDS = (
     request => 2104,
     bulky => 2175,
     garden => 2106,
+    return_request => 3240,
 );
 lock_hash(%EVENT_TYPE_IDS);
 
@@ -458,6 +460,21 @@ Ingore any updates from Echo that aren't New/Completed and don't have a resoluti
 sub open311_waste_update_extra {
     my ($self, $cfg, $event) = @_;
 
+    my $esc;
+    if ($event->{EventTypeId} == $EVENT_TYPE_IDS{return_request}) {
+        # Could have got here with a full event (pull) or subset (push)
+        if (!$event->{Data}) {
+            $event = $cfg->{echo}->GetEvent($event->{Guid});
+        }
+        my $data = Integrations::Echo::force_arrayref($event->{Data}, 'ExtensibleDatum');
+        foreach (@$data) {
+            if ($_->{DatatypeName} eq 'Investigation Outcome') {
+                $esc = 'Approved' if $_->{Value} == 1;
+                $esc = 'Declined' if $_->{Value} == 2;
+            }
+        }
+    }
+
     my $override_status;
     my $event_type = $cfg->{event_types}{$event->{EventTypeId}};
     my $state_id = $event->{EventStateId};
@@ -472,6 +489,7 @@ sub open311_waste_update_extra {
 
     return (
         defined $override_status ? (status => $override_status ) : (),
+        defined $esc ? (external_status_code => $esc) : (),
     );
 }
 
@@ -955,6 +973,62 @@ sub waste_munge_report_data {
     $data->{detail} = "$data->{title}\n\n$address";
     $c->set_param('service_id', $id);
     $self->_set_user_source;
+}
+
+
+=head2 waste_munge_enquiry_form_pages
+
+We are using an enquiry form to report a disputed missed collection.
+
+So we add an extra page to inform whether a dispute can be raised and an extra page
+for the user to confirm they would like to raise a dispute with a declaration
+their container was correctly placed, which they only reach
+if they they are able to dispute the missed collection
+
+=cut
+
+sub return_request_option {
+    my $self = shift;
+    my $c = $self->{c};
+
+    my $service_id = $c->get_param('service_id');
+    my $service = $c->stash->{services}{$service_id};
+    my $last = $service->{last};
+    my $next = $service->{next};
+    my $next_state = $next->{state} || '';
+
+    return 'too-late' unless $service->{report_within_time};
+
+    my $resolution_id = $last->{resolution_id} || 0;
+    return 'not-presented' if $resolution_id == 66;
+    return 'contaminated' if $resolution_id == 33;
+
+    return '';
+}
+
+sub waste_munge_enquiry_form_pages {
+    my ($self, $pages, $fields) = @_;
+    my $c = $self->{c};
+    my $category = $c->get_param('category');
+    my $reason = $self->return_request_option;
+
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Enquiry::Bromley';
+
+    if ($category eq 'Return request') {
+        # If we have a reason, we need to start with a special page
+        if ($reason eq 'not-presented') {
+            $c->stash->{first_page} = 'missed_collection_intro_not_presented';
+        } elsif ($reason eq 'contaminated' || $reason eq 'too-late') {
+            $c->stash->{first_page} = 'missed_collection_intro';
+        }
+    } elsif ($category eq 'General Enquiry') {
+        # If we have a reason, add a notice to the start of the Other form
+        if ($reason eq 'not-presented') {
+            unshift @{$pages->[1]{fields}}, 'bromley_missed_notice_not_presented';
+        } elsif ($reason eq 'contaminated' || $reason eq 'too-late') {
+            unshift @{$pages->[1]{fields}}, 'bromley_missed_notice';
+        }
+    }
 }
 
 sub waste_munge_enquiry_data {
