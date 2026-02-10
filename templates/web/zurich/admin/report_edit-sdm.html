@@ -79,6 +79,18 @@
      </dd>
   [% END %]
 
+    [% IF problem.state != 'submitted' AND hierarchical_attributes AND selected_hierarchical_attributes %]
+        [% SET selected = selected_hierarchical_attributes %]
+            <dt><span class="mock-label">[% loc('Hierarchical Attributes:') %]</span></dt>
+            <dd>
+                [% FOR field IN ['Geschäftsbereich', 'Objekt', 'Kategorie'] %]
+                    [% IF selected.$field AND hierarchical_attributes.$field.entries.${selected.$field} %]
+                        <strong>[% field %]</strong> [% hierarchical_attributes.$field.entries.${selected.$field}.name %]<br>
+                    [% END %]
+                [% END %]
+            </dd>
+    [% END %]
+
 </dl>
 
 </div>
