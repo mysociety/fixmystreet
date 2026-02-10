@@ -161,7 +161,7 @@ FixMyStreet::override_config {
     $mech->content_contains('small items');
     $mech->submit_form_ok({ form_number => 2 }); # 'Book Collection'
 
-    $mech->content_contains( 'Before you start your booking',
+    $mech->content_contains( 'Before you book',
         'Should be able to access the booking form' );
 
     my $report;
@@ -170,7 +170,7 @@ FixMyStreet::override_config {
 
         subtest 'Intro page' => sub {
             $mech->content_contains('Book small items collection');
-            $mech->content_contains('Before you start your booking');
+            $mech->content_contains('Before you book');
             $mech->submit_form_ok;
         };
 

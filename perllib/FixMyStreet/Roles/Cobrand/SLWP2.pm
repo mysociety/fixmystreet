@@ -897,7 +897,7 @@ sub suppress_report_sent_email {
 }
 
 sub bulky_location_photo_prompt {
-    'Help us by attaching a photo of where the items will be left for collection.';
+    'Help us find your items by attaching a photo of where the items will be left for collection.';
 }
 
 1;

@@ -63,7 +63,7 @@ FixMyStreet::override_config {
 
         $mech->content_contains('Bulky waste');
         $mech->submit_form_ok({ form_number => 5 });
-        $mech->content_contains( 'Before you start your booking',
+        $mech->content_contains( 'Before you book',
             'Should be able to access the booking form' );
     };
 
@@ -147,7 +147,7 @@ FixMyStreet::override_config {
 
         subtest 'Intro page' => sub {
             $mech->content_contains('Book a bulky waste collection');
-            $mech->content_contains('Before you start your booking');
+            $mech->content_contains('Before you book');
             $mech->content_like(qr/Prices start from\s+£45\.50/);
             $mech->submit_form_ok;
         };
