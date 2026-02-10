@@ -12,7 +12,9 @@ Please contact us after this time with your reference number if you haven’t re
 [% ELSIF report.category == 'Bin not returned' %]
     <p>Your report will be recorded and used to help improve our service.
 
-    <p>If you have reported the bin not returned and you are on an assisted collection, we will come back to return your bin to the correct location.
+    [% IF assisted_collection %]
+    <p>We will come back to return your bin to the correct location.
+    [% END %]
 [% ELSIF report.category == 'Waste spillage' %]
     <p>Your report will be recorded and used to help improve our service.
 

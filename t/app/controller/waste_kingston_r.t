@@ -541,7 +541,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok( { with_fields => { extra_details => 'Blocking pavement', extra_Exact_Location => 'hello' } } );
         $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
         $mech->submit_form_ok( { with_fields => { submit => '1' } });
-        $mech->content_contains('Thank you for bringing this to our attention');
+        $mech->content_lacks('We will come back to return your bin to the correct location.');
+        $mech->content_contains('Your report will be recorded and used to help improve our service.');
         $mech->content_contains('Return to property details');
         $mech->content_contains('/waste/12345"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
@@ -577,7 +578,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok( { with_fields => { extra_details => 'Blocking drive', extra_Exact_Location => 'hello' } } );
         $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
         $mech->submit_form_ok( { with_fields => { submit => '1' } });
-        $mech->content_contains('Thank you for bringing this to our attention');
+        $mech->content_contains('We will come back to return your bin to the correct location.');
         $mech->content_contains('Return to property details');
         $mech->content_contains('/waste/12345"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
@@ -610,7 +611,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok( { with_fields => { extra_details => 'Blocking drive', extra_Exact_Location => 'hello' } } );
         $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
         $mech->submit_form_ok( { with_fields => { submit => '1' } });
-        $mech->content_contains('Thank you for bringing this to our attention');
+        $mech->content_contains('We will come back to return your bin to the correct location.');
         $mech->content_contains('Return to property details');
         $mech->content_contains('/waste/12345"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
@@ -638,7 +639,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
         $mech->submit_form_ok( { with_fields => { submit => '1' } });
         $mech->content_contains('Your enquiry has been submitted');
-        $mech->content_contains('We will use your information to improve our service');
+        $mech->content_contains('If the spillage is on a public highway, please');
         $mech->content_contains('Return to property details');
         $mech->content_contains('/waste/12345"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
