@@ -362,6 +362,10 @@ input[type="submit"].waste-service-link {
     border: solid 4px $govuk-error-colour;
   }
 
+  &.info {
+    border: solid 4px black;
+  }
+
   &__img {
     flex-basis: auto;
     align-self: center;

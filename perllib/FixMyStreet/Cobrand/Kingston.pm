@@ -820,7 +820,7 @@ sub bulky_collection_window_start_date {
 =cut
 
 sub bulky_location_text_prompt {
-    "Please tell us where you will place the items for collection (include any access codes the crew will need)";
+    "Please tell us where you will place the items for collection and include any access information (such as access codes) the crew will need. For example, ‘On the driveway’.";
 }
 
 1;
