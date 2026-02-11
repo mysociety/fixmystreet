@@ -119,7 +119,6 @@ title: Welcome
       <p class="tertiary-heading">Say hello, we&rsquo;ll help you make <br>your new site awesome</p>
       <ul class="action-buttons spacer-top">
         <li><a href="https://github.com/mysociety/fixmystreet" class="btn--blue"><i class="icon icon-github">&nbsp;</i> GitHub</a></li>
-        <li><a href="https://twitter.com/fixmystreet" class="btn--blue"><i class="icon icon-twitter">&nbsp;</i> Follow us</a></li>
         <li><a href="{{ "/community/" | relative_url }}" class="btn--blue"><i class="icon icon-post">&nbsp;</i> Mailing list</a></li>
       </ul>
     </div>
