@@ -146,6 +146,7 @@ sub redirect_to_id : Private {
     $uri .= '/garden_check' if $type eq 'garden';
     $uri .= '/bulky' if $type eq 'bulky';
     $uri .= '/small_items' if $type eq 'small_items';
+    $uri .= '/sharps' if $type eq 'sharps';
     $c->res->redirect($uri);
     $c->detach;
 }

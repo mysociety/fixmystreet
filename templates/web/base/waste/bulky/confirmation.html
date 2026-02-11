@@ -3,6 +3,8 @@ IF report.category == 'Bulky collection';
     title = 'Bulky collection booking confirmed';
 ELSIF report.category == 'Small items collection';
     title = 'Small items collection booking confirmed';
+ELSIF report.category == 'Sharps collection';
+    title = 'Sharps booking confirmed';
 ELSE;
     title = 'Enquiry has been submitted';
 END;
@@ -30,7 +32,11 @@ END ~%]
       [% END %]
       <p>If you need to contact us about your booking please use the reference number:&nbsp;[% report_id %]</p>
     [% ELSE %]
-      <p>Our contractor will collect the items you have requested on [% cobrand.bulky_nice_collection_date(report) %].</p>
+      [% IF report.category == 'Sharps collection' %]
+        <p>Your request has been passed to our contractor who will deliver / collect the items requested on: [% cobrand.bulky_nice_collection_date(report) %].</p>
+      [% ELSE %]
+        <p>Our contractor will collect the items you have requested on [% cobrand.bulky_nice_collection_date(report) %].</p>
+      [% END %]
 
       [% IF cobrand.moniker == 'merton' %]
         <p>If your collection includes both upholstered and non-upholstered items (such as a sofa and a fridge), we may collect them in two stages.
@@ -38,7 +44,11 @@ END ~%]
       [% END %]
 
       [% IF cobrand.moniker == 'bexley' %]
-        <p>Collections start from [% cobrand.bulky_nice_collection_time %].&nbsp;Please have your items ready for collection at the location given and dismantled if required.</p>
+        [% IF report.category == 'Sharps collection' %]
+          <p>Please ensure that all boxes to be collected are sealed and available for collection from <strong>6am</strong> on the morning of your collection.</p>
+        [% ELSE %]
+          <p>Collections start from [% cobrand.bulky_nice_collection_time %].&nbsp;Please have your items ready for collection at the location given and dismantled if required.</p>
+        [% END %]
       [% ELSE %]
         <p>Item collection starts from [% cobrand.bulky_nice_collection_time %].&nbsp;
           [%~ IF cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston' ~%]

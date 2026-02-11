@@ -1,0 +1,18 @@
+[% IF report.get_extra_field_value('sharps_collecting') %]
+  <p style="[% p_style %]">Collection details</p>
+  <ul>
+    <li>Number of 1-litre boxes: [% report.get_extra_field_value('sharps_collect_small_quantity') %]</li>
+    <li>Number of 5-litre boxes: [% report.get_extra_field_value('sharps_collect_large_quantity') %]</li>
+    <li>Collection location: [% report.get_extra_field_value('collect_location') %]</li>
+    <li>Further access details: [% report.get_extra_field_value('collect_location_other') %]</li>
+  </ul>
+[% END %]
+
+[% IF report.get_extra_field_value('sharps_delivering') %]
+  <p style="[% p_style %]">Delivery details</p>
+  <ul>
+    <li>Glucose monitoring devices: [% report.get_extra_field_value('sharps_deliver_glucose_monitor') %]</li>
+    <li>Box size: [% report.get_extra_field_value('sharps_deliver_size') %]</li>
+    <li>Quantity: [% report.get_extra_field_value('sharps_deliver_quantity') %]</li>
+  </ul>
+[% END %]

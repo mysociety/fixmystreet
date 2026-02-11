@@ -50,6 +50,12 @@ sub small_items_enabled {
     return $cfg->{small_items_enabled};
 }
 
+sub sharps_enabled {
+    my $self = shift;
+    my $cfg = $self->feature('waste_features') || {};
+    return $cfg->{sharps_enabled};
+}
+
 sub bulky_items_master_list { $_[0]->wasteworks_config->{item_list} || [] }
 sub small_items_master_list { $_[0]->wasteworks_config->{small_item_list} || [] }
 sub bulky_per_item_costs { $_[0]->wasteworks_config->{per_item_costs} }
@@ -383,14 +389,17 @@ sub find_booked_collections {
     my %pending_states = map { $_ => 1 } FixMyStreet::DB::Result::Problem->open_states;
 
     my @reports = $self->problems->search({
-        category => ['Bulky collection', 'Small items collection'],
+        category => ['Bulky collection', 'Small items collection', 'Sharps collection'],
         uprn => $uprn,
     })->order_by('-id')->all;
 
     my $dt = DateTime->now( time_zone => FixMyStreet->local_time_zone )->truncate( to => 'day' )->subtract ( days => 10 );
     my $out;
     foreach (@reports) {
-        my $key = $_->category eq 'Small items collection' ? 'small_items' : 'bulky';
+        my $key
+            = $_->category eq 'Sharps collection'      ? 'sharps'
+            : $_->category eq 'Small items collection' ? 'small_items'
+            :                                            'bulky';
 
         my $date = $self->collection_date($_);
         next if $recent && $date < $dt;

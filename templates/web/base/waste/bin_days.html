@@ -294,6 +294,25 @@
         </div>
         [% END %]
 
+      [%
+        IF property.show_sharps;
+        SET image = c.cobrand.image_for_unit({ service_id => 'sharps' });
+      %]
+        <div class="waste-service-grid">
+          <div class="waste-service-grid--service-name">
+            <h3 id="sharps" class="govuk-heading-m waste-service-name">Sharps</h3>
+          </div>
+
+          <div class="waste-service-grid--service-image">
+            <img src="[% image %].svg" srcset="[% image %].svg 1x" alt="" class="waste-service-image">
+          </div>
+
+          <div class="waste-service-grid--service-description">
+            [% PROCESS 'waste/bulky/_bin_days_list.html' type='sharps' %]
+          </div>
+        </div>
+      [% END %]
+
       [% IF NOT service_data.size %]
         [% TRY %][% PROCESS waste/_bin_days_no_collections.html %][% CATCH file %]
           <p>This property has no collections.</p>

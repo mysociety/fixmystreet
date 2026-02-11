@@ -282,6 +282,7 @@ sub look_up_property {
         longitude => $site->{Site}->{SiteLongitude},
         upcoming_bank_holiday => $upcoming_bank_holiday,
         show_bulky_waste => $self->bulky_allowed_property($address),
+        show_sharps => $self->sharps_allowed_property($address),
         %parent_property,
     };
 }
@@ -965,6 +966,7 @@ sub image_for_unit {
     my $service_id = $unit->{service_id};
 
     return '/i/waste-containers/bulky-white' if $service_id eq 'bulky';
+    return '/i/waste-containers/sharps' if $service_id eq 'sharps';
     return '/i/waste-containers/bexley/' . $images->{$service_id};
 }
 

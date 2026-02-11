@@ -24,10 +24,11 @@ SET data = form.saved_data;
   [% END %]
 [% END %]
 
-
 <h1 class="govuk-heading-xl govuk-!-margin-bottom-9">
   [% IF small_items %]
     Your small items collection
+  [% ELSIF sharps %]
+    Your sharps booking
   [% ELSE %]
     [% IF problem %]
       Your bulky waste collection
@@ -136,6 +137,11 @@ SET data = form.saved_data;
       [% END %]
 
       <hr>
+    [% IF sharps %]
+      [% PROCESS 'waste/sharps/_details.html' data = data %]
+
+    [% ELSE %]
+
       <div class="summary-section-header">
         <h3 class="summary-section--heading">Items to be collected</h3>
         [% PROCESS change_answers_button goto='add_items' %]
@@ -236,7 +242,9 @@ SET data = form.saved_data;
         </tbody>
       </table>
 
-    [% IF cobrand.bulky_show_location_page %]
+    [% END %]
+
+    [% IF cobrand.bulky_show_location_page && !sharps %]
       <div class="summary-section-header">
         <h3 class="summary-section--heading">Location details</h3>
         [% PROCESS change_answers_button goto='location' %]
@@ -331,7 +339,7 @@ SET data = form.saved_data;
     <dt>Phone</dt>
     <dd>[% data.phone OR 'Not given' %]</dd>
 
-[% IF c.cobrand.moniker == 'bexley' %]
+[% IF c.cobrand.moniker == 'bexley' AND NOT sharps %]
     <dt>State pension?</dt>
     <dd>[% data.pension %]</dd>
     <dt>Physical disability?</dt>

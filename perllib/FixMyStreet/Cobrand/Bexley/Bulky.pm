@@ -251,4 +251,43 @@ sub bulky_refund_collection {
     );
 }
 
+# Sharps
+
+sub sharps_allowed_property {
+    my ( $self, $property ) = @_;
+    my $class = $property->{class} || '';
+    return $self->sharps_enabled && $class =~ /^(RD|RH|RI|RE|CE)/ ? 1 : 0;
+}
+
+sub waste_munge_sharps_data {
+    my ( $self, $data ) = @_;
+
+    my $c = $self->{c};
+    my $property = $c->stash->{property};
+    my $address = $property->{address};
+
+    my ($date, $ref) = split(";", $data->{chosen_date});
+
+    $data->{title} = 'Sharps collection';
+    $data->{detail} = 'Address: ' . $c->stash->{property}->{address};
+    $data->{category} = 'Sharps collection';
+    $data->{extra_collection_date} = $date;
+    $data->{extra_round_instance_id} = $ref;
+
+    if ( $data->{sharps_collecting} eq 'Yes' ) {
+        $data->{extra_sharps_collecting} = 1;
+        $data->{extra_collect_location} = $data->{collect_location};
+        $data->{extra_collect_location_other} = $data->{collect_location_other};
+        $data->{extra_sharps_collect_small_quantity} = $data->{collect_small_quantity};
+        $data->{extra_sharps_collect_large_quantity} = $data->{collect_large_quantity};
+    }
+
+    if ( $data->{sharps_delivering} eq 'Yes' ) {
+        $data->{extra_sharps_delivering} = 1;
+        $data->{extra_sharps_deliver_glucose_monitor} = $data->{deliver_glucose_monitor};
+        $data->{extra_sharps_deliver_size} = $data->{deliver_size};
+        $data->{extra_sharps_deliver_quantity} = $data->{deliver_quantity};
+    }
+}
+
 1;
