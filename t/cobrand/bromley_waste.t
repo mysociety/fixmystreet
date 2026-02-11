@@ -1100,6 +1100,17 @@ subtest 'check direct debit reconcilliation' => sub {
     });
     my $renewal_nothing_in_echo_ref = "LBB-" . $renewal_nothing_in_echo->id . "-754322";
 
+    my $sub_for_renewal_coming_in_as_adhoc = setup_dd_test_report({
+        'Subscription_Type' => 2,
+        'Subscription_Details_Quantity' => 1,
+        'payment_method' => 'direct_debit',
+        'property_id' => '154323',
+        'uprn' => '234561',
+    });
+    my $sub_for_renewal_coming_in_as_adhoc_ref = "LBB-" . $sub_for_renewal_coming_in_as_adhoc->id . "-3654321";
+    $sub_for_renewal_coming_in_as_adhoc->set_extra_metadata('payerReference' => $sub_for_renewal_coming_in_as_adhoc_ref);
+    $sub_for_renewal_coming_in_as_adhoc->update;
+
     my $integ = Test::MockModule->new('Integrations::Pay360');
     $integ->mock('config', sub { return { dd_sun => 'sun', dd_client_id => 'client' }; } );
     $integ->mock('call', sub {
@@ -1312,6 +1323,21 @@ subtest 'check direct debit reconcilliation' => sub {
                             Status => "Paid",
                             Type => "First Time",
                         },
+                        {   # subsequent renewal from a cc sub, but coming in as ad-hoc
+                            AlternateKey => "",
+                            Amount => 10.00,
+                            ClientName => "London Borough of Bromley",
+                            CollectionDate => "16/03/2021",
+                            DueDate => "16/03/2021",
+                            PayerAccountHoldersName => "A Payer",
+                            PayerAccountNumber => 123,
+                            PayerName => "A Payer",
+                            PayerReference => $sub_for_renewal_coming_in_as_adhoc_ref,
+                            PayerSortCode => "12345",
+                            ProductName => "Garden Waste",
+                            Status => "Paid",
+                            Type => "First Time",
+                        },
                     ]
                 }
             }}};
@@ -1499,6 +1525,8 @@ subtest 'check direct debit reconcilliation' => sub {
         "category: Garden Subscription (1)\n",
         "is a new/ad hoc\n",
         "no matching record found for Garden Subscription payment with id GGW554321\n",
+        "trying to process the payment as if it's a renewal in case it came through wrong...\n",
+        "no matching record found for Garden Subscription payment with id GGW554321\n",
         "done looking at payment GGW554321\n",
         "\n",
         "looking at payment $hidden_ref for £10 on 16/03/2021\n",
@@ -1509,6 +1537,9 @@ subtest 'check direct debit reconcilliation' => sub {
         "potential match is a dd payment\n",
         "potential match type is 1\n",
         "found matching report " . $hidden->id . " with state hidden\n",
+        "no matching record found for Garden Subscription payment with id $hidden_ref\n",
+        "trying to process the payment as if it's a renewal in case it came through wrong...\n",
+        "looking at potential match " . $hidden->id . " with state hidden\n",
         "no matching record found for Garden Subscription payment with id $hidden_ref\n",
         "done looking at payment $hidden_ref\n",
         "\n",
@@ -1534,6 +1565,9 @@ subtest 'check direct debit reconcilliation' => sub {
         "looking at potential match " . $ad_hoc_skipped->id . "\n",
         "potential match is a dd payment\n",
         "potential match type is 3\n",
+        "no matching record found for Garden Subscription payment with id $ad_hoc_skipped_ref\n",
+        "trying to process the payment as if it's a renewal in case it came through wrong...\n",
+        "looking at potential match " . $ad_hoc_skipped->id . " with state unconfirmed\n",
         "no matching record found for Garden Subscription payment with id $ad_hoc_skipped_ref\n",
         "done looking at payment $ad_hoc_skipped_ref\n",
     ];
@@ -1584,6 +1618,12 @@ subtest 'check direct debit reconcilliation' => sub {
     is $subsequent_renewal_from_cc_sub->get_extra_field_value('Subscription_Details_Container_Type'), 44, 'Subsequent Renewal has correct container type';
     is $subsequent_renewal_from_cc_sub->get_extra_field_value('service_id'), 545, 'Subsequent Renewal has correct service id';
     is $subsequent_renewal_from_cc_sub->get_extra_field_value('payment_method'), 'direct_debit', 'correctly marked as direct debit';
+
+    my $new_sub_for_renewal_coming_in_as_adhoc = FixMyStreet::DB->resultset('Problem')->search({ uprn => "234561" })->order_by('-id');
+    is $new_sub_for_renewal_coming_in_as_adhoc->count, 2, "Two reports for property";
+    $new_sub_for_renewal_coming_in_as_adhoc = $new_sub_for_renewal_coming_in_as_adhoc->first;
+    is $new_sub_for_renewal_coming_in_as_adhoc->state, 'confirmed', "Renewal report confirmed";
+    is $new_sub_for_renewal_coming_in_as_adhoc->get_extra_field_value('Subscription_Type'), 2, 'Renewal has correct type';
 
     $ad_hoc_orig->discard_changes;
     is $ad_hoc_orig->get_extra_metadata('dd_date'), "01/01/2021", "dd date unchanged ad hoc orig";
@@ -1673,6 +1713,9 @@ subtest 'check direct debit reconcilliation' => sub {
         "potential match is a dd payment\n",
         "potential match type is 1\n",
         "found matching report " . $hidden->id . " with state hidden\n",
+        "no matching record found for Garden Subscription payment with id $hidden_ref\n",
+        "trying to process the payment as if it's a renewal in case it came through wrong...\n",
+        "looking at potential match " . $hidden->id . " with state hidden\n",
         "no matching record found for Garden Subscription payment with id $hidden_ref\n",
         "done looking at payment $hidden_ref\n",
     ], "warns if given reference";
