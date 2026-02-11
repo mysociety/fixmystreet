@@ -1518,6 +1518,7 @@ subtest 'check direct debit reconcilliation' => sub {
         "looking at potential match " . $renewal_nothing_in_echo->id . " with state confirmed\n",
         "is a matching new report\n",
         "no matching service to renew for $renewal_nothing_in_echo_ref\n",
+        "done looking at payment $renewal_nothing_in_echo_ref\n",
         "\n",
         "looking at payment GGW854324 for £10 on 16/03/2021\n",
         "category: Garden Subscription (2)\n",
@@ -1688,6 +1689,7 @@ subtest 'check direct debit reconcilliation' => sub {
         "looking at potential match " . $hidden->id . " with state fixed - council\n",
         "is a matching new report\n",
         "no matching service to renew for $hidden_ref\n",
+        "done looking at payment $hidden_ref\n",
     ], "gets past the first stage if forced renewal";
 
     $hidden->unset_extra_metadata('dd_date');
