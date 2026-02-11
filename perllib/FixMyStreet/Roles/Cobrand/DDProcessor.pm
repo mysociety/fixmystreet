@@ -157,6 +157,12 @@ sub waste_reconcile_direct_debits {
             unless ( $handled ) {
                 $self->log("no matching record found for $category payment with id " . $payment->payer);
             }
+
+            unless ( $handled ) {
+                $self->log("trying to process the payment as if it's a renewal in case it came through wrong...");
+                $handled = $self->_handle_renewal_payment($payment, $category, $uprn, $rs->reset, $params, $dry_run);
+            }
+
         }
 
         $self->log( "done looking at payment " . $payment->payer );
