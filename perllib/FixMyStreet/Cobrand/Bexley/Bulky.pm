@@ -251,4 +251,14 @@ sub bulky_refund_collection {
     );
 }
 
+# Sharps
+
+sub sharps_allowed_property {
+    my ( $self, $property ) = @_;
+
+    # XXX Implement checks
+
+    return 1;
+}
+
 1;

@@ -8,6 +8,7 @@ use utf8;
 use FixMyStreet::App::Form::Waste::Bulky;
 use FixMyStreet::App::Form::Waste::Bulky::Amend;
 use FixMyStreet::App::Form::Waste::Bulky::Cancel;
+use FixMyStreet::App::Form::Waste::Sharps;
 use FixMyStreet::App::Form::Waste::SmallItems;
 use FixMyStreet::App::Form::Waste::SmallItems::Cancel;
 use FixMyStreet::App::Form::Waste::SmallItems::Amend;
@@ -58,6 +59,22 @@ sub setup_small : Chained('/waste/property') : PathPart('small_items') : Capture
         property => $c->stash->{property},
         type => 'small_items',
     );
+}
+
+sub setup_sharps : Chained('/waste/property') : PathPart('sharps') : CaptureArgs(0) {
+    my ($self, $c) = @_;
+
+    if ( !$c->stash->{property}{show_sharps} ) {
+        $c->detach('/waste/property_redirect');
+    }
+
+    $c->stash->{sharps} = 1;
+    $c->stash->{booking_class} = $c->cobrand->booking_class->new(
+        cobrand => $c->cobrand,
+        property => $c->stash->{property},
+        type => 'sharps',
+    );
+    # XXX Other stash settings?
 }
 
 sub bulky_item_options_method {
@@ -211,11 +228,21 @@ sub index_small : PathPart('') : Chained('setup_small') : Args(0) {
     $c->detach('index_booking');
 }
 
+sub index_sharps : PathPart('') : Chained('setup_sharps') : Args(0) {
+    my ($self, $c) = @_;
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Sharps';
+
+    # XXX Config
+    # XXX Check if pending?
+
+    $c->detach('index_booking');
+}
+
 sub index_booking : Private {
     my ($self, $c) = @_;
 
     $c->stash->{first_page} = 'intro';
-    $c->forward('item_list');
+    $c->forward('item_list') unless $c->stash->{sharps};
     $c->forward('form');
 
     if ( $c->stash->{form}->current_page->name eq 'intro' ) {

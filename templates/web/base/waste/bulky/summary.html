@@ -24,10 +24,12 @@ SET data = form.saved_data;
   [% END %]
 [% END %]
 
-
+[% # XXX Handle sharps fields %]
 <h1 class="govuk-heading-xl govuk-!-margin-bottom-9">
   [% IF small_items %]
     Your small items collection
+  [% ELSIF sharps %]
+    Your sharps collection
   [% ELSE %]
     [% IF problem %]
       Your bulky waste collection
