@@ -159,6 +159,16 @@ fixmystreet.assets.banes.curo_not_found = function(layer) {
     fixmystreet.message_controller.road_found(layer);
 };
 
+fixmystreet.assets.banes.rightsofway_stylemap = new OpenLayers.StyleMap({
+    'default': new OpenLayers.Style({
+        fillColor: '#790d8a',
+        strokeColor: "#790d8a",
+        strokeWidth: 4,
+        strokeOpacity: 0.8,
+        fillOpacity: 0.8
+    })
+});
+
 /* Bexley */
 
 fixmystreet.assets.bexley = {};
