@@ -19,3 +19,5 @@ FixMyStreet::override_config {
         ok 1;
     };
 };
+
+done_testing;
