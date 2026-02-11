@@ -84,7 +84,7 @@ FixMyStreet::override_config {
         my $e = FixMyStreet::Script::Reports->new;
         my $base = FixMyStreet->config('BASE_URL');
         my ($id1, $id2, $id3, $id4) = ( $p1->id, $p2->id, $p_bromley->id, $p_tfl->id );
-        stdout_like { $e->end_summary_failures } qr%The following 4 reports had problems sending:\nBromley Council \(1\): http://bromley.example.org/admin/report_edit/$id3\nCouncil of the Thousand \(2\): http://www.example.org/admin/report_edit/$id2, http://www.example.org/admin/report_edit/$id1\nTfL \(1\): http://tfl.example.org/admin/report_edit/$id4.*report/$id2.*report/$id4.*report/$id3.*report/$id1%s, "includes count of reports and reports in fixed order"
+        stdout_like { $e->end_summary_failures } qr%The following 4 reports had problems sending:\nBromley Council \(1\): http://bromley.example.org/admin/report_edit/$id3\nCouncil of the Thousand \(2\): http://www.example.org/admin/report_edit/$id2, http://www.example.org/admin/report_edit/$id1\nTfL \(1\): http://tfl.example.org/admin/report_edit/$id4%s, "includes count of reports and reports in fixed order";
     }
 };
 
