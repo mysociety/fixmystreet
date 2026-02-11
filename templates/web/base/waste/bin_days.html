@@ -294,6 +294,23 @@
         </div>
         [% END %]
 
+      [% IF property.show_sharps %]
+        <div class="waste-service-grid">
+          <div class="waste-service-grid--service-name">
+            <h3 id="sharps" class="govuk-heading-m waste-service-name">Sharps</h3>
+          </div>
+
+          <div class="waste-service-grid--service-image">
+            [% # XXX Do we have an image for sharps? %]
+          </div>
+
+          <div class="waste-service-grid--service-description">
+            [% # XXX Handle sharps %]
+            [% PROCESS 'waste/bulky/_bin_days_list.html' type='sharps' %]
+          </div>
+        </div>
+      [% END %]
+
       [% IF NOT service_data.size %]
         [% TRY %][% PROCESS waste/_bin_days_no_collections.html %][% CATCH file %]
           <p>This property has no collections.</p>

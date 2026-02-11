@@ -18,7 +18,7 @@ use Types::Standard qw(Enum);
 
 has cobrand => ( is => 'ro' );
 has property => ( is => 'ro' );
-has type => ( is => 'ro', isa => Enum['bulky', 'small_items'] );
+has type => ( is => 'ro', isa => Enum['bulky', 'small_items', 'sharps'] );
 
 has config => ( is => 'lazy', default => sub { $_[0]->cobrand->feature('whitespace') });
 has ws => ( is => 'lazy', default => sub { Integrations::Whitespace->new(%{$_[0]->config}) });

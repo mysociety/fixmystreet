@@ -21,9 +21,15 @@ has_page choose_date_earlier => (
     title => 'Choose date for collection',
     template => 'waste/bulky/choose_date.html',
     next => sub {
-        ( $_[1]->{later_dates} )
+        my $params = $_[1];
+        my $form = $_[2];
+
+        ( $params->{later_dates} )
             ? 'choose_date_later'
-            : 'add_items';
+            : ( $form->c->stash->{sharps}
+                ? 'extra_questions'
+                : 'add_items'
+            );
     },
 );
 
@@ -352,9 +358,9 @@ sub validate {
 
     if ( $self->current_page->name =~ /choose_date/ ) {
         my $next_page
-            = $self->current_page->next->( undef, $self->c->req->params );
+            = $self->current_page->next->( undef, $self->c->req->params, $self );
 
-        if ( $next_page eq 'add_items' ) {
+        if ( $next_page !~ /choose_date/ ) {
             $self->field('chosen_date')
                 ->add_error('Available dates field is required')
                 if !$self->field('chosen_date')->value;
