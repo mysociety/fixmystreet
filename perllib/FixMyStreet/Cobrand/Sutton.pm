@@ -1060,9 +1060,10 @@ sub waste_bulky_resolution_photo_update {
     if ($report_id) {
         my $update = FixMyStreet::DB->resultset('Comment')->search({
             problem_id => $report_id,
-            problem_state => 'unable to fix'
+            problem_state => 'unable to fix',
+            photo => { '!=' => undef },
         })->first();
-        return $update if $update && $update->photo;
+        return $update if $update;
     }
 }
 
