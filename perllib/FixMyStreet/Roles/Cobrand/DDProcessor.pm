@@ -126,46 +126,8 @@ sub waste_reconcile_direct_debits {
         # create a renewal record using the original subscription as a basis.
         if ( $type eq $self->waste_subscription_types->{Renew} ) {
             $self->log("is a renewal");
-            my $p;
-            # loop over all matching records and pick the most recent new sub or renewal
-            # record. This is where we get the details of the renewal from. There should
-            # always be one of these for an automatic DD renewal. If there isn't then
-            # something has gone wrong and we need to error.
-            while ( my $cur = $rs->next ) {
-                $self->log("looking at potential match " . $cur->id . " with state " . $cur->state);
-                # only match direct debit payments
-                next unless $self->waste_is_dd_payment($cur);
-                # already processed
-                next RECORD if $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $payment->date;
-                # only confirmed records are valid.
-                next unless FixMyStreet::DB::Result::Problem->visible_states()->{$cur->state};
-                next if $p;
+            $handled = $self->_handle_renewal_payment($payment, $category, $uprn, $rs, $params, $dry_run);
 
-                my $sub_type = $cur->get_extra_field_value($self->garden_subscription_type_field);
-                next unless $sub_type eq $self->waste_subscription_types->{New} || $sub_type eq $self->waste_subscription_types->{Renew};
-
-                if ( $sub_type eq $self->waste_subscription_types->{New} ) {
-                    $self->log("is a matching new report");
-                } elsif ( $sub_type eq $self->waste_subscription_types->{Renew} ) {
-                    $self->log("is a matching renewal report");
-                }
-                $p = $cur;
-            }
-            if ( $p ) {
-                my $service = $self->waste_get_current_garden_sub( $p->waste_property_id );
-                my $quantity;
-                if ($service) {
-                    $quantity = $self->waste_get_sub_quantity($service);
-                } elsif ($params->{reference} && $params->{force_when_missing}) {
-                    $quantity = $params->{force_when_missing};
-                } else {
-                    $self->log("no matching service to renew for " . $payment->payer);
-                    $self->output_log(1);
-                    next;
-                }
-                my $renew = $self->_duplicate_waste_report($p, $uprn, $quantity, $payment, $dry_run);
-                $handled = $dry_run ? 1 : $renew->id;
-            }
         # this covers new subscriptions and ad-hoc payments, both of which already have
         # a record in the database as they are the result of user action
         } else {
@@ -191,10 +153,10 @@ sub waste_reconcile_direct_debits {
                     next RECORD;
                 }
             }
-        }
 
-        unless ( $handled ) {
-            $self->log("no matching record found for $category payment with id " . $payment->payer);
+            unless ( $handled ) {
+                $self->log("no matching record found for $category payment with id " . $payment->payer);
+            }
         }
 
         $self->log( "done looking at payment " . $payment->payer );
@@ -271,6 +233,54 @@ sub waste_reconcile_direct_debits {
         $self->log("finished looking at payment " . $payment->payer);
         $self->output_log;
     }
+}
+
+sub _handle_renewal_payment {
+    my ($self, $payment, $category, $uprn, $rs, $params, $dry_run) = @_;
+    my $p;
+    # loop over all matching records and pick the most recent new sub or renewal
+    # record. This is where we get the details of the renewal from. There should
+    # always be one of these for an automatic DD renewal. If there isn't then
+    # something has gone wrong and we need to error.
+    while ( my $cur = $rs->next ) {
+        $self->log("looking at potential match " . $cur->id . " with state " . $cur->state);
+        # only match direct debit payments
+        next unless $self->waste_is_dd_payment($cur);
+        # already processed
+        if ($cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $payment->date) {
+            $self->log('renewal was already processed');
+            return 1;  # already handled
+        }
+        # only confirmed records are valid.
+        next unless FixMyStreet::DB::Result::Problem->visible_states()->{$cur->state};
+        next if $p;
+
+        my $sub_type = $cur->get_extra_field_value($self->garden_subscription_type_field);
+        next unless $sub_type eq $self->waste_subscription_types->{New} || $sub_type eq $self->waste_subscription_types->{Renew};
+
+        if ( $sub_type eq $self->waste_subscription_types->{New} ) {
+            $self->log("is a matching new report");
+        } elsif ( $sub_type eq $self->waste_subscription_types->{Renew} ) {
+            $self->log("is a matching renewal report");
+        }
+        $p = $cur;
+    }
+    if ( $p ) {
+        my $service = $self->waste_get_current_garden_sub( $p->waste_property_id );
+        my $quantity;
+        if ($service) {
+            $quantity = $self->waste_get_sub_quantity($service);
+        } elsif ($params->{reference} && $params->{force_when_missing}) {
+            $quantity = $params->{force_when_missing};
+        } else {
+            $self->log("no matching service to renew for " . $payment->payer);
+            return 0;  # not handled
+        }
+        my $renew = $self->_duplicate_waste_report($p, $uprn, $quantity, $payment, $dry_run);
+        return $dry_run ? 1: $renew->id;  # whether or not handled
+    }
+    $self->log("no matching record found for $category payment with id " . $payment->payer);
+    return 0;  # not handled
 }
 
 sub add_new_sub_metadata { return; }
