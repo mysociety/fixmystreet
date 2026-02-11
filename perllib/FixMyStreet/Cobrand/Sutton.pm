@@ -221,7 +221,7 @@ sub waste_munge_bin_services_open_requests {
 
 Sutton has custom behaviour to allow escalation of unresolved missed collections
 or container requests. This also covers disputing when the council has not collected
-a bin, or bulky upload because of a problem.
+a bin, or bulky collection because of a problem.
 
 =cut
 
