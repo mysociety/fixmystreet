@@ -769,6 +769,32 @@ FixMyStreet::override_config {
             $mech->content_lacks("You can cancel this booking up to");
             $mech->content_lacks('Cancel this booking');
         };
+
+        my $cancel_update = FixMyStreet::DB->resultset('Comment')->search({
+                problem_id => $report->id,
+                problem_state => 'cancelled'
+            })->first();
+        $cancel_update->delete();
+    };
+
+    subtest 'Bulky goods collection completed email' => sub {
+        $report->update({ state => 'fixed - council', external_id => 'a-guid' });
+        $mech->email_count_is(0);
+        my $completion_comment
+            = $mech->create_comment_for_problem( $report, $body_user, 'User',
+            'Things collected', undef, 'confirmed', 'fixed - council' );
+        # otherwise alert will not send because uses current_timestamp in query
+        $completion_comment->confirmed(\'current_timestamp');
+        $completion_comment->update;
+
+        FixMyStreet::Script::Alerts::send_updates();
+        my $cobrand = $body->get_cobrand_handler;
+        $mech->email_count_is(1);
+        my $email = $mech->get_email;
+        my $email_text = $mech->get_text_body_from_email($email);
+        my $email_html = $mech->get_html_body_from_email($email);
+        like $email_text, qr/BBQ/, 'collection completed text email contains item list';
+        like $email_html, qr/BBQ/, 'collection completed html email contains item list';
     };
 
     subtest 'Missed collections' => sub {
