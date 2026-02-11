@@ -27,6 +27,8 @@ use JSON::MaybeXS;
 use strict;
 use warnings;
 
+use WasteWorks::Costs;
+
 my $log_level;
 
 sub log_level {
@@ -50,11 +52,15 @@ sub waste_is_dd_payment {
     return $row->get_extra_field_value('payment_method') && $row->get_extra_field_value('payment_method') eq 'direct_debit';
 }
 
+sub _parse_payment_date {
+    my ($self, $date) = @_;
+    my ($day, $month, $year) = ( $date =~ m#^(\d+)/(\d+)/(\d+)$#);
+    return DateTime->new(day => $day, month => $month, year => $year);
+}
+
 sub waste_dd_paid {
     my ($self, $date) = @_;
-
-    my ($day, $month, $year) = ( $date =~ m#^(\d+)/(\d+)/(\d+)$#);
-    my $dt = DateTime->new(day => $day, month => $month, year => $year);
+    my $dt = $self->_parse_payment_date($date);
     return $self->within_working_days($dt, 3, 1);
 }
 
@@ -280,7 +286,16 @@ sub _handle_renewal_payment {
             $quantity = $params->{force_when_missing};
         } else {
             $self->log("no matching service to renew for " . $payment->payer);
-            return 0;  # not handled
+            $self->log("trying to calculate bin quantity instead...");
+            my $costs = WasteWorks::Costs->new({ cobrand => $payment->cobrand });
+            my $ggw_cost_pence = $costs->get_cost("ggw_cost", $self->_parse_payment_date($payment->date));
+            my $payment_amount_pence = $payment->amount * 100;
+            if (!$payment_amount_pence || !$ggw_cost_pence  || ($payment_amount_pence % $ggw_cost_pence != 0)) {
+                $self->log("unable to work out quantity from bin price and payment amount");
+                return 0;
+            }
+            $quantity = $payment_amount_pence / $ggw_cost_pence;
+            $self->log("calculated quantity as $quantity for payment £" . $payment->amount . " and garden bin cost £" . $ggw_cost_pence / 100 );
         }
         my $renew = $self->_duplicate_waste_report($p, $uprn, $quantity, $payment, $dry_run);
         return $dry_run ? 1: $renew->id;  # whether or not handled

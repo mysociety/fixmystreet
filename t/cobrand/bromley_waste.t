@@ -898,6 +898,9 @@ subtest 'check direct debit reconcilliation' => sub {
         COBRAND_FEATURES => {
             payment_gateway => {
                 bromley => {
+                    ggw_cost => [
+                        { start_date => '2019-02-27 00:00', cost => 1000 },
+                    ],
                 }
             }
         },
@@ -1090,14 +1093,14 @@ subtest 'check direct debit reconcilliation' => sub {
     $unprocessed_cancel->category('Cancel Garden Subscription');
     $unprocessed_cancel->update;
 
-    my $renewal_nothing_in_echo = setup_dd_test_report({
+    my $renewal_nothing_in_echo_and_cant_figure_out_quantity = setup_dd_test_report({
         'Subscription_Type' => 1,
         'Subscription_Details_Quantity' => 1,
         'payment_method' => 'direct_debit',
         'property_id' => '74321',
         'uprn' => '754322',
     });
-    my $renewal_nothing_in_echo_ref = "LBB-" . $renewal_nothing_in_echo->id . "-754322";
+    my $renewal_nothing_in_echo_and_cant_figure_out_quantity_ref = "LBB-" . $renewal_nothing_in_echo_and_cant_figure_out_quantity->id . "-754322";
 
     my $sub_for_renewal_coming_in_as_adhoc = setup_dd_test_report({
         'Subscription_Type' => 2,
@@ -1109,6 +1112,17 @@ subtest 'check direct debit reconcilliation' => sub {
     my $sub_for_renewal_coming_in_as_adhoc_ref = "LBB-" . $sub_for_renewal_coming_in_as_adhoc->id . "-3654321";
     $sub_for_renewal_coming_in_as_adhoc->set_extra_metadata('payerReference' => $sub_for_renewal_coming_in_as_adhoc_ref);
     $sub_for_renewal_coming_in_as_adhoc->update;
+
+    my $renewal_nothing_in_echo_but_can_figure_out_quantity = setup_dd_test_report({
+        'Subscription_Type' => 1,
+        'Subscription_Details_Quantity' => 1,
+        'payment_method' => 'direct_debit',
+        'property_id' => '74321',
+        'uprn' => '890123',
+    });
+    my $renewal_nothing_in_echo_but_can_figure_out_quantity_ref = "LBB-" . $renewal_nothing_in_echo_but_can_figure_out_quantity->id . "-890123";
+    $renewal_nothing_in_echo_but_can_figure_out_quantity->set_extra_metadata('payerReference' => $renewal_nothing_in_echo_but_can_figure_out_quantity_ref);
+    $renewal_nothing_in_echo_but_can_figure_out_quantity->update;
 
     my $integ = Test::MockModule->new('Integrations::Pay360');
     $integ->mock('config', sub { return { dd_sun => 'sun', dd_client_id => 'client' }; } );
@@ -1155,9 +1169,9 @@ subtest 'check direct debit reconcilliation' => sub {
                             Status => "Paid",
                             Type => "First Time",
                         },
-                        {   # hidden new sub
+                        {   # hidden new sub (and can't figure out quantity from payment)
                             AlternateKey => "",
-                            Amount => 10.00,
+                            Amount => 11.00,
                             ClientName => "London Borough of Bromley",
                             CollectionDate => "16/03/2021",
                             DueDate => "16/03/2021",
@@ -1231,16 +1245,16 @@ subtest 'check direct debit reconcilliation' => sub {
                             Status => "Paid",
                             Type => "Regular",
                         },
-                        {   # renewal but nothing in echo
+                        {   # renewal but nothing in echo and can't figure out quantity from payment
                             AlternateKey => "",
-                            Amount => 10.00,
+                            Amount => 11.00,
                             ClientName => "London Borough of Bromley",
                             CollectionDate => "16/03/2021",
                             DueDate => "16/03/2021",
                             PayerAccountHoldersName => "A Payer",
                             PayerAccountNumber => 123,
                             PayerName => "A Payer",
-                            PayerReference => $renewal_nothing_in_echo_ref,
+                            PayerReference => $renewal_nothing_in_echo_and_cant_figure_out_quantity_ref,
                             PayerSortCode => "12345",
                             ProductName => "Garden Waste",
                             Status => "Paid",
@@ -1336,6 +1350,21 @@ subtest 'check direct debit reconcilliation' => sub {
                             ProductName => "Garden Waste",
                             Status => "Paid",
                             Type => "First Time",
+                        },
+                        {   # renewal but nothing in echo but can figure out quantity from payment
+                            AlternateKey => "",
+                            Amount => 20.00,
+                            ClientName => "London Borough of Bromley",
+                            CollectionDate => "16/03/2021",
+                            DueDate => "16/03/2021",
+                            PayerAccountHoldersName => "A Payer",
+                            PayerAccountNumber => 123,
+                            PayerName => "A Payer",
+                            PayerReference => $renewal_nothing_in_echo_but_can_figure_out_quantity_ref,
+                            PayerSortCode => "12345",
+                            ProductName => "Garden Waste",
+                            Status => "Paid",
+                            Type => "Payment: 17",
                         },
                     ]
                 }
@@ -1528,7 +1557,7 @@ subtest 'check direct debit reconcilliation' => sub {
         "no matching record found for Garden Subscription payment with id GGW554321\n",
         "done looking at payment GGW554321\n",
         "\n",
-        "looking at payment $hidden_ref for £10 on 16/03/2021\n",
+        "looking at payment $hidden_ref for £11 on 16/03/2021\n",
         "category: Garden Subscription (1)\n",
         "extra query is {payerReference: $hidden_ref\n",
         "is a new/ad hoc\n",
@@ -1542,14 +1571,16 @@ subtest 'check direct debit reconcilliation' => sub {
         "no matching record found for Garden Subscription payment with id $hidden_ref\n",
         "done looking at payment $hidden_ref\n",
         "\n",
-        "looking at payment $renewal_nothing_in_echo_ref for £10 on 16/03/2021\n",
+        "looking at payment $renewal_nothing_in_echo_and_cant_figure_out_quantity_ref for £11 on 16/03/2021\n",
         "category: Garden Subscription (2)\n",
-        "extra query is {payerReference: $renewal_nothing_in_echo_ref\n",
+        "extra query is {payerReference: $renewal_nothing_in_echo_and_cant_figure_out_quantity_ref\n",
         "is a renewal\n",
-        "looking at potential match " . $renewal_nothing_in_echo->id . " with state confirmed\n",
+        "looking at potential match " . $renewal_nothing_in_echo_and_cant_figure_out_quantity->id . " with state confirmed\n",
         "is a matching new report\n",
-        "no matching service to renew for $renewal_nothing_in_echo_ref\n",
-        "done looking at payment $renewal_nothing_in_echo_ref\n",
+        "no matching service to renew for $renewal_nothing_in_echo_and_cant_figure_out_quantity_ref\n",
+        "trying to calculate bin quantity instead...\n",
+        "unable to work out quantity from bin price and payment amount\n",
+        "done looking at payment $renewal_nothing_in_echo_and_cant_figure_out_quantity_ref\n",
         "\n",
         "looking at payment GGW854324 for £10 on 16/03/2021\n",
         "category: Garden Subscription (2)\n",
@@ -1623,6 +1654,12 @@ subtest 'check direct debit reconcilliation' => sub {
     $new_sub_for_renewal_coming_in_as_adhoc = $new_sub_for_renewal_coming_in_as_adhoc->first;
     is $new_sub_for_renewal_coming_in_as_adhoc->state, 'confirmed', "Renewal report confirmed";
     is $new_sub_for_renewal_coming_in_as_adhoc->get_extra_field_value('Subscription_Type'), 2, 'Renewal has correct type';
+
+    my $new_sub_for_renewal_nothing_in_echo_but_can_figure_out_quantity = FixMyStreet::DB->resultset('Problem')->search({ uprn => "890123" })->order_by('-id');
+    is $new_sub_for_renewal_nothing_in_echo_but_can_figure_out_quantity->count, 2, "Two reports for property";
+    $new_sub_for_renewal_nothing_in_echo_but_can_figure_out_quantity = $new_sub_for_renewal_nothing_in_echo_but_can_figure_out_quantity->first;
+    is $new_sub_for_renewal_nothing_in_echo_but_can_figure_out_quantity->state, 'confirmed', "Renewal report confirmed";
+    is $new_sub_for_renewal_nothing_in_echo_but_can_figure_out_quantity->get_extra_field_value('Subscription_Details_Quantity'), 2, "Quantity correctly calculated";
 
     $ad_hoc_orig->discard_changes;
     is $ad_hoc_orig->get_extra_metadata('dd_date'), "01/01/2021", "dd date unchanged ad hoc orig";
@@ -1704,7 +1741,7 @@ subtest 'check direct debit reconcilliation' => sub {
         $c->waste_reconcile_direct_debits({ reference => $hidden_ref });
     } [
         "\n",
-        "looking at payment $hidden_ref for £10 on 16/03/2021\n",
+        "looking at payment $hidden_ref for £11 on 16/03/2021\n",
         "category: Garden Subscription (1)\n",
         "extra query is {payerReference: $hidden_ref\n",
         "is a new/ad hoc\n",
@@ -1724,7 +1761,7 @@ subtest 'check direct debit reconcilliation' => sub {
         $c->waste_reconcile_direct_debits({ reference => $hidden_ref, force_renewal => 1 });
     } [
         "\n",
-        "looking at payment $hidden_ref for £10 on 16/03/2021\n",
+        "looking at payment $hidden_ref for £11 on 16/03/2021\n",
         "category: Garden Subscription (1)\n",
         "Overriding type 1 to renew\n",
         "extra query is {payerReference: $hidden_ref\n",
@@ -1732,6 +1769,8 @@ subtest 'check direct debit reconcilliation' => sub {
         "looking at potential match " . $hidden->id . " with state fixed - council\n",
         "is a matching new report\n",
         "no matching service to renew for $hidden_ref\n",
+        "trying to calculate bin quantity instead...\n",
+        "unable to work out quantity from bin price and payment amount\n",
         "done looking at payment $hidden_ref\n",
     ], "gets past the first stage if forced renewal";
 
@@ -1739,11 +1778,11 @@ subtest 'check direct debit reconcilliation' => sub {
     $hidden->update({ state => 'unconfirmed' });
     stdout_like {
         $c->waste_reconcile_direct_debits({ reference => $hidden_ref, force_new => 1, verbose => 1 });
-    } qr/looking at payment $hidden_ref for £10 on 16\/03\/2021.*?Overriding type 1 to new.*?found matching report.*?confirming matching report.*?done looking at payment/s;
+    } qr/looking at payment $hidden_ref for £11 on 16\/03\/2021.*?Overriding type 1 to new.*?found matching report.*?confirming matching report.*?done looking at payment/s;
 
     stdout_like {
-        $c->waste_reconcile_direct_debits({ reference => $renewal_nothing_in_echo_ref, force_when_missing => 1, verbose => 1 });
-    } qr/looking at payment $renewal_nothing_in_echo_ref for £10 on 16\/03\/2021.*?category: Garden Subscription \(2\).*?is a renewal.*?looking at potential match @{[$renewal_nothing_in_echo->id]}.*?is a matching new report.*?created new confirmed report.*?done looking at payment/s, "creates a renewal if forced to";
+        $c->waste_reconcile_direct_debits({ reference => $renewal_nothing_in_echo_and_cant_figure_out_quantity_ref, force_when_missing => 1, verbose => 1 });
+    } qr/looking at payment $renewal_nothing_in_echo_and_cant_figure_out_quantity_ref for £11 on 16\/03\/2021.*?category: Garden Subscription \(2\).*?is a renewal.*?looking at potential match @{[$renewal_nothing_in_echo_and_cant_figure_out_quantity->id]}.*?is a matching new report.*?created new confirmed report.*?done looking at payment/s, "creates a renewal if forced to";
 
     # Test that a processed renewal that is then hidden doesn't generate warnings
     $processed_renewal->discard_changes;
