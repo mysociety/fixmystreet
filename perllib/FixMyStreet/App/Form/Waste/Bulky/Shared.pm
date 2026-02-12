@@ -27,7 +27,7 @@ has_page choose_date_earlier => (
         ( $params->{later_dates} )
             ? 'choose_date_later'
             : ( $form->c->stash->{sharps}
-                ? 'extra_questions'
+                ? 'collection_and_delivery'
                 : 'add_items'
             );
     },
