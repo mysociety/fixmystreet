@@ -4,6 +4,8 @@ use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste::Bulky::Shared';
 
+has sharps => ( is => 'ro', default => 1 );
+
 has_page intro => (
     title => 'Book sharps collection',
     intro => 'sharps/intro.html',
