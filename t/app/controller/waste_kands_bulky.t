@@ -1331,7 +1331,9 @@ FixMyStreet::override_config {
             # we only want the HTML link as the text version does not contain the link
             my @links = $email_html =~ m{https?://[^"]+}g;
             my @enq_links = grep( /enquiry/, @links );
-            $mech->get_ok($enq_links[0]);
+            # need to strip the host otherwise we're not logged in
+            my $l = URI->new($enq_links[0]);
+            $mech->get_ok($l->path_query);
             $mech->content_contains('Our crews reported that your Bulky waste collection was not made due to Not Available - Gate Locked', 'details of missed bin collection displayed');
             $mech->content_contains('This photo provides the evidence', 'Has resolution photo text');
         };
@@ -1346,7 +1348,8 @@ FixMyStreet::override_config {
             # we only want the HTML link as the text version does not contain the link
             my @links = $email_html =~ m{https?://[^"]+}g;
             my @enq_links = grep( /enquiry/, @links );
-            $mech->get_ok($enq_links[0]);
+            my $l = URI->new($enq_links[0]);
+            $mech->get_ok($l->path_query);
             $mech->content_lacks('Our crews reported that your Bulky waste collection was not made ', 'details of missed bin collection displayed');
             $mech->content_contains('Missed collections can only be disputed');
         };
