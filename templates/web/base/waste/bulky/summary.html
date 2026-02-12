@@ -147,15 +147,17 @@ SET data = form.saved_data;
         [% PROCESS change_answers_button goto='add_items' %]
       </div>
       [% items = [] %]
-      [% FOR num IN [ 1 .. c.stash.booking_maximum ];
-        item_key = 'item_' _ num;
-        photo_key = 'item_photo_' _ num;
-        item = data.$item_key;
-        notes_key = 'item_notes_' _ num;
-        NEXT UNLESS item;
-        items.push({ item => item, photo => data.$photo_key, notes => data.$notes_key });
-      END %]
-      [% IF NOT small_items %]
+      [% IF NOT sharps %]
+        [% FOR num IN [ 1 .. c.stash.booking_maximum ];
+          item_key = 'item_' _ num;
+          photo_key = 'item_photo_' _ num;
+          item = data.$item_key;
+          notes_key = 'item_notes_' _ num;
+          NEXT UNLESS item;
+          items.push({ item => item, photo => data.$photo_key, notes => data.$notes_key });
+        END %]
+      [% END %]
+      [% IF NOT small_items AND NOT sharps %]
       <dl>
         <dt>Price</dt>
         [% IF problem;
