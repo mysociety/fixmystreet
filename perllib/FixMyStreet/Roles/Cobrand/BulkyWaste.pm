@@ -382,6 +382,7 @@ sub get_all_payments {
     return $refs;
 }
 
+# XXX Handle sharps
 sub find_booked_collections {
     my ( $self, $uprn, $recent, $retry ) = @_;
 

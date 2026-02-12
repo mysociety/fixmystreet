@@ -300,6 +300,7 @@ sub view : Private {
         address => $p->get_extra_metadata('property_address'),
     };
 
+    # XXX Handle sharps
     my $items_extra;
     if ($p->category eq 'Small items collection') {
         $c->stash->{small_items} = 1;
@@ -414,6 +415,22 @@ sub process_small_items_data : Private {
     }
 
     $c->forward('/waste/add_report', [ $data ]) or return;
+    return 1;
+}
+
+sub process_sharps_data : Private {
+    my ( $self, $c, $form ) = @_;
+    my $data = $form->saved_data;
+
+    $c->cobrand->call_hook( "waste_munge_sharps_data", $data );
+
+    # Read extra details in loop
+    foreach (grep { /^extra_/ } keys %$data) {
+        my ($id) = /^extra_(.*)/;
+        $c->set_param($id, $data->{$_});
+    }
+
+    $c->forward( '/waste/add_report', [$data] ) or return;
     return 1;
 }
 

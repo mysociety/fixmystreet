@@ -6,6 +6,8 @@ ELSIF c.action == 'waste/bulky/amend';
 ELSE;
     IF small_items;
         c.uri_for_action('waste/bulky/index_small', [ property.id ]);
+    ELSIF sharps;
+        c.uri_for_action('waste/bulky/index_sharps', [ property.id ]);
     ELSE;
         c.uri_for_action('waste/bulky/index', [ property.id ]);
     END;
