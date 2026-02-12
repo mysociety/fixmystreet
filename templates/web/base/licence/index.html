@@ -26,6 +26,19 @@
     });
 })();
 </script>
+
+[% IF c.user.is_superuser OR c.config.STAGING_SITE %]
+<button class="btn" onclick='
+    $("input[type=text],textarea").val("test value");
+    $("input[type=email]").val("text@example.com");
+    $("input[name*=phone]").val("07700 900002");
+    $("input[inputmode=numeric][name]").val("10");
+    $("input[inputmode=numeric][name*=year]").val(1900+new Date().getYear());
+    $("input[type=radio][value=\"Yes\"").prop("checked", true);
+    $("input[type=checkbox]", ".content").prop("checked", true);
+    '>Fill</button>
+[% END %]
+
 [% END %]
 
 [% INCLUDE footer.html %]
