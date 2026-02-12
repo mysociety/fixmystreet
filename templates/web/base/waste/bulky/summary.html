@@ -24,7 +24,6 @@ SET data = form.saved_data;
   [% END %]
 [% END %]
 
-[% # XXX Handle sharps fields %]
 <h1 class="govuk-heading-xl govuk-!-margin-bottom-9">
   [% IF small_items %]
     Your small items collection
@@ -142,22 +141,56 @@ SET data = form.saved_data;
       [% END %]
 
       <hr>
+    [% IF sharps %]
+
+      [% IF data.sharps_collecting == 'Yes' %]
+      <div class="summary-section-header">
+        <h3 class="summary-section--heading">Collection details</h3>
+        [% PROCESS change_answers_button goto='collection_quantities' %]
+      </div>
+      <dl>
+        <dt>Number of 1-litre boxes</dt>
+        <dd>[% data.collect_small_quantity %]</dd>
+        <dt>Number of 5-litre boxes</dt>
+        <dd>[% data.collect_large_quantity %]</dd>
+        <dt>Collection location</dt>
+        <dd>[% data.collect_location %]</dd>
+        <dt>Glucose monitoring devices</dt>
+        <dd>[% data.collect_glucose_monitor %]</dd>
+        <dt>Cytotoxic waste</dt>
+        <dd>[% data.collect_cytotoxic %]</dd>
+      </dl>
+      [% END %]
+
+      [% IF data.sharps_delivering == 'Yes' %]
+      <div class="summary-section-header">
+        <h3 class="summary-section--heading">Delivery details</h3>
+        [% PROCESS change_answers_button goto='delivery_details' %]
+      </div>
+      <dl>
+        <dt>Box size</dt>
+        <dd>[% data.deliver_size %]</dd>
+        <dt>Quantity</dt>
+        <dd>[% data.deliver_quantity %]</dd>
+      </dl>
+      [% END %]
+
+    [% ELSE %]
+
       <div class="summary-section-header">
         <h3 class="summary-section--heading">Items to be collected</h3>
         [% PROCESS change_answers_button goto='add_items' %]
       </div>
       [% items = [] %]
-      [% IF NOT sharps %]
-        [% FOR num IN [ 1 .. c.stash.booking_maximum ];
-          item_key = 'item_' _ num;
-          photo_key = 'item_photo_' _ num;
-          item = data.$item_key;
-          notes_key = 'item_notes_' _ num;
-          NEXT UNLESS item;
-          items.push({ item => item, photo => data.$photo_key, notes => data.$notes_key });
-        END %]
-      [% END %]
-      [% IF NOT small_items AND NOT sharps %]
+      [% FOR num IN [ 1 .. c.stash.booking_maximum ];
+        item_key = 'item_' _ num;
+        photo_key = 'item_photo_' _ num;
+        item = data.$item_key;
+        notes_key = 'item_notes_' _ num;
+        NEXT UNLESS item;
+        items.push({ item => item, photo => data.$photo_key, notes => data.$notes_key });
+      END %]
+      [% IF NOT small_items %]
       <dl>
         <dt>Price</dt>
         [% IF problem;
@@ -243,6 +276,8 @@ SET data = form.saved_data;
         [% END %]
         </tbody>
       </table>
+
+    [% END %]
 
     [% IF cobrand.bulky_show_location_page %]
       <div class="summary-section-header">
@@ -339,7 +374,7 @@ SET data = form.saved_data;
     <dt>Phone</dt>
     <dd>[% data.phone OR 'Not given' %]</dd>
 
-[% IF c.cobrand.moniker == 'bexley' %]
+[% IF c.cobrand.moniker == 'bexley' AND NOT sharps %]
     <dt>State pension?</dt>
     <dd>[% data.pension %]</dd>
     <dt>Physical disability?</dt>

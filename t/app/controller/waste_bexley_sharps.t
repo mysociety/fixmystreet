@@ -130,6 +130,25 @@ FixMyStreet::override_config {
 
         $mech->content_contains('Booking Summary');
         $mech->content_contains('Friday 27 June 2025');
+
+        # Summary page should show sharps-specific details
+        $mech->content_contains('Collection details');
+        $mech->content_contains('Number of 1-litre boxes');
+        $mech->content_contains('Number of 5-litre boxes');
+        $mech->content_contains('Collection location');
+        $mech->content_contains('Doorstep');
+        $mech->content_contains('Glucose monitoring devices');
+        $mech->content_contains('Cytotoxic waste');
+        $mech->content_contains('Delivery details');
+        $mech->content_contains('Box size');
+        $mech->content_contains('1-litre');
+        $mech->content_contains('Quantity');
+
+        # Summary should NOT show bulky-specific fields
+        $mech->content_lacks('Items to be collected');
+        $mech->content_lacks('State pension?');
+        $mech->content_lacks('Physical disability?');
+
         $mech->submit_form_ok(
             {   with_fields => {
                     tandc => 1,
@@ -176,6 +195,56 @@ FixMyStreet::override_config {
         like $email_html, qr/Thank you for booking a sharps collection/;
 
         # XXX Collection/delivery details in email
+
+        $report->delete;
+    };
+
+    subtest 'Summary page with delivery only' => sub {
+        $mech->get_ok('/waste/10001/sharps');
+        $mech->submit_form_ok;
+
+        # About you
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    name  => 'Bob Marge',
+                    email => $user->email,
+                    phone => '44 07 111 111 111',
+                }
+            }
+        );
+
+        # Choose date
+        $mech->submit_form_ok(
+            { with_fields => { chosen_date => '2025-06-27;1;' } } );
+
+        # Collection and delivery - delivery only
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    sharps_collecting => 'No',
+                    sharps_delivering => 'Yes',
+                }
+            }
+        );
+
+        # Delivery details
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    deliver_size => '5-litre',
+                    deliver_quantity => 2,
+                }
+            }
+        );
+
+        # Summary page checks
+        $mech->content_contains('Booking Summary');
+        $mech->content_contains('Delivery details');
+        $mech->content_contains('Box size');
+        $mech->content_contains('5-litre');
+        $mech->content_lacks('Collection details',
+            'Collection details not shown when not collecting');
+        $mech->content_lacks('Items to be collected');
+        $mech->content_lacks('State pension?');
+        $mech->content_lacks('Physical disability?');
     };
 };
 
