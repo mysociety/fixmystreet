@@ -46,8 +46,8 @@ has pdf => ( is => 'lazy', default => sub {
         width => 'proportional',
         settings => { encode => 'utf8' },
         file => {
-            roman => 'web/cobrands/tfl/fonts/Johnston100-Light.ttf',
-            bold => 'web/cobrands/tfl/fonts/Johnston100-Medium.ttf',
+            roman => FixMyStreet->path_to('web/cobrands/tfl/fonts/Johnston100-Light.ttf')->stringify,
+            bold => FixMyStreet->path_to('web/cobrands/tfl/fonts/Johnston100-Medium.ttf')->stringify,
         }
     );
 
