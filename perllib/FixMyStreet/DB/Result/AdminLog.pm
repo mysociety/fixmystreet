@@ -152,6 +152,7 @@ sub action_display {
         moderation => _('Moderated'),
         resend => _('Resent'),
         category_change => _('Changed category'),
+        group_change => _('Changed group'),
         state_change => _('Changed state'),
     );
     return $action_map{$self->action} || $self->action;

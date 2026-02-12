@@ -114,7 +114,14 @@ sub update : Private {
     my $problem = $c->stash->{problem};
 
     my $current_category = $problem->category;
-    my $new_category_id = $c->get_param('category');
+
+    my $new_group_and_category_id = $c->get_param('category');
+
+    my $rgx = qr/__/;
+    my ( $new_group, $new_category_id )
+        = $new_group_and_category_id =~ $rgx
+        ? ( split $rgx, $new_group_and_category_id )
+        : ( '', $new_group_and_category_id );
 
     if (!$new_category_id) {
         my $errors = $c->stash->{errors} || [];
@@ -127,7 +134,10 @@ sub update : Private {
     my $contact = FixMyStreet::DB->resultset("Contact")->find($new_category_id);
     my $new_category = $contact->category;
 
-    my $changed = $c->forward('/admin/reports/edit_category', [ $problem, 1, $contact ] );
+    my $changed = $c->forward(
+        '/admin/reports/edit_category',
+        [ $problem, 1, $contact, $new_group ]
+    );
 
     if ( $changed ) {
         $c->stash->{problem}->update( { state => 'confirmed' } );

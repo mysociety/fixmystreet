@@ -55,6 +55,7 @@ sub open311_munge_update_params {
 
     my $p = $comment->problem;
 
+    # TODO Do we want to send update when only group has been changed?
     if ( $comment->text =~ /Category changed/ ) {
         if ( my $service_code = $p->get_extra_field_value('_wrapped_service_code')  || $p->contact->email ) {
             $params->{service_code} = $service_code;

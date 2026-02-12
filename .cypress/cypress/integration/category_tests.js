@@ -15,6 +15,7 @@ describe('Basic categories', function() {
         'Graffiti',
         'Offensive graffiti',
         'G|Licensing',
+        'G|Parks',
         'Parks/landscapes',
         'Pavements',
         'Potholes',
@@ -25,6 +26,7 @@ describe('Basic categories', function() {
         'Street cleaning',
         'Street lighting',
         'Street nameplates',
+        'G|Streets',
         'Traffic lights',
         'Trees',
         'Other'
