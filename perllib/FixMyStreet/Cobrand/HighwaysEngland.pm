@@ -158,12 +158,6 @@ sub recent_photos {
     return [];
 }
 
-=item * Anonymous reporting is allowed
-
-=cut
-
-sub allow_anonymous_reports { 'button' }
-
 =item * Two domains for admin users
 
 =cut
