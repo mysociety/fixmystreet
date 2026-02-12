@@ -11,7 +11,7 @@
   </form>
 [% ELSIF unit.report_locked_out %]
   [% IF c.cobrand.moniker == 'sutton' and unit.dispute_allowed %]
-    <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Missed collection dispute&amp;service_id=[% unit.service_id %][% '&amp;guid=' _ guid IF guid %][% '&amp;booking_id=' _ original_booking IF original_booking %]" class="waste-service-link waste-service-descriptor">Report a problem with this missed collection</a>
+    <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Missed collection dispute&amp;service_id=[% unit.service_id %][% '&amp;booking_id=' _ original_booking IF original_booking %]" class="waste-service-link waste-service-descriptor">Report a problem with this missed collection</a>
   [% ELSE %]
   <span class="waste-service-descriptor">A missed collection cannot be reported;
     [% IF unit.report_locked_out_reason %]

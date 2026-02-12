@@ -816,6 +816,19 @@ sub waste_munge_enquiry_form_pages {
     my $c = $self->{c};
     my $category = $c->get_param('category');
 
+    my $booking_id = $c->get_param('booking_id');
+    if ($booking_id) {
+        my $report = $c->model('DB::Problem')->find($booking_id);
+        unless ( $report && $c->user_exists && (
+                $c->stash->{is_staff} || $report->user->id == $c->user->id
+        ) ) {
+            my $property_uri = $c->uri_for_action( 'waste/bin_days', $c->stash->{property_id} );
+            my $uri = $c->uri_for( '/auth', { r => $property_uri } );
+            $c->res->redirect($uri);
+        }
+        $c->stash->{guid} = $report->external_id;
+    }
+
     # Add the service to the main fields form page
     $pages->[1]{intro} = 'enquiry-intro.html';
     $pages->[1]{title} = _enquiry_nice_title($category);
@@ -875,7 +888,7 @@ sub waste_munge_enquiry_form_pages {
             $pages->[1]{fields} = [ grep { !/^extra_Assisted/ } @{$pages->[1]{fields}} ];
         }
     } elsif ( $category eq 'Missed collection dispute') {
-        my $guid = $c->get_param('guid');
+        my $guid = $c->stash->{guid};
         # if we have a guid then it might be a link from an email and
         # so it might be clicked outside the window so re-check if
         # disputes are allowed

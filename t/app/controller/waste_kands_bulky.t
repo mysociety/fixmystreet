@@ -1210,6 +1210,7 @@ FixMyStreet::override_config {
         $echo->mock('GetEventsForObject', sub { [] }); # reset
     };
     subtest 'Dispute of failed bulky collections' => sub {
+        $mech->log_in_ok($report->user->email);
         $echo->mock('GetEventsForObject', sub { [ {
             Id => '8004',
             ClientReference => 'LBS-123',
@@ -1248,10 +1249,13 @@ FixMyStreet::override_config {
             $mech->content_contains('Report a problem with this missed collection', 'can report just after window opens');
         };
 
+        my $link;
         subtest 'Open collection dispute' => sub {
             set_fixed_time('2025-04-10T19:00:00Z');
             $mech->get_ok('/waste/12345');
             $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
+            # save this for checking logged out access below
+            $link = $mech->uri;
             $mech->content_contains('Our crews reported that your Bulky waste collection was not made due to Not Available - Gate Locked', 'details of missed bin collection displayed');
             $mech->content_lacks('This photo provides the evidence', 'No resolution photo text');
             $mech->submit_form_ok( { with_fields => { 'extra_Notes' => 'The gate was open' } }, 'submitted reasons');
@@ -1269,6 +1273,16 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('Notes'), "The gate was open";
         };
 
+        subtest 'Must be report user to open collection dispute' => sub {
+            $mech->log_out_ok;
+            $mech->get_ok($link);
+            my $report_id = $report->id;
+            is $mech->uri->path, '/auth', 'Redirects to auth if not logged in';
+            like $mech->content, qr#name="r"[^>]*waste/12345/enquiry[^ ]*booking_id=$report_id#, 'login page contains correct redirect'
+        };
+
+
+        $mech->log_in_ok($report->user->email);
         set_fixed_time('2025-04-10T19:00:00Z');
         $report->update_extra_field( { name => 'GUID', value => 'booking-guid'} );
         $report->update;
