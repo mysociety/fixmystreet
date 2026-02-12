@@ -415,13 +415,7 @@ sub _setup_container_request_disputes_for_service {
     if ($row->{last}->{completed} && $row->{report_locked_out}) {
         # and then check if we can open a dispute for this resolution
         if ( $self->waste_check_can_raise_dispute($row->{service_id}, $row->{last}->{resolution}) ) {
-            my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-            my $wd = FixMyStreet::WorkingDays->new();
-            my $start = $wd->add_days($row->{last}->{completed}, $start_days)->set_hour(18);
-            my $end = $wd->add_days($start, $window_days + 1)->set_hour(0); # Before this
-
-            # check window
-            if ($now >= $start && $now < $end) {
+            if ( $self->_check_date_within_dispute_window($row->{last}->{completed}) ) {
                 $row->{dispute_allowed} = 1;
             }
         }
