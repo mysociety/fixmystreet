@@ -65,6 +65,7 @@ sub process_licence : Private {
     my $data = $form->saved_data;
     my $type = $c->stash->{licence_type};
     my $name = $c->stash->{licence_name};
+    $data->{licence_type} = $type;
 
     # Handle staff submitting on behalf of another user
     my $contributing_as_another_user = $c->user_exists
@@ -150,6 +151,110 @@ sub process_licence : Private {
     $c->stash->{reference} = 'FMS' . $problem->id;
 
     return 1;
+}
+
+=head2 view
+
+When someone views their licence application, we reconstruct the
+summary page they were shown during the application.
+
+=cut
+
+sub view : Private {
+    my ($self, $c) = @_;
+    my $p = $c->stash->{problem};
+    my $type = $p->get_extra_metadata('licence_type');
+    $c->forward('show', [ $type ]);
+    $c->stash->{form}->saved_data($p->extra);
+    $c->stash->{template} = 'licence/summary.html';
+}
+
+=head2 pdf
+
+We want to generate a PDF version of the summary
+page they were shown during the application.
+
+=cut
+
+sub pdf : Local : Args(1) {
+    my ($self, $c, $id) = @_;
+    my $p = $c->stash->{problem} = FixMyStreet::DB->resultset("Problem")->find($id);
+
+    my $token_ok = ($c->get_param('token') || '') eq ($p ? $p->confirmation_token : '');
+    $c->detach('/page_error_404_not_found')
+        unless $p && (
+            $token_ok
+            || ($c->user_exists && ($c->user->is_superuser || $c->user->id == $p->user_id))
+        );
+
+    my $type = $p->get_extra_metadata('licence_type')
+        or $c->detach('/page_error_404_not_found');
+    $c->forward('show', [ $type ]);
+    my $form = $c->stash->{form};
+    $form->saved_data($p->extra);
+
+    require FixMyStreet::PDF;
+    my $pdf = FixMyStreet::PDF->new(
+        title => $p->title . ', FMS' . $p->id,
+        font => 'Johnston100',
+    );
+
+    # Simplest solution, have a template that has the HTML in,
+    # and let it place it all. This works, but has orphans.
+    #my $input = $c->render_fragment('licence/summary_pdf.html');
+    #$pdf->plot_line(undef, 'black', $input);
+
+    # So instead, generate the PDF line by line and check for
+    # orphan headings as we go
+
+    my ($rc, $next_y);
+    ($rc, $next_y) = $pdf->plot_line($next_y, 'black', '<h1>' . $form->title . '</h1>');
+    ($rc, $next_y) = $pdf->plot_line($next_y, 'black', '<p>FMS' . $p->id . '</p>');
+
+    foreach my $page (@{$form->fields_for_display}) {
+        next if $page->{hide};
+        next if $page->{stage} eq 'intro' || $page->{stage} eq 'done';
+
+        my $page_title = "<h2>$page->{title}</h2>";
+        my ($rc, $post_title_y) = $pdf->plot_line($next_y, 'white', $page_title);
+        if ($rc) {
+            # Want to start heading on new page
+            $next_y = undef;
+        }
+
+        my $first_field = 1;
+        foreach my $field (@{$page->{fields}}) {
+            next if $field->{hide};
+            my $line = "<p style='margin-top:6pt'><strong>$field->{desc}";
+            $line .= ':' unless $field->{desc} =~ /[?:.]$/;
+            $line .= "</strong> $field->{pretty}</p>";
+
+            if ($first_field) {
+                $first_field = 0;
+                if ($post_title_y) {
+                    # Can we fit the line of text in after the heading?
+                    ($rc) = $pdf->plot_line($post_title_y, 'white', $line);
+                    if ($rc) {
+                        # Heading would be an orphan, want to start it on new page
+                        $next_y = undef;
+                    }
+                }
+                ($rc, $next_y) = $pdf->plot_line($next_y, '#0019A8', $page_title);
+            }
+            ($rc, $next_y) = $pdf->plot_line($next_y, 'black', $line);
+
+            # Special showing of calculated end date
+            if ($field->{desc} eq 'Number of weeks required') {
+                my $end = $form->saved_data->{proposed_end_date};
+                my $line = '<p style="margin-top:6pt"><strong>Proposed end date:';
+                $line .= "</strong> $end->{day}/$end->{month}/$end->{year}</p>";
+                ($rc, $next_y) = $pdf->plot_line($next_y, 'black', $line);
+            }
+        }
+    }
+
+    $c->res->content_type('application/pdf');
+    $c->res->body($pdf->to_string);
 }
 
 __PACKAGE__->meta->make_immutable;

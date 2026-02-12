@@ -6,22 +6,28 @@
 [% PROCESS errors %]
 
 <h1 class="govuk-heading-xl">[% form.title %]</h1>
+[% IF problem %]
+<p>FMS[% problem.id %]
+[% ELSE %]
 <p>Please review your application before submitting.</p>
+[% END %]
 
 <div class="forms__summary">
 <dl class="govuk-summary-list">
   [% FOR page IN form.fields_for_display %]
       [% NEXT IF page.hide %]
-      [% NEXT IF page.stage == 'intro' OR page.stage == 'summary' OR page.stage == 'done' %]
+      [% NEXT IF page.stage == 'intro' OR page.stage == 'done' %]
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">[% page.title %]</dt>
         <dd class="govuk-summary-list__value"></dd>
         <dd class="govuk-summary-list__actions">
-        <form method="post">
+         [% UNLESS problem %]
+          <form method="post">
             <input type="hidden" name="saved_data" value="[% form.fif.saved_data %]">
             <input type="hidden" name="goto" value="[% page.stage %]">
-            <input type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0" value="Change answers">
-        </form>
+            <input type="submit" class="fake-link" value="Change answers">
+          </form>
+         [% END %]
         </dd>
       </div>
       [% FOR field IN page.fields %]
@@ -40,9 +46,12 @@
   [% END %]
 </dl>
 
+[% UNLESS problem %]
 <form method="post" enctype="multipart/form-data">
     [% PROCESS form %]
 </form>
+[% END %]
+
 </div>
 
 [% INCLUDE footer.html %]
