@@ -143,8 +143,10 @@
   [% IF (type == 'bulky' AND waste_features.bulky_multiple_bookings) OR (type == 'small_items' AND waste_features.small_items_multiple_bookings) OR NOT collections.$type.pending %]
     [% IF type == 'bulky' %]
     <form method="post" action="[% c.uri_for_action('waste/bulky/index', [ property.id ]) %]">
-    [% ELSE %]
+    [% ELSIF type == 'small_items' %]
     <form method="post" action="[% c.uri_for_action('waste/bulky/index_small', [ property.id ]) %]">
+    [% ELSIF type == 'sharps' %]
+    <form method="post" action="[% c.uri_for_action('waste/bulky/index_sharps', [ property.id ]) %]">
     [% END %]
       <input type="hidden" name="token" value="[% csrf_token %]">
       <input class="btn btn--primary govuk-!-margin-bottom-2" type="submit" aria-label="Book a collection" value="Book a collection">
