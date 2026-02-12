@@ -307,6 +307,7 @@ sub munge_bin_services_for_address {
     foreach (@$rows) {
         $self->_setup_missed_collection_escalations_for_service($_);
         $self->_setup_container_request_escalations_for_service($_);
+        $self->_setup_container_request_disputes_for_service($_);
     }
 }
 
@@ -404,7 +405,7 @@ sub waste_check_can_raise_dispute {
 
 =cut
 
-sub munge_waste_task_resolutions {
+sub _setup_container_request_disputes_for_service {
     my ($self, $row) = @_;
 
     my $start_days = 0; # Window starts on the day the collection was missed
