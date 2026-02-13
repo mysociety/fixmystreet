@@ -210,7 +210,9 @@ sub responsible_for_areas {
 
     if ($self->can('check_report_is_on_cobrand_asset')) {
         # This will need changing for two tier councils
-        if (grep ($self->council_area_id->[0] == $_, keys %$councils)) {
+        my $council_area_ids = $self->council_area_id;
+        $council_area_ids = [ $council_area_ids ] unless ref $council_area_ids eq 'ARRAY';
+        if (grep ($council_area_ids->[0] == $_, keys %$councils)) {
             return 1;
         } else {
             return $self->check_report_is_on_cobrand_asset;
