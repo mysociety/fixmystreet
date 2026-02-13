@@ -370,6 +370,44 @@ fixmystreet.assets.buckinghamshire.prow_selected = function(asset) {
     return 'You have selected ' + type + ' <b>' + id + '</b>';
 };
 
+// Found PROW road
+fixmystreet.assets.buckinghamshire.prow_road_found = function(layer, feature) {
+    if ( fixmystreet.assets.selectedFeature() ) {
+        // Hide non-stopper message if spot selected
+        bucks_hide_non_stopper_message(layer);
+        return;
+    }
+
+    fixmystreet.assets.buckinghamshire.found_item.call(layer, feature);
+};
+
+fixmystreet.assets.buckinghamshire.found_item = function(asset) {
+    fixmystreet.assets.named_select_action_found.call(this, asset);
+};
+
+fixmystreet.assets.buckinghamshire.prow_road_selected = function(asset) {
+    return 'You have selected Right of Way <b>' + asset.attributes.RouteCode + '</b>';
+};
+
+// PROW road not found
+fixmystreet.assets.buckinghamshire.prow_road_not_found = function(layer) {
+    if ( fixmystreet.assets.selectedFeature() ) {
+        // This may never be reached, as selecting a spot PROW asset implies
+        // a road has also been found
+        return;
+    }
+
+    fixmystreet.assets.buckinghamshire.not_found_msg_update.call(layer);
+};
+
+fixmystreet.assets.buckinghamshire.not_found_msg_update = function() {
+    fixmystreet.assets.named_select_action_not_found.call(this);
+};
+
+function bucks_hide_non_stopper_message(layer) {
+    delete layer.map_messaging.asset;
+}
+
 fixmystreet.assets.buckinghamshire.streetlight_stylemap = new OpenLayers.StyleMap({
   'default': fixmystreet.assets.style_default,
   'hover': fixmystreet.assets.style_default_hover,
