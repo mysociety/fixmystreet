@@ -467,6 +467,22 @@ sub fields_for_display {
     return $things;
 }
 
+=head3 label_for_field
+
+This is used in order to reconstruct nice labels from the given option, in e.g. summary page.
+
+=cut
+
+sub label_for_field {
+    my ($form, $field, $key) = @_;
+    my $fn = 'options_' . $field;
+    my @options = $form->field($field)->options;
+    @options = $form->$fn if !@options && $form->can($fn);
+    foreach (@options) {
+        return $_->{label} if $_->{value} eq $key;
+    }
+}
+
 =head3 format_for_display
 
 Converts a field value to a human-readable format for display.
@@ -484,7 +500,7 @@ sub format_for_display {
     my $field = $form->field($field_name);
 
     if ( $field->{type} eq 'Select' ) {
-        return $form->c->stash->{label_for_field}($form, $field_name, $value);
+        return $form->label_for_field($field_name, $value);
     } elsif ( $field->{type} eq 'DateTime' ) {
         # if field was on the last screen then we get the DateTime and not
         # the hash because it's not been through the freeze/that process
