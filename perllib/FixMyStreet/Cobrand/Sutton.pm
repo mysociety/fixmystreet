@@ -217,10 +217,11 @@ sub waste_munge_bin_services_open_requests {
     }
 }
 
-=head2 Escalations
+=head2 Escalations and Disputes
 
 Sutton has custom behaviour to allow escalation of unresolved missed collections
-or container requests.
+or container requests. This also covers disputing when the council has not collected
+a bin, or bulky collection because of a problem.
 
 =cut
 
@@ -238,36 +239,66 @@ around booked_check_missed_collection => sub {
     my $missed = $self->{c}->stash->{booked_missed};
     foreach my $guid (keys %$missed) {
         my $missed_event = $missed->{$guid}{report_open};
-        next unless $missed_event;
+        my $locked_out = $missed->{$guid}{report_locked_out};
 
-        my $open_escalation = 0;
-        foreach ($escalations->list) {
-            next unless $_->{report};
-            my $missed_guid = $_->{report}->get_extra_field_value('missed_guid');
-            next unless $missed_guid;
-            if ($missed_guid eq $missed_event->{guid}) {
-                $missed->{$guid}{escalations}{missed_open} = $_;
-                $open_escalation = 1;
+        if ($missed_event) {
+            my $open_escalation = 0;
+            foreach ($escalations->list) {
+                next unless $_->{report};
+                my $missed_guid = $_->{report}->get_extra_field_value('missed_guid');
+                next unless $missed_guid;
+                if ($missed_guid eq $missed_event->{guid}) {
+                    $missed->{$guid}{escalations}{missed_open} = $_;
+                    $open_escalation = 1;
+                }
             }
-        }
 
-        if (
-            # Report is still open
-            !$missed_event->{closed}
-            # And no existing escalation since last collection
-            && !$open_escalation
-        ) {
-            my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-            # And two working days (from 6pm) have passed
-            my $wd = FixMyStreet::WorkingDays->new();
-            my $start = $wd->add_days($missed_event->{date}, 2)->set_hour(18);
-            my $end = $wd->add_days($start, 2);
-            if ($now >= $start && $now < $end) {
-                $missed->{$guid}{escalations}{missed} = $missed_event;
+            if (
+                # Report is still open
+                !$missed_event->{closed}
+                # And no existing escalation since last collection
+                && !$open_escalation
+            ) {
+                my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+                # And two working days (from 6pm) have passed
+                my $wd = FixMyStreet::WorkingDays->new();
+                my $start = $wd->add_days($missed_event->{date}, 2)->set_hour(18);
+                my $end = $wd->add_days($start, 2);
+                if ($now >= $start && $now < $end) {
+                    $missed->{$guid}{escalations}{missed} = $missed_event;
+                }
+            }
+        } elsif ($locked_out) {
+            my $within_window = $self->_check_date_within_dispute_window(
+                $missed->{$guid}{report_locked_out_date}
+            );
+            my $resolution_valid = $self->waste_check_can_raise_dispute(
+                $missed->{$guid}{service_id},
+                $missed->{$guid}{report_locked_out_reason}
+            );
+            if ($within_window && $resolution_valid) {
+                $missed->{$guid}{dispute_allowed} = 1
             }
         }
     }
 };
+
+sub _check_date_within_dispute_window {
+    my ($self, $date) = @_;
+
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    # And two working days (from 6pm) have passed
+    my $wd = FixMyStreet::WorkingDays->new();
+    my $start = $wd->add_days($date, 0)->set_hour(18);
+    my $end = $wd->add_days($start, 3)->set_hour(0);
+
+    if ($now >= $start && $now < $end) {
+        return 1;
+    }
+
+    return 0;
+}
+
 
 sub munge_bin_services_for_address {
     my ($self, $rows) = @_;
@@ -276,6 +307,7 @@ sub munge_bin_services_for_address {
     foreach (@$rows) {
         $self->_setup_missed_collection_escalations_for_service($_);
         $self->_setup_container_request_escalations_for_service($_);
+        $self->_setup_container_request_disputes_for_service($_);
     }
 }
 
@@ -354,6 +386,39 @@ sub _setup_container_request_escalations_for_service {
 
     if ($now >= $start && $now < $end) {
         $row->{escalations}{container} = $open_request_event;
+    }
+}
+
+=head2 waste_check_can_raise_dispute
+
+Checks if disputes can be raised for the service and resolution text.
+
+=cut
+
+sub waste_check_can_raise_dispute {
+    my ($self, $service_id, $resolution) = @_;
+
+    # currently we allow disputes on all resolution codes
+    return 1;
+}
+=head2 Disputes
+
+=cut
+
+sub _setup_container_request_disputes_for_service {
+    my ($self, $row) = @_;
+
+    my $start_days = 0; # Window starts on the day the collection was missed
+    my $window_days = 2; # Window ends 2 working days after the start date
+
+    # check if a dispute is allowed on reports that have been marked as unable to be collected
+    if ($row->{last}->{completed} && $row->{report_locked_out}) {
+        # and then check if we can open a dispute for this resolution
+        if ( $self->waste_check_can_raise_dispute($row->{service_id}, $row->{last}->{resolution}) ) {
+            if ( $self->_check_date_within_dispute_window($row->{last}->{completed}) ) {
+                $row->{dispute_allowed} = 1;
+            }
+        }
     }
 }
 
@@ -746,64 +811,101 @@ sub waste_munge_enquiry_form_pages {
     my $c = $self->{c};
     my $category = $c->get_param('category');
 
+    my $booking_id = $c->get_param('booking_id');
+    if ($booking_id) {
+        my $report = $c->model('DB::Problem')->find($booking_id);
+        unless ( $report && $c->user_exists && (
+                $c->stash->{is_staff} || $report->user->id == $c->user->id
+        ) ) {
+            my $property_uri = $c->uri_for_action( 'waste/bin_days', $c->stash->{property_id} );
+            my $uri = $c->uri_for( '/auth', { r => $property_uri } );
+            $c->res->redirect($uri);
+        }
+        $c->stash->{guid} = $report->external_id;
+    }
+
     # Add the service to the main fields form page
     $pages->[1]{intro} = 'enquiry-intro.html';
     $pages->[1]{title} = _enquiry_nice_title($category);
 
-    return unless $category eq 'Bin not returned';;
+    if ( $category eq 'Bin not returned') {
+        my $assisted = $c->stash->{assisted_collection};
+        if ($assisted) {
+            # Add extra first page with extra question
+            $c->stash->{first_page} = 'now_returned';
+            unshift @$pages, now_returned => {
+                fields => [ 'now_returned', 'continue' ],
+                intro => 'enquiry-intro.html',
+                title => _enquiry_nice_title($category),
+                next => 'enquiry',
+            };
+            push @$fields, now_returned => {
+                type => 'Select',
+                widget => 'RadioGroup',
+                required => 1,
+                label => 'Has the container now been returned to the property?',
+                options => [
+                    { label => 'Yes', value => 'Yes' },
+                    { label => 'No', value => 'No' },
+                ],
+            };
 
-    my $assisted = $c->stash->{assisted_collection};
-    if ($assisted) {
-        # Add extra first page with extra question
-        $c->stash->{first_page} = 'now_returned';
-        unshift @$pages, now_returned => {
-            fields => [ 'now_returned', 'continue' ],
-            intro => 'enquiry-intro.html',
-            title => _enquiry_nice_title($category),
-            next => 'enquiry',
-        };
-        push @$fields, now_returned => {
-            type => 'Select',
-            widget => 'RadioGroup',
-            required => 1,
-            label => 'Has the container now been returned to the property?',
-            options => [
-                { label => 'Yes', value => 'Yes' },
-                { label => 'No', value => 'No' },
-            ],
-        };
+            # Remove any non-assisted extra notices
+            my @new;
+            for (my $i=0; $i<@$fields; $i+=2) {
+                if ($fields->[$i] !~ /^extra_NotAssisted/) {
+                    push @new, $fields->[$i], $fields->[$i+1];
+                }
+            }
+            @$fields = @new;
+            $pages->[3]{fields} = [ grep { !/^extra_NotAssisted/ } @{$pages->[3]{fields}} ];
+            $pages->[3]{update_field_list} = sub {
+                my $form = shift;
+                my $c = $form->c;
+                my $data = $form->saved_data;
+                my $returned = $data->{now_returned} || '';
+                my $key = $returned eq 'No' ? 'extra_AssistedReturned' : 'extra_AssistedNotReturned';
+                return {
+                    category => { default => $c->get_param('category') },
+                    service_id => { default => $c->get_param('service_id') },
+                    $key => { widget => 'Hidden' },
+                }
+            };
+        } else {
+            # Remove any assisted extra notices
+            my @new;
+            for (my $i=0; $i<@$fields; $i+=2) {
+                if ($fields->[$i] !~ /^extra_Assisted/) {
+                    push @new, $fields->[$i], $fields->[$i+1];
+                }
+            }
+            @$fields = @new;
+            $pages->[1]{fields} = [ grep { !/^extra_Assisted/ } @{$pages->[1]{fields}} ];
+        }
+    } elsif ( $category eq 'Missed collection dispute') {
+        my $guid = $c->stash->{guid};
+        # if we have a guid then it might be a link from an email and
+        # so it might be clicked outside the window so re-check if
+        # disputes are allowed
+        if ($guid) {
+            my $dispute_allowed = $self->_check_date_within_dispute_window(
+                $c->stash->{booked_missed}{$guid}{report_locked_out_date}
+            );
+            unless ($dispute_allowed) {
+                $c->stash->{first_page} = 'window_expired';
+                @$pages = (window_expired => {
+                    title => _enquiry_nice_title($category),
+                    fields => [ 'window_expired' ],
+                });
 
-        # Remove any non-assisted extra notices
-        my @new;
-        for (my $i=0; $i<@$fields; $i+=2) {
-            if ($fields->[$i] !~ /^extra_NotAssisted/) {
-                push @new, $fields->[$i], $fields->[$i+1];
+                @$fields = (window_expired => {
+                    type => 'Notice',
+                    widget => 'NoRender',
+                    required => 0,
+                    label => 'Missed collections can only be disputed for 2 working days after the collection date.',
+                });
             }
         }
-        @$fields = @new;
-        $pages->[3]{fields} = [ grep { !/^extra_NotAssisted/ } @{$pages->[3]{fields}} ];
-        $pages->[3]{update_field_list} = sub {
-            my $form = shift;
-            my $c = $form->c;
-            my $data = $form->saved_data;
-            my $returned = $data->{now_returned} || '';
-            my $key = $returned eq 'No' ? 'extra_AssistedReturned' : 'extra_AssistedNotReturned';
-            return {
-                category => { default => $c->get_param('category') },
-                service_id => { default => $c->get_param('service_id') },
-                $key => { widget => 'Hidden' },
-            }
-        };
-    } else {
-        # Remove any assisted extra notices
-        my @new;
-        for (my $i=0; $i<@$fields; $i+=2) {
-            if ($fields->[$i] !~ /^extra_Assisted/) {
-                push @new, $fields->[$i], $fields->[$i+1];
-            }
-        }
-        @$fields = @new;
-        $pages->[1]{fields} = [ grep { !/^extra_Assisted/ } @{$pages->[1]{fields}} ];
     }
 }
 
@@ -886,6 +988,33 @@ sub bulky_allowed_property {
 sub bulky_collection_time { { hours => 6, minutes => 0 } }
 sub bulky_cancellation_cutoff_time { { hours => 6, minutes => 0, days_before => 0 } }
 
+sub waste_bulky_missed_blocked_codes {
+    return {
+        # Partially completed
+        12399 => {
+            507 => 'Not all items presented',
+            380 => 'Some items too heavy',
+        },
+        # Completed
+        12400 => {
+            606 => 'More items presented than booked',
+        },
+        # Not Completed
+        12401 => {
+            460 => 'Nothing out',
+            379 => 'Item not as described',
+            100 => 'No access',
+            212 => 'Too heavy',
+            473 => 'Damage on site',
+            234 => 'Hazardous waste',
+        },
+        # Not Completed
+        19185 => {
+            466 => 'Not Available - Gate Locked',
+        },
+    };
+}
+
 =item * There is an 11pm cut-off for looking to book next day collections.
 
 =cut
@@ -926,6 +1055,27 @@ sub bulky_show_individual_notes {
     my $self = shift;
     return $self->{c}->stash->{small_items} ? 0 : 1;
 }
+
+=head2 waste_bulky_resolution_photo_update
+
+Given a report id get the update with the resolution photo for a bulky waste collection
+
+=cut
+
+sub waste_bulky_resolution_photo_update {
+    my ($self, $report_id) = @_;
+
+    if ($report_id) {
+        my $update = FixMyStreet::DB->resultset('Comment')->search({
+            problem_id => $report_id,
+            problem_state => 'unable to fix',
+            photo => { '!=' => undef },
+        })->first();
+        return $update if $update;
+    }
+}
+
+
 
 =head2 filter_booking_dates
 

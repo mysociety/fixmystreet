@@ -30,7 +30,9 @@ $contact->update;
 
 my $contact_centre_user = $mech->create_user_ok('contact@example.org', from_body => $body, email_verified => 1, name => 'Contact 1');
 
-my $sutton = $mech->create_body_ok( 2498, 'Sutton Borough Council', { cobrand => 'sutton' } );
+my $sutton_user = $mech->create_user_ok('sutton_body@example.org');
+my $sutton = $mech->create_body_ok( 2498, 'Sutton Borough Council',
+    { cobrand => 'sutton', comment_user => $sutton_user } );
 my $sutton_staff = $mech->create_user_ok('sutton_staff@example.org', from_body => $sutton->id);
 
 for ($body, $sutton) {
@@ -44,6 +46,11 @@ create_contact($sutton, { category => 'Complaint against time', email => '3134' 
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
     { code => 'original_ref', required => 0, automated => 'hidden_field' },
     { code => 'missed_guid', required => 0, automated => 'hidden_field' },
+);
+
+create_contact($sutton, { category => 'Missed collection dispute', email => '3143' },
+    { code => 'Image', description => 'Image', required => 0, datatype => 'image' },
+    { code => 'Notes', description => 'Reason for dispute', required => 1, datatype => 'text' },
 );
 
 FixMyStreet::override_config {
@@ -762,6 +769,32 @@ FixMyStreet::override_config {
             $mech->content_lacks("You can cancel this booking up to");
             $mech->content_lacks('Cancel this booking');
         };
+
+        my $cancel_update = FixMyStreet::DB->resultset('Comment')->search({
+                problem_id => $report->id,
+                problem_state => 'cancelled'
+            })->first();
+        $cancel_update->delete();
+    };
+
+    subtest 'Bulky goods collection completed email' => sub {
+        $report->update({ state => 'fixed - council', external_id => 'a-guid' });
+        $mech->email_count_is(0);
+        my $completion_comment
+            = $mech->create_comment_for_problem( $report, $body_user, 'User',
+            'Things collected', undef, 'confirmed', 'fixed - council' );
+        # otherwise alert will not send because uses current_timestamp in query
+        $completion_comment->confirmed(\'current_timestamp');
+        $completion_comment->update;
+
+        FixMyStreet::Script::Alerts::send_updates();
+        my $cobrand = $body->get_cobrand_handler;
+        $mech->email_count_is(1);
+        my $email = $mech->get_email;
+        my $email_text = $mech->get_text_body_from_email($email);
+        my $email_html = $mech->get_html_body_from_email($email);
+        like $email_text, qr/BBQ/, 'collection completed text email contains item list';
+        like $email_html, qr/BBQ/, 'collection completed html email contains item list';
     };
 
     subtest 'Missed collections' => sub {
@@ -1175,6 +1208,151 @@ FixMyStreet::override_config {
         };
 
         $echo->mock('GetEventsForObject', sub { [] }); # reset
+    };
+    subtest 'Dispute of failed bulky collections' => sub {
+        $mech->log_in_ok($report->user->email);
+        $echo->mock('GetEventsForObject', sub { [ {
+            Id => '8004',
+            ClientReference => 'LBS-123',
+            Guid => 'booking-guid',
+            ServiceId => 960, # Bulky
+            EventTypeId => 3130, # Bulky collection
+            EventStateId => 19185, # Not Completed
+            EventDate => { DateTime => '2025-04-01T00:00:00Z' },
+            ResolvedDate => { DateTime => '2025-04-08T00:00:00Z' },
+            ResolutionCodeId => 466, # No access - Gate locked
+        } ] });
+
+        subtest 'Check Bulky waste dispute window' => sub {
+            set_fixed_time('2025-04-07T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with this missed collection', 'cannot report before collection happened');
+
+            set_fixed_time('2025-04-11T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with this missed collection', 'cannot report after window closed');
+
+            set_fixed_time('2025-04-08T17:59:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with this missed collection', 'cannot report just before window opens');
+
+            set_fixed_time('2025-04-11T00:01:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with this missed collection', 'cannot report just after window closes');
+
+            set_fixed_time('2025-04-10T23:59:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('Report a problem with this missed collection', 'can report just before window closes');
+
+            set_fixed_time('2025-04-08T18:01:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('Report a problem with this missed collection', 'can report just after window opens');
+        };
+
+        my $link;
+        subtest 'Open collection dispute' => sub {
+            set_fixed_time('2025-04-10T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
+            # save this for checking logged out access below
+            $link = $mech->uri;
+            $mech->content_contains('Our crews reported that your Bulky waste collection was not made due to Not Available - Gate Locked', 'details of missed bin collection displayed');
+            $mech->content_lacks('This photo provides the evidence', 'No resolution photo text');
+            $mech->submit_form_ok( { with_fields => { 'extra_Notes' => 'The gate was open' } }, 'submitted reasons');
+            $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } }, 'sumitted name and email');
+            $mech->submit_form_ok( { with_fields => { submit => '1' } }, 'submitted confirmation');
+            $mech->content_contains('Your enquiry has been submitted');
+            $mech->content_contains('Return to property details');
+            $mech->content_contains('/waste/12345"');
+            my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+            is $report->category, 'Missed collection dispute', "Correct category";
+            is $report->title, 'Missed collection dispute';
+            is $report->detail, "2/3 Example Street, Sutton, SM2 5HF", "Details of report contain information about problem";
+            is $report->user->email, 'schmoe@example.org', 'User details added to report';
+            is $report->name, 'Joe Schmoe', 'User details added to report';
+            is $report->get_extra_field_value('Notes'), "The gate was open";
+        };
+
+        subtest 'Must be report user to open collection dispute' => sub {
+            $mech->log_out_ok;
+            $mech->get_ok($link);
+            my $report_id = $report->id;
+            is $mech->uri->path, '/auth', 'Redirects to auth if not logged in';
+            like $mech->content, qr#name="r"[^>]*waste/12345/enquiry[^ ]*booking_id=$report_id#, 'login page contains correct redirect'
+        };
+
+
+        $mech->log_in_ok($report->user->email);
+        set_fixed_time('2025-04-10T19:00:00Z');
+        $report->update_extra_field( { name => 'GUID', value => 'booking-guid'} );
+        $report->update;
+        my $comment = FixMyStreet::DB->resultset('Comment')->create(
+            {
+                user          => $sutton_user,
+                problem_id    => $report->id,
+                text          => 'Not Available - Gate Locked',
+                confirmed     => DateTime->now - DateTime::Duration->new( minutes => 15 ),
+                problem_state => 'unable to fix',
+                anonymous     => 0,
+                mark_open     => 0,
+                mark_fixed    => 0,
+                state         => 'confirmed',
+                photo         => $sample_file->slurp,
+            }
+        );
+
+        subtest 'Open collection dispute with photo' => sub {
+            $mech->get_ok('/waste/12345');
+            $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
+            $mech->content_contains('Our crews reported that your Bulky waste collection was not made due to Not Available - Gate Locked', 'details of missed bin collection displayed');
+            $mech->content_contains('This photo provides the evidence', 'Has resolution photo text');
+        };
+
+        restore_time();
+        $comment->confirmed( DateTime->now ); # - DateTime::Duration->new( minutes => 15 ) );
+        $comment->update;
+
+        my $email;
+        set_fixed_time('2025-04-10T19:00:00Z');
+        subtest 'Open collection dispute from email' => sub {
+            $mech->clear_emails_ok;
+            FixMyStreet::Script::Alerts::send_updates();
+            $mech->email_count_is(1);
+            $email = $mech->get_email;
+            my $email_text = $mech->get_text_body_from_email($email);
+            my $email_html = $mech->get_html_body_from_email($email);
+            like $email_text, qr/Not Available - Gate Locked/, 'Reason pulled from comment';
+            like $email_text, qr/report a problem with this missed collection/, 'Report a problem text in text email';
+            like $email_html, qr/Not Available - Gate Locked/, 'Reason pulled from comment';
+            like $email_html, qr/Our crews reported your bulky waste collection was not made/, 'extra bulky waste text included';
+            like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
+            like $email_html, qr{waste/12345/enquiry}, 'HTML alert contains report link';
+
+            # we only want the HTML link as the text version does not contain the link
+            my @links = $email_html =~ m{https?://[^"]+}g;
+            my @enq_links = grep( /enquiry/, @links );
+            # need to strip the host otherwise we're not logged in
+            my $l = URI->new($enq_links[0]);
+            $mech->get_ok($l->path_query);
+            $mech->content_contains('Our crews reported that your Bulky waste collection was not made due to Not Available - Gate Locked', 'details of missed bin collection displayed');
+            $mech->content_contains('This photo provides the evidence', 'Has resolution photo text');
+        };
+
+        set_fixed_time('2025-04-11T19:00:00Z');
+        subtest 'Cannot open collection dispute from email outside window' => sub {
+            my $email_html = $mech->get_html_body_from_email($email);
+            like $email_html, qr/Not Available - Gate Locked/, 'Got correct update in html email';
+            like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
+            like $email_html, qr{waste/12345/enquiry}, 'HTML alert contains report link';
+
+            # we only want the HTML link as the text version does not contain the link
+            my @links = $email_html =~ m{https?://[^"]+}g;
+            my @enq_links = grep( /enquiry/, @links );
+            my $l = URI->new($enq_links[0]);
+            $mech->get_ok($l->path_query);
+            $mech->content_lacks('Our crews reported that your Bulky waste collection was not made ', 'details of missed bin collection displayed');
+            $mech->content_contains('Missed collections can only be disputed');
+        };
     };
 
 };

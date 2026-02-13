@@ -50,6 +50,10 @@ The issue has been logged and a clean up has been organised for within the next 
 We apologise for any inconvenience this may have caused and appreciate your feedback. We're committed to using it to improve our customer service.
 
 Please note that we are unable to return to correct the problem, unless you are on the Assisted Collection service and you have indicated you require additional help.
+[% ELSIF report.category == 'Missed collection dispute' %]
+We apologise for any inconvenience this may have caused and appreciate your feedback. We're committed to using it to improve our customer service.
+
+We will investigate and aim to respond in the next two working days.
 [% END %]
 
 [% ELSIF cobrand.moniker == 'kingston' AND report.category == 'Request new container' %]
