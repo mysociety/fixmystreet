@@ -27,6 +27,7 @@ my $body = $mech->create_body_ok(
         cobrand => 'buckinghamshire',
     },
 );
+my $herts = $mech->create_body_ok(2228, 'Hertfordshire County Council');
 my $parish = $mech->create_body_ok(53822, 'Adstock Parish Council');
 my $parish2 = $mech->create_body_ok(58815, 'Aylesbury Town Council');
 my $deleted_parish = $mech->create_body_ok(58815, 'Aylesbury Parish Council');
@@ -77,6 +78,12 @@ $mech->create_contact_ok(body_id => $body->id, category => 'Barrier problem', em
 my $grass_bucks = $mech->create_contact_ok(body_id => $body->id, category => 'Grass cutting', email => 'grass@example.org', send_method => 'Email');
 $mech->create_contact_ok(body_id => $body->id, category => 'Flyposting', email => 'flyposting@example.org', send_method => 'Email');
 $mech->create_contact_ok(body_id => $body->id, category => 'Rights of way', email => 'Cams-ROW');
+$mech->create_contact_ok(body_id => $body->id, category => 'Street lights', email => 'street@example.org', send_method => 'Email', extra => {
+    _fields => [{
+        code => 'asset_resource_id',
+        automated => 'hidden_field',
+    }]
+});
 
 # Create another Grass cutting category for a parish.
 $contact = $mech->create_contact_ok(body_id => $parish->id, category => 'Grass cutting', email => 'grassparish@example.org', send_method => 'Email');
@@ -458,6 +465,42 @@ subtest 'Allows car park reports to be made in a car park' => sub {
         }
     }, "submit details");
     $mech->content_contains('Your issue is on its way to the council');
+};
+
+subtest 'Can select asset that is in Hertfordshire area on Bucks cobrand' => sub {
+    $mech->get_ok('/report/new/?longitude=-0.636904&latitude=51.817248');
+    $mech->content_contains('That location is not covered by Buckinghamshire Council', 'Area in Herts not reportable on Bucks cobrand');
+    $mech->get_ok('/report/new/?longitude=-0.868388&latitude=51.561705&category=Street+lights');
+    $mech->submit_form_ok( { with_fields => {
+            title => 'Lamp issue in Herts on Bucks',
+            detail => 'Lamp issue over the border',
+            longitude => -0.636904,
+            latitude => 51.817248,
+            asset_resource_id => '12345',
+        }}, 'Location in Herts ok as clicked from Bucks location onto Bucks asset');
+    my $problem = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
+    is $problem->title, 'Lamp issue in Herts on Bucks', 'Report has been made';
+    is $problem->body, 'Buckinghamshire Council', 'Problem on correct body';
+    $problem->delete;
+};
+
+subtest 'Can select asset that is in Hertfordshire area on FMS' => sub {
+    ok $mech->host("www.fixmystreet.com"), "change host to www";
+    $mech->get_ok('/report/new/?longitude=-0.636904&latitude=51.817248');
+    $mech->content_contains('We do not yet have details for the council that covers this location', 'Herts does not have Bucks categories');
+    $mech->get_ok('/report/new/?longitude=-0.868388&latitude=51.561705&category=Street+lights');
+    $mech->submit_form_ok( { with_fields => {
+            title => 'Lamp issue in Herts on FMS',
+            detail => 'Lamp issue over the border',
+            longitude => -0.636904,
+            latitude => 51.817248,
+            asset_resource_id => '12345',
+        }}, 'Location in Herts ok as clicked from Bucks location onto Bucks asset');
+    my $problem = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
+    is $problem->title, 'Lamp issue in Herts on FMS', 'Report has been made';
+    is $problem->body, 'Buckinghamshire Council', 'Problem on correct body';
+    $problem->delete;
+    ok $mech->host("buckinghamshire.fixmystreet.com"), "change host to www";
 };
 
 $report = undef;
