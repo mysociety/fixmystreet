@@ -175,7 +175,7 @@ sub problem_is_within_area_type {
         srsname => "urn:ogc:def:crs:EPSG::27700",
         typename => $layer,
         outputformat => "json",
-        filter => "<Filter xmlns:gml=\"http://www.opengis.net/gml\"><Intersects><PropertyName>geom</PropertyName><gml:Point srsName=\"27700\"><gml:coordinates>$x,$y</gml:coordinates></gml:Point></Intersects></Filter>",
+        filter => "<Filter><Intersects><PropertyName>geom</PropertyName><Point srsName=\"27700\"><coordinates>$x,$y</coordinates></Point></Intersects></Filter>",
     };
 
     my $features = $self->_fetch_features($cfg) || [];
