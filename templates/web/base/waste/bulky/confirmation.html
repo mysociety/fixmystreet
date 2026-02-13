@@ -3,6 +3,8 @@ IF report.category == 'Bulky collection';
     title = 'Bulky collection booking confirmed';
 ELSIF report.category == 'Small items collection';
     title = 'Small items collection booking confirmed';
+ELSIF report.category == 'Sharps collection';
+    title = 'Sharps booking confirmed';
 ELSE;
     title = 'Enquiry has been submitted';
 END;
