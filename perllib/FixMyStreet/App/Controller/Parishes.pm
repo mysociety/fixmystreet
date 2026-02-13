@@ -50,7 +50,7 @@ sub process_parish : Private {
     my $data = $form->saved_data;
     my $cfg = $self->stripe->config;
 
-    my $parish_name = $form->c->stash->{label_for_field}($form, 'parish', $data->{parish});
+    my $parish_name = $form->label_for_field('parish', $data->{parish});
 
     my $body = FixMyStreet::DB->resultset("Body")->new({
         name => $parish_name,
