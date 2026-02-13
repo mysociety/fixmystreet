@@ -1302,7 +1302,7 @@ sub waste_munge_request_data {
     my $address = $c->stash->{property}->{address};
     my $container = $c->stash->{containers}{$id};
     my $reason = $data->{request_reason} || '';
-    my $nice_reason = $c->stash->{label_for_field}->($form, 'request_reason', $reason);
+    my $nice_reason = $form->label_for_field('request_reason', $reason);
 
     my ($action_id, $reason_id);
     my $type = $id;

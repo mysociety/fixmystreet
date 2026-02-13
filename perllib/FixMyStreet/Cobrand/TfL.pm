@@ -32,6 +32,7 @@ use POSIX qw(strcoll);
 use Path::Tiny;
 
 use FixMyStreet::MapIt;
+use FixMyStreet::App::Form::Licence;
 use mySociety::ArrayUtils;
 use Utils;
 
@@ -712,7 +713,23 @@ around 'munge_sendreport_params' => sub {
 
     if ($row->cobrand_data eq 'licence') {
         my @attachments;
-        my $subdir = 'tfl-licence-' . $row->get_extra_metadata('licence_type');
+
+        my $type = $row->get_extra_metadata('licence_type');
+        my $pdf = FixMyStreet::App::Form::Licence->generate_pdf($row);
+        if ($pdf) {
+            my $filename = $type . '-licence-application-' . $row->id . '.pdf';
+            push @attachments, {
+                body => $pdf,
+                attributes => {
+                    filename => $filename,
+                    content_type => 'application/pdf',
+                    encoding => 'base64', # quoted-printable ends up with newlines corrupting binary data
+                    name => $filename,
+                },
+            };
+        }
+
+        my $subdir = 'tfl-licence-' . $type;
         # Attach documents
         my $mime_types = MIME::Types->new;
         # Any field beginning upload_ is perhaps a file

@@ -186,6 +186,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
 
         subtest 'sent emails' => sub {
             FixMyStreet::Script::Reports::send();
+            my $id = $problem->id;
 
             my @email = $mech->get_email;
             my @email_parts;
@@ -205,12 +206,14 @@ subtest 'Scaffold form submission - smoke test' => sub {
             like $email_parts[5][0]{'Content-Type'}, qr{image/gif};
             like $email_parts[5][0]{'Content-Disposition'}, qr{email-logo.gif};
             my $next = 6;
-            if (@email_parts == 10) {
+            if (@email_parts == 11) {
                 # IM installed, so there is a map attachment
                 like $email_parts[6][0]{'Content-Type'}, qr{image/jpeg};
                 like $email_parts[6][0]{'Content-Disposition'}, qr{map.jpeg};
                 $next++;
             }
+            like $email_parts[$next][0]{'Content-Type'}, qr{application/pdf};
+            like $email_parts[$next++][0]{'Content-Disposition'}, qr{scaffold-licence-application-$id.pdf};
             like $email_parts[$next][0]{'Content-Type'}, qr{application/pdf};
             like $email_parts[$next++][0]{'Content-Disposition'}, qr{sample.pdf};
             like $email_parts[$next][0]{'Content-Type'}, qr{application/pdf};

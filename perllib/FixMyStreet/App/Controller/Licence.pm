@@ -5,37 +5,11 @@ use namespace::autoclean;
 BEGIN { extends 'FixMyStreet::App::Controller::Form' }
 
 use utf8;
-
-# Discover and load all form classes in FixMyStreet::App::Form::Licence::*
-my @ALL_FORM_CLASSES;
-BEGIN {
-    require Module::Pluggable;
-    Module::Pluggable->import(
-        search_path => 'FixMyStreet::App::Form::Licence',
-        sub_name    => '_form_classes',
-        require     => 1,
-    );
-    @ALL_FORM_CLASSES = __PACKAGE__->_form_classes;
-}
+use FixMyStreet::App::Form::Licence;
 
 has feature => ( is => 'ro', default => 'licencing_forms' );
 
 has index_template => ( is => 'ro', default => 'licence/index.html' );
-
-# Build licence types from discovered form classes
-sub licence_types {
-    my $self = shift;
-    my %types;
-    for my $class (@ALL_FORM_CLASSES) {
-        next unless $class->can('type') && $class->can('name');
-        my $type = $class->type;
-        $types{$type} = {
-            class => $class,
-            name  => $class->name,
-        };
-    }
-    return \%types;
-}
 
 # Override parent Form.pm's index to 404 - you must specify a licence type
 # (Without this, the inherited index would try to load a non-existent form)
@@ -48,7 +22,7 @@ sub index : Path : Args(0) {
 sub show : Path : Args(1) {
     my ($self, $c, $type) = @_;
 
-    my $licence_config = $self->licence_types->{lc $type}
+    my $licence_config = FixMyStreet::App::Form::Licence->licence_types->{lc $type}
         or $c->detach('/page_error_404_not_found');
 
     $c->stash->{form_class} = $licence_config->{class};
@@ -178,7 +152,7 @@ page they were shown during the application.
 
 sub pdf : Local : Args(1) {
     my ($self, $c, $id) = @_;
-    my $p = $c->stash->{problem} = FixMyStreet::DB->resultset("Problem")->find($id);
+    my $p = FixMyStreet::DB->resultset("Problem")->find($id);
 
     my $token_ok = ($c->get_param('token') || '') eq ($p ? $p->confirmation_token : '');
     $c->detach('/page_error_404_not_found')
@@ -187,74 +161,11 @@ sub pdf : Local : Args(1) {
             || ($c->user_exists && ($c->user->is_superuser || $c->user->id == $p->user_id))
         );
 
-    my $type = $p->get_extra_metadata('licence_type')
-        or $c->detach('/page_error_404_not_found');
-    $c->forward('show', [ $type ]);
-    my $form = $c->stash->{form};
-    $form->saved_data($p->extra);
-
-    require FixMyStreet::PDF;
-    my $pdf = FixMyStreet::PDF->new(
-        title => $p->title . ', FMS' . $p->id,
-        font => 'Johnston100',
-    );
-
-    # Simplest solution, have a template that has the HTML in,
-    # and let it place it all. This works, but has orphans.
-    #my $input = $c->render_fragment('licence/summary_pdf.html');
-    #$pdf->plot_line(undef, 'black', $input);
-
-    # So instead, generate the PDF line by line and check for
-    # orphan headings as we go
-
-    my ($rc, $next_y);
-    ($rc, $next_y) = $pdf->plot_line($next_y, 'black', '<h1>' . $form->title . '</h1>');
-    ($rc, $next_y) = $pdf->plot_line($next_y, 'black', '<p>FMS' . $p->id . '</p>');
-
-    foreach my $page (@{$form->fields_for_display}) {
-        next if $page->{hide};
-        next if $page->{stage} eq 'intro' || $page->{stage} eq 'done';
-
-        my $page_title = "<h2>$page->{title}</h2>";
-        my ($rc, $post_title_y) = $pdf->plot_line($next_y, 'white', $page_title);
-        if ($rc) {
-            # Want to start heading on new page
-            $next_y = undef;
-        }
-
-        my $first_field = 1;
-        foreach my $field (@{$page->{fields}}) {
-            next if $field->{hide};
-            my $line = "<p style='margin-top:6pt'><strong>$field->{desc}";
-            $line .= ':' unless $field->{desc} =~ /[?:.]$/;
-            $line .= "</strong> $field->{pretty}</p>";
-
-            if ($first_field) {
-                $first_field = 0;
-                if ($post_title_y) {
-                    # Can we fit the line of text in after the heading?
-                    ($rc) = $pdf->plot_line($post_title_y, 'white', $line);
-                    if ($rc) {
-                        # Heading would be an orphan, want to start it on new page
-                        $next_y = undef;
-                    }
-                }
-                ($rc, $next_y) = $pdf->plot_line($next_y, '#0019A8', $page_title);
-            }
-            ($rc, $next_y) = $pdf->plot_line($next_y, 'black', $line);
-
-            # Special showing of calculated end date
-            if ($field->{desc} eq 'Number of weeks required') {
-                my $end = $form->saved_data->{proposed_end_date};
-                my $line = '<p style="margin-top:6pt"><strong>Proposed end date:';
-                $line .= "</strong> $end->{day}/$end->{month}/$end->{year}</p>";
-                ($rc, $next_y) = $pdf->plot_line($next_y, 'black', $line);
-            }
-        }
-    }
+    my $pdf = FixMyStreet::App::Form::Licence->generate_pdf($p);
+    $c->detach('/page_error_404_not_found') unless $pdf;
 
     $c->res->content_type('application/pdf');
-    $c->res->body($pdf->to_string);
+    $c->res->body($pdf);
 }
 
 __PACKAGE__->meta->make_immutable;

@@ -1,7 +1,7 @@
 package FixMyStreet::App::Form::Licence::PitLane;
 
 use HTML::FormHandler::Moose;
-extends 'FixMyStreet::App::Form::Licence';
+extends 'FixMyStreet::App::Form::Licence::Base';
 use utf8;
 
 # Type identifier used in URL: /licence/pit-lane

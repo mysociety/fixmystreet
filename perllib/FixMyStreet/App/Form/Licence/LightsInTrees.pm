@@ -1,7 +1,7 @@
 package FixMyStreet::App::Form::Licence::LightsInTrees;
 
 use HTML::FormHandler::Moose;
-extends 'FixMyStreet::App::Form::Licence';
+extends 'FixMyStreet::App::Form::Licence::Base';
 use utf8;
 
 # Type identifier used in URL: /licence/lights-in-trees

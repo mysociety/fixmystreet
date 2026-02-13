@@ -1,7 +1,7 @@
 package FixMyStreet::App::Form::Licence::MobileApparatus;
 
 use HTML::FormHandler::Moose;
-extends 'FixMyStreet::App::Form::Licence';
+extends 'FixMyStreet::App::Form::Licence::Base';
 use utf8;
 
 # Type identifier used in URL
