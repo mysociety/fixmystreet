@@ -117,6 +117,17 @@ for my $cat ('Dropped Kerbs', 'Skips') {
     $child_cat->update;
 }
 
+# Categories with multiple parents
+for my $cat ( 'Broken glass', 'Litter' ) {
+    my $child_cat = FixMyStreet::DB::Factory::Contact->find_or_create(
+        {   body     => $body,
+            category => $cat,
+        }
+    );
+    $child_cat->set_extra_metadata( group => [ 'Streets', 'Parks' ] );
+    $child_cat->update;
+}
+
 if ($opt->test_fixtures) {
     my $bodies;
 

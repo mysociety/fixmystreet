@@ -4,6 +4,10 @@
 	    <link rel="stylesheet" href="[% version('/cobrands/fixmystreet/dashboard.css') %]">
 [% END %]
 
+[% extra_js = [
+    version('/cobrands/fixmystreet/dashboard.js')
+] %]
+
 [%
     INCLUDE 'header.html'
         title = loc('Dashboard')
@@ -63,7 +67,7 @@
         <select class="form-control js-multiple" multiple name="category" id="category">
             [% BLOCK category_option %]
             [% SET category_safe = mark_safe(cat.category) %]
-                <option value='[% cat.category | html %]'[% ' selected' IF display_categories.$category_safe %]>[% cat.category_display | html %]</option>
+                <option value='[% cat.category | html %]'[% ' selected' IF display_categories.$category_safe %]>[% cat.category_display | html %][% ' [deleted]' IF cat.state == 'deleted' %]</option>
             [% END %]
             [%~ INCLUDE 'report/new/_category_select.html' include_group_option=1 ~%]
         </select>
@@ -163,11 +167,11 @@
         <th scope="col">[% loc('Total') %]</th>
       [% END %]
     </tr>
-  [% SET current_category = '' %]
+  [% SET current_group = '' %]
   [% FOR k IN rows %][% k_safe = mark_safe(k) %]
-    [% IF category_to_group.$k_safe AND category_to_group.$k_safe != current_category %]
-    [% SET current_category = category_to_group.$k_safe %]
-      <tr>
+    [% IF category_to_group.$k_safe AND category_to_group.$k_safe != current_group %]
+      [% SET current_group = category_to_group.$k_safe %]
+      <tr class="group-heading[% IF category.size && !(table_groups_to_display.$current_group) %] is-unselected-category[% END %]">
         [% IF group_by == 'category+state' %]
         <th colspan="5" scope="colgroup">[% category_to_group.$k_safe %]</th>
         [% ELSE %]
@@ -175,27 +179,65 @@
         [% END %]
       </tr>
     [% END %]
+    [% IF group_by == 'state' %]
     <tr>
-      [% IF group_by == 'state' %]
-        <th scope="row">[% prettify_state(k) %]</th>
+      <th scope="row">[% prettify_state(k) %]</th>
+    [% ELSIF group_by == 'category+state' || group_by == 'category' %]
+      [% IF category.size %]
+        [%
+          # We do not want to mark/hide deleted/zero categories if searching for specific one(s).
+          # Instead, hide any unselected categories.
+        %]
+        [%
+          SET class_to_hide =
+            table_categories_to_display.$k ?
+              '' :
+              'is-unselected-category';
+        %]
       [% ELSE %]
-        <th scope="row">[% k %]</th>
+        [% # Mark/hide deleted/zero categories %]
+        [%
+          SET is_zero =
+            (
+              group_by == 'category+state'
+                && !grouped.$k_safe.open
+                && !grouped.$k_safe.closed
+                && !grouped.$k_safe.fixed
+            ) || (
+              group_by == 'category'
+                && !grouped.$k_safe.total
+            );
+
+          SET class_to_hide =
+            group_to_category.$current_group.$k_safe.state == 'deleted' ?
+              'is-deleted' :
+              ( is_zero ?
+                'is-zero' :
+                ''
+              );
+        %]
       [% END %]
-      [% IF group_by == 'category+state' %]
-        <td>[% grouped.$k_safe.open OR 0 %]</td>
-        <td>[% grouped.$k_safe.closed OR 0 %]</td>
-        <td>[% grouped.$k_safe.fixed OR 0 %]</td>
-        <td>[% grouped.$k_safe.total OR 0 %]</td>
-      [% ELSE %]
-        [% FOR k2 IN columns.sort %]
-          <td>[% grouped.$k_safe.$k2 OR 0 %]</td>
-        [% END %]
-        <td>[% grouped.$k_safe.total OR 0 %]</td>
+    <tr [% IF class_to_hide %]class="[% class_to_hide %]"[% END %]>
+      <th class="contact-category" scope="row">[% k %]</th>
+    [% ELSE %]
+    <tr>
+      <th scope="row">[% k %]</th>
+    [% END %]
+    [% IF group_by == 'category+state' %]
+      <td>[% grouped.$k_safe.open OR 0 %]</td>
+      <td>[% grouped.$k_safe.closed OR 0 %]</td>
+      <td>[% grouped.$k_safe.fixed OR 0 %]</td>
+      <td>[% grouped.$k_safe.total OR 0 %]</td>
+    [% ELSE %]
+      [% FOR k2 IN columns.sort %]
+        <td>[% grouped.$k_safe.$k2 OR 0 %]</td>
       [% END %]
+      <td>[% grouped.$k_safe.total OR 0 %]</td>
+    [% END %]
     </tr>
   [% END %]
     <tr class="subtotal">
-        <th scope="row">[% loc('Total') %]</th>
+        <th scope="row">[% loc('Total (including deleted categories)') %]</th>
       [% IF group_by == 'category+state' %]
         <td>[% totals.open OR 0 %]</td>
         <td>[% totals.closed OR 0 %]</td>
