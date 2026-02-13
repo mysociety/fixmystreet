@@ -72,6 +72,10 @@ body.waste label {
     @extend .body-large;
 }
 
+.content {
+    color: $black;
+}
+
 /* NAVBAR */
 #site-logo {
     height: 9rem;
@@ -142,10 +146,18 @@ body.waste label {
 /* FOOTER */
 .site-footer {
     margin-top: 0;
-    padding: 2rem 1.875rem 4rem;
     column-gap: 4rem;
+    .container {
+        padding: 1.875rem;
+        padding-top: 2rem;
+        padding-bottom: 4rem;
+    }
 
     @media (min-width: $screen-size-min-width-large) {
-        padding: 3rem 3.125rem 4rem;
+        .container {
+            padding: 3.125rem;
+            padding-top: 2rem;
+            padding-bottom: 4rem;
+        }
     }
 }

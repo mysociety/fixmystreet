@@ -21,7 +21,7 @@ jobs:
       with:
         submodules: true
 
-    - uses: niden/actions-memcached@v7
+    - uses: mysociety/actions-memcached@v1
 
     - name: Setup cache (carton)
       uses: actions/cache@v3

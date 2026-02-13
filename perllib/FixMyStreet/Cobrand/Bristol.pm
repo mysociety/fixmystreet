@@ -116,6 +116,15 @@ sub body_disallows_state_change {
     return !($self->{c}->user_exists && $self->{c}->user->id == $problem->user->id);
 }
 
+sub report_validation {
+    my ($self, $report, $errors) = @_;
+    if ($report->category eq 'Bin damaged') {
+        if (!$report->get_extra_field_value('asset_resource_id')) {
+            $errors->{category} = 'Please select a litter bin from the map';
+        }
+    }
+}
+
 =head2 category_change_force_resend
 
 If a report was sent to a backend, when the category

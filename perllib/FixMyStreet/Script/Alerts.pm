@@ -58,7 +58,7 @@ sub send_alert_type {
                $head_table.cobrand as item_cobrand,
                $head_table.*
         from alert, $item_table, $head_table
-            where alert.parameter::integer = $head_table.id
+            where alert.parameter = $head_table.id::text
             and $item_table.${head_table}_id = $head_table.id
             ";
     } else {
@@ -71,7 +71,7 @@ sub send_alert_type {
     $query .= "
         and alert_type='$ref' and whendisabled is null and $item_table.confirmed >= whensubscribed
         and $item_table.confirmed >= current_timestamp - '7 days'::interval
-         and (select whenqueued from alert_sent where alert_sent.alert_id = alert.id and alert_sent.parameter::integer = $item_table.id) is null
+         and (select whenqueued from alert_sent where alert_sent.alert_id = alert.id and alert_sent.parameter = $item_table.id::text) is null
         and $item_table.user_id <> alert.user_id
         and " . $alert_type->item_where . "
         and alert.confirmed = 1

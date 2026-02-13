@@ -109,6 +109,10 @@ OpenLayers.Layer.VectorBase = OpenLayers.Class(OpenLayers.Layer.Vector, {
         if (!this.inRange && this.resolutions) {
             var firstVisibleResolution = this.resolutions[0];
             var zoomLevel = fixmystreet.map.getZoomForResolution(firstVisibleResolution);
+            var resCheck = fixmystreet.map.getResolutionForZoom(zoomLevel);
+            if (resCheck > firstVisibleResolution) {
+                zoomLevel++;
+            }
             if (window.selected_problem_id) {
                 var feature = fixmystreet.maps.get_marker_by_id(window.selected_problem_id);
                 if (feature) {

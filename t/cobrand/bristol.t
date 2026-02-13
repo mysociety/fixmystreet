@@ -127,6 +127,16 @@ my $graffiti = $mech->create_contact_ok(
     category => 'Graffiti',
     email => 'Alloy-graffiti',
 );
+$mech->create_contact_ok(
+    body_id => $bristol->id,
+    category => 'Bin damaged',
+    email => 'damaged',
+    extra => {
+        _fields => [
+            { code => 'asset_resource_id', automated => 'hidden_field' },
+        ]
+    }
+);
 
 subtest 'Reports page works with no reports', sub {
     FixMyStreet::override_config {
@@ -252,6 +262,36 @@ subtest 'Damaged cycle hanger automatically closed' => sub {
         like $p->comments->first->text, qr/This issue has been forwarded.*cycle hangers/, 'correct comment text';
 
         $mech->email_count_is(1);
+    };
+};
+
+subtest 'Damaged bin category' => sub {
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'bristol',
+    }, sub {
+        $mech->get_ok("/report/new?latitude=51.494885&longitude=-2.602237");
+        $mech->submit_form_ok({ with_fields => {
+            title         => 'Test Report',
+            detail        => 'Test report details.',
+            name          => 'Joe Bloggs',
+            may_show_name => '1',
+            username_register => 'test-1@example.com',
+            category      => 'Bin damaged',
+        }});
+        $mech->content_contains('Please select a litter bin');
+        print $mech->encoded_content;
+        $mech->submit_form_ok({ with_fields => {
+            title         => 'Test Report',
+            detail        => 'Test report details.',
+            name          => 'Joe Bloggs',
+            may_show_name => '1',
+            username_register => 'test-1@example.com',
+            category      => 'Bin damaged',
+            asset_resource_id => '123456',
+        }});
+        $mech->content_lacks('Please select a litter bin');
+        $mech->content_contains('Now check your email');
     };
 };
 

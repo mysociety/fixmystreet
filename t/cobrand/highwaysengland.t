@@ -48,7 +48,7 @@ ok $r->{error}, "searching for lowecase road only generates error";
 my $mech = FixMyStreet::TestMech->new;
 my $highways = $mech->create_body_ok(164186, 'National Highways', { send_method => 'Email::Highways', cobrand => 'highwaysengland' });
 
-$mech->create_contact_ok(email => 'testareaemail@nh', body_id => $highways->id, category => 'Pothole (NH)');
+$mech->create_contact_ok(email => 'testareaemail@nh', body_id => $highways->id, category => 'Pothole (NH)', extra => { anonymous_allowed => 1 });
 
 my $superuser = $mech->create_user_ok('super@example.com', name => 'Admin', from_body => $highways, password => 'password', is_superuser => 1);
 
