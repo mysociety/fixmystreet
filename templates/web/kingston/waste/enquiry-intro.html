@@ -1,0 +1,7 @@
+[% SET service_id = c.req.params.service_id %]
+[% IF services.$service_id %]
+<dl class="waste__address">
+    <dt class="waste__address__title">Service</dt>
+    <dd class="waste__address__property">[% services.$service_id.service_name %]</dd>
+</dl>
+[% END %]

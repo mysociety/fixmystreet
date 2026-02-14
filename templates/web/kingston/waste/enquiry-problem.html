@@ -1,0 +1,28 @@
+[%
+
+f = [];
+service_id = c.req.params.service_id;
+service = services.$service_id;
+
+IF service.report_allowed AND (property.domestic_refuse_bin OR communal_property);
+    SET field = { value = 'Bin not returned', label = 'My wheelie bin, box or caddy was not returned correctly after collection' };
+    IF service.events.filter(event_type = 3135);
+        field.disabled = 1;
+    END;
+    f.push(field);
+END;
+
+IF service.report_allowed AND property.domestic_refuse_bin;
+    SET field = { value = 'Waste spillage', label = 'Spillage during collection' };
+    IF service.events.filter(event_type = 3227);
+        field.disabled = 1;
+    END;
+    f.push(field);
+END;
+
+PROCESS waste/enquiry.html
+    title = 'Reporting a spillage or bin not returned'
+    field_options = f
+    field_label = 'What problem would you like to report?'
+    intro = 'waste/problem-intro.html';
+%]
