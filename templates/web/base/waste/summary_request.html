@@ -20,7 +20,7 @@ step1 = first_page;
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% containers.$container_id %]</dt>
       [% IF c.cobrand.moniker == 'brent' %]
-        <dd class="govuk-summary-list__value">[% label_for_field(form, 'request_reason', data.request_reason) %]</dd>
+        <dd class="govuk-summary-list__value">[% form.label_for_field('request_reason', data.request_reason) %]</dd>
       [% ELSE %]
         <dd class="govuk-summary-list__value">
             [% IF data.$quantity_key %][% data.$quantity_key %] to deliver[% END %]
@@ -43,11 +43,11 @@ step1 = first_page;
       </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key govuk-summary-list__key--sub">People at propery</dt>
-          <dd class="govuk-summary-list__value">[% label_for_field(form, 'property_people', data.property_people) %]</dd>
+          <dd class="govuk-summary-list__value">[% form.label_for_field('property_people', data.property_people) %]</dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Children at property</dt>
-          <dd class="govuk-summary-list__value">[% label_for_field(form, 'property_children', data.property_children) %]</dd>
+          <dd class="govuk-summary-list__value">[% form.label_for_field('property_children', data.property_children) %]</dd>
         </div>
       [% END %]
     [% END %]
