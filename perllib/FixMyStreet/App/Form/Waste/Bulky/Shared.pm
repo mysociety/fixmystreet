@@ -15,15 +15,22 @@ extends 'FixMyStreet::App::Form::Waste';
 use FixMyStreet::Template::SafeString;
 
 has small_items => ( is => 'ro', default => 0 );
+has sharps => ( is => 'ro', default => 0 );
 
 has_page choose_date_earlier => (
     fields => [ 'continue', 'chosen_date', 'show_later_dates' ],
     title => 'Choose date for collection',
     template => 'waste/bulky/choose_date.html',
     next => sub {
-        ( $_[1]->{later_dates} )
+        my $params = $_[1];
+        my $form = $_[2];
+
+        ( $params->{later_dates} )
             ? 'choose_date_later'
-            : 'add_items';
+            : ( $form->sharps
+                ? 'collection_and_delivery'
+                : 'add_items'
+            );
     },
 );
 
@@ -95,6 +102,9 @@ has_page summary => (
     },
     update_field_list => sub {
         my ($form) = @_;
+
+        return {} if $form->sharps;
+
         my $data = $form->saved_data;
         my $new = _renumber_items($data, $form->c->stash->{booking_maximum});
         %$data = %$new;
@@ -129,13 +139,15 @@ has_page summary => (
         return 0;
     },
     finished => sub {
-
         if ($_[0]->small_items) {
             if ($_[0]->c->stash->{amending_booking}) {
                 return $_[0]->wizard_finished('process_bulky_amend');
             } else {
                 return $_[0]->wizard_finished('process_small_items_data');
             }
+        }
+        if ($_[0]->sharps) {
+            return $_[0]->wizard_finished('process_sharps_data');
         }
         if ($_[0]->c->stash->{amending_booking}) {
             return $_[0]->wizard_finished('process_bulky_amend');
@@ -352,9 +364,9 @@ sub validate {
 
     if ( $self->current_page->name =~ /choose_date/ ) {
         my $next_page
-            = $self->current_page->next->( undef, $self->c->req->params );
+            = $self->current_page->next->( undef, $self->c->req->params, $self );
 
-        if ( $next_page eq 'add_items' ) {
+        if ( $next_page !~ /choose_date/ ) {
             $self->field('chosen_date')
                 ->add_error('Available dates field is required')
                 if !$self->field('chosen_date')->value;

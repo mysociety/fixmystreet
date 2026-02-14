@@ -282,6 +282,7 @@ sub look_up_property {
         longitude => $site->{Site}->{SiteLongitude},
         upcoming_bank_holiday => $upcoming_bank_holiday,
         show_bulky_waste => $self->bulky_allowed_property($address),
+        show_sharps => $self->sharps_allowed_property($address),
         %parent_property,
     };
 }

@@ -251,4 +251,30 @@ sub bulky_refund_collection {
     );
 }
 
+# Sharps
+
+sub sharps_allowed_property {
+    my ( $self, $property ) = @_;
+
+    # XXX Implement checks
+
+    return 1;
+}
+
+# XXX What is all the data we need?
+sub waste_munge_sharps_data {
+    my ( $self, $data ) = @_;
+
+    my $c = $self->{c};
+    my $property = $c->stash->{property};
+    my $address = $property->{address};
+
+    my ($date, $ref) = split(";", $data->{chosen_date});
+
+    $data->{title} = 'Sharps collection';
+    $data->{detail} = 'Address: ' . $c->stash->{property}->{address};
+    $data->{category} = 'Sharps collection';
+    $data->{extra_collection_date} = $date;
+}
+
 1;

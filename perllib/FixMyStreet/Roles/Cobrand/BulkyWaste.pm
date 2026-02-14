@@ -50,6 +50,12 @@ sub small_items_enabled {
     return $cfg->{small_items_enabled};
 }
 
+sub sharps_enabled {
+    my $self = shift;
+    my $cfg = $self->feature('waste_features') || {};
+    return $cfg->{sharps_enabled};
+}
+
 sub bulky_items_master_list { $_[0]->wasteworks_config->{item_list} || [] }
 sub small_items_master_list { $_[0]->wasteworks_config->{small_item_list} || [] }
 sub bulky_per_item_costs { $_[0]->wasteworks_config->{per_item_costs} }
@@ -376,6 +382,7 @@ sub get_all_payments {
     return $refs;
 }
 
+# XXX Handle sharps
 sub find_booked_collections {
     my ( $self, $uprn, $recent, $retry ) = @_;
 
