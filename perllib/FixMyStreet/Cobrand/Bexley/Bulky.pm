@@ -275,6 +275,16 @@ sub waste_munge_sharps_data {
     $data->{detail} = 'Address: ' . $c->stash->{property}->{address};
     $data->{category} = 'Sharps collection';
     $data->{extra_collection_date} = $date;
+    $data->{extra_round_instance_id} = $ref;
+    $data->{extra_sharps_location} = $data->{collect_location};
+
+    $data->{extra_sharps_collect_small_quantity} = $data->{collect_small_quantity};
+    $data->{extra_sharps_collect_large_quantity} = $data->{collect_large_quantity};
+    $data->{extra_sharps_collect_glucose_monitor} = $data->{collect_glucose_monitor};
+    $data->{extra_sharps_collect_cytotoxic} = $data->{collect_cytotoxic};
+
+    $data->{extra_sharps_deliver_size} = $data->{deliver_size};
+    $data->{extra_sharps_deliver_quantity} = $data->{deliver_quantity};
 }
 
 1;

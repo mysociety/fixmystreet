@@ -15,11 +15,21 @@ my $contact = $mech->create_contact_ok(
     body     => $body,
     category => 'Sharps collection',
     group    => ['Waste'],
-    email    => 'whitespace_sharps',
-    extra    => { type => 'waste' }
+    email    => 'sharps@test.com',
+    extra    => { type => 'waste' },
 );
 $contact->set_extra_fields(
     { code => 'collection_date', required => 1, automated => 'hidden_field' },
+    { code => 'round_instance_id', required => 1, automated => 'hidden_field' },
+    { code => 'sharps_location', required => 1, automated => 'hidden_field' },
+
+    { code => 'sharps_collect_small_quantity', required => 1, automated => 'hidden_field' },
+    { code => 'sharps_collect_large_quantity', required => 1, automated => 'hidden_field' },
+    { code => 'sharps_collect_glucose_monitor', required => 1, automated => 'hidden_field' },
+    { code => 'sharps_collect_cytotoxic', required => 1, automated => 'hidden_field' },
+
+    { code => 'sharps_deliver_size', required => 1, automated => 'hidden_field' },
+    { code => 'sharps_deliver_quantity', required => 1, automated => 'hidden_field' },
 );
 $contact->update;
 
@@ -141,14 +151,31 @@ FixMyStreet::override_config {
         is $report->title, 'Sharps collection';
         is $report->uprn, '10001';
         is $report->get_extra_field_value('collection_date'), '2025-06-27';
+        is $report->get_extra_field_value('round_instance_id'), '1';
+        is $report->get_extra_field_value('sharps_location'), 'Doorstep';
+        is $report->get_extra_field_value('sharps_collect_small_quantity'), '3';
+        is $report->get_extra_field_value('sharps_collect_large_quantity'), '2';
+        is $report->get_extra_field_value('sharps_collect_glucose_monitor'), 'No';
+        is $report->get_extra_field_value('sharps_collect_cytotoxic'), 'Yes';
+        is $report->get_extra_field_value('sharps_deliver_size'), '1-litre';
+        is $report->get_extra_field_value('sharps_deliver_quantity'), '5';
 
-        # XXX Test sending to Whitespace
-        # $mech->clear_emails_ok();
-        # FixMyStreet::Script::Reports::send();
-        # $mech->email_count_is(0);
+        $mech->clear_emails_ok();
+        FixMyStreet::Script::Reports::send();
+        # Email to council and email to user (former is Open311 in real life)
+        $mech->email_count_is(2);
+        my ( undef, $email_to_user ) = $mech->get_email;
 
-        # $report->discard_changes;
-        # is $report->external_id, 'TODO';
+        is $email_to_user->header('Subject'),
+            'Sharps collection service - reference ' . $report->id;
+
+        my $email_txt = $mech->get_text_body_from_email($email_to_user);
+        like $email_txt, qr/Thank you for booking a sharps collection/;
+
+        my $email_html = $mech->get_html_body_from_email($email_to_user);
+        like $email_html, qr/Thank you for booking a sharps collection/;
+
+        # XXX Collection/delivery details in email
     };
 };
 
