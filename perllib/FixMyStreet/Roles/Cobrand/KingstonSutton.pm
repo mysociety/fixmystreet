@@ -407,7 +407,14 @@ sub waste_munge_enquiry_form_pages {
         }
 
     } elsif ( $category eq 'Report out-of-time missed collection' ) {
-        $pages->[1]{intro} = 'enquiry-non-actionable-intro.html';
+        $c->stash->{first_page} = 'intro';
+        unshift @$pages, intro => {
+            fields => [ 'continue' ],
+            intro => 'enquiry-non-actionable-intro.html',
+            title => _enquiry_nice_title($category),
+            next => 'about_you',
+        };
+
         # Remove and replace email field
         my @new;
         for (my $i=0; $i<@$fields; $i+=2) {

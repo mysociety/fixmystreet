@@ -432,6 +432,10 @@ FixMyStreet::override_config {
         $mech->follow_link_ok(
             { text_regex => qr/Report a food waste collection as missed/ } );
 
+        # intro page
+        $mech->content_contains('You can report a missed bin collection at any time');
+        $mech->submit_form_ok();
+
         # About you
         $mech->content_contains('Provide an email address so we can send you updates.');
         $mech->submit_form_ok(
