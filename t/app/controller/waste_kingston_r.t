@@ -433,6 +433,7 @@ FixMyStreet::override_config {
             { text_regex => qr/Report a food waste collection as missed/ } );
 
         # About you
+        $mech->content_contains('Provide an email address so we can send you updates.');
         $mech->submit_form_ok(
             { with_fields => { name => 'Bob Marge', email => $user->email } }
         );

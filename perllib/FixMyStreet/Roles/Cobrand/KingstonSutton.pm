@@ -351,60 +351,79 @@ sub waste_munge_enquiry_form_pages {
     $pages->[1]{intro} = 'enquiry-intro.html';
     $pages->[1]{title} = _enquiry_nice_title($category);
 
-    return unless $category eq 'Bin not returned';;
+    if ( $category eq 'Bin not returned' ) {
+        my $assisted = $c->stash->{assisted_collection};
+        if ($assisted) {
+            # add extra first page with extra question
+            $c->stash->{first_page} = 'now_returned';
+            unshift @$pages, now_returned => {
+                fields => [ 'now_returned', 'continue' ],
+                intro => 'enquiry-intro.html',
+                title => _enquiry_nice_title($category),
+                next => 'enquiry',
+            };
+            push @$fields, now_returned => {
+                type => 'Select',
+                widget => 'RadioGroup',
+                required => 1,
+                label => 'has the container now been returned to the property?',
+                options => [
+                    { label => 'Yes', value => 'yes' },
+                    { label => 'No', value => 'no' },
+                ],
+            };
 
-    my $assisted = $c->stash->{assisted_collection};
-    if ($assisted) {
-        # add extra first page with extra question
-        $c->stash->{first_page} = 'now_returned';
-        unshift @$pages, now_returned => {
-            fields => [ 'now_returned', 'continue' ],
-            intro => 'enquiry-intro.html',
-            title => _enquiry_nice_title($category),
-            next => 'enquiry',
-        };
-        push @$fields, now_returned => {
-            type => 'Select',
-            widget => 'RadioGroup',
-            required => 1,
-            label => 'has the container now been returned to the property?',
-            options => [
-                { label => 'Yes', value => 'yes' },
-                { label => 'No', value => 'no' },
-            ],
-        };
+            # remove any non-assisted extra notices
+            my @new;
+            for (my $i=0; $i<@$fields; $i+=2) {
+                if ($fields->[$i] !~ /^extra_notassisted/i) {
+                    push @new, $fields->[$i], $fields->[$i+1];
+                }
+            }
+            @$fields = @new;
+            $pages->[3]{fields} = [ grep { !/^extra_notassisted/i } @{$pages->[3]{fields}} ];
+            $pages->[3]{update_field_list} = sub {
+                my $form = shift;
+                my $c = $form->c;
+                my $data = $form->saved_data;
+                my $returned = $data->{now_returned} || '';
+                my $key = lc($returned) eq 'no' ? 'extra_AssistedReturned' : 'extra_AssistedNotReturned';
+                return {
+                    category => { default => $c->get_param('category') },
+                    service_id => { default => $c->get_param('service_id') },
+                    $key => { widget => 'Hidden' },
+                }
+            };
+        } else {
+            # remove any assisted extra notices
+            my @new;
+            for (my $i=0; $i<@$fields; $i+=2) {
+                if ($fields->[$i] !~ /^extra_assisted/i) {
+                    push @new, $fields->[$i], $fields->[$i+1];
+                }
+            }
+            @$fields = @new;
+            $pages->[1]{fields} = [ grep { !/^extra_assisted/i } @{$pages->[1]{fields}} ];
+        }
 
-        # remove any non-assisted extra notices
+    } elsif ( $category eq 'Report out-of-time missed collection' ) {
+        $pages->[1]{intro} = 'enquiry-non-actionable-intro.html';
+        # Remove and replace email field
         my @new;
         for (my $i=0; $i<@$fields; $i+=2) {
-            if ($fields->[$i] !~ /^extra_notassisted/i) {
+            if ($fields->[$i] ne 'email') {
                 push @new, $fields->[$i], $fields->[$i+1];
             }
         }
         @$fields = @new;
-        $pages->[3]{fields} = [ grep { !/^extra_notassisted/i } @{$pages->[3]{fields}} ];
-        $pages->[3]{update_field_list} = sub {
-            my $form = shift;
-            my $c = $form->c;
-            my $data = $form->saved_data;
-            my $returned = $data->{now_returned} || '';
-            my $key = lc($returned) eq 'no' ? 'extra_AssistedReturned' : 'extra_AssistedNotReturned';
-            return {
-                category => { default => $c->get_param('category') },
-                service_id => { default => $c->get_param('service_id') },
-                $key => { widget => 'Hidden' },
-            }
+        push @$fields, email => {
+            type => 'Email',
+            order => 3,
+            tags => {
+                hint => 'Provide an email address so we can send you updates.'
+            },
         };
-    } else {
-        # remove any assisted extra notices
-        my @new;
-        for (my $i=0; $i<@$fields; $i+=2) {
-            if ($fields->[$i] !~ /^extra_assisted/i) {
-                push @new, $fields->[$i], $fields->[$i+1];
-            }
-        }
-        @$fields = @new;
-        $pages->[1]{fields} = [ grep { !/^extra_assisted/i } @{$pages->[1]{fields}} ];
+
     }
 }
 
@@ -418,6 +437,8 @@ sub _enquiry_nice_title {
         $category = 'Issue with collection';
     } elsif ($category eq 'Failure to Deliver Bags/Containers') {
         $category = 'Issue with delivery';
+    } elsif ($category eq 'Report out-of-time missed collection') {
+        $category = 'Reporting a missed collection outside the 48 hour reporting window';
     }
     return $category;
 }
