@@ -92,6 +92,21 @@
   </div>
 [% END %]
 
+[% IF c.cobrand.moniker == 'kingston' && non_actionable %]
+  <div class="govuk-form-group">
+    <fieldset class="govuk-fieldset">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+        <h2 class="govuk-fieldset__heading">
+          After you submit
+        </h2>
+      </legend>
+      <p>
+      You will receive an acknowledgement email. Your report will be recorded and used to help improve our service.
+      </p>
+    </fieldset>
+  </div>
+[% END %]
+
 <form class="waste" method="post">
     [% PROCESS form %]
 </form>

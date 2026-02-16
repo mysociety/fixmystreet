@@ -448,7 +448,7 @@ FixMyStreet::override_config {
 
         # Confirmation page
         $mech->content_contains('Thank you for reporting a missed collection');
-        $mech->content_contains('A copy has been sent to your email address');
+        $mech->content_contains('You will receive an acknowledgment email to');
         $mech->content_lacks('Your reference number');
 
         # Check report
