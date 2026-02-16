@@ -1,5 +1,7 @@
 Subject: [%
-IF report.category == 'Small items collection' && cobrand.moniker != 'sutton';
+IF report.category == 'Sharps collection';
+    "Sharps collection service - reference " _ report.id;
+ELSIF report.category == 'Small items collection' && cobrand.moniker != 'sutton';
     " Small items collection service - reference " _ report.id;
 ELSIF cobrand.moniker == 'kingston';
     "Your bulky waste collection - reference RBK-" _ report.id;
