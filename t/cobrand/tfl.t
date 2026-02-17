@@ -42,18 +42,11 @@ my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Counci
 my $systemuser = $mech->create_user_ok('systemuser@example.com', name => 'System User', from_body => $body, password => 'password');
 $body->update({ comment_user_id => $systemuser->id });
 
-$staffuser->user_body_permissions->create({
-    body => $body,
-    permission_type => 'contribute_as_body',
-});
-$staffuser->user_body_permissions->create({
-    body => $body,
-    permission_type => 'default_to_body',
-});
-$staffuser->user_body_permissions->create({
-    body => $body,
-    permission_type => 'category_edit',
-});
+$staffuser->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_body' });
+$staffuser->user_body_permissions->create({ body => $body, permission_type => 'default_to_body' });
+$staffuser->user_body_permissions->create({ body => $body, permission_type => 'category_edit' });
+$staffuser->user_body_permissions->create({ body => $body, permission_type => 'report_edit_category' });
+
 my $user = $mech->create_user_ok('londonresident@example.com');
 
 my $bromley = $mech->create_body_ok(2482, 'Bromley', { cobrand => 'bromley' });
@@ -616,8 +609,10 @@ subtest "extra information included in email" => sub {
     like $mech->get_text_body_from_email($email[1]), qr/report's reference number is FMS$id/, "FMS-prefixed ID in reporter email";
     $mech->clear_emails_ok;
 
+    $mech->log_in_ok( $staffuser->email );
     $mech->get_ok( '/report/' . $report->id );
     $mech->content_contains('FMS' . $report->id) or diag $mech->content;
+    $mech->content_contains('Sent to:</strong> busstops@example.com');
 };
 
 subtest "Abandoned bike reports contain bike number" => sub {
