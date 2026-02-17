@@ -203,8 +203,10 @@ sub open311_config {
 
     $params->{always_send_email} = 1;
     $params->{multi_photos} = 1;
-    $params->{upload_files} = 1;
-    $params->{upload_files_for_updates} = 1;
+    if ($contact->email =~ /Alloy/) {
+        $params->{upload_files} = 1;
+        $params->{upload_files_for_updates} = 1;
+    }
 }
 
 sub open311_config_updates {
