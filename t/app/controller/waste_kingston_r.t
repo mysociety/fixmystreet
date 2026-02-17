@@ -410,6 +410,7 @@ FixMyStreet::override_config {
 		$mech->content_lacks('Paper and card');
 
         $mech->submit_form_ok({ with_fields => { 'service-980' => 1 } });
+        $mech->content_contains('If we have a problem resolving your report');
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Thank you for reporting a missed collection');
@@ -437,6 +438,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok();
 
         # About you
+        $mech->content_contains('We need these details so we can contact you about this report');
         $mech->content_contains('Provide an email address so we can send you updates.');
         $mech->submit_form_ok(
             { with_fields => { name => 'Bob Marge', email => $user->email } }
@@ -692,9 +694,9 @@ FixMyStreet::override_config {
             $mech->get_ok('/waste/12345');
             $mech->content_contains('please report the problem here');
 
-        # HERE
             subtest 'actually make the report' => sub {
                 $mech->follow_link_ok({ text => 'please report the problem here' });
+                $mech->content_lacks('We need these details so we can contact you about this report');
                 $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
                 $mech->submit_form_ok( { with_fields => { submit => '1' } });
                 $mech->content_contains('Your enquiry has been submitted');
