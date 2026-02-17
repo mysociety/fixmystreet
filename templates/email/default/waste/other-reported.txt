@@ -1,12 +1,25 @@
-[% IF report.category == 'Request new container' ~%][% SET subject_type = 'request' ~%][% ELSE ~%][% SET subject_type = 'report' ~%][% END ~%]
-[% SET subject_text = 'Your ' _ subject_type _ ' has been logged' ~%]
-[% IF cobrand.moniker == 'kingston' ~%]
-    [% SET prefix = 'RBK-' ~%]
-    [% IF report.category == 'Request new container' ~%]
-        [% subject_text = 'Your bin request has been logged' ~%]
-    [% END ~%]
-[% ELSIF cobrand.moniker == 'sutton' %][% SET prefix = 'LBS-' ~%]
-[% ELSE %][% SET prefix = '' %][% END ~%]
+[%
+IF report.category == 'Request new container';
+    SET subject_type = 'request';
+ELSE;
+    SET subject_type = 'report';
+END;
+IF report.category == 'General Enquiry';
+    SET subject_text = 'Thank you for your enquiry';
+ELSE;
+    SET subject_text = 'Your ' _ subject_type _ ' has been logged';
+END;
+IF cobrand.moniker == 'kingston';
+    SET prefix = 'RBK-';
+    IF report.category == 'Request new container';
+        subject_text = 'Your bin request has been logged';
+    END;
+ELSIF cobrand.moniker == 'sutton';
+    SET prefix = 'LBS-';
+ELSE;
+    SET prefix = '';
+END;
+~%]
 Subject: [% subject_text ~%], reference [% prefix %][% report.id %]
 
 Dear [% report.name %],

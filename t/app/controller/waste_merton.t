@@ -576,6 +576,7 @@ FixMyStreet::override_config {
         $mech->content_contains('/waste/12345"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('Notes'), 'It never turned up';
+        is $report->title, 'Failure to deliver concerning Mixed recycling collection';
         is $report->detail, "It never turned up\n\n2 Example Street, Merton, KT1 1AA";
         is $report->user->email, 'anne@example.org';
         is $report->name, 'Anne Assist';
@@ -613,6 +614,7 @@ FixMyStreet::override_config {
         my $cgi = CGI::Simple->new($req->content);
         is $cgi->param('api_key'), 'KEY';
         is $cgi->param('attribute[Notes]'), 'Hello';
+        like $cgi->param('description'), qr/Bin not returned concerning Non-recyclable waste collection/;
         $mech->get_ok('/waste/12345');
         $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable waste collection' });
         $mech->submit_form_ok( { with_fields => { category => 'Waste spillage' } });

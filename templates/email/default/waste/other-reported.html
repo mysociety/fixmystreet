@@ -16,6 +16,8 @@ INCLUDE '_email_top.html';
     [% ELSE %]
       <h1 style="[% h1_style %]">Your request has been&nbsp;logged</h1>
     [% END %]
+  [% ELSIF report.category == 'General Enquiry' %]
+    <h1 style="[% h1_style %]">Thank you for your&nbsp;enquiry</h1>
   [% ELSE %]
     <h1 style="[% h1_style %]">Your report has been&nbsp;logged</h1>
   [% END %]
@@ -89,6 +91,11 @@ INCLUDE '_email_top.html';
   <p style="[% p_style %]">
   Your report about the problem with your bin collection has been made to the council.
   The crew will be advised. Please let us know if it happens again.
+  </p>
+[% ELSIF cobrand.moniker == 'merton' AND report.category == 'General Enquiry' %]
+  <p style="[% p_style %]">
+    This has been passed to the relevant team for their attention.
+    An officer will respond to you within 5 working days.
   </p>
 
 [% ELSE %]

@@ -533,13 +533,16 @@ sub waste_munge_report_form_fields {
 
 sub waste_munge_enquiry_data {
     my ($self, $data) = @_;
+    my $c = $self->{c};
 
-    my $address = $self->{c}->stash->{property}->{address};
-    $data->{title} = $data->{category};
+    my $address = $c->stash->{property}->{address};
+    my $service_id = $data->{service_id};
+    my $service_name = $c->stash->{services}{$service_id}{service_name};
+    $data->{title} = "$data->{category} concerning $service_name collection";
 
     my $detail;
     if ($data->{category} eq 'Bin not returned' || $data->{category} eq 'Lid not closed') {
-        $detail .= ($data->{'extra_Notes'} ? $data->{'extra_Notes'} : '') . "\n\n";
+        $detail .= ($data->{'extra_Notes'} ? $data->{'extra_Notes'} . "\n\n" : '');
     } else {
         foreach (sort grep { /^extra_/ } keys %$data) {
             $detail .= "$data->{$_}\n\n";
