@@ -526,9 +526,23 @@ sub waste_munge_report_form_pages {
     }
 }
 
+sub waste_missed_collection_is_communal {
+    my ($self, $report) = @_;
+    my $service_id = $report->get_extra_field_value('service_id');
+    return $service_id == $SERVICE_IDS{communal_refuse} || $service_id == $SERVICE_IDS{communal_food} || $service_id == $SERVICE_IDS{communal_paper} || $service_id == $SERVICE_IDS{communal_mixed};
+}
+
 sub waste_munge_report_form_fields {
     my ($self, $field_list) = @_;
-    $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Report::SLWP';
+    my $c = $self->{c};
+    if ($c->stash->{communal_property}) {
+        unshift @$field_list, communal_note => {
+            type => 'Notice',
+            widget => 'NoRender',
+            label => 'Please note this is a communal bin, and your report will be submitted on behalf of all associated properties.',
+        };
+    }
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Report::SLWP';
 }
 
 sub waste_munge_enquiry_data {
