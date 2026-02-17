@@ -177,8 +177,12 @@ has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data proc
                     return ();
                 }
 
-                # Convert all images to JPEGs
-                my %params = ( magick => 'JPEG' );
+                my %params;
+                if ($type eq 'png') {
+                    %params = ( magick => 'PNG' );
+                } else {
+                    %params = ( magick => 'JPEG' );
+                }
 
                 # we have an image we can use - save it to storage
                 $photo_blob = try {
