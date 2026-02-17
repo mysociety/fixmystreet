@@ -8,7 +8,6 @@ with 'FixMyStreet::Roles::Cobrand::Waste',
 
 use Hash::Util qw(lock_hash);
 use WasteWorks::Costs;
-use FixMyStreet::App::Form::Waste::Report::Merton;
 use FixMyStreet::App::Form::Waste::Request::Merton;
 use FixMyStreet::App::Form::Waste::Request::Merton::Larger;
 
