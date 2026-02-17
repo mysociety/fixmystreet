@@ -447,6 +447,33 @@ FixMyStreet::override_config {
         is $report->detail, "Report missed Food waste\n\n2 Example Street, Merton, KT1 1AA";
         is $report->title, 'Report missed Food waste';
     };
+
+    subtest 'Communal report' => sub {
+        FixMyStreet::Script::Reports::send();
+        $mech->clear_emails_ok;
+        my $dupe = dclone($bin_data);
+        # Give the entry communal
+        foreach (@$dupe) {
+            $_->{ServiceId} = 1070;
+        }
+        $e->mock('GetServiceUnitsForObject', sub { $dupe });
+        $mech->get_ok('/waste/12345/report');
+        $mech->content_contains('Non-recyclable waste');
+        $mech->content_contains('this is a communal bin');
+        $mech->submit_form_ok({ with_fields => { 'service-1070' => 1 } });
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Thank you for reporting a missed collection');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->uprn, 1000000002;
+        is $report->detail, "Report missed Non-recyclable waste\n\n2 Example Street, Merton, KT1 1AA";
+        is $report->title, 'Report missed Non-recyclable waste';
+        FixMyStreet::Script::Reports::send();
+        my $email = $mech->get_email;
+        like $mech->get_text_body_from_email($email), qr/this is a communal bin/;
+        $e->mock('GetServiceUnitsForObject', sub { $bin_data });
+    };
+
     subtest 'No reporting/requesting if open request' => sub {
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Report a missed mixed recycling collection');

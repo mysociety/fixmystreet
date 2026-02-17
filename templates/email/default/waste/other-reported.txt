@@ -73,6 +73,10 @@ crew to remove it. We aim for this to be the same day as we deliver your new bin
 [% IF cobrand.moniker == 'brent' %]
 We will arrange another collection as soon as possible over the next two days. Please note that collections may also be attempted on a public holiday/weekend.
 [% ELSIF cobrand.moniker == 'merton' %]
+[% IF cobrand.waste_missed_collection_is_communal(report) ~%]
+Please note this is a communal bin, and your report has been submitted on behalf of all associated properties.
+
+[% END %]
 We will arrange another collection as soon as possible over the next 2 working days.
 
 Did you know...?

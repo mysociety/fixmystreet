@@ -97,6 +97,9 @@ INCLUDE '_email_top.html';
       [% IF cobrand.moniker == 'brent' %]
         <p style="[% p_style %]">We will arrange another collection as soon as possible over the next two days. Please note that collections may also be attempted on a public holiday/weekend.</p>
       [% ELSIF cobrand.moniker == 'merton' %]
+        [% IF cobrand.waste_missed_collection_is_communal(report) %]
+          <p style="[% p_style %]">Please note this is a communal bin, and your report has been submitted on behalf of all associated properties.</p>
+        [% END %]
         <p style="[% p_style %]">We will arrange another collection as soon as possible over the next 2 working days.</p>
         <p style="[% p_style %]">Did you know...?<br>Our crews carry out over 150,000 collections every week from houses and flats. In 2024/25, 99% of missed collections were successfully collected within 2 days after being reported.</p>
       [% ELSE %]
