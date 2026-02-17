@@ -1013,7 +1013,8 @@ html.mobile.js-nav-open #js-menu-open-modal {
 
 .has-inline-svg,
 .btn.has-inline-svg {
-  display: flex;
+  // Prevent other display properties, like govuk-heading, override the flex property. 
+  display: flex !important;
   flex-direction: row;
   gap: 0.25rem;
   align-items: center;
