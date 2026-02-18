@@ -251,6 +251,7 @@
     [%~ IF field.get_tag('number') %] pattern="[0-9]*" inputmode="numeric"[% END ~%]
     [%~ IF field.get_tag('autofocus') %] autofocus[% END ~%]
     [%~ IF field.disabled %] disabled[% END ~%]
+    [%~ IF field.required %] required[% END ~%]
     [%~ IF field.get_tag('hint') OR error %]
       aria-describedby="[% IF field.get_tag('hint') %][% field.id %]-hint [% END %][% IF error %][% field.id %]-error[% END %]"
     [%~ END %]>
