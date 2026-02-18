@@ -255,10 +255,8 @@ sub bulky_refund_collection {
 
 sub sharps_allowed_property {
     my ( $self, $property ) = @_;
-
-    # XXX Implement checks
-
-    return 1;
+    my $class = $property->{class} || '';
+    return $self->sharps_enabled && $class =~ /^(RD|RH|RI|RE|CE)/;
 }
 
 sub waste_munge_sharps_data {
