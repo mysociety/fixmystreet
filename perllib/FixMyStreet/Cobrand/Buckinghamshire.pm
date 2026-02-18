@@ -402,6 +402,31 @@ sub open311_get_update_munging {
     }
 }
 
+sub check_report_is_on_cobrand_asset {
+    my $self = shift;
+
+    if ($self->{c}->get_param('asset_resource_id')) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+sub munge_overlapping_asset_bodies {
+    my ($self, $bodies) = @_;
+
+    # See if the point is within the administrative area of Bucks
+    my $in_bucks = grep { $self->council_area_id == $_ } keys %{$self->{c}->stash->{all_areas}};
+
+    # cobrand will be true if the point is within an area of different responsibility from the norm
+    my $cobrand = $self->check_report_is_on_cobrand_asset;
+    if (!$in_bucks && $cobrand) {
+        my $body = $self->body;
+        %$bodies = map { $_->id => $_ } grep { $_->get_column('name') ne 'Hertfordshire County Council' } values %$bodies;
+        $$bodies{$body->id} = $body;
+    }
+}
+
 sub report_new_munge_before_insert {
     my ($self, $report) = @_;
 

@@ -220,6 +220,12 @@ sub munge_report_new_bodies {
         $bromley->munge_overlapping_asset_bodies($bodies);
     }
 
+    if ( $bodies{'Hertfordshire County Council'} ) {
+        # Cope with Bucks street light outside Bucks
+        my $bucks = FixMyStreet::Cobrand::Buckinghamshire->new({ c => $self->{c} });
+        $bucks->munge_overlapping_asset_bodies($bodies);
+    }
+
     if ( $bodies{'Merton Council'} ) {
         my $merton = FixMyStreet::Cobrand::Merton->new({ c => $self->{c} });
         $merton->munge_overlapping_asset_bodies($bodies);
