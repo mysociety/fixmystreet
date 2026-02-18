@@ -73,15 +73,16 @@ sub report_age {
     };
 }
 
-=item * Pins are green if closed/fixed, red if confirmed, orange otherwise
+=item * Pins are grey cross for closed; green tick for fixed; yellow cone for open; orange at work for other open states.
 
 =cut
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    return 'green' if $p->is_closed || $p->is_fixed;
-    return 'red' if $p->state eq 'confirmed';
-    return 'orange'; # all the other `open_states` like "in progress"
+    return 'grey-cross' if $p->is_closed;
+    return 'green-tick' if $p->is_fixed;
+    return 'yellow-cone' if $p->state eq 'confirmed';
+    return 'orange-work'; # all the other `open_states` like "in progress"
 }
 
 sub has_aerial_maps { 'tilma.mysociety.org/mapcache/gmaps/northumberlandaerial@{grid}' }
