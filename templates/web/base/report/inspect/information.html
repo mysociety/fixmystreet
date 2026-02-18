@@ -58,7 +58,7 @@
         [% END %]
 
         [% IF c.cobrand.moniker == 'tfl' AND problem.get_extra_metadata('sent_to') %]
-            <p><strong>Sent to:</strong> [% problem.get_extra_metadata('sent_to').join(', ') %]</p>
+            <p><strong>Sent to: [% problem.get_extra_metadata('sent_to').join(', ') %]</strong></p>
         [% END %]
 
         <p>

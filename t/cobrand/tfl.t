@@ -612,7 +612,7 @@ subtest "extra information included in email" => sub {
     $mech->log_in_ok( $staffuser->email );
     $mech->get_ok( '/report/' . $report->id );
     $mech->content_contains('FMS' . $report->id) or diag $mech->content;
-    $mech->content_contains('Sent to:</strong> busstops@example.com');
+    $mech->content_contains('Sent to: busstops@example.com');
 };
 
 subtest "Abandoned bike reports contain bike number" => sub {
