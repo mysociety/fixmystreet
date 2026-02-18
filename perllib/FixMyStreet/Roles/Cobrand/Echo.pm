@@ -322,8 +322,8 @@ sub bin_services_for_address {
             $self->moniker eq 'brent' ? (timeband => $_->{timeband}) : (),
         };
 
-        if ($self->moniker eq 'sutton') {
-            # Sutton needs to know about events from before the last collection in case
+        if ($self->moniker eq 'sutton' or $self->moniker eq 'kingston') {
+            # Kingston/Sutton need to know about events from before the last collection in case
             # there have been missed container escalations that are still relevant
             $row->{all_events} = $events->filter({ service => $service_id });
         }
@@ -338,7 +338,10 @@ sub bin_services_for_address {
             $row->{events} = $events->combine($events_unit)->filter({ service => $service_id, since => $row->{last}{date} });
             my $recent_events = $row->{events}->filter({ type => 'missed' });
             $row->{report_open} = ($recent_events->list)[0];
+
+            $self->call_hook(waste_allow_non_actionable_report => $row);
         }
+
         push @out, $row;
     }
 
@@ -591,6 +594,7 @@ sub waste_task_resolutions {
         # If the task is ended and could not be done, do not allow reporting
         if ($state eq 'Not Completed' || ($state eq 'Completed' && $orig_resolution =~ /Excess/)) {
             $row->{report_allowed} = 0;
+            $row->{report_allowed_non_actionable} = 0;
             $row->{report_locked_out} = 1;
         }
     }
@@ -614,6 +618,7 @@ sub waste_on_the_day_criteria {
     }
     if (!$completed) {
         $row->{report_allowed} = 0;
+        $row->{report_allowed_non_actionable} = 0;
     }
 }
 
@@ -1030,6 +1035,7 @@ sub booked_check_missed_collection {
                 if ($event->{resolution} eq $_ || $_ eq 'all') {
                     $row->{report_locked_out} = 1;
                     $row->{report_locked_out_reason} = $blocked_codes->{$state_id}{$_};
+                    $row->{report_locked_out_date} = $event->{date};
                 }
             }
         }

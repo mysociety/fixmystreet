@@ -9,4 +9,14 @@ Please contact us after this time with your reference number if you haven’t re
 
 <p>Please ensure you recycle all you can and take part in our food waste collections to reduce the amount of general rubbish you produce. For guidance on our services please visit our website <a href="https://www.kingston.gov.uk/bins-recycling-rubbish">https://www.kingston.gov.uk/bins-recycling-rubbish</a>
 
+[% ELSIF report.category == 'Bin not returned' %]
+    <p>Your report will be recorded and used to help improve our service.
+
+    [% IF assisted_collection %]
+    <p>We will come back to return your bin to the correct location.
+    [% END %]
+[% ELSIF report.category == 'Waste spillage' %]
+    <p>Your report will be recorded and used to help improve our service.
+
+    <p>If the spillage is on a public highway, please <a href="https://kingston-self.achieveservice.com/service/Request_a_street_clean_in_Kingston">report a street cleaning issue</a>.
 [% END %]

@@ -169,6 +169,342 @@ sub waste_report_form_first_next {
     };
 }
 
+=head2 Escalations and Disputes
+
+Kingston and Sutton have custom behaviour to allow escalation of unresolved missed collections
+or container requests. Sutton also allows disputing when the council has not collected a bin or
+bulky collection because of a problem.
+
+=cut
+
+around booked_check_missed_collection => sub {
+    my ($orig, $self, $type, $events, $blocked_codes) = @_;
+
+    $self->$orig($type, $events, $blocked_codes);
+
+    # Now check for any old open missed collections that can be escalated
+
+    my $cfg = $self->feature('echo');
+    my $service_id = $cfg->{$type . '_service_id'} or return;
+
+    my $escalations = $events->filter({ event_type => 3134, service => $service_id });
+    my $missed = $self->{c}->stash->{booked_missed};
+    foreach my $guid (keys %$missed) {
+        my $missed_event = $missed->{$guid}{report_open};
+        my $locked_out = $missed->{$guid}{report_locked_out};
+
+        if ($missed_event) {
+            my $open_escalation = 0;
+            my $escalation_event;
+            foreach ($escalations->list) {
+                next unless $_->{report};
+                my $missed_guid = $_->{report}->get_extra_field_value('missed_guid');
+                next unless $missed_guid;
+                if ($missed_guid eq $missed_event->{guid}) {
+                    $missed->{$guid}{escalations}{missed_open} = $_;
+                    $escalation_event = $_;
+                    $open_escalation = 1;
+                }
+            }
+
+            my $wd = FixMyStreet::WorkingDays->new();
+            if ($self->waste_target_days->{missed_bulky}) {
+                $self->{c}->stash->{booked_missed}->{target} = $wd->add_days($missed_event->{date}, $self->waste_target_days->{missed_bulky})->set_hour($self->waste_day_end_hour);
+            }
+
+            if (
+                # Report is still open
+                !$missed_event->{closed}
+                # And no existing escalation since last collection
+                && !$open_escalation
+            ) {
+                my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+                # And two working days (from 6pm) have passed
+                my $start = $wd->add_days($missed_event->{date}, $self->waste_escalation_window->{bulky_start})->set_hour($self->waste_day_end_hour);
+                my $end = $wd->add_days($start, $self->waste_escalation_window->{bulky_length});
+                if ($now >= $start && $now < $end) {
+                    $missed->{$guid}{escalations}{missed} = $missed_event;
+                }
+            } elsif ($open_escalation) {
+                if ($self->waste_target_days && $self->waste_target_days->{missed_bulky_escalation}) {
+                    $missed_event->{target} = $wd->add_days($escalation_event->{date}, $self->waste_target_days->{missed_bulky_escalation})->set_hour($self->waste_day_end_hour);
+                }
+                $missed->{$guid}{escalations}{missed_open} = $missed_event;
+            }
+        } elsif ($locked_out) {
+            my $within_window = $self->_check_date_within_dispute_window(
+                $missed->{$guid}{report_locked_out_date}
+            );
+            my $resolution_valid = $self->waste_check_can_raise_dispute(
+                $missed->{$guid}{service_id},
+                $missed->{$guid}{report_locked_out_reason}
+            );
+            if ($within_window && $resolution_valid) {
+                $missed->{$guid}{dispute_allowed} = 1
+            }
+        }
+    }
+};
+
+# default to never allowing disputes
+sub _check_date_within_dispute_window { 0; }
+sub waste_check_can_raise_dispute { 0; }
+sub _setup_container_request_disputes_for_service {}
+
+sub munge_bin_services_for_address {
+    my ($self, $rows) = @_;
+
+    # Escalations
+    foreach (@$rows) {
+        $self->_setup_missed_collection_escalations_for_service($_);
+        $self->_setup_container_request_escalations_for_service($_);
+        $self->_setup_container_request_disputes_for_service($_);
+    }
+}
+
+sub _setup_missed_collection_escalations_for_service {
+    my ($self, $row) = @_;
+    my $events = $row->{events} or return;
+
+    my $c = $self->{c};
+    my $property = $c->stash->{property};
+
+    my $wd = FixMyStreet::WorkingDays->new();
+    if ($row->{report_open} && $self->waste_target_days && $self->waste_target_days->{missed}) {
+        $row->{report_open}->{target} = $wd->add_days($row->{report_open}->{date}, $self->waste_target_days->{missed})->set_hour($self->waste_day_end_hour);
+    }
+
+    my $missed_event = ($events->filter({ type => 'missed' })->list)[0];
+    my $escalation_event = ($events->filter({ event_type => 3134 })->list)[0];
+    if (
+        # If there's a missed bin report
+        $missed_event
+        # And report is still open
+        && !$missed_event->{closed}
+        # And the event source is the same as the current property (for communal)
+        && ($missed_event->{source} || 0) == $property->{id}
+        # And no existing escalation since last collection
+        && !$escalation_event
+    ) {
+        my $day_cfg = $self->waste_escalation_window;
+        my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+
+        my $start = $wd->add_days($missed_event->{date}, $day_cfg->{missed_start})->set_hour($self->waste_day_end_hour);
+        # And window is one day (weekly) two WDs (fortnightly)
+        my $window = $row->{schedule} =~ /every other/i ? $day_cfg->{missed_length_fortnightly} : $day_cfg->{missed_length_weekly};
+        my $end = $wd->add_days($start, $window);
+        if ($now >= $start && $now < $end) {
+            $row->{escalations}{missed} = $missed_event;
+        }
+    } elsif ($escalation_event) {
+        if ($self->waste_target_days && $self->waste_target_days->{missed_escalation}) {
+            $escalation_event->{target} = $wd->add_days($escalation_event->{date}, $self->waste_target_days->{missed_escalation})->set_hour($self->waste_day_end_hour);
+        }
+        $row->{escalations}{missed_open} = $escalation_event;
+    }
+}
+
+sub waste_target_days { {} }
+
+sub _setup_container_request_escalations_for_service {
+    my ($self, $row) = @_;
+    my $open_requests = $row->{requests_open};
+
+    # If there are no open container requests, there's nothing for us to do
+    return unless scalar keys %$open_requests;
+
+    # We're only expecting one open container request per service
+    my $open_request_event = (values %$open_requests)[0];
+    my $escalation_events = $row->{all_events}->filter({ event_type => 3141 });
+    my $wd = FixMyStreet::WorkingDays->new();
+
+    foreach my $escalation_event ($escalation_events->list) {
+        my $escalation_event_report = $escalation_event->{report};
+        next unless $escalation_event_report;
+
+        if ($escalation_event_report->get_extra_field_value('container_request_guid') eq $open_request_event->{guid}) {
+            if ($self->waste_target_days && $self->waste_target_days->{container_escalation}) {
+                $escalation_event->{target} = $wd->add_days($escalation_event->{date}, $self->waste_target_days->{container_escalation});
+            }
+            $row->{escalations}{container_open} = $escalation_event;
+            # We've marked that there is already an escalation event for the container
+            # request, so there's nothing left to do
+            return;
+        }
+    }
+
+    # There's an open container request with no matching escalation so
+    # we check now to see if it's within the window for an escalation to be raised
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+
+    my $day_cfg = $self->waste_escalation_window;
+    my $start_days = $day_cfg->{container_start};
+    my $window_days = $day_cfg->{container_length};
+    if (FixMyStreet->config('STAGING_SITE') && !FixMyStreet->test_mode) {
+        # For staging site testing (but not automated testing) use quicker/smaller windows
+        $start_days = 1;
+        $window_days = 2;
+    }
+
+    my $start = $wd->add_days($open_request_event->{date}, $start_days)->set_hour(0);
+    my $end = $wd->add_days($start, $window_days + 1); # Before this
+
+    if ($now >= $start && $now < $end) {
+        $row->{escalations}{container} = $open_request_event;
+    }
+}
+
+=head2 waste_munge_enquiry_form_pages
+
+the bin not returned flow has some more complex setup depending on whether
+the property has an assisted collection or not, with an extra question,
+and showing/hiding different notices.
+
+=cut
+
+sub waste_munge_enquiry_form_pages {
+    my ($self, $pages, $fields) = @_;
+    my $c = $self->{c};
+    my $category = $c->get_param('category');
+
+    my $booking_id = $c->get_param('booking_id');
+    if ($booking_id) {
+        my $report = $c->model('DB::Problem')->find($booking_id);
+        unless ( $report && $c->user_exists && (
+                $c->stash->{is_staff} || $report->user->id == $c->user->id
+        ) ) {
+            my $property_uri = $c->uri_for_action( 'waste/bin_days', $c->stash->{property_id} );
+            my $uri = $c->uri_for( '/auth', { r => $property_uri } );
+            $c->res->redirect($uri);
+        }
+        $c->stash->{guid} = $report->external_id;
+    }
+
+    # add the service to the main fields form page
+    $pages->[1]{intro} = 'enquiry-intro.html';
+    $pages->[1]{title} = _enquiry_nice_title($category);
+
+    if ( $category eq 'Bin not returned' ) {
+        my $assisted = $c->stash->{assisted_collection};
+        if ($assisted) {
+            # add extra first page with extra question
+            $c->stash->{first_page} = 'now_returned';
+            unshift @$pages, now_returned => {
+                fields => [ 'now_returned', 'continue' ],
+                intro => 'enquiry-intro.html',
+                title => _enquiry_nice_title($category),
+                next => 'enquiry',
+            };
+            push @$fields, now_returned => {
+                type => 'Select',
+                widget => 'RadioGroup',
+                required => 1,
+                label => 'has the container now been returned to the property?',
+                options => [
+                    { label => 'Yes', value => 'yes' },
+                    { label => 'No', value => 'no' },
+                ],
+            };
+
+            # remove any non-assisted extra notices
+            my @new;
+            for (my $i=0; $i<@$fields; $i+=2) {
+                if ($fields->[$i] !~ /^extra_notassisted/i) {
+                    push @new, $fields->[$i], $fields->[$i+1];
+                }
+            }
+            @$fields = @new;
+            $pages->[3]{fields} = [ grep { !/^extra_notassisted/i } @{$pages->[3]{fields}} ];
+            $pages->[3]{update_field_list} = sub {
+                my $form = shift;
+                my $c = $form->c;
+                my $data = $form->saved_data;
+                my $returned = $data->{now_returned} || '';
+                my $key = lc($returned) eq 'no' ? 'extra_AssistedReturned' : 'extra_AssistedNotReturned';
+                return {
+                    category => { default => $c->get_param('category') },
+                    service_id => { default => $c->get_param('service_id') },
+                    $key => { widget => 'Hidden' },
+                }
+            };
+        } else {
+            # remove any assisted extra notices
+            my @new;
+            for (my $i=0; $i<@$fields; $i+=2) {
+                if ($fields->[$i] !~ /^extra_assisted/i) {
+                    push @new, $fields->[$i], $fields->[$i+1];
+                }
+            }
+            @$fields = @new;
+            $pages->[1]{fields} = [ grep { !/^extra_assisted/i } @{$pages->[1]{fields}} ];
+        }
+
+    } elsif ( $category eq 'Report out-of-time missed collection' ) {
+        $c->stash->{first_page} = 'intro';
+        unshift @$pages, intro => {
+            fields => [ 'continue' ],
+            intro => 'enquiry-non-actionable-intro.html',
+            title => _enquiry_nice_title($category),
+            next => 'about_you',
+        };
+
+        # Remove and replace email field
+        my @new;
+        for (my $i=0; $i<@$fields; $i+=2) {
+            if ($fields->[$i] ne 'email') {
+                push @new, $fields->[$i], $fields->[$i+1];
+            }
+        }
+        @$fields = @new;
+        push @$fields, email => {
+            type => 'Email',
+            order => 3,
+            tags => {
+                hint => 'Provide an email address so we can send you updates.'
+            },
+        };
+    } elsif ( $category eq 'Missed collection dispute') {
+        my $guid = $c->stash->{guid};
+        # if we have a guid then it might be a link from an email and
+        # so it might be clicked outside the window so re-check if
+        # disputes are allowed
+        if ($guid) {
+            my $dispute_allowed = $self->_check_date_within_dispute_window(
+                $c->stash->{booked_missed}{$guid}{report_locked_out_date}
+            );
+            unless ($dispute_allowed) {
+                $c->stash->{first_page} = 'window_expired';
+                @$pages = (window_expired => {
+                    title => _enquiry_nice_title($category),
+                    fields => [ 'window_expired' ],
+                });
+
+                @$fields = (window_expired => {
+                    type => 'Notice',
+                    widget => 'NoRender',
+                    required => 0,
+                    label => 'Missed collections can only be disputed for 2 working days after the collection date.',
+                });
+            }
+        }
+    }
+}
+
+sub _enquiry_nice_title {
+    my $category = shift;
+    if ($category eq 'Bin not returned') {
+        $category = 'Wheelie bin, box or caddy not returned correctly after collection';
+    } elsif ($category eq 'Waste spillage') {
+        $category = 'Spillage during collection';
+    } elsif ($category eq 'Complaint against time') {
+        $category = 'Issue with collection';
+    } elsif ($category eq 'Failure to Deliver Bags/Containers') {
+        $category = 'Issue with delivery';
+    } elsif ($category eq 'Report out-of-time missed collection') {
+        $category = 'Reporting a missed collection outside the 48 hour reporting window';
+    }
+    return $category;
+}
 
 =head2 waste_cc_payment_line_item_ref
 

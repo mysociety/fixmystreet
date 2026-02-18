@@ -1,4 +1,6 @@
-[% IF report.category == 'Garden Subscription' OR report.category == 'Cancel Garden Subscription' OR report.category == 'Amend Garden Subscription' ~%]
+[% IF report.category == 'Report out-of-time missed collection' ~%]
+[% PROCESS 'waste/other-reported-non-actionable.txt' ~%]
+[% ELSIF report.category == 'Garden Subscription' OR report.category == 'Cancel Garden Subscription' OR report.category == 'Amend Garden Subscription' ~%]
 [% PROCESS 'waste/other-reported-garden.txt' ~%]
 [% ELSIF report.category == 'Bulky collection' OR report.category == 'Small items collection' ~%]
 [% PROCESS 'waste/other-reported-bulky.txt' ~%]

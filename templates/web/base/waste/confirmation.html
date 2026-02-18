@@ -7,7 +7,7 @@ IF report.category == 'Request new container' || report.category == 'Request con
     ELSE;
         title = 'Your container request has been sent';
     END;
-ELSIF report.category == 'Report missed collection' OR report.category == 'Report missed assisted collection';
+ELSIF report.category == 'Report missed collection' OR report.category == 'Report missed assisted collection' OR report.category == 'Report out-of-time missed collection';
     title = 'Thank you for reporting a missed collection';
 ELSIF report.category == 'Request additional collection';
     title = 'Your additional collection has been requested';
@@ -35,6 +35,10 @@ END ~%]
             <p class="govuk-body">
                 Your property meets current general waste bin capacity requirements.
             </p>
+        [% ELSIF c.cobrand.moniker == 'kingston' && report.category == 'Report out-of-time missed collection' %]
+        <p>
+            You will receive an acknowledgment email to [% report.user.email %]. Your report will be recorded and used to help improve our service.
+        </p>
         [% ELSE %]
         <p>
             [% IF report.user.email && report.get_extra_metadata('contributed_as') != 'anonymous_user' %]
