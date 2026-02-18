@@ -463,6 +463,34 @@ FixMyStreet::override_config {
 
         $report->delete;
     };
+
+    subtest 'All eligible property classes show sharps section' => sub {
+        my %eligible = (
+            10001 => 'RD',
+            10005 => 'CE',
+            10006 => 'RH',
+            10007 => 'RI',
+            10008 => 'RE',
+        );
+        for my $uprn ( sort keys %eligible ) {
+            my $class = $eligible{$uprn};
+            $mech->get_ok("/waste/$uprn");
+            $mech->content_contains('id="sharps"', "$class-class property shows sharps section");
+            $mech->content_contains('Arrange a sharps collection', "$class-class property shows sharps sidebar link");
+            $mech->get("/waste/$uprn/sharps");
+            is $mech->uri->path, "/waste/$uprn/sharps", "$class-class property can access sharps form";
+        }
+    };
+
+    subtest 'Ineligible property class cannot access sharps' => sub {
+        $mech->get_ok('/waste/10009');
+        $mech->content_lacks('id="sharps"', 'Non-eligible property has no sharps section');
+        $mech->content_lacks('Arrange a sharps collection', 'Non-eligible property has no sharps sidebar link');
+
+        $mech->get('/waste/10009/sharps');
+        is $mech->res->previous->code, 302, 'Accessing sharps form redirects';
+        is $mech->uri->path, '/waste/10009', 'Redirected back to property page';
+    };
 };
 
 done_testing;

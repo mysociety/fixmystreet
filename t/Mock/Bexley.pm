@@ -87,6 +87,14 @@ $bexley_mocks{dbi}->mock( 'connect', sub {
                 usrn => 321,
             };
         } else { # address_for_uprn
+            my %uprn_class = (
+                10001 => 'RD04',
+                10005 => 'CE01',
+                10006 => 'RH01',
+                10007 => 'RI01',
+                10008 => 'RE01',
+                10009 => 'CR01',
+            );
             return {
                 postcode          => 'DA13NP',
                 sao_start_number  => 98,
@@ -102,7 +110,7 @@ $bexley_mocks{dbi}->mock( 'connect', sub {
                 street_descriptor => 'THE AVENUE',
                 locality_name     => 'Little Bexlington',
                 town_name         => 'Bexley',
-                class => $_[3] == 10001 ? 'RD04' : 'C',
+                class => $uprn_class{$_[3]} // 'C',
                 has_parent => 1,
             };
         }
@@ -220,6 +228,33 @@ sub _site_info {
             AccountSiteUPRN => '10006',
             Site            => {
                 SiteShortAddress => ', 6, THE AVENUE, DA1 3LD',
+                SiteLatitude     => 51.466707,
+                SiteLongitude    => 0.181108,
+            },
+        },
+        10007 => {
+            AccountSiteID   => 7,
+            AccountSiteUPRN => '10007',
+            Site            => {
+                SiteShortAddress => ', 7, THE AVENUE, DA1 3LD',
+                SiteLatitude     => 51.466707,
+                SiteLongitude    => 0.181108,
+            },
+        },
+        10008 => {
+            AccountSiteID   => 8,
+            AccountSiteUPRN => '10008',
+            Site            => {
+                SiteShortAddress => ', 8, THE AVENUE, DA1 3LD',
+                SiteLatitude     => 51.466707,
+                SiteLongitude    => 0.181108,
+            },
+        },
+        10009 => {
+            AccountSiteID   => 9,
+            AccountSiteUPRN => '10009',
+            Site            => {
+                SiteShortAddress => ', 9, THE AVENUE, DA1 3LD',
                 SiteLatitude     => 51.466707,
                 SiteLongitude    => 0.181108,
             },
