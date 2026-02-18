@@ -42,7 +42,31 @@ my $params = {
     cobrand => 'peterborough',
 };
 my $peterborough = $mech->create_body_ok(2566, 'Peterborough City Council', $params);
-$mech->create_contact_ok(email => 'FLY', body_id => $peterborough->id, category => 'General fly tipping');
+$mech->create_contact_ok(email => 'FLY', body_id => $peterborough->id, category => 'General fly tipping', extra => {
+    _fields => [
+        {"code" => "Land_Type", "order" => 17, "values" => [
+            {"key" => "Back Alley - L03", "name" => "Back Alley"},
+            {"key" => "Footpath / Bridleway - L02", "name" => "Footpath / Bridleway"},
+            {"key" => "Highway - L01", "name" => "Highway"},
+        ], "datatype" => "singlevaluelist", "required" => "true", "variable" => "true", "description" => "Land Type"},
+
+        {"code" => "Primary_Waste_Type", "order" => 18, "values" => [
+            {"key" => "Tyres - W06", "name" => "Tyres"},
+            {"key" => "Vehicle Parts - W03", "name" => "Vehicle Parts"},
+            {"key" => "White Goods - W04", "name" => "White Goods"},
+        ], "datatype" => "singlevaluelist", "required" => "true", "variable" => "true", "description" => "Primary Waste Type"},
+
+        {"code" => "Incident_Size", "order" => 19, "values" => [
+            {"key" => "Car Boot Load or Less - S02", "name" => "Car Boot Load or Less"},
+            {"key" => "Single Black Bag - S00", "name" => "Single Black Bag"},
+            {"key" => "Small Van Load - S03", "name" => "Small Van Load"},
+        ], "datatype" => "singlevaluelist", "required" => "true", "variable" => "true", "description" => "Incident Size"},
+        {"code" => "pcc-witness", "order" => 20, "values" => [
+            {"key" => "yes", "name" => "Yes"},
+            {"key" => "no", "name" => "No"}
+        ], "datatype" => "singlevaluelist", "required" => "true", "variable" => "true", "description" => "Did you witness the fly-tipping or have evidence about who did it?"},
+    ],
+});
 $mech->create_contact_ok(email => 'Bartec-Graffiti', body_id => $peterborough->id, category => 'Non offensive graffiti');
 my $user = $mech->create_user_ok('peterborough@example.org', name => 'Council User', from_body => $peterborough);
 $peterborough->update( { comment_user_id => $user->id } );
@@ -262,7 +286,10 @@ subtest "flytipping on PCC land is sent by open311 and email" => sub {
         STAGING_FLAGS => { send_reports => 1 },
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'peterborough',
-        COBRAND_FEATURES => { open311_email => { peterborough => { flytipping => 'flytipping@example.org' } } },
+        COBRAND_FEATURES => { open311_email => { peterborough => {
+            flytipping => 'flytipping@example.org',
+            flytipping_witnessed => 'witnessed@example.org',
+        } } },
     }, sub {
         $mech->clear_emails_ok;
 
@@ -282,6 +309,9 @@ subtest "flytipping on PCC land is sent by open311 and email" => sub {
             extra => {
                 _fields => [
                     { name => 'site_code', value => '12345', },
+                    { name => 'Land_Type', value => 'Highway - L01', },
+                    { name => 'Primary_Waste_Type', value => 'Tyres - W06', },
+                    { name => 'Incident_Size', value => 'Small Van Load - S03', },
                 ],
             },
         } );
@@ -294,20 +324,25 @@ subtest "flytipping on PCC land is sent by open311 and email" => sub {
         is $p->comments->count, 0, 'no comment added';
         my $cgi = CGI::Simple->new(Open311->test_req_used->content);
         is $cgi->param('service_code'), 'FLY', 'service code is correct';
+        is $cgi->param('attribute[Land_Type]'), 'Highway - L01';
 
         $mech->email_count_is(1);
         my $email = $mech->get_email;
         ok $email, "got an email";
         is $email->header('To'), '"Environmental Services" <flytipping@example.org>', 'email sent to correct address';
+        like $email->header('Subject'), qr/\[Censorship checking only\] Problem Report: /;
     };
 };
 
-subtest "flytipping on PCC land witnessed is only sent by email" => sub {
+subtest "flytipping on PCC land witnessed is sent by open311 and two emails" => sub {
     FixMyStreet::override_config {
         STAGING_FLAGS => { send_reports => 1 },
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'peterborough',
-        COBRAND_FEATURES => { open311_email => { peterborough => { flytipping => 'flytipping@example.org' } } },
+        COBRAND_FEATURES => { open311_email => { peterborough => {
+            flytipping => 'flytipping@example.org',
+            flytipping_witnessed => 'witnessed@example.org',
+        } } },
     }, sub {
         $mech->clear_emails_ok;
 
@@ -324,14 +359,22 @@ subtest "flytipping on PCC land witnessed is only sent by email" => sub {
             },
         } );
 
-        my $test_data = FixMyStreet::Script::Reports::send();
+        FixMyStreet::Script::Reports::send();
         $p->discard_changes;
-        ok !$test_data->{test_req_used}, 'open311 not sent';
+        is $p->send_state, 'sent', 'Report marked as sent';
+        is $p->get_extra_metadata('sent_to')->[1], 'flytipping@example.org', 'sent_to extra metadata is set';
+        is $p->get_extra_metadata('sent_to')->[0], 'witnessed@example.org', 'sent_to extra metadata is set';
+        is $p->state, 'confirmed', 'report state unchanged';
+        is $p->comments->count, 0, 'no comment added';
+        my $cgi = CGI::Simple->new(Open311->test_req_used->content);
+        is $cgi->param('service_code'), 'FLY', 'service code is correct';
 
-        $mech->email_count_is(1);
-        my $email = $mech->get_email;
-        ok $email, "got an email";
-        is $email->header('To'), '"Environmental Services" <flytipping@example.org>', 'email sent to correct address';
+        $mech->email_count_is(2);
+        my @email = $mech->get_email;
+        is $email[0]->header('To'), '"Environmental Services" <flytipping@example.org>', 'email sent to correct address';
+        like $email[0]->header('Subject'), qr/\[Censorship checking only\] Problem Report: /;
+        is $email[1]->header('To'), '"Environmental Enforcement" <witnessed@example.org>', 'email sent to correct address';
+        like $email[1]->header('Subject'), qr/\[URGENT - Evidence available\] Problem Report: /;
     };
 };
 
@@ -340,7 +383,10 @@ subtest "flytipping/graffiti on non PCC land is not sent anywhere" => sub {
         STAGING_FLAGS => { send_reports => 1 },
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'peterborough',
-        COBRAND_FEATURES => { open311_email => { peterborough => { flytipping => 'flytipping@example.org' } } },
+        COBRAND_FEATURES => { open311_email => { peterborough => {
+            flytipping => 'flytipping@example.org',
+            flytipping_witnessed => 'witnessed@example.org',
+        } } },
     }, sub {
         $mech->clear_emails_ok;
 
