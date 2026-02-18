@@ -39,7 +39,7 @@ has_page choose_date_later => (
 );
 
 has_page location => (
-    title    => 'Location details',
+    title    => 'Add location details',
     intro => 'bulky/location.html',
     fields   =>
         [ 'location', 'location_photo', 'location_photo_fileid', 'continue' ],
@@ -292,8 +292,8 @@ has_field tandc => (
         my $link = $c->stash->{small_items} ? 'small_items_tandc_link' : 'bulky_tandc_link';
         $link = $c->cobrand->call_hook($link);
         my $label;
-        if ($c->cobrand->moniker eq 'sutton') {
-            $label = 'I have read the <a href="' . $link . '" target="_blank">terms and conditions</a> of the service on the council’s website and agree to them.';
+        if ($c->cobrand->moniker eq 'sutton' || $c->cobrand->moniker eq 'kingston') {
+            $label = 'I have read the <a href="' . $link . '" target="_blank">bulky waste terms and conditions</a>.';
         } elsif ($c->cobrand->moniker eq 'bromley') {
             $label = '&bull; I confirm that the bulky waste items will be available from 7.00am on the day of collection
 <br>&bull; I confirm the bulky waste items will be left outside at the front of the property but not on the public highway, in an easy accessible location.

@@ -259,7 +259,7 @@ FixMyStreet::override_config {
 
         $mech->content_contains('Bulky waste');
         $mech->submit_form_ok; # 'Book Collection'
-        $mech->content_contains( 'Before you start your booking',
+        $mech->content_contains( 'Before you book',
             'Should be able to access the booking form' );
     };
 
@@ -306,27 +306,26 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/bulky');
 
         subtest 'Intro page' => sub {
-            $mech->content_contains('Book bulky items collection');
-            $mech->content_contains('Before you start your booking');
-            $mech->content_contains('you may wish to add pictures');
+            $mech->content_contains('Book a bulky waste collection');
+            $mech->content_contains('Before you book');
             $mech->content_contains('You can request up to <strong>eight items per collection');
-            $mech->content_contains('The price you pay depends how many items you would like collected:');
-            $mech->content_contains('1–4 items = £40.00');
-            $mech->content_contains('5–8 items = £61.00');
+            $mech->content_contains('The price depends on how many items you would like collected:');
+            $mech->content_contains('1 to 4 items cost £40.00');
+            $mech->content_contains('5 to 8 items cost £61.00');
             $mech->content_contains('Bookings are final and non refundable');
             $mech->submit_form_ok;
         };
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
-        $mech->content_contains('Collections take place any time from 6:30am to 4:30pm.');
-        $mech->content_contains('placed outside before 6:30am on the collection day.');
+        $mech->content_contains('collect the items between 6:30am and 4:30pm');
+        $mech->content_contains('outside before 6:30am on the collection day.');
         $mech->content_contains('1 July');
         $mech->content_contains('8 July');
         $mech->content_contains('2023-07-01T00:00:00;reserve1==::reserve4==;2023-06-25T10:10:00');
         $mech->submit_form_ok(
             { with_fields => { chosen_date => '2023-07-01T00:00:00;reserve1==::reserve4==;2023-06-25T10:10:00' } }
         );
-        $mech->content_contains('Select the items that you need us to collect using the');
-        $mech->content_contains('You can book the collection of up to eight items');
+        $mech->content_contains('Select the items to be collected');
+        $mech->content_contains('You can book for up to 8 items');
 
         subtest 'higher band try' => sub {
             $mech->submit_form_ok(
@@ -349,7 +348,7 @@ FixMyStreet::override_config {
             $mech->back;
         };
 
-        $mech->content_contains('You can also add an optional note');
+        $mech->content_contains('can add an optional note');
         $mech->submit_form_ok(
             {
                 form_number => 1,

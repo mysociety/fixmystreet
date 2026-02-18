@@ -4,14 +4,19 @@
     [% service_name = "bulky goods" ~%]
 [% END ~%]
 
-[% IF c.cobrand.moniker == 'bexley';
-    list_type = 'ul';
-ELSE;
-    list_type = 'ol';
-END %]
+<h2>Before you book</h2>
 
-<h3>Before you start your booking</h3>
-<[% list_type %]>
+[% IF c.cobrand.moniker == 'kingston' %]
+<p>Please make sure you have read
+<a href="https://www.kingston.gov.uk/bins-and-recycling/collections/book-bulky-waste-collection" target="_blank">our guidance on what we collect</a>.
+</p>
+[% ELSIF c.cobrand.moniker == 'sutton' %]
+<p>Please make sure you have read
+<a href="https://www.sutton.gov.uk/w/bulky-waste-collections-book-a-bulky-item-collection" target="_blank">our guidance on what we collect</a>.
+</p>
+[% END %]
+
+<ul>
   [%~
       USE pounds = format('%.2f');
       SET cfg = c.cobrand.wasteworks_config;
@@ -41,10 +46,14 @@ END %]
 
   [% ELSE %]
 
+  [% IF c.cobrand.moniker != 'kingston' AND c.cobrand.moniker != 'sutton' %]
     <li>Requesting a [% service_name %] collection usually takes around <strong>10 minutes</strong></li>
+  [% END %]
+
   [% IF c.cobrand.moniker != 'bromley' %]
     <li>You can request up to <strong>[% c.stash.booking_maximum | numwords %] items per collection</strong></li>
   [% END %]
+
   [% IF cfg.band1_price %]
     [%
         SET band1_items = cfg.band1_max;
@@ -52,32 +61,38 @@ END %]
         SET base_price = cfg.base_price / 100;
         SET band1_price = cfg.band1_price / 100;
     %]
-    <li>The price you pay depends how many items you would like collected:
+    <li>The price depends on how many items you would like collected:
         <ul class="bulky-intro-pricing">
             <li class="bulky-intro-pricing">
-                1–[% band1_items %] items = £[% pounds(band1_price) %]
+                1 to [% band1_items %] items cost £[% pounds(band1_price) %]
             </li>
             <li class="bulky-intro-pricing">
-                [% band1_items+1 %]–[% max_items %] items = £[% pounds(base_price) %]
+                [% band1_items+1 %] to [% max_items %] items cost £[% pounds(base_price) %]
             </li>
         </ul>
     </li>
   [% END %]
-  [% IF c.cobrand.moniker != 'bromley' %]
+
+  [% IF c.cobrand.moniker != 'bromley' AND c.cobrand.moniker != 'kingston' AND c.cobrand.moniker != 'sutton' %]
     <li>Please make sure you have read the <strong><a href="[% c.cobrand.call_hook('bulky_tandc_link') %]" target="_blank">[% service_name %] collection</a></strong> page on the council’s website</li>
   [% END %]
+
+  [% IF c.cobrand.moniker != 'kingston' AND c.cobrand.moniker != 'sutton' %]
     <li>In order to help us with your collection, you may wish to add pictures of the items to be collected
       [% IF c.cobrand.moniker != 'bromley' %]
         and the location
       [% END %]
     </li>
-    <li>Before confirming your booking, you need to check all the information provided is correct</li>
+  [% END %]
+
+    <li>Before confirming your booking, please check all the information provided is correct</li>
+
     [% IF cobrand.moniker == 'kingston' || cobrand.moniker == 'sutton' || cobrand.moniker == 'merton' %]
     <li>Bookings are final and non refundable</li>
     [% END %]
 
   [% END %] [% # End of not-Bexley %]
-</[% list_type %]>
+</ul>
 
 [% IF c.cobrand.moniker == 'bexley' %]
   <h3>Don't use this service to:</h3>

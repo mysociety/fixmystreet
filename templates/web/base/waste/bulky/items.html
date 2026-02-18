@@ -11,16 +11,27 @@
 [% END %]
 
 [% IF c.cobrand.moniker == 'sutton' || c.cobrand.moniker == 'kingston' %]
-    <p>Select the items that you need us to collect using the drop-down menu below.
-      You can book the collection of up to [%
+    <p>
+    You can book for up to [%
           SET cfg = c.cobrand.wasteworks_config;
           SET max = small_items ? cfg.small_items_per_collection_max : cfg.items_per_collection_max;
-          max | numwords;
+          max;
       %] items.</p>
-    <p>You can search for an item in the list by typing the first few letters.</p>
+
+    <p>Select the items to be collected using the drop-down menu. You can search for an item in the list by typing the first few letters.</p>
+
     [% IF NOT c.cobrand.bulky_item_notes_field_mandatory %]
-    <p>You can also add an optional note against each item which can help ensure we pick up the right items.</p>
+    <p>To help us collect the right items, you can add an optional note and photo for each item.</p>
     [% END %]
+
+    <div class="govuk-warning-text info">
+        <div class="govuk-warning-text__content">
+            Items not selected from the dropdown will not be collected.
+        </div>
+    </div>
+
+    <hr>
+
 [% ELSE %]
 <div class="govuk-warning-text due" style="max-width:550px">
   <div class="govuk-warning-text__img">
