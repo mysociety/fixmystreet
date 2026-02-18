@@ -35,8 +35,9 @@ sub find_available_slots {
     }
 
     my $window = $self->cobrand->_bulky_collection_window($last_earlier_date_str);
+    my $service_id = $self->type eq 'sharps' ? 359 : 78;
     my @available_slots;
-    my $slots = $self->ws->GetCollectionSlots($self->property->{uprn}, $window->{date_from}, $window->{date_to});
+    my $slots = $self->ws->GetCollectionSlots($self->property->{uprn}, $window->{date_from}, $window->{date_to}, $service_id);
     foreach (@$slots) {
         (my $date = $_->{AdHocRoundInstanceDate}) =~ s/T00:00:00//;
         $date = $self->cobrand->_bulky_date_to_dt($date);
