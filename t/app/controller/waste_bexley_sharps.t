@@ -66,6 +66,12 @@ FixMyStreet::override_config {
         $mech->submit_form_ok;
 
         $mech->content_contains('About you');
+        my $got_service_id;
+        $whitespace_mock->mock('GetCollectionSlots', sub {
+            my ($self, $uprn, $from, $to, $service_id) = @_;
+            $got_service_id = $service_id;
+            return $slots_default;
+        });
         $mech->submit_form_ok(
             {   with_fields => {
                     name  => 'Bob Marge',
@@ -74,6 +80,7 @@ FixMyStreet::override_config {
                 }
             }
         );
+        is $got_service_id, 359, 'Uses sharps service ID for GetCollectionSlots';
 
         $mech->content_contains('Choose date for collection');
         $mech->submit_form_ok(

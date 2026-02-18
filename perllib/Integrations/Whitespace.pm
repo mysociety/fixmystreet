@@ -241,11 +241,11 @@ sub GetFullWorksheetDetails {
 }
 
 sub GetCollectionSlots {
-    my ( $self, $uprn, $from, $to ) = @_;
+    my ( $self, $uprn, $from, $to, $service_id ) = @_;
     my $res = $self->call( 'GetCollectionSlots', "$uprn $from $to",
         collectionSlotsInputInput => ixhash(
             Uprn => $uprn,
-            ServiceId => 78,
+            ServiceId => $service_id,
             NextCollectionFromDate => $from,
             NextCollectionToDate => $to,
         )
