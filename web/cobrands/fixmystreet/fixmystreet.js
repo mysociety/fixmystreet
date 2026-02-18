@@ -984,6 +984,11 @@ $.extend(fixmystreet.set_up, {
 
     if (!subsequent) {
         category_filter.addEventListener('keyup', filter_keyup);
+        category_filter.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+            }
+        });
         category_filter.addEventListener('blur', function() {
             category_row.style.paddingBottom = null;
         });
