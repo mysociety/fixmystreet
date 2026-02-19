@@ -1,0 +1,140 @@
+/* USAGE Example:
+    IMPORTANT: Remember to add `aria-current="step"` for the step that is currently active.
+
+    <nav aria-label="Form progress bar">
+        <ol class="progress-form is--aligned-left">
+            <li class="progress-form__step is-complete">
+                <div class="progress-form__circle" aria-hidden="true"></div>
+                <div class="progress-form__label">Your details</div>
+            </li>
+
+            <li class="progress-form__step is-active" aria-current="step">
+                <div class="progress-form__circle" aria-hidden="true"></div>
+                <div class="progress-form__label">Select categories</div>
+            </li>
+
+            <li class="progress-form__step">
+                <div class="progress-form__circle" aria-hidden="true"></div>
+                <div class="progress-form__label">Review your answers</div>
+            </li>
+
+            <li class="progress-form__step">
+                <div class="progress-form__circle" aria-hidden="true"></div>
+                <div class="progress-form__label">Payment</div>
+            </li>
+        </ol>
+    </nav>
+*/
+
+.progress-form {
+  $green: #00703c; //GOVUK Green
+  $grey: #505a5f; //GOVUK Grey, same as govuk-hint
+  $black: #222;
+  $circle-diameter: 20px;
+  $circle-border: 3px;
+
+  // Added these variables so we can reuse this component.
+  // Currently it works well on mobile with 4 steps, but with more we probably want to hide it on mobile.
+  --form-number-of-steps: 4;
+  --show-on-mobile: grid;
+  --progress-form-bar-max-width: 100%;
+
+  display: grid;
+  grid-template-columns: repeat(var(--form-number-of-steps), 1fr);
+  position: relative;
+  margin: 2rem 0;
+  padding: 0;
+  max-width: var(--progress-form-bar-max-width);
+
+  li {
+    list-style: none;
+  }
+
+  @media (max-width: 40rem) {
+    display: var(--show-on-mobile, grid);
+  }
+
+  &__step {
+    position: relative;
+    text-align: center;
+
+    // Connecting lines
+    &:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: ($circle-diameter + (2 * $circle-border)) / 2;
+      left: 50%;
+      width: 100%;
+      height: 2px;
+      background: $grey;
+      z-index: 0;
+    }
+
+    &.is-complete,
+    &.is-active {
+      .progress-form__circle {
+        border-color: $green;
+      }
+
+      .progress-form__label {
+        color: $black;
+      }
+    }
+
+    &.is-active {
+        .progress-form__circle {
+            background: mix($green, #fff, 25%);
+        }
+    }
+
+    &.is-complete {
+      .progress-form__circle {
+        background: $green;
+      }
+
+      &:not(:last-child)::after {
+        background: $green;
+      }
+    }
+  }
+
+  &__circle {
+    width: $circle-diameter;
+    height: $circle-diameter;
+    margin: 0 auto;
+    border-radius: 50%;
+    border: $circle-border solid $grey;
+    background: #fff;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__label {
+    margin-top: 0.75rem;
+    font-size: 0.75rem;
+    color: $grey;
+    text-transform: uppercase;
+
+    @media (max-width: 40rem) {
+        font-size: 0.65rem;
+    }
+  }
+
+  // Left-aligned version
+  &.is--aligned-left {
+    grid-template-columns: 1fr repeat(calc(var(--form-number-of-steps) - 1), 2fr);
+
+    .progress-form__step:first-child {
+      text-align: left;
+
+      &:not(:last-child)::after {
+        left: ($circle-diameter + (2 * $circle-border)) / 2;
+        width: 200%;
+      }
+
+      .progress-form__circle {
+        margin: 0;
+      }
+    }
+  }
+}
