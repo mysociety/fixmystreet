@@ -1,6 +1,7 @@
 Subject: [%
-IF flytipping_extra; '[Censorship checking only] '; END;
-IF flytipping_extra_witnessed; '[URGENT - Evidence available] '; END;
+IF flytipping_extra_witnessed; '[URGENT - Evidence available] ';
+ELSIF flytipping_extra; '[Censorship checking only] ';
+END;
 ~%]
 Problem Report: [% report.title %]
 
