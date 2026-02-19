@@ -439,7 +439,8 @@ sub waste_setup_direct_debit {
     my $c = $self->{c};
 
     my $report = $c->stash->{report};
-    my $email = $report->user->email || 'gardenwaste@' . $self->admin_user_domain;
+    my $email = $report->user->email || '';
+    $email = '' if $email eq 'gardenwaste@' . $self->admin_user_domain;
 
     my $data = $c->stash->{form_data};
     my $uprn = $report->uprn;
@@ -448,7 +449,7 @@ sub waste_setup_direct_debit {
 
     my $customer_data = {
         customerRef => $report->id,
-        email => $email,
+        $email ? (email => $email) : (),
         title => $data->{name_title},
         firstName => $data->{first_name},
         surname => $data->{surname},
