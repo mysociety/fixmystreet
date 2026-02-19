@@ -1991,8 +1991,8 @@ FixMyStreet::override_config {
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         ok $report, "Found the report";
 
-        # Check default email was used
-        is $customer_params->{email}, 'gardenwaste@' . $body->get_cobrand_handler->admin_user_domain, 'Default email was used';
+        # Check no email was used
+        is $customer_params->{email}, undef, 'Default email was used';
 
         $mech->content_contains('Your Direct Debit has been set up successfully');
         $mech->content_contains('Direct Debit Mandate');
