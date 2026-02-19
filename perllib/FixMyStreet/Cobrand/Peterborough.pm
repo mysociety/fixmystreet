@@ -255,7 +255,6 @@ sub _witnessed_general_flytipping {
 
 sub open311_pre_send {
     my ($self, $row, $open311) = @_;
-    return 'SKIP' if $self->_witnessed_general_flytipping($row);
 
     # This is a temporary addition to workaround an issue with the bulky goods
     # backend Peterborough are using.
@@ -281,15 +280,24 @@ sub open311_post_send {
     my ($self, $row, $h) = @_;
 
     # Check Open311 was successful
-    my $send_email = $row->external_id || $self->_witnessed_general_flytipping($row);
+    my $send_email = $row->external_id;
     return unless $send_email;
 
     my $emails = $self->feature('open311_email');
     my %flytipping_cats = map { $_ => 1 } @{ $self->_flytipping_categories };
     if ( $emails->{flytipping} && $flytipping_cats{$row->category} ) {
         my $dest = [ $emails->{flytipping}, "Environmental Services" ];
+        $h->{flytipping_extra} = 1;
         my $sender = FixMyStreet::SendReport::Email->new( to => [ $dest ] );
         $sender->send($row, $h);
+        if ($emails->{flytipping_witnessed} && $self->_witnessed_general_flytipping($row)) {
+            my $dest2 = [ $emails->{flytipping_witnessed}, "Environmental Enforcement" ];
+            $h->{flytipping_extra_witnessed} = 1;
+            $sender = FixMyStreet::SendReport::Email->new( to => [ $dest2 ] );
+            $sender->send($row, $h);
+            push @{$row->get_extra_metadata('sent_to')}, $dest->[0];
+            $row->update_extra_metadata(sent_to => $row->get_extra_metadata('sent_to'));
+        }
     }
 
     if ($h->{report}->get_extra_field_value('bulky_text_reminders')) {

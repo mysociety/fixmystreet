@@ -262,7 +262,10 @@ subtest "flytipping on PCC land is sent by open311 and email" => sub {
         STAGING_FLAGS => { send_reports => 1 },
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'peterborough',
-        COBRAND_FEATURES => { open311_email => { peterborough => { flytipping => 'flytipping@example.org' } } },
+        COBRAND_FEATURES => { open311_email => { peterborough => {
+            flytipping => 'flytipping@example.org',
+            flytipping_witnessed => 'witnessed@example.org',
+        } } },
     }, sub {
         $mech->clear_emails_ok;
 
@@ -299,15 +302,19 @@ subtest "flytipping on PCC land is sent by open311 and email" => sub {
         my $email = $mech->get_email;
         ok $email, "got an email";
         is $email->header('To'), '"Environmental Services" <flytipping@example.org>', 'email sent to correct address';
+        like $email->header('Subject'), qr/\[Censorship checking only\] Problem Report: /;
     };
 };
 
-subtest "flytipping on PCC land witnessed is only sent by email" => sub {
+subtest "flytipping on PCC land witnessed is sent by open311 and two emails" => sub {
     FixMyStreet::override_config {
         STAGING_FLAGS => { send_reports => 1 },
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'peterborough',
-        COBRAND_FEATURES => { open311_email => { peterborough => { flytipping => 'flytipping@example.org' } } },
+        COBRAND_FEATURES => { open311_email => { peterborough => {
+            flytipping => 'flytipping@example.org',
+            flytipping_witnessed => 'witnessed@example.org',
+        } } },
     }, sub {
         $mech->clear_emails_ok;
 
@@ -324,14 +331,22 @@ subtest "flytipping on PCC land witnessed is only sent by email" => sub {
             },
         } );
 
-        my $test_data = FixMyStreet::Script::Reports::send();
+        FixMyStreet::Script::Reports::send();
         $p->discard_changes;
-        ok !$test_data->{test_req_used}, 'open311 not sent';
+        is $p->send_state, 'sent', 'Report marked as sent';
+        is $p->get_extra_metadata('sent_to')->[1], 'flytipping@example.org', 'sent_to extra metadata is set';
+        is $p->get_extra_metadata('sent_to')->[0], 'witnessed@example.org', 'sent_to extra metadata is set';
+        is $p->state, 'confirmed', 'report state unchanged';
+        is $p->comments->count, 0, 'no comment added';
+        my $cgi = CGI::Simple->new(Open311->test_req_used->content);
+        is $cgi->param('service_code'), 'FLY', 'service code is correct';
 
-        $mech->email_count_is(1);
-        my $email = $mech->get_email;
-        ok $email, "got an email";
-        is $email->header('To'), '"Environmental Services" <flytipping@example.org>', 'email sent to correct address';
+        $mech->email_count_is(2);
+        my @email = $mech->get_email;
+        is $email[0]->header('To'), '"Environmental Services" <flytipping@example.org>', 'email sent to correct address';
+        like $email[0]->header('Subject'), qr/\[Censorship checking only\] Problem Report: /;
+        is $email[1]->header('To'), '"Environmental Enforcement" <witnessed@example.org>', 'email sent to correct address';
+        like $email[1]->header('Subject'), qr/\[URGENT - Evidence available\] Problem Report: /;
     };
 };
 
@@ -340,7 +355,10 @@ subtest "flytipping/graffiti on non PCC land is not sent anywhere" => sub {
         STAGING_FLAGS => { send_reports => 1 },
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'peterborough',
-        COBRAND_FEATURES => { open311_email => { peterborough => { flytipping => 'flytipping@example.org' } } },
+        COBRAND_FEATURES => { open311_email => { peterborough => {
+            flytipping => 'flytipping@example.org',
+            flytipping_witnessed => 'witnessed@example.org',
+        } } },
     }, sub {
         $mech->clear_emails_ok;
 
