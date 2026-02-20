@@ -13,7 +13,7 @@ $mock->mock('_fetch_features', sub {
     my ($self, $args, $x, $y) = @_;
     if ( $args->{type} && $args->{type} eq 'arcgis' ) {
         # council land
-        if ( $x == 552617 && $args->{url} =~ m{4/query} ) {
+        if ( ($x == 552617 || $x == 519240) && $args->{url} =~ m{4/query} ) {
             return [ { geometry => { type => 'Point' } } ];
         # leased out council land
         } elsif ( $x == 552651 && $args->{url} =~ m{3/query} ) {
@@ -36,13 +36,13 @@ my $params = {
     send_method => 'Open311',
     send_comments => 1,
     api_key => 'KEY',
-    endpoint => 'endpoint',
+    endpoint => 'http://endpoint.example.org',
     jurisdiction => 'home',
     can_be_devolved => 1,
     cobrand => 'peterborough',
 };
 my $peterborough = $mech->create_body_ok(2566, 'Peterborough City Council', $params);
-$mech->create_contact_ok(email => 'FLY', body_id => $peterborough->id, category => 'General fly tipping', extra => {
+my $flytipping = $mech->create_contact_ok(email => 'FLY', body_id => $peterborough->id, category => 'General fly tipping', extra => {
     _fields => [
         {"code" => "Land_Type", "order" => 17, "values" => [
             {"key" => "Back Alley - L03", "name" => "Back Alley"},
@@ -72,6 +72,7 @@ my $user = $mech->create_user_ok('peterborough@example.org', name => 'Council Us
 $peterborough->update( { comment_user_id => $user->id } );
 
 my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $peterborough);
+$staffuser->user_body_permissions->create({ body => $peterborough, permission_type => 'report_inspect' });
 
 subtest 'open311 request handling', sub {
     FixMyStreet::override_config {
@@ -120,7 +121,6 @@ subtest "extra update params are sent to open311" => sub {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'peterborough',
     }, sub {
-        my $contact = $mech->create_contact_ok(body_id => $peterborough->id, category => 'Trees', email => 'TREES');
         Open311->_inject_response('servicerequestupdates.xml', '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>ezytreev-248</update_id></request_update></service_request_updates>');
 
         my $o = Open311->new(
@@ -128,8 +128,12 @@ subtest "extra update params are sent to open311" => sub {
         );
 
         my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', {
-            external_id => 1, category => 'Trees', send_state => 'sent',
-            send_method_used => "Open311", cobrand => 'peterborough' });
+            external_id => 1, category => 'General fly tipping', send_state => 'sent',
+            send_method_used => "Open311", cobrand => 'peterborough',
+            extra => { _fields => [
+                { name => 'Incident_Size', value => 'huge' },
+            ] },
+        });
 
         my $c = FixMyStreet::DB->resultset('Comment')->create({
             problem => $p, user => $p->user, anonymous => 't', text => 'Update text',
@@ -142,7 +146,8 @@ subtest "extra update params are sent to open311" => sub {
         my $cgi = CGI::Simple->new($o->test_req_used->content);
         is $cgi->param('description'), '[Customer FMS update] Update text', 'FMS update prefix included';
         is $cgi->param('service_request_id_ext'), $p->id, 'Service request ID included';
-        is $cgi->param('service_code'), $contact->email, 'Service code included';
+        is $cgi->param('service_code'), $flytipping->email, 'Service code included';
+        is $cgi->param('attribute[Incident_Size]'), 'huge';
 
         $mech->get_ok('/report/' . $p->id);
         $mech->content_lacks('Please note that updates are not sent to the council.');
@@ -172,13 +177,14 @@ subtest "bartec report with no geocode handled correctly" => sub {
     };
 };
 
-subtest "no update sent to Bartec" => sub {
+subtest "update sent to Bartec" => sub {
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'peterborough',
     }, sub {
         $mech->get_ok('/report/' . $problem->id);
         $mech->content_contains('Please note that updates are not sent to the council.');
+        Open311->_inject_response('/servicerequestupdates.xml', '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>43</update_id></request_update></service_request_updates>');
         my $o = Open311::PostServiceRequestUpdates->new;
         my $c = FixMyStreet::DB->resultset('Comment')->create({
             problem => $problem, user => $problem->user, anonymous => 't', text => 'Update text',
@@ -188,7 +194,7 @@ subtest "no update sent to Bartec" => sub {
         $c->discard_changes; # to get defaults
         $o->process_update($peterborough, $c);
         $c->discard_changes;
-        is $c->send_state, 'skipped';
+        is $c->send_state, 'sent';
     };
 };
 
@@ -295,8 +301,9 @@ subtest "flytipping on PCC land is sent by open311 and email" => sub {
 
         my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', {
             category => 'General fly tipping',
-            latitude => 52.5708,
-            longitude => 0.2505,
+            latitude => 52.57146,
+            longitude => -0.24201,
+            areas => ',2566,',
             cobrand => 'peterborough',
             geocode => {
                 display_name => '12 A Street, XX1 1SZ',
@@ -331,6 +338,14 @@ subtest "flytipping on PCC land is sent by open311 and email" => sub {
         ok $email, "got an email";
         is $email->header('To'), '"Environmental Services" <flytipping@example.org>', 'email sent to correct address';
         like $email->header('Subject'), qr/\[Censorship checking only\] Problem Report: /;
+
+        subtest 'inspector form makes update when metadata changed' => sub {
+            $mech->log_in_ok( $staffuser->email );
+            $mech->get_ok('/report/' . $p->id);
+            $mech->submit_form_ok({ button => 'save', with_fields => { category_generalflytipping_Incident_Size => 'tiny', include_update => 0 } });
+            $p->discard_changes;
+            is $p->get_extra_field_value('Incident_Size'), 'tiny';
+        };
     };
 };
 
@@ -510,6 +525,8 @@ subtest 'Resending between backends' => sub {
         }
     };
 };
+
+$mech->log_out_ok;
 
 foreach my $cobrand ( "peterborough", "fixmystreet" ) {
     subtest "waste categories aren't available outside /waste on $cobrand cobrand" => sub {
