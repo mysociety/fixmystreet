@@ -93,9 +93,37 @@ has_field collect_location => (
     required => 1,
     label => 'Where are the boxes located?',
     options => [
-        { label => 'Inside property', value => 'Inside property' },
-        { label => 'Doorstep', value => 'Doorstep' },
+        {   label     => 'Inside property',
+            value     => 'Inside property',
+            data_hide => '#form-collect_location_other-row',
+        },
+        {   label     => 'Doorstep',
+            value     => 'Doorstep',
+            data_hide => '#form-collect_location_other-row',
+        },
+        {   label     => 'Other',
+            value     => 'Other',
+            data_show => '#form-collect_location_other-row',
+        },
     ],
+);
+
+has_field collect_location_other => (
+    label => 'Tell us where you will leave the boxes to be collected',
+    type => 'Text',
+    widget => 'Textarea',
+    maxlength => 250,
+    required_when => {
+        collect_location => sub {
+            ( $_[1]->form->field('collect_location')->value // '' ) eq 'Other';
+        },
+    },
+    messages => {
+        required => 'Location details are required',
+    },
+    tags => {
+        initial_hidden => 1,
+    },
 );
 
 has_field collect_glucose_monitor => (

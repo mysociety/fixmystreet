@@ -358,7 +358,8 @@ FixMyStreet::override_config {
         $mech->content_contains('Collection details');
         $mech->submit_form_ok(
             {   with_fields => {
-                    collect_location => 'Doorstep',
+                    collect_location => 'Other',
+                    collect_location_other => 'With the cat',
                     collect_glucose_monitor => 'No',
                     collect_cytotoxic => 'Yes',
                 }
@@ -370,7 +371,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Number of 1-litre boxes');
         $mech->content_contains('Number of 5-litre boxes');
         $mech->content_contains('Collection location');
-        $mech->content_contains('Doorstep');
+        $mech->content_contains('Other: With the cat');
         $mech->content_contains('Glucose monitoring devices');
         $mech->content_contains('Cytotoxic waste');
         $mech->content_lacks('Delivery details');
@@ -395,7 +396,7 @@ FixMyStreet::override_config {
         is $report->uprn, '10001';
         is $report->get_extra_field_value('collection_date'), '2025-06-27';
         is $report->get_extra_field_value('round_instance_id'), '1';
-        is $report->get_extra_field_value('sharps_location'), 'Doorstep';
+        is $report->get_extra_field_value('sharps_location'), 'Other: With the cat';
         is $report->get_extra_field_value('sharps_collecting'), '1';
         is $report->get_extra_field_value('sharps_collect_small_quantity'), '3';
         is $report->get_extra_field_value('sharps_collect_large_quantity'), '2';
@@ -415,7 +416,7 @@ FixMyStreet::override_config {
 
         like $email_txt, qr/Number of 1-litre boxes: 3/;
         like $email_txt, qr/Number of 5-litre boxes: 2/;
-        like $email_txt, qr/Collection location: Doorstep/;
+        like $email_txt, qr/Collection location: Other: With the cat/;
         like $email_txt, qr/Glucose monitoring devices: No/;
         like $email_txt, qr/Cytotoxic waste: Yes/;
 
@@ -425,7 +426,7 @@ FixMyStreet::override_config {
 
         like $email_html, qr/Number of 1-litre boxes: 3/;
         like $email_html, qr/Number of 5-litre boxes: 2/;
-        like $email_html, qr/Collection location: Doorstep/;
+        like $email_html, qr/Collection location: Other: With the cat/;
         like $email_html, qr/Glucose monitoring devices: No/;
         like $email_html, qr/Cytotoxic waste: Yes/;
 
