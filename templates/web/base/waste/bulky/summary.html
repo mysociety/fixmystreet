@@ -142,7 +142,6 @@ SET data = form.saved_data;
 
       <hr>
     [% IF sharps %]
-
       [% IF data.sharps_collecting == 'Yes' %]
       <div class="summary-section-header">
         <h3 class="summary-section--heading">Collection details</h3>
@@ -279,7 +278,7 @@ SET data = form.saved_data;
 
     [% END %]
 
-    [% IF cobrand.bulky_show_location_page %]
+    [% IF cobrand.bulky_show_location_page && !sharps %]
       <div class="summary-section-header">
         <h3 class="summary-section--heading">Location details</h3>
         [% PROCESS change_answers_button goto='location' %]

@@ -37,8 +37,12 @@ If your collection includes both upholstered and non-upholstered items (such as 
 The second collection may be up to two working days after your chosen date.
 
 [% END ~%]
+[% IF report.category == 'Sharps collection' %]
+[% INCLUDE 'waste/_sharps_list.txt' %]
+[% ELSE %]
 Items to be collected:
 [% INCLUDE 'waste/_bulky_list.txt' %]
+[% END %]
 
 [% IF payment ~%]
 Total cost: £[% pounds(payment / 100) %]

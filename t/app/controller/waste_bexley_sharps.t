@@ -23,11 +23,13 @@ $contact->set_extra_fields(
     { code => 'round_instance_id', required => 1, automated => 'hidden_field' },
     { code => 'sharps_location', required => 1, automated => 'hidden_field' },
 
+    { code => 'sharps_collecting', required => 1, automated => 'hidden_field' },
     { code => 'sharps_collect_small_quantity', required => 1, automated => 'hidden_field' },
     { code => 'sharps_collect_large_quantity', required => 1, automated => 'hidden_field' },
     { code => 'sharps_collect_glucose_monitor', required => 1, automated => 'hidden_field' },
     { code => 'sharps_collect_cytotoxic', required => 1, automated => 'hidden_field' },
 
+    { code => 'sharps_delivering', required => 1, automated => 'hidden_field' },
     { code => 'sharps_deliver_size', required => 1, automated => 'hidden_field' },
     { code => 'sharps_deliver_quantity', required => 1, automated => 'hidden_field' },
 );
@@ -172,10 +174,12 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('collection_date'), '2025-06-27';
         is $report->get_extra_field_value('round_instance_id'), '1';
         is $report->get_extra_field_value('sharps_location'), 'Doorstep';
+        is $report->get_extra_field_value('sharps_collecting'), '1';
         is $report->get_extra_field_value('sharps_collect_small_quantity'), '3';
         is $report->get_extra_field_value('sharps_collect_large_quantity'), '2';
         is $report->get_extra_field_value('sharps_collect_glucose_monitor'), 'No';
         is $report->get_extra_field_value('sharps_collect_cytotoxic'), 'Yes';
+        is $report->get_extra_field_value('sharps_delivering'), '1';
         is $report->get_extra_field_value('sharps_deliver_size'), '1-litre';
         is $report->get_extra_field_value('sharps_deliver_quantity'), '5';
 
@@ -191,15 +195,31 @@ FixMyStreet::override_config {
         my $email_txt = $mech->get_text_body_from_email($email_to_user);
         like $email_txt, qr/Thank you for booking a sharps collection/;
 
+        like $email_txt, qr/Number of 1-litre boxes: 3/;
+        like $email_txt, qr/Number of 5-litre boxes: 2/;
+        like $email_txt, qr/Collection location: Doorstep/;
+        like $email_txt, qr/Glucose monitoring devices: No/;
+        like $email_txt, qr/Cytotoxic waste: Yes/;
+
+        like $email_txt, qr/Box size: 1-litre/;
+        like $email_txt, qr/Quantity: 5/;
+
         my $email_html = $mech->get_html_body_from_email($email_to_user);
         like $email_html, qr/Thank you for booking a sharps collection/;
 
-        # XXX Collection/delivery details in email
+        like $email_html, qr/Number of 1-litre boxes: 3/;
+        like $email_html, qr/Number of 5-litre boxes: 2/;
+        like $email_html, qr/Collection location: Doorstep/;
+        like $email_html, qr/Glucose monitoring devices: No/;
+        like $email_html, qr/Cytotoxic waste: Yes/;
+
+        like $email_html, qr/Box size: 1-litre/;
+        like $email_html, qr/Quantity: 5/;
 
         $report->delete;
     };
 
-    subtest 'Summary page with delivery only' => sub {
+    subtest 'Sharps booking with delivery only' => sub {
         $mech->get_ok('/waste/10001/sharps');
         $mech->submit_form_ok;
 
@@ -245,6 +265,173 @@ FixMyStreet::override_config {
         $mech->content_lacks('Items to be collected');
         $mech->content_lacks('State pension?');
         $mech->content_lacks('Physical disability?');
+
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    tandc => 1,
+                }
+            }
+        );
+
+        $mech->content_contains('Sharps booking confirmed');
+
+        # Check content of report in DB
+        my $report = FixMyStreet::DB->resultset('Problem')->first;
+        is $report->category, 'Sharps collection';
+        is $report->cobrand_data, 'waste';
+        like $report->detail, qr/Address:.*DA1 3NP/;
+        is $report->non_public, 1;
+        is $report->state, 'confirmed';
+        is $report->title, 'Sharps collection';
+        is $report->uprn, '10001';
+        is $report->get_extra_field_value('collection_date'), '2025-06-27';
+        is $report->get_extra_field_value('round_instance_id'), '1';
+        is $report->get_extra_field_value('sharps_location'), '';
+        is $report->get_extra_field_value('sharps_collecting'), '';
+        is $report->get_extra_field_value('sharps_collect_small_quantity'), '';
+        is $report->get_extra_field_value('sharps_collect_large_quantity'), '';
+        is $report->get_extra_field_value('sharps_collect_glucose_monitor'), '';
+        is $report->get_extra_field_value('sharps_collect_cytotoxic'), '';
+        is $report->get_extra_field_value('sharps_delivering'), '1';
+        is $report->get_extra_field_value('sharps_deliver_size'), '5-litre';
+        is $report->get_extra_field_value('sharps_deliver_quantity'), '2';
+
+        $mech->clear_emails_ok();
+        FixMyStreet::Script::Reports::send();
+        # Email to council and email to user (former is Open311 in real life)
+        $mech->email_count_is(2);
+        my ( undef, $email_to_user ) = $mech->get_email;
+
+        my $email_txt = $mech->get_text_body_from_email($email_to_user);
+
+        unlike $email_txt, qr/Collection details/;
+
+        like $email_txt, qr/Box size: 5-litre/;
+        like $email_txt, qr/Quantity: 2/;
+
+        my $email_html = $mech->get_html_body_from_email($email_to_user);
+
+        unlike $email_html, qr/Collection details/;
+
+        like $email_html, qr/Box size: 5-litre/;
+        like $email_html, qr/Quantity: 2/;
+
+        $report->delete;
+    };
+
+    subtest 'Sharps booking with collection only' => sub {
+        $mech->get_ok('/waste/10001/sharps');
+        $mech->submit_form_ok;
+
+        # About you
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    name  => 'Bob Marge',
+                    email => $user->email,
+                    phone => '44 07 111 111 111',
+                }
+            }
+        );
+
+        # Choose date
+        $mech->submit_form_ok(
+            { with_fields => { chosen_date => '2025-06-27;1;' } } );
+
+        # Collection and delivery - collection only
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    sharps_collecting => 'Yes',
+                    sharps_delivering => 'No',
+                }
+            }
+        );
+
+        $mech->content_contains('Collection quantities');
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    collect_small_quantity => 3,
+                    collect_large_quantity => 2,
+                }
+            }
+        );
+
+        $mech->content_contains('Collection details');
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    collect_location => 'Doorstep',
+                    collect_glucose_monitor => 'No',
+                    collect_cytotoxic => 'Yes',
+                }
+            }
+        );
+
+        # Summary page checks
+        $mech->content_contains('Collection details');
+        $mech->content_contains('Number of 1-litre boxes');
+        $mech->content_contains('Number of 5-litre boxes');
+        $mech->content_contains('Collection location');
+        $mech->content_contains('Doorstep');
+        $mech->content_contains('Glucose monitoring devices');
+        $mech->content_contains('Cytotoxic waste');
+        $mech->content_lacks('Delivery details');
+
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    tandc => 1,
+                }
+            }
+        );
+
+        $mech->content_contains('Sharps booking confirmed');
+
+        # Check content of report in DB
+        my $report = FixMyStreet::DB->resultset('Problem')->first;
+        is $report->category, 'Sharps collection';
+        is $report->cobrand_data, 'waste';
+        like $report->detail, qr/Address:.*DA1 3NP/;
+        is $report->non_public, 1;
+        is $report->state, 'confirmed';
+        is $report->title, 'Sharps collection';
+        is $report->uprn, '10001';
+        is $report->get_extra_field_value('collection_date'), '2025-06-27';
+        is $report->get_extra_field_value('round_instance_id'), '1';
+        is $report->get_extra_field_value('sharps_location'), 'Doorstep';
+        is $report->get_extra_field_value('sharps_collecting'), '1';
+        is $report->get_extra_field_value('sharps_collect_small_quantity'), '3';
+        is $report->get_extra_field_value('sharps_collect_large_quantity'), '2';
+        is $report->get_extra_field_value('sharps_collect_glucose_monitor'), 'No';
+        is $report->get_extra_field_value('sharps_collect_cytotoxic'), 'Yes';
+        is $report->get_extra_field_value('sharps_delivering'), '';
+        is $report->get_extra_field_value('sharps_deliver_size'), '';
+        is $report->get_extra_field_value('sharps_deliver_quantity'), '';
+
+        $mech->clear_emails_ok();
+        FixMyStreet::Script::Reports::send();
+        # Email to council and email to user (former is Open311 in real life)
+        $mech->email_count_is(2);
+        my ( undef, $email_to_user ) = $mech->get_email;
+
+        my $email_txt = $mech->get_text_body_from_email($email_to_user);
+
+        like $email_txt, qr/Number of 1-litre boxes: 3/;
+        like $email_txt, qr/Number of 5-litre boxes: 2/;
+        like $email_txt, qr/Collection location: Doorstep/;
+        like $email_txt, qr/Glucose monitoring devices: No/;
+        like $email_txt, qr/Cytotoxic waste: Yes/;
+
+        unlike $email_txt, qr/Delivery details/;
+
+        my $email_html = $mech->get_html_body_from_email($email_to_user);
+
+        like $email_html, qr/Number of 1-litre boxes: 3/;
+        like $email_html, qr/Number of 5-litre boxes: 2/;
+        like $email_html, qr/Collection location: Doorstep/;
+        like $email_html, qr/Glucose monitoring devices: No/;
+        like $email_html, qr/Cytotoxic waste: Yes/;
+
+        unlike $email_html, qr/Delivery details/;
+
+        $report->delete;
     };
 };
 
