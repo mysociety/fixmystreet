@@ -153,7 +153,7 @@ SET data = form.saved_data;
         <dt>Number of 5-litre boxes</dt>
         <dd>[% data.collect_large_quantity %]</dd>
         <dt>Collection location</dt>
-        <dd>[% data.collect_location %]</dd>
+        <dd>[% data.collect_location == 'Other' ? 'Other: ' _ data.collect_location_other : data.collect_location %]</dd>
         <dt>Glucose monitoring devices</dt>
         <dd>[% data.collect_glucose_monitor %]</dd>
         <dt>Cytotoxic waste</dt>

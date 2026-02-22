@@ -261,7 +261,6 @@ sub sharps_allowed_property {
     return 1;
 }
 
-# XXX What is all the data we need?
 sub waste_munge_sharps_data {
     my ( $self, $data ) = @_;
 
@@ -276,9 +275,12 @@ sub waste_munge_sharps_data {
     $data->{category} = 'Sharps collection';
     $data->{extra_collection_date} = $date;
     $data->{extra_round_instance_id} = $ref;
-    $data->{extra_sharps_location} = $data->{collect_location};
 
     if ( $data->{sharps_collecting} eq 'Yes' ) {
+        $data->{extra_sharps_location}
+            = $data->{collect_location} eq 'Other'
+            ? 'Other: ' . $data->{collect_location_other}
+            : $data->{collect_location};
         $data->{extra_sharps_collecting} = 1;
         $data->{extra_sharps_collect_small_quantity} = $data->{collect_small_quantity};
         $data->{extra_sharps_collect_large_quantity} = $data->{collect_large_quantity};
