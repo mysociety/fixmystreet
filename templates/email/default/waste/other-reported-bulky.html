@@ -39,8 +39,12 @@ cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel
   [% END %]
 
   <p style="[% p_style %]">
-    Items to be collected:
-    [% INCLUDE 'waste/_bulky_list.html' %]
+    [% IF report.category == 'Sharps collection' %]
+      [% INCLUDE 'waste/_sharps_list.html' %]
+    [% ELSE %]
+      Items to be collected:
+      [% INCLUDE 'waste/_bulky_list.html' %]
+    [% END %]
   </p>
 
 [% IF payment %]
