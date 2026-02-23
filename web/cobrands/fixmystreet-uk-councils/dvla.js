@@ -95,6 +95,7 @@ function dvla_lookup(e) {
             vehicle_type = 'Other';
         }
 
+/* Do not do anything if it matches at present
         if (reasons.length) {
             document.querySelectorAll('.js-reporting-page--next').forEach(b => b.disabled = true);
             const stopperId = 'js-dvla-stopper';
@@ -114,6 +115,7 @@ function dvla_lookup(e) {
             const height = wrapper.getBoundingClientRect().height;
             document.querySelector('.js-reporting-page--active').style.paddingBottom = height;
         } else {
+*/
             let field = document.querySelector('input[name*="' + fields.colour + '"]');
             if (field) {
                 const a = [];
@@ -138,7 +140,9 @@ function dvla_lookup(e) {
                 field.value = reg;
             }
             fixmystreet.pageController.toPage('next');
+/*
         }
+*/
     };
     request.send(`registration=${encodeURIComponent(reg)}`);
 }
