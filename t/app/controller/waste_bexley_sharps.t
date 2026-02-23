@@ -216,6 +216,35 @@ FixMyStreet::override_config {
         like $email_html, qr/Box size: 1-litre/;
         like $email_html, qr/Quantity: 5/;
 
+        subtest 'View sharps report' => sub {
+            $mech->get( '/report/' . $report->id );
+            is $mech->res->code, 403, 'cannot view if not logged in';
+
+            $mech->log_in_ok( $report->user->email );
+            $mech->get_ok( '/report/' . $report->id );
+
+            # Report page should show sharps-specific details
+            $mech->text_contains('Your sharps collection');
+
+            $mech->text_contains('Collection details');
+            $mech->text_contains('Number of 1-litre boxes3');
+            $mech->text_contains('Number of 5-litre boxes2');
+            $mech->text_contains('Collection locationDoorstep');
+            $mech->text_contains('Glucose monitoring devicesNo');
+            $mech->text_contains('Cytotoxic wasteYes');
+
+            $mech->text_contains('Delivery details');
+            $mech->text_contains('Box size1-litre');
+            $mech->text_contains('Quantity5');
+
+            # ... but NOT show bulky-specific details
+            $mech->content_lacks('Items to be collected');
+            $mech->content_lacks('State pension?');
+            $mech->content_lacks('Physical disability?');
+
+            $mech->log_out_ok;
+        };
+
         $report->delete;
     };
 

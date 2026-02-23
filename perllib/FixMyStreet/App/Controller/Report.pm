@@ -83,9 +83,14 @@ sub display :PathPart('') :Chained('id') :Args(0) {
     my ( $self, $c ) = @_;
 
     my $problem = $c->stash->{problem};
-    if ($problem->cobrand_data eq 'waste' && ($problem->category eq 'Bulky collection' || $problem->category eq 'Small items collection')) {
+    if ($problem->cobrand_data eq 'waste'
+        && (   $problem->category eq 'Bulky collection'
+            || $problem->category eq 'Small items collection'
+            || $problem->category eq 'Sharps collection' )
+    ) {
         $c->detach('/waste/bulky/view');
     }
+
 
     $c->forward('/auth/get_csrf_token');
     $c->forward( 'load_updates' );
