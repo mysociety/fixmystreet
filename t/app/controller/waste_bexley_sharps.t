@@ -1,3 +1,6 @@
+# Must be at top
+use Test::MockTime 'set_fixed_time';
+
 use FixMyStreet::Script::Reports;
 use FixMyStreet::TestMech;
 use t::Mock::Bexley;
@@ -230,6 +233,9 @@ FixMyStreet::override_config {
 
         $mech->clear_emails_ok();
         FixMyStreet::Script::Reports::send();
+        # Manually set external ID on report
+        $report->external_id('Whitespace-123');
+        $report->update;
         # Email to council and email to user (former is Open311 in real life)
         $mech->email_count_is(2);
         my ( undef, $email_to_user ) = $mech->get_email;
@@ -259,7 +265,52 @@ FixMyStreet::override_config {
         like $email_html, qr/Box size: 1-litre/;
         like $email_html, qr/Quantity: 5/;
 
-        $report->delete;
+        set_fixed_time('2025-06-01T12:00:00Z');
+
+        subtest 'View sharps report' => sub {
+            note 'Sharps section on bin days page shows same options because no user logged in';
+            $mech->get_ok('/waste/10001');
+            $mech->content_contains('You need to sign in to see the full details of this property.');
+            $mech->content_contains('Book a collection');
+            $mech->content_lacks('View existing collections');
+            $mech->content_lacks('Check booking details');
+
+            $mech->get( '/report/' . $report->id );
+            is $mech->res->code, 403, 'cannot view if not logged in';
+
+            $mech->log_in_ok( $report->user->email );
+            $mech->get_ok('/waste/10001');
+            $mech->content_lacks('You need to sign in to see the full details of this property.');
+            $mech->content_contains('Book a collection');
+            $mech->content_lacks('View existing collections');
+            $mech->content_contains('Check booking details');
+
+            $mech->get_ok( '/report/' . $report->id );
+
+            # Report page should show sharps-specific details
+            $mech->text_contains('Your sharps booking');
+
+            $mech->text_contains('Collection details');
+            $mech->text_contains('Number of 1-litre boxes3');
+            $mech->text_contains('Number of 5-litre boxes2');
+            $mech->text_contains('Collection locationOn the doorstep');
+            $mech->text_contains('Glucose monitoring devicesNo');
+
+            $mech->text_contains('Delivery details');
+            $mech->text_contains('Box size1-litre');
+            $mech->text_contains('Quantity5');
+
+            # ... but NOT show bulky-specific details
+            $mech->content_lacks('Items to be collected');
+            $mech->content_lacks('State pension?');
+            $mech->content_lacks('Physical disability?');
+
+            $mech->content_contains('Cancel this booking');
+        };
+
+        $mech->log_out_ok;
+
+        $mech->delete_problems_for_body($body->id);
     };
 
     subtest 'Sharps booking with delivery only' => sub {

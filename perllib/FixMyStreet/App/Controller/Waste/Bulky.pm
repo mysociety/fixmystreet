@@ -289,6 +289,7 @@ sub amend : Chained('setup') : Args(1) {
 
 # Called by F::A::Controller::Report::display if the report in question is
 # a bulky goods collection.
+# Also used for small items and sharps collections.
 sub view : Private {
     my ($self, $c) = @_;
 
@@ -304,6 +305,8 @@ sub view : Private {
         $c->stash->{small_items} = 1;
         $c->stash->{booking_maximum} = $c->cobrand->wasteworks_config->{small_items_per_collection_max} || 5;
         $items_extra = $c->cobrand->call_hook('small_items_extra');
+    } elsif ($p->category eq 'Sharps collection') {
+        $c->stash->{sharps} = 1;
     } else {
         $c->stash->{small_items} = 0;
         $c->stash->{booking_maximum} = $c->cobrand->wasteworks_config->{items_per_collection_max} || 5;
@@ -314,7 +317,10 @@ sub view : Private {
 
     $c->forward('/report/load_updates');
 
-    my $saved_data = $c->cobrand->waste_reconstruct_bulky_data($p);
+    my $saved_data
+        = $c->stash->{sharps}
+        ? $c->cobrand->waste_reconstruct_sharps_data($p)
+        : $c->cobrand->waste_reconstruct_bulky_data($p);
     $c->stash->{form} = {
         items_extra => $items_extra,
         saved_data  => $saved_data,
@@ -343,6 +349,10 @@ sub cancel_small : PathPart('cancel') : Chained('setup_small') : Args(1) {
     my ( $self, $c, $id ) = @_;
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::SmallItems::Cancel';
     $c->detach('cancel');
+}
+
+sub cancel_sharps : PathPart('cancel') : Chained('setup_sharps') : Args(1) {
+    # XXX
 }
 
 sub amend_small : PathPart('amend') : Chained('setup_small') : Args(1) {

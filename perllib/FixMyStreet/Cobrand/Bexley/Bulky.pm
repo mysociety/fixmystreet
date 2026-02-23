@@ -290,4 +290,35 @@ sub waste_munge_sharps_data {
     }
 }
 
+sub waste_reconstruct_sharps_data {
+    my ( $self, $p ) = @_;
+
+    my $date = $p->get_extra_field_value('collection_date');
+    my $ref = $p->get_extra_field_value('round_instance_id');
+    my $saved_data = {
+        chosen_date => "$date;$ref;",
+
+        sharps_collecting => $p->get_extra_field_value('sharps_collecting')
+            ? 'Yes'
+            : 'No',
+        collect_location        => $p->get_extra_field_value('collect_location'),
+        collect_location_other  => $p->get_extra_field_value('collect_location_other'),
+        collect_small_quantity  => $p->get_extra_field_value('sharps_collect_small_quantity'),
+        collect_large_quantity  => $p->get_extra_field_value('sharps_collect_large_quantity'),
+
+        sharps_delivering => $p->get_extra_field_value('sharps_delivering')
+            ? 'Yes'
+            : 'No',
+        deliver_glucose_monitor => $p->get_extra_field_value('sharps_deliver_glucose_monitor'),
+        deliver_size     => $p->get_extra_field_value('sharps_deliver_size'),
+        deliver_quantity => $p->get_extra_field_value('sharps_deliver_quantity'),
+    };
+
+    $saved_data->{name} = $p->name;
+    $saved_data->{email} = $p->user->email;
+    $saved_data->{phone} = $p->phone_waste;
+
+    return $saved_data;
+}
+
 1;
