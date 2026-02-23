@@ -218,8 +218,12 @@ describe('Abandoned vehicle behaviour', function() {
     cy.get('[name=dvla_reg]').type('G00D');
     cy.nextPageReporting();
     cy.wait('@dvla');
-    cy.contains('White Audi car, Petrol, 2016');
-    cy.contains('that are taxed or have a valid MOT');
+//    cy.contains('White Audi car, Petrol, 2016');
+//    cy.contains('that are taxed or have a valid MOT');
+    cy.get('[name=VEHICLE_REGISTRATION]').should('have.value', 'G00D');
+    cy.get('[name=ABANDONED_VEHICLE_TAXED]').should('have.value', 'Yes');
+    cy.get('[name=ABANDONED_SELECT_TYPE]').should('have.value', 'Car');
+    cy.get('[name="MAKE_/_COLOUR_OF_THE_VEHI"]').should('have.value', 'Audi / White');
   });
 
   it('Gave an untaxed reg plate', function() {
