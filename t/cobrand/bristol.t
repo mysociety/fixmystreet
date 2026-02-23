@@ -84,6 +84,12 @@ my $cycle_hanger = $mech->create_contact_ok(
         display_name => 'Damaged cycle hanger',
     },
 );
+my $camp = $mech->create_contact_ok(
+    body_id => $bristol->id,
+    category => 'Vehicle dwelling encampment',
+    email => 'camp@example.org',
+    send_method => 'Email'
+);
 
 my $flytipping = $mech->create_contact_ok(
     body_id => $bristol->id,
@@ -213,55 +219,42 @@ subtest 'check services override' => sub {
     is_deeply $open311_contact->get_extra_fields, $extra, 'Easting has automated set';
 };
 
-subtest "idle roadworks automatically closed" => sub {
+subtest "Categories automatically closed" => sub {
     FixMyStreet::override_config {
         STAGING_FLAGS => { send_reports => 1 },
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'bristol',
     }, sub {
-        $mech->clear_emails_ok;
+        foreach my $test ( $roadworks, $cycle_hanger, $camp ) {
+            my $template = FixMyStreet::DB->resultset("ResponseTemplate")->create({
+                body => $bristol,
+                title => $test->category . ' template',
+                text => 'Your ' . $test->category . ' report has been forwarded on.',
+                state => 'confirmed',
+                auto_response => 1,
+            });
+            $template->add_to_contact_response_templates({ contact => $test });
 
-        my ($p) = $mech->create_problems_for_body(1, $bristol->id, 'Title', {
-            cobrand => 'bristol',
-            category => $roadworks->category,
-        } );
+            $mech->clear_emails_ok;
 
-        FixMyStreet::Script::Reports::send();
+            my ($p) = $mech->create_problems_for_body(1, $bristol->id, 'Title', {
+                cobrand => 'bristol',
+                category => $test->category,
+            } );
+            $p->create_related_things(1); # The template update that gets added on creation
 
-        $p->discard_changes;
-        ok $p->whensent, 'Report marked as sent';
-        is $p->get_extra_metadata('sent_to')->[0], 'roadworks@example.org', 'sent_to extra metadata set';
-        is $p->state, 'closed', 'report closed having sent email';
-        is $p->comments->count, 1, 'comment added';
-        like $p->comments->first->text, qr/This issue has been forwarded on/, 'correct comment text';
+            FixMyStreet::Script::Reports::send();
 
-        $mech->email_count_is(1);
-    };
-};
+            $p->discard_changes;
+            ok $p->whensent, 'Report marked as sent';
+            is $p->get_extra_metadata('sent_to')->[0], $test->email, 'sent_to extra metadata set';
+            is $p->state, 'closed', 'report closed having sent email';
+            is $p->comments->count, 1, 'comment added';
+            my $cat = $test->category;
+            like $p->comments->first->text, qr/\Q$cat\E report has been forwarded/, 'correct comment text';
 
-subtest 'Damaged cycle hanger automatically closed' => sub {
-    FixMyStreet::override_config {
-        STAGING_FLAGS => { send_reports => 1 },
-        MAPIT_URL => 'http://mapit.uk/',
-        ALLOWED_COBRANDS => 'bristol',
-    }, sub {
-        $mech->clear_emails_ok;
-
-        my ($p) = $mech->create_problems_for_body(1, $bristol->id, 'Title', {
-            cobrand => 'bristol',
-            category => $cycle_hanger->category,
-        } );
-
-        FixMyStreet::Script::Reports::send();
-
-        $p->discard_changes;
-        ok $p->whensent, 'Report marked as sent';
-        is $p->get_extra_metadata('sent_to')->[0], 'cycles@example.org', 'sent_to extra metadata set';
-        is $p->state, 'closed', 'report closed having sent email';
-        is $p->comments->count, 1, 'comment added';
-        like $p->comments->first->text, qr/This issue has been forwarded.*cycle hangers/, 'correct comment text';
-
-        $mech->email_count_is(1);
+            $mech->email_count_is(1);
+        };
     };
 };
 
@@ -280,7 +273,6 @@ subtest 'Damaged bin category' => sub {
             category      => 'Bin damaged',
         }});
         $mech->content_contains('Please select a litter bin');
-        print $mech->encoded_content;
         $mech->submit_form_ok({ with_fields => {
             title         => 'Test Report',
             detail        => 'Test report details.',
