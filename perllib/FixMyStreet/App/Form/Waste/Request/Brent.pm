@@ -181,7 +181,21 @@ has_page request_refuse_container => (
         'property_largest_general_waste_bin',
         'continue'
     ],
-    next => 'about_you',
+    next => sub {
+        my $data = shift;
+        my $choice = $data->{'container-choice'};
+
+        # Refuse container requests that aren't referred will be rejected, so we don't
+        # want to bother collecting personal details.
+        if (FixMyStreet::Cobrand::Brent::request_referral($choice, $data)) {
+            $data->{'no_about_you_in_summary'} = 0;
+            $data->{'about_you_skipped'} = 0;
+            return 'about_you';
+        }
+        $data->{'no_about_you_in_summary'} = 1;
+        $data->{'about_you_skipped'} = 1;
+        return 'summary';
+    },
 );
 
 has_field property_type =>(
