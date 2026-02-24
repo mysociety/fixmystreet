@@ -3,6 +3,9 @@
 f = [];
 service_id = c.req.params.service_id;
 service = services.$service_id;
+IF c.cobrand.return_request_option;
+    f.push( { value = 'Return request', label = 'My bin was not collected' } );
+END;
 IF service.report_allowed;
     IF !service.events.filter(event_type = 2118);
         f.push( { value = 'Gate not closed', label = 'A gate or enclosure wasn’t closed after the collection' } );

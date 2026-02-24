@@ -1,0 +1,49 @@
+[%
+SET service_id = c.req.params.service_id;
+SET reason = c.cobrand.return_request_option;
+%]
+[% IF services.$service_id %]
+<dl class="waste__address">
+    <dt class="waste__address__title">Service</dt>
+    <dd class="waste__address__property">[% services.$service_id.service_name %]</dd>
+</dl>
+[% END %]
+
+[% IF reason == 'contaminated' %]
+<p>
+  Your most recent collection was reported as <strong>contaminated</strong> by the collection team and they were unable to empty your container.
+</p>
+<p>
+  Contamination occurs when non-recyclable items are mixed with recycling.
+</p>
+<p>
+  Please remove any contaminated items and we will empty your container on the next scheduled collection day.
+</p>
+<p>
+  Please visit our website for further details at <a href='https://www.bromley.gov.uk/household-waste-recycling'>https://www.bromley.gov.uk/household-waste-recycling</a>
+</p>
+[% ELSIF reason == 'not-presented' %]
+<p>
+  Your most recent collection has been reported as <strong>not presented</strong> by the collection team.
+</p>
+<p>
+  This means they could not see your waste or recycling container at the edge of your property (or approved collection location) on the last scheduled visit.
+</p>
+<p>
+  Please note, your recycling and waste needs to be placed in the correct containers, securely contained and placed at the edge of your property within arms reach of the pavement (edge of curtilage) by 7am on your scheduled collection day. Please do not place containers directly on the pavement.
+</p>
+<p>
+  Please ensure your containers are easily accessible. If they are not presented correctly or they are hidden behind a locked gate or a parked car, the collection team may not be able to empty them.
+</p>
+<p>
+  If you believe the correct container <strong>was</strong> presented at the edge of your property by 7:00 AM on your collection day, please click below.
+
+[% ELSIF reason == 'too-late' %]
+
+<p>
+  <strong>Reports of missed collections must be raised within 2 working days of your scheduled collection date.</strong>
+</p>
+<p>
+  Please visit our website for further details at <a href='https://www.bromley.gov.uk/household-waste-recycling'>https://www.bromley.gov.uk/household-waste-recycling</a>
+</p>
+[% END %]

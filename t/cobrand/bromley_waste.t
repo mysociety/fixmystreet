@@ -61,6 +61,34 @@ $mech->create_contact_ok(
     group => ['Waste'],
 );
 
+my ($dispute) = $mech->create_contact_ok(
+    body => $body,
+    category => 'Return request',
+    email => '3240',
+    send_method => 'Open311',
+    endpoint => 'waste-endpoint',
+    extra => { type => 'waste' },
+    group => ['Waste'],
+);
+$dispute->set_extra_fields(
+    { code => 'Notes', datatype => 'text', required => 0 },
+);
+$dispute->update;
+
+my ($general) = $mech->create_contact_ok(
+    body => $body,
+    category => 'General Enquiry',
+    email => '2148',
+    send_method => 'Open311',
+    endpoint => 'waste-endpoint',
+    extra => { type => 'waste' },
+    group => ['Waste'],
+);
+$general->set_extra_fields(
+    { code => 'Notes', datatype => 'text', required => 0 },
+);
+$general->update;
+
 my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
     latitude => 51.402096,
     longitude => 0.015784,
@@ -250,6 +278,8 @@ subtest 'check heatmap page' => sub {
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'bromley',
+    MAPIT_URL => 'http://mapit.uk/',
+    BASE_URL => 'http://bromley.example.org',
     COBRAND_FEATURES => {
         payment_gateway => { bromley => { ggw_cost => 1000 } },
         echo => { bromley => { sample_data => 1 } },
@@ -330,6 +360,145 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345');
         $mech->content_lacks('Report a non-recyclable refuse collection');
         restore_time();
+    };
+
+    subtest 'test extra missed collection reporting options' => sub {
+        $body->response_templates->create({
+            title => 'Wrong bin (Not completed)',
+            text => 'We could not collect your waste as it was not correctly presented.',
+            external_status_code => '66,,Not Completed',
+        });
+        $body->response_templates->create({
+            title => 'Contaminated (Not completed)',
+            text => 'We could not collect your waste as it was contaminated.',
+            external_status_code => '33,,Not Completed',
+        });
+
+        my $echo = Test::MockModule->new('Integrations::Echo');
+        set_fixed_time('2020-05-27T19:00:00Z');
+
+        subtest 'Within two days, not correctly placed' => sub {
+            $echo->mock('GetTasks', sub { return &_bromley_test($_[1], $_[2], '66') });
+            $mech->get_ok('/waste/12345');
+            $mech->content_like(qr/May, at 10:00a\.?m\.?/);
+            $mech->content_contains('We could not collect your waste as it was not correctly presented.', 'Waste template from resolution 66');
+            $mech->content_lacks('Report a non-recyclable refuse collection', 'Can not report a missed collection as resolved');
+            $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable refuse collection' });
+            # Enquiry type list page
+            $mech->content_contains('My bin was not collected', 'Can report a missed collection in the general enquiry list');
+            $mech->submit_form_ok({ with_fields => {category => 'Return request'} });
+            # 'Not presented' information page
+            $mech->content_contains('If you believe the correct container <strong>was</strong> presented at the edge of your property by 7:00 AM on your collection day, please click below', 'Contains page detailing proper placement');
+            $mech->content_contains('Continue', 'User can continue the enquiry');
+            $mech->submit_form_ok();
+            # Declaration page
+            $mech->content_contains('To request a missed collection, please confirm the following', 'Declaration page is shown');
+            $mech->submit_form_ok();
+            $mech->content_contains('field is required', 'Error if field not filled');
+            $mech->form_with_fields('declaration');
+            $mech->current_form->find_input('declaration', undef, 1)->value('7am');
+            $mech->submit_form_ok;
+            $mech->content_lacks('I declare my container was correctly positioned field is required', 'No error as field was filled...');
+            $mech->content_contains('To request a missed collection, please confirm the following', '...but not moved forward as "No" selected');
+            $mech->form_with_fields('declaration');
+            $mech->current_form->find_input('declaration', undef, 2)->value('arm');
+            $mech->submit_form_ok;
+            # Enquiry page
+            $mech->submit_form_ok( {with_fields => { extra_Notes => 'My bin was in front of the house near the pavement' } });
+            # About you page
+            $mech->submit_form_ok( { with_fields => { name => 'James Herriot', email => 'test@example.com' } });
+            # Summary page
+            $mech->content_contains('Please review the information you’ve provided before you submit your enquiry', 'Reached summary page');
+            $mech->content_contains('I declare my container was in reach of the pavement and out by 7:00 AM', 'Can change answer for declaration');
+            $mech->clear_emails_ok;
+            $mech->submit_form_ok( { form_number => 3 } );
+            # Confirm report
+            $mech->get_ok($mech->get_link_from_email);
+            my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+            my $id = $report->id;
+            $mech->content_contains('You have successfully submitted your missed collection request');
+            $mech->content_contains("Your reference number is <strong>$id</strong>");
+            $mech->content_contains('Our team will now investigate this matter further');
+            restore_time();
+        };
+
+        subtest 'After two days, not presented' => sub {
+            $echo->mock('GetTasks', sub { return &_bromley_test($_[1], $_[2], '66') });
+            set_fixed_time('2020-05-30T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('We could not collect your waste as it was not correctly presented.', 'Waste template from resolution 66');
+            $mech->content_lacks('Report a non-recyclable refuse collection', 'Can not report a missed collection as resolved');
+            $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable refuse collection' });
+            # Enquiry type list page
+            $mech->content_contains('My bin was not collected', 'Can report a missed collection in the general enquiry list');
+            $mech->submit_form_ok({ with_fields => {category => 'Return request'} });
+            # 'Missed collection' information page
+            $mech->content_contains('Reports of missed collections must be raised within 2');
+            $mech->content_lacks('Continue', 'No option offered to continue enquiry');
+            restore_time();
+        };
+
+        subtest 'Report already open' => sub {
+            set_fixed_time('2020-05-27T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_like(qr/May, at 10:00a\.?m\.?/);
+            $mech->content_contains('A paper &amp; cardboard collection has been reported as missed');
+            $mech->follow_link_ok({ text => 'Report a problem with a paper & cardboard collection' });
+            $mech->content_lacks('My bin was not collected', 'No option to report again in the enquiry list');
+            restore_time();
+        };
+
+        subtest 'After cutoff time' => sub {
+            set_fixed_time('2020-05-27T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_like(qr/May, at 10:00a\.?m\.?/);
+            $mech->follow_link_ok({ text => 'Report a problem with a garden waste collection' });
+            $mech->content_contains('My bin was not collected', 'Option to report in the enquiry list');
+            $mech->submit_form_ok({ with_fields => {category => 'Return request'} });
+            # 'Missed collection' information page
+            $mech->content_contains('Reports of missed collections must be raised within 2');
+            $mech->content_lacks('Continue', 'No option offered to continue enquiry');
+            restore_time();
+        };
+
+        subtest 'Other contains link back to menu' => sub {
+            set_fixed_time('2020-05-27T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_like(qr/May, at 10:00a\.?m\.?/);
+            $mech->follow_link_ok({ text => 'Report a problem with a garden waste collection' });
+            $mech->submit_form_ok({ with_fields => {category => 'General Enquiry'} });
+            $mech->content_contains("We cannot accept missed collection reports through this form.");
+            $mech->content_contains('enquiry?category=Return+request&amp;service_id=545');
+            restore_time();
+        };
+
+
+        for my $test (
+            { date => '2020-05-27T19:00:00Z', title => 'Within two days, contaminated', too_late => 0 },
+            { date => '2020-05-30T19:00:00Z', title => 'After two days, contaminated', too_late => 1 },
+        ) {
+            subtest $test->{title} => sub {
+                set_fixed_time($test->{date});
+                $echo->mock('GetTasks', sub { return &_bromley_test($_[1], $_[2], '33') });
+                $mech->get_ok('/waste/12345');
+                $mech->content_contains('We could not collect your waste as it was contaminated.', 'Waste template from resolution 33');
+                $mech->content_lacks('Report a non-recyclable refuse collection', 'Can not report a missed collection as resolved');
+                $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable refuse collection' });
+                # Enquiry type list page
+                $mech->content_contains('My bin was not collected', 'Can report a missed collection in the general enquiry list');
+                $mech->submit_form_ok({ with_fields => {category => 'Return request'} });
+                # 'Contaminated' information page
+                if ($test->{too_late}) {
+                    $mech->content_contains('Reports of missed collections must be raised within 2');
+                } else {
+                    $mech->content_contains('Please remove any contaminated items and we will empty your container on the next scheduled collection day');
+                }
+                $mech->content_lacks('Continue', 'No option offered to continue enquiry');
+                restore_time();
+            };
+        };
+
+        $echo->unmock('GetTasks'); # Otherwise, running under coverage, it is not garbage collected
     };
 
     subtest 'test not using different backend template' => sub {
@@ -600,11 +769,18 @@ subtest 'updating of waste reports' => sub {
             my ($key, $type, $value) = ${$args[3]->value}->value;
             my $external_id = ${$value->value}->value->value;
             my ($waste, $event_state_id, $resolution_code, $event_type_id) = split /-/, $external_id;
+            my %data;
+            if (($event_type_id||0) == 3240) {
+                $data{Data}{ExtensibleDatum} = [
+                    { DatatypeName => 'Investigation Outcome', Value => 1 },
+                ];
+            }
             return SOAP::Result->new(result => {
                 EventStateId => $event_state_id,
                 EventTypeId => $event_type_id || '2104',
                 LastUpdatedDate => { OffsetMinutes => 60, DateTime => '2020-06-24T14:00:00Z' },
                 ResolutionCodeId => $resolution_code,
+                %data,
             });
         } elsif ($method eq 'GetEventType') {
             return SOAP::Result->new(result => {
@@ -647,6 +823,13 @@ subtest 'updating of waste reports' => sub {
         $body->response_templates->create({
             title => 'Allocated title', text => 'This has been allocated',
             'auto_response' => 1, state => 'action scheduled',
+        });
+        $body->response_templates->create({
+            title => 'Return request approved',
+            text => 'We will return to pick up your waste.',
+            external_status_code => 'Approved',
+            state => '',
+            auto_response => 1,
         });
 
         @reports = $mech->create_problems_for_body(2, $body->id, 'Report missed collection', {
@@ -731,6 +914,17 @@ subtest 'updating of waste reports' => sub {
         $report->discard_changes;
         is $report->comments->count, ++$comment_count, 'A new update';
         is $report->state, 'unable to fix', 'A state change';
+
+        $report->update({ external_id => 'waste-15004--3240', state => 'confirmed' });
+        stdout_like {
+            $cobrand->waste_fetch_events({ verbose => 1 });
+        } qr/Updating report to state fixed - council, Completed/;
+        $report->discard_changes;
+        is $report->comments->count, ++$comment_count, 'A new update';
+        is $report->state, 'fixed - council', 'A state change';
+        $update = FixMyStreet::DB->resultset('Comment')->order_by('-id')->first;
+        is $update->text, 'We will return to pick up your waste.';
+        is $update->get_extra_metadata('external_status_code'), 'Approved';
     };
 
     FixMyStreet::override_config {
@@ -1818,6 +2012,35 @@ sub data_to_save {
     }
     $data{'collated_services'}->{'GetTasks'} = $echo->GetTasks([123, 456], [234, 567], [345, 678], [456, 789]);
     return \%data;
+}
+
+sub _bromley_test {
+    my $id = pop @_;
+    my %lookup = map { $_->[0] . ',' . $_->[1] => 1 } @_;
+    my $data = [];
+    my %issue = ( 66 => 'Wrong Bin Out', 33 => 'Bin Contaminated' );
+
+    push @$data, {
+        Ref => { Value => { anyType => [ '123', '456' ] } },
+        State => { Name => 'Not Completed' },
+        Resolution => { Ref => { Value => { anyType => $id } }, Name => $issue{$id} },
+        TaskTypeId => '3216',
+        CompletedDate => { DateTime => '2020-05-27T10:00:00Z' }
+    } if $lookup{"123,456"};
+    push @$data, {
+        Ref => { Value => { anyType => [ '234', '567' ] } },
+        State => { Name => 'Outstanding' },
+        CompletedDate => undef
+    } if $lookup{"234,567"};
+    push @$data, {
+        Ref => { Value => { anyType => [ '345', '678' ] } },
+        State => { Name => 'Not Completed' }
+    } if $lookup{"345,678"};
+    push @$data, {
+        Ref => { Value => { anyType => [ '456', '789' ] } },
+        CompletedDate => undef
+    } if $lookup{"456,789"};
+    return $data;
 }
 
 done_testing();
