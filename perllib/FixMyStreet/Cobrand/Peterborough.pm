@@ -144,6 +144,27 @@ sub lookup_site_code_config { {
     accept_types => { Polygon => 1 },
 } }
 
+=head2 record_update_extra_fields
+
+We want to create comments when flytipping metadata information is changed.
+
+=cut
+
+sub record_update_extra_fields {
+    my ($self, $problem, $update_params) = @_;
+    if ($problem->category =~ /fly tipping/ && $update_params) {
+        my $param_prefix = lc $problem->category;
+        $param_prefix =~ s/[^a-z]//g;
+        $param_prefix = "category_" . $param_prefix . "_";
+        foreach ('Land_Type', 'Primary_Waste_Type', 'Incident_Size') {
+            my $old = $problem->get_extra_field_value($_) || '';
+            my $new = $self->{c}->get_param($param_prefix . $_) || '';
+            $update_params->{extra}{detailed_information} = 1 if $new ne $old;
+        }
+    }
+    return {};
+}
+
 sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;
 
@@ -152,7 +173,15 @@ sub open311_munge_update_params {
     $params->{description} = "[Customer FMS update] " . $params->{description};
 
     # Send the FMS problem ID with the update.
-    $params->{service_request_id_ext} = $comment->problem->id;
+    my $problem = $comment->problem;
+    $params->{service_request_id_ext} = $problem->id;
+
+    if ($problem->category =~ /fly tipping/) {
+        foreach ('Land_Type', 'Primary_Waste_Type', 'Incident_Size') {
+            my $value = $problem->get_extra_field_value($_);
+            $params->{"attribute[$_]"} = $value if $value;
+        }
+    }
 }
 
 sub updates_sent_to_body {
@@ -161,14 +190,6 @@ sub updates_sent_to_body {
     my $code = $problem->contact->email;
     return 0 if $code =~ /^Bartec/;
     return 1;
-}
-
-sub should_skip_sending_update {
-    my ($self, $update) = @_;
-
-    my $code = $update->problem->contact->email;
-    return 1 if $code =~ /^Bartec/;
-    return 0;
 }
 
 around 'open311_config' => sub {
