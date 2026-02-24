@@ -1346,45 +1346,74 @@ FixMyStreet::override_config {
 
     subtest 'test general waste (refuse) container requests' => sub {
         foreach ((
+            # Some extra container rejection scenarios
             {
-                reason => 'extra',
-                property_people => 'Up to 5',
-                property_nappies => '1',
-                property_general_waste_bins => '1',
-                property_largest_general_waste_bin => '140L',
-                should_be_referred => 1,
-                expected_report_detail => "Request forwarded to Brent Council by email\n\n" .
-                                          "Quantity: 1\n\n" .
-                                          "2 Example Street, Brent, NW2 1AA\n\n" .
-                                          "Reason: I would like an extra container",
-            },
-            {
-                reason => 'extra',
-                property_people => 'Up to 5',
-                property_nappies => 'None',
-                property_general_waste_bins => '1',
-                property_largest_general_waste_bin => '140L',
                 should_be_referred => 0,
+                reason => 'extra',
+                property_people => 'Up to 5',
+                property_nappies => '0',
+                property_general_waste_bins => '1',
+                property_largest_general_waste_bin => '140L',
+                # Check report detail for rejections.
                 expected_report_detail => "Request automatically calculated\n\n" .
                                           "Quantity: 1\n\n" .
                                           "2 Example Street, Brent, NW2 1AA\n\n" .
                                           "Reason: I would like an extra container",
             },
             {
-                reason => 'damaged',
+                should_be_referred => 0,
+                reason => 'extra',
                 property_people => 'Up to 5',
-                property_nappies => 'None',
+                property_nappies => '1',
+                property_general_waste_bins => '2 or more',
+                property_largest_general_waste_bin => '140L',
+            },
+            {
+                should_be_referred => 0,
+                reason => 'extra',
+                property_people => '6 or more',
+                property_nappies => '1',
+                property_general_waste_bins => '1',
+                property_largest_general_waste_bin => '240L',
+            },
+            {
+                should_be_referred => 0,
+                reason => 'extra',
+                property_people => '6 or more',
+                property_nappies => '1',
+                property_general_waste_bins => '1',
+                property_largest_general_waste_bin => '360L',
+            },
+            # Some extra container referral scenarios
+            {
+                should_be_referred => 1,
+                reason => 'extra',
+                property_people => '6 or more',
+                property_nappies => '0',
                 property_general_waste_bins => '1',
                 property_largest_general_waste_bin => '140L',
                 should_be_referred => 1,
+                # Check report detail for referrals.
+                expected_report_detail => "Request forwarded to Brent Council by email\n\n" .
+                                          "Quantity: 1\n\n" .
+                                          "2 Example Street, Brent, NW2 1AA\n\n" .
+                                          "Reason: I would like an extra container",
+            },
+            {
+                should_be_referred => 1,
+                reason => 'extra',
+                property_people => 'Up to 5',
+                property_nappies => '1 or more',
+                property_general_waste_bins => '1',
+                property_largest_general_waste_bin => '140L',
             },
         )) {
+            my $should_be_referred = $_->{should_be_referred};
             my $reason = $_->{reason};
             my $people = $_->{property_people};
             my $nappies = $_->{property_nappies};
             my $bins = $_->{property_general_waste_bins};
             my $largest_bin_size = $_->{property_largest_general_waste_bin};
-            my $should_be_referred = $_->{should_be_referred};
             my $expected_report_detail = $_->{expected_report_detail};
 
             my $outcome_text = $should_be_referred ? 'REFER' : 'REFUSE';
@@ -1407,7 +1436,6 @@ FixMyStreet::override_config {
                 $mech->content_contains("My container is missing", "Can report missing container");
                 $mech->content_lacks("I am a new resident without a container", "Can not request new container as new resident");
 
-                my $reason = $_->{reason};
                 $mech->submit_form_ok({ with_fields => { 'request_reason' => $reason } }, "Request with reason $reason");
 
                 $mech->content_contains('Household details', "Questions for extra refuse container");
@@ -1426,10 +1454,12 @@ FixMyStreet::override_config {
 
                 my ($report) = FixMyStreet::DB->resultset('Problem')->search({ category => 'Request new container' })->order_by('-id')->first;
                 if ($should_be_referred) {
-                    is $report->get_extra_field_value('request_referral'), 1, 'Request was referred';
+                    # Exit early on failure to prevent clutter.
+                    is($report->get_extra_field_value('request_referral'), 1, 'Request was referred') or return;
                     is $report->state, 'confirmed', 'Referred report in confirmed state';
                 } else {
-                    is $report->get_extra_field_value('request_referral'), '', 'Request was refused';
+                    # Exit early on failure to prevent clutter.
+                    is($report->get_extra_field_value('request_referral'), '', 'Request was refused') or return;
                     is $report->state, 'fixed - council', 'Refused report in fixed - council state';
                 }
                 if ($expected_report_detail) {
