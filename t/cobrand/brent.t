@@ -1346,6 +1346,12 @@ FixMyStreet::override_config {
         $mech->follow_link_ok({url => 'http://brent.fixmystreet.com/waste/12345/request'});
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } }, "Choose refuse bin");
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'damaged' } }, "Request replacement for damaged refuse container");
+        $mech->submit_form_ok({ with_fields =>
+                {
+                    'property_people' => 'Up to 5' ,
+                    'property_children' => 'Yes',
+                },
+            }, "Answer refuse container questions");
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user1->email } });
         $mech->submit_form_ok({ with_fields => { 'process' => 'summary' } });
         $mech->content_contains('Your container request has been sent');
