@@ -72,7 +72,7 @@ $dropzone-frontpage-white-background-desktop: false !default;
 
 //hacks for desk/mob only stuff
 .desk-only {
-    display: block;
+    display: revert !important;
 }
 .mob-only {
     // Override `display: block` etc if other classes are defined
