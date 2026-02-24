@@ -464,6 +464,24 @@ FixMyStreet::override_config {
         $report->delete;
     };
 
+    subtest 'Saturday dates do not show extra charge note' => sub {
+        $mech->get_ok('/waste/10001/sharps');
+        $mech->submit_form_ok;
+
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    name  => 'Bob Marge',
+                    email => $user->email,
+                    phone => '44 07 111 111 111',
+                }
+            }
+        );
+
+        $mech->content_contains('Choose date for collection');
+        $mech->content_contains('5 July', 'Saturday date is shown');
+        $mech->content_lacks('extra charge', 'Saturday does not show extra charge on sharps form');
+    };
+
     subtest 'All eligible property classes show sharps section' => sub {
         my %eligible = (
             10001 => 'RD',
