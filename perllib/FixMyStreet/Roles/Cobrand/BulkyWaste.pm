@@ -670,7 +670,7 @@ sub bulky_reminders {
     # Can't see an easy way to find these apart from loop through them all.
     # Is only daily.
     my $collections = $self->problems->search({
-        category => ['Bulky collection', 'Small items collection'],
+        category => ['Bulky collection', 'Small items collection', 'Sharps collection'],
         state => [ FixMyStreet::DB::Result::Problem->open_states ], # XXX?
     });
 
@@ -680,7 +680,7 @@ sub bulky_reminders {
         $collections = $collections->search({
              -or => [
                 extra => { '\?' => 'payment_reference' },
-                category => 'Small items collection'
+                category => ['Small items collection', 'Sharps collection']
             ]
         });
     }
