@@ -173,7 +173,7 @@ has_field how_long_lived => (
 has_page request_refuse_container => (
     title => 'Household details',
     intro => 'refuse_call_us.html',
-    fields => [ 'property_type', 'property_people', 'property_nappies', 'continue'],
+    fields => [ 'property_type', 'property_people', 'property_nappies', 'property_general_waste_bins', 'continue'],
     next => 'about_you',
 );
 
@@ -210,6 +210,25 @@ has_field property_nappies =>(
         { value => '1', label => '1 or more' }
     ],
 );
+
+has_field property_general_waste_bins =>(
+    required => 1,
+    type => 'Select',
+    label => 'How many general waste bins do you currently have?',
+);
+
+sub options_property_general_waste_bins {
+    my $form = shift;
+    my $data = $form->saved_data;
+    my $choice = $data->{'request_reason'};
+    my @options;
+    if ($choice eq 'missing') {
+        push @options, { value => '0', label => 'None' };
+    }
+    push @options, { value => '1', label => '1' };
+    push @options, { value => '2', label => '2 or more' };
+    return @options;
+}
 
 has_field submit => (
     type => 'Submit',
