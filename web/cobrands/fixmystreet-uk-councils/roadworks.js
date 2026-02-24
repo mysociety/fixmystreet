@@ -84,7 +84,7 @@ fixmystreet.roadworks.display_message = function(feature) {
     }
     dt('Dates');
     var $dates = $("<dd></dd>").appendTo($dl);
-    var date_style = { weekday: 'long', day: 'numeric', month: 'long' };
+    var date_style = config.date_style || { weekday: 'long', day: 'numeric', month: 'long' };
     start = start.toLocaleDateString('en-gb', date_style);
     end = end.toLocaleDateString('en-gb', date_style);
     $dates.text(start + " to " + end);
@@ -100,6 +100,10 @@ fixmystreet.roadworks.display_message = function(feature) {
     if (attr.promoter) {
         dt('Responsibility');
         dd(attr.promoter);
+    }
+    if (config.show_id) {
+        dt('Permit number');
+        dd(attr.work_ref);
     }
 
     if (config.text_after) {
