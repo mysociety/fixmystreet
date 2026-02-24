@@ -1465,6 +1465,56 @@ FixMyStreet::override_config {
                 property_general_waste_bins => '2 or more',
                 property_largest_general_waste_bin => '360L',
             },
+            # Some missing container rejection scenarios
+            {
+                should_be_referred => 0,
+                reason => 'missing',
+                property_people => 'Up to 5',
+                property_nappies => '0',
+                property_general_waste_bins => '1',
+                property_largest_general_waste_bin => '140L',
+            },
+            {
+                should_be_referred => 0,
+                reason => 'missing',
+                property_people => '6 or more',
+                property_nappies => '1 or more',
+                property_general_waste_bins => '2 or more',
+                property_largest_general_waste_bin => '140L',
+            },
+            {
+                should_be_referred => 0,
+                reason => 'missing',
+                property_people => '6 or more',
+                property_nappies => '0',
+                property_general_waste_bins => '1',
+                property_largest_general_waste_bin => '240L',
+            },
+            # Some missing container referral scenarios
+            {
+                should_be_referred => 1,
+                reason => 'missing',
+                property_people => 'Up to 5',
+                property_nappies => '0',
+                property_general_waste_bins => '0',
+                property_largest_general_waste_bin => '140L',
+            },
+            {
+                should_be_referred => 1,
+                reason => 'missing',
+                property_people => '6 or more',
+                property_nappies => '0',
+                property_general_waste_bins => '1',
+                property_largest_general_waste_bin => '140L',
+            },
+            {
+                should_be_referred => 1,
+                reason => 'missing',
+                property_people => '6 or more',
+                property_nappies => '1',
+                property_general_waste_bins => '1',
+                property_largest_general_waste_bin => '360L',
+            },
         )) {
             my $should_be_referred = $_->{should_be_referred};
             my $reason = $_->{reason};
