@@ -53,6 +53,10 @@ step1 = first_page;
           <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Children in nappies at property</dt>
           <dd class="govuk-summary-list__value">[% form.label_for_field('property_nappies', data.property_nappies) %]</dd>
         </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Current general waste bins</dt>
+          <dd class="govuk-summary-list__value">[% form.label_for_field('property_general_waste_bins', data.property_general_waste_bins) %]</dd>
+        </div>
       [% END %]
     [% END %]
   [% FOR removal IN data.keys.grep('^removal-') %]
