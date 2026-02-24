@@ -1400,7 +1400,12 @@ sub request_referral {
             return 0 if $people == 1 && $nappies eq 'None' && $bins eq '2 or more';
             return 0 if $largest_bin_size ne '140L' && $bins eq '2 or more' && ($people <= 5 || $nappies eq 'None');
             return 1;
-        } else {
+        } elsif ($data->{request_reason} eq 'missing') {
+            return 1 if $bins eq 'None';
+            return 0 if $bins eq '2 or more';
+            # Only single bin scenarios left.
+            return 0 if $people == 1 && $nappies eq 'None';
+            return 0 if $largest_bin_size ne '140L' && ($people <= 5 || $nappies eq 'None');
             return 1;
         }
     }
@@ -1563,10 +1568,7 @@ sub waste_garden_mod_params {
 sub waste_post_report_creation {
     my ($self, $report, $data) = @_;
 
-    if (
-        $report->title =~ /Request new General rubbish bin \(grey bin\)/
-        && ($data->{request_reason} eq 'extra' || $data->{request_reason} eq 'damaged')
-        ) {
+    if ($report->title =~ /Request new General rubbish bin \(grey bin\)/) {
 
         if (!$report->get_extra_field_value('request_referral')) {
             $self->{c}->stash->{brent_request_automatic} = 1;
