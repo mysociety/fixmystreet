@@ -1304,6 +1304,7 @@ sub waste_munge_request_data {
         property_nappies
         property_type
         property_general_waste_bins
+        property_largest_general_waste_bin
     );
     for (@fields) {
         $c->set_param("request_$_", $data->{$_} || '');
