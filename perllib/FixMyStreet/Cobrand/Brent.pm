@@ -1387,9 +1387,10 @@ sub request_referral {
         )
     ) {
         if ($data->{request_reason} eq 'extra') {
-            if ($data->{property_people} == 6 || $data->{property_nappies} eq '1 or more') {
-                return 1;
-            }
+            return 0 if $data->{property_largest_general_waste_bin} ne '140L';
+            return 0 if $data->{property_general_waste_bins} eq '2 or more';
+            return 0 if $data->{property_people} == 1 && $data->{property_nappies} eq 'None';
+            return 1;
         } else {
           return 1;
         }

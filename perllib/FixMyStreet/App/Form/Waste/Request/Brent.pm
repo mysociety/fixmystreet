@@ -271,7 +271,7 @@ sub validate {
     return unless $self->page_name eq 'request_refuse_container';
     my $size_field = $self->field('property_largest_general_waste_bin');
     my $bins_field = $self->field('property_general_waste_bins');
-    if ($bins_field->value > 0 && $size_field->value eq 'none') {
+    if ($bins_field->value ne 'None' && $size_field->value eq 'none') {
         $size_field->add_error('Please provide the size of your largest general waste bin.');
     }
 }
