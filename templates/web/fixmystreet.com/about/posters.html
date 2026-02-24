@@ -15,6 +15,14 @@
     badge = '<a href="https://www.fixmystreet.com/"> <img src="https://www.fixmystreet.com/i/fms-badge.jpeg" alt="FixMyStreet - report, view or discuss local problems" border="0"></a>'
 %]
 
+[%
+    badge_parish_v1 = '<a href="https://www.fixmystreet.com/"> <img src="https://www.fixmystreet.com/i/fms-parish-website-badge.png" alt="Report, view and discuss local problems via our FixMyStreet page" border="0"></a>'
+%]
+
+[%
+    badge_parish_v2 = '<a href="https://www.fixmystreet.com/"> <img src="https://www.fixmystreet.com/i/fms-parish-website-badge-round.png" alt="Report, view and discuss local problems via our FixMyStreet page" border="0"></a>'
+%]
+
 [% BLOCK sidebar %]
 <div class="sticky-sidebar sticky-sidebar--help">
     <aside>
@@ -26,6 +34,8 @@
             <li><a href="#web">Website Badge</a></li>
             <li><a href="#print">Printed Materials</a></li>
             <li><a href="#premadeadverts">Pre-made Adverts</a></li>
+            <li><a href="#fms-parishes">Promotional material for parishes</a></li>
+            <li><a href="#fms-parishes">Website badges for parishes</a></li>
         </ul>
     </aside>
 </div>
@@ -85,11 +95,15 @@
 
 <h2 id="web">Website Badge</h2>
 
-<p class="badge-preview">[% badge | safe %]</p>
+<div class="badge-section">
+    <div>
+        <p>Copy and paste the text below to add this badge to your site:</p>
+        <textarea class="badge-code js-click-select">[% badge %]</textarea>
+        <p><small>(thanks to Lincolnshire Council for the image)</small></p>
+    </div>
 
-<p>Copy and paste the text below to add this badge to your site:</p>
-<textarea class="badge-code js-click-select">[% badge %]</textarea>
-<p><small>(thanks to Lincolnshire Council for the image)</small></p>
+    <p class="badge-preview">[% badge | safe %]</p>
+</div>
 
 <h2 id="print">Printed Materials</h2>
 
@@ -134,5 +148,36 @@
         <strong>One-sixteenth page advert</strong> (4cm wide, 6cm high)
     </a></li>
 </ul>
+
+<h2 id="fms-parishes">Promotional material for FixMyStreet Parishes</h2>
+
+<img src="/cobrands/fixmystreet.com/images/parishes/parish-media-pack-preview.png" class="pack-preview" alt="">
+
+<p>Let everyone know that your local parish council is now accepting FixMyStreet reports.</p>
+
+<ul>
+    <li>Poster and flyers to print out</li>
+    <li>An image to share on your social media channels</li>
+    <li>An email signature banner to signpost people to the service</li>
+    <li>A website badge</li>
+</ul>
+
+<a href="/cobrands/fixmystreet.com/posters/parishes-pack.zip" data-goodielink="parishes-pack" class="download-button">Download ZIP file</a>
+
+<h2 id="fms-parishes-badges">Website badges for parishes</h2>
+
+<div class="badge-section">
+    <div>
+        <p>Copy and paste the text below to add this badge to your site:</p>
+
+        <p class="govuk-!-margin-bottom-1"><strong>Square version</strong></p>
+        <textarea class="badge-code js-click-select govuk-!-margin-bottom-5">[% badge_parish_v1 %]</textarea>
+
+        <p class="govuk-!-margin-bottom-1"><strong>Round version</strong></p>
+        <textarea class="badge-code js-click-select govuk-!-margin-bottom-5">[% badge_parish_v2 %]</textarea>
+    </div>
+
+    <img class="badge-preview" width="285" height="285" src="/cobrands/fixmystreet.com/images/parishes/parish-web-badge-preview.png" alt="">
+</div>
 
 [% INCLUDE footer.html %]
