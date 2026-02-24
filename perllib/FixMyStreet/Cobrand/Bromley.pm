@@ -71,6 +71,7 @@ my %ALLOW_CLOSED_EVENT_TYPE_IDS = (
     2162 => 'crew_behaviour',
     2163 => 'damage_to_property',
     2186 => 'wrongful_removal',
+    3240 => 'return_request',
 );
 lock_hash(%ALLOW_CLOSED_EVENT_TYPE_IDS);
 
