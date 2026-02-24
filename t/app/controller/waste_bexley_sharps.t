@@ -1,3 +1,4 @@
+use Test::MockTime qw(:all);
 use FixMyStreet::Script::Reports;
 use FixMyStreet::TestMech;
 use t::Mock::Bexley;
@@ -487,6 +488,70 @@ FixMyStreet::override_config {
         $mech->content_contains('Choose date for collection');
         $mech->content_contains('5 July', 'Saturday date is shown');
         $mech->content_lacks('extra charge', 'Saturday does not show extra charge on sharps form');
+    };
+
+    subtest 'Sharps collection email reminders' => sub {
+        $mech->get_ok('/waste/10001/sharps');
+        $mech->submit_form_ok; # intro page
+        $mech->submit_form_ok({ with_fields => {
+            name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111',
+        }});
+        $mech->submit_form_ok({ with_fields => { chosen_date => '2025-06-27;1;' } });
+        $mech->submit_form_ok({ with_fields => {
+            sharps_collecting => 'Yes', sharps_delivering => 'No',
+        }});
+        $mech->submit_form_ok({ with_fields => {
+            collect_small_quantity => 3, collect_large_quantity => 2,
+        }});
+        $mech->submit_form_ok({ with_fields => {
+            collect_location        => 'Doorstep',
+            collect_glucose_monitor => 'No',
+            collect_cytotoxic       => 'Yes',
+        }});
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        $mech->clear_emails_ok;
+
+        my $report = FixMyStreet::DB->resultset('Problem')->search(
+            undef, { order_by => { -desc => 'id' } }
+        )->first;
+
+        my $cobrand = $body->get_cobrand_handler;
+
+        # Collection date is 2025-06-27. Too early — no reminder 3 days before.
+        set_fixed_time('2025-06-24T05:44:59Z');
+        $cobrand->bulky_reminders;
+        $mech->email_count_is(0, 'No reminder 3 days before collection');
+
+        # One day before — reminder is sent
+        set_fixed_time('2025-06-26T05:44:59Z');
+        $cobrand->bulky_reminders;
+        my $email = $mech->get_email;
+
+        is $email->header('Subject'),
+            'Sharps collection reminder - reference ' . $report->id,
+            'Correct reminder subject';
+
+        my $txt  = $mech->get_text_body_from_email($email);
+        my $html = $mech->get_html_body_from_email($email);
+
+        like $txt, qr/This is a reminder that your collection is tomorrow/,
+            'Reminder email distinguishable from confirmation (txt)';
+        like $txt, qr/${\$report->id}/, 'Includes request number (txt)';
+        like $txt, qr/Address:.*DA1 3NP/, 'Includes collection address (txt)';
+        like $txt, qr/Friday 27 June 2025/, 'Includes collection date (txt)';
+        like $txt, qr/Number of 1-litre boxes: 3/, 'Includes 1-litre box count (txt)';
+        like $txt, qr/Number of 5-litre boxes: 2/, 'Includes 5-litre box count (txt)';
+        like $txt, qr/Glucose monitoring devices: No/, 'Includes glucose monitor detail (txt)';
+        like $txt, qr/Cytotoxic waste: Yes/, 'Includes cytotoxic waste detail (txt)';
+        unlike $txt, qr{/waste/10001/sharps/cancel/}, 'No cancel link in reminder (txt)';
+
+        like $html, qr/Friday 27 June 2025/, 'Includes collection date (html)';
+        unlike $html, qr{/waste/10001/sharps/cancel/}, 'No cancel link in reminder (html)';
+        $mech->clear_emails_ok;
+
+        # No second reminder sent
+        $cobrand->bulky_reminders;
+        $mech->email_count_is(0, 'No duplicate reminder sent');
     };
 
     subtest 'All eligible property classes show sharps section' => sub {
