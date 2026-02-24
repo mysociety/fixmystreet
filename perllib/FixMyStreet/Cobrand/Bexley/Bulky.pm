@@ -76,8 +76,8 @@ sub bulky_date_label {
     my $format = '%A %e %B';
     my $label = $dt->strftime($format);
 
-    # Saturdays have higher pricing
-    if ( $dt->day_of_week == 6 ) {
+    # Saturdays have higher pricing for bulky, but not sharps
+    if ( $dt->day_of_week == 6 && !$self->{c}->stash->{sharps} ) {
         $label .= ' (extra charge)';
     }
 
