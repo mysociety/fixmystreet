@@ -1291,7 +1291,7 @@ sub waste_munge_request_data {
 
     my $c = $self->{c};
 
-    for (qw(how_long_lived contamination_reports ordered_previously property_people property_children)) {
+    for (qw(how_long_lived contamination_reports ordered_previously property_people property_children property_type)) {
         $c->set_param("request_$_", $data->{$_} || '');
     }
     my $referral = request_referral($id, $data);

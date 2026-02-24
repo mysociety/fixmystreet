@@ -173,8 +173,22 @@ has_field how_long_lived => (
 has_page request_refuse_container => (
     title => 'Household details',
     intro => 'refuse_call_us.html',
-    fields => [ 'property_people', 'property_children', 'continue'],
+    fields => [ 'property_type', 'property_people', 'property_children', 'continue'],
     next => 'about_you',
+);
+
+has_field property_type =>(
+    required => 1,
+    type => 'Select',
+    label => 'Please select your property type',
+    options => [
+        { value => 'House (Entire property)',
+          label => 'House (Entire property)' },
+        { value => 'House converted flat (Self contained)',
+          label => 'House converted flat (Self contained)' },
+        { value => 'Shared flat',
+          label => 'Shared flat' },
+    ],
 );
 
 has_field property_people =>(
