@@ -210,6 +210,7 @@ create_contact({ category => 'Request new container', email => 'request@example.
     { code => 'request_property_type', required => 0, automated => 'hidden_field' },
     { code => 'request_property_nappies', required => 0, automated => 'hidden_field' },
     { code => 'request_property_general_waste_bins', required => 0, automated => 'hidden_field' },
+    { code => 'request_property_largest_general_waste_bin', required => 0, automated => 'hidden_field' },
 );
 create_contact({ category => 'Assisted collection add', email => 'Echo-assisted' },
     { code => 'Notes', description => 'Additional notes', required => 0, datatype => 'text' },
@@ -1354,6 +1355,7 @@ FixMyStreet::override_config {
                     'property_people' => 'Up to 5',
                     'property_nappies' => 'None',
                     'property_general_waste_bins' => '1',
+                    'property_largest_general_waste_bin' => '140L',
                 },
             }, "Answer refuse container questions");
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user1->email } });
@@ -1396,6 +1398,7 @@ FixMyStreet::override_config {
                         'property_people' => 'Up to 5',
                         'property_nappies' => $test->{nappies},
                         'property_general_waste_bins' => '1',
+                        'property_largest_general_waste_bin' => '140L',
                     },
                 }, "Request extra container");
             $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user1->email } });

@@ -173,7 +173,14 @@ has_field how_long_lived => (
 has_page request_refuse_container => (
     title => 'Household details',
     intro => 'refuse_call_us.html',
-    fields => [ 'property_type', 'property_people', 'property_nappies', 'property_general_waste_bins', 'continue'],
+    fields => [
+        'property_type',
+        'property_people',
+        'property_nappies',
+        'property_general_waste_bins',
+        'property_largest_general_waste_bin',
+        'continue'
+    ],
     next => 'about_you',
 );
 
@@ -230,11 +237,43 @@ sub options_property_general_waste_bins {
     return @options;
 }
 
+has_field property_largest_general_waste_bin =>(
+    required => 1,
+    type => 'Select',
+    label => 'What size is the largest general waste bin?',
+);
+
+sub options_property_largest_general_waste_bin {
+    my $form = shift;
+    my $data = $form->saved_data;
+    my $choice = $data->{'request_reason'};
+    my @options;
+    if ($choice eq 'missing') {
+        # Only the 'missing' request type allows for there being no
+        # existing bins.
+        push @options, { value => 'none', label => 'No bins' };
+    }
+    push @options, { value => '140L', label => '140 Litres' };
+    push @options, { value => '240L', label => '240 Litres' };
+    push @options, { value => '360L', label => '360 Litres' };
+    return @options;
+}
+
 has_field submit => (
     type => 'Submit',
     value => 'Request container',
     element_attr => { class => 'govuk-button' },
     order => 999,
 );
+
+sub validate {
+    my $self = shift;
+    return unless $self->page_name eq 'request_refuse_container';
+    my $size_field = $self->field('property_largest_general_waste_bin');
+    my $bins_field = $self->field('property_general_waste_bins');
+    if ($bins_field->value > 0 && $size_field->value eq 'none') {
+        $size_field->add_error('Please provide the size of your largest general waste bin.');
+    }
+}
 
 1;
