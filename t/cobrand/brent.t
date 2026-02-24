@@ -193,7 +193,8 @@ $contact->set_extra_fields(
 $contact->update;
 
 create_contact({ category => 'Report missed collection', email => 'Echo-missed' });
-create_contact({ category => 'Request new container', email => 'request@example.org' },
+create_contact({ category => 'Request new container', email => 'request@example.org',
+    extra => { anonymous_allowed => 1 } },
     { code => 'Container_Request_Quantity', required => 1, automated => 'hidden_field' },
     { code => 'Container_Request_Container_Type', required => 1, automated => 'hidden_field' },
     { code => 'Container_Request_Action', required => 0, automated => 'hidden_field' },
@@ -1557,17 +1558,23 @@ FixMyStreet::override_config {
                         },
                     }, "Answer household detail questions");
 
-                $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user1->email } });
+                if ($should_be_referred) {
+                    # Exit early to prevent clutter.
+                    $mech->content_contains('About you', "'about you' section shown - report will be referred") or return;
+                    # We onlt collect personal details if the request won't be rejected.
+                    $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user1->email } });
+                } else {
+                    # Exit early to prevent clutter.
+                    $mech->content_lacks('About you', "'about you' section not shown - report will be rejected") or return;
+                }
                 $mech->submit_form_ok({ with_fields => { 'process' => 'summary' } });
 
                 my ($report) = FixMyStreet::DB->resultset('Problem')->search({ category => 'Request new container' })->order_by('-id')->first;
                 if ($should_be_referred) {
-                    # Exit early on failure to prevent clutter.
-                    is($report->get_extra_field_value('request_referral'), 1, 'Request was referred') or return;
+                    is $report->get_extra_field_value('request_referral'), 1, 'Request was referred';
                     is $report->state, 'confirmed', 'Referred report in confirmed state';
                 } else {
-                    # Exit early on failure to prevent clutter.
-                    is($report->get_extra_field_value('request_referral'), '', 'Request was refused') or return;
+                    is $report->get_extra_field_value('request_referral'), '', 'Request was refused';
                     is $report->state, 'fixed - council', 'Refused report in fixed - council state';
                 }
                 if ($expected_report_detail) {

@@ -1291,6 +1291,11 @@ sub waste_munge_request_data {
 
     my $c = $self->{c};
 
+    if ($data->{about_you_skipped}) {
+        $data->{name} = "Waste User";  # Can't use the anonymous account name as it fails validation.
+        $data->{email} = $self->anonymous_account->{email};
+    }
+
     my @fields = qw(
         how_long_lived
         contamination_reports
