@@ -1291,7 +1291,7 @@ sub waste_munge_request_data {
 
     my $c = $self->{c};
 
-    for (qw(how_long_lived contamination_reports ordered_previously property_people property_children property_type)) {
+    for (qw(how_long_lived contamination_reports ordered_previously property_people property_nappies property_type)) {
         $c->set_param("request_$_", $data->{$_} || '');
     }
     my $referral = request_referral($id, $data);
@@ -1372,7 +1372,7 @@ sub request_referral {
         )
     ) {
         if ($data->{request_reason} eq 'extra') {
-            if ($data->{property_people} == 6 || $data->{property_children} eq 'Yes') {
+            if ($data->{property_people} == 6 || $data->{property_nappies} == 1) {
                 return 1;
             }
         } else {

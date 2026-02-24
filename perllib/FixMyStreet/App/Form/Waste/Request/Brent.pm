@@ -173,7 +173,7 @@ has_field how_long_lived => (
 has_page request_refuse_container => (
     title => 'Household details',
     intro => 'refuse_call_us.html',
-    fields => [ 'property_type', 'property_people', 'property_children', 'continue'],
+    fields => [ 'property_type', 'property_people', 'property_nappies', 'continue'],
     next => 'about_you',
 );
 
@@ -201,13 +201,13 @@ has_field property_people =>(
     ],
 );
 
-has_field property_children =>(
+has_field property_nappies =>(
     required => 1,
     type => 'Select',
-    label => 'Do any children live at the property?',
+    label => 'How many children in nappies live at your property?',
     options => [
-        { value => 'No', label => 'No' },
-        { value => 'Yes', label => 'Yes' }
+        { value => '0', label => 'None' },
+        { value => '1', label => '1 or more' }
     ],
 );
 

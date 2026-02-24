@@ -1351,7 +1351,7 @@ FixMyStreet::override_config {
                 {
                     'property_type' => 'Shared flat',
                     'property_people' => 'Up to 5',
-                    'property_children' => 'Yes',
+                    'property_nappies' => 'None',
                 },
             }, "Answer refuse container questions");
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user1->email } });
@@ -1369,8 +1369,8 @@ FixMyStreet::override_config {
 
     subtest 'test requesting an extra refuse container' => sub {
         for my $test (
-            { children => 'Yes', detail => "Request forwarded to Brent Council by email\n\nQuantity: 1\n\n2 Example Street, Brent, NW2 1AA\n\nReason: I would like an extra container", referral => 1},
-            { children => 'No', detail => "Request automatically calculated\n\nQuantity: 1\n\n2 Example Street, Brent, NW2 1AA\n\nReason: I would like an extra container", referral => ''},
+            { nappies => '1 or more', detail => "Request forwarded to Brent Council by email\n\nQuantity: 1\n\n2 Example Street, Brent, NW2 1AA\n\nReason: I would like an extra container", referral => 1},
+            { nappies => 'None', detail => "Request automatically calculated\n\nQuantity: 1\n\n2 Example Street, Brent, NW2 1AA\n\nReason: I would like an extra container", referral => ''},
         ) {
             FixMyStreet::DB->resultset('Problem')->search(
                 {
@@ -1392,7 +1392,7 @@ FixMyStreet::override_config {
                     {
                         'property_type' => 'Shared flat',
                         'property_people' => 'Up to 5',
-                        'property_children' => $test->{children},
+                        'property_nappies' => $test->{nappies},
                     },
                 }, "Request extra container");
             $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user1->email } });
