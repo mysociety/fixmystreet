@@ -1381,13 +1381,22 @@ sub request_referral {
           || $data->{'container-' . $CONTAINER_IDS{rubbish_grey_bin}}
         )
     ) {
+        my $bins = $data->{property_general_waste_bins};
+        my $largest_bin_size = $data->{property_largest_general_waste_bin};
+        my $people = $data->{property_people};
+        my $nappies = $data->{property_nappies};
+
         if ($data->{request_reason} eq 'extra') {
-            return 0 if $data->{property_largest_general_waste_bin} ne '140L';
-            return 0 if $data->{property_general_waste_bins} >= 2;
-            return 0 if $data->{property_people} == 1 && $data->{property_nappies} == 0;
+            return 0 if $largest_bin_size ne '140L';
+            return 0 if $bins >= 2;
+            return 0 if $people == 1 && $nappies == 0;
+            return 1;
+        } elsif ($data->{request_reason} eq 'damaged') {
+            return 0 if $people == 1 && $nappies == 0 && $bins >= 2;
+            return 0 if $largest_bin_size ne '140L' && $bins >= 2 && ($people <= 5 || $nappies == 0);
             return 1;
         } else {
-          return 1;
+            return 1;
         }
     }
 }
@@ -1551,7 +1560,7 @@ sub waste_post_report_creation {
 
     if (
         $report->title =~ /Request new General rubbish bin \(grey bin\)/
-        && $data->{request_reason} eq 'extra'
+        && ($data->{request_reason} eq 'extra' || $data->{request_reason} eq 'damaged')
         ) {
 
         if (!$report->get_extra_field_value('request_referral')) {
