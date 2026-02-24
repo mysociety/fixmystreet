@@ -59,8 +59,8 @@ fixmystreet.roadworks.config = {};
 
 fixmystreet.roadworks.display_message = function(feature) {
     var attr = feature.attributes,
-        start = new Date(attr.start_date).toDateString(),
-        end = new Date(attr.end_date).toDateString(),
+        start = new Date(attr.start_date),
+        end = new Date(attr.end_date),
         summary = attr.summary,
         desc = attr.description;
 
@@ -69,23 +69,37 @@ fixmystreet.roadworks.display_message = function(feature) {
         tag_top = config.tag_top || 'p',
         colon = config.colon ? ':' : '';
 
+    function dt(name) {
+        $dl.append("<dt>" + name + colon + "</dt>");
+    }
+    function dd(text) {
+        $dl.append($("<dd></dd>").text(text));
+    }
+
     var $msg = $('<div class="js-roadworks-message box-warning"><' + tag_top + '>Roadworks are scheduled near this location, so you may not need to report your issue.</' + tag_top + '></div>');
     var $dl = $("<dl></dl>").appendTo($msg);
-    $dl.append("<dt>Dates" + colon + "</dt>");
+    if (attr.street_name) {
+        dt('Location');
+        dd([attr.street_name, attr.area_name].filter(Boolean).join(', '));
+    }
+    dt('Dates');
     var $dates = $("<dd></dd>").appendTo($dl);
-    $dates.text(start + " until " + end);
+    var date_style = { weekday: 'long', day: 'numeric', month: 'long' };
+    start = start.toLocaleDateString('en-gb', date_style);
+    end = end.toLocaleDateString('en-gb', date_style);
+    $dates.text(start + " to " + end);
     if (config.extra_dates_text) {
         $dates.append('<br>' + config.extra_dates_text);
     }
-    $dl.append("<dt>" + summary_heading_text + colon + "</dt>");
-    $dl.append($("<dd></dd>").text(summary));
+    dt(summary_heading_text);
+    dd(summary);
     if (desc) {
-        $dl.append("<dt>Description" + colon + "</dt>");
-        $dl.append($("<dd></dd>").text(desc));
+        dt('Description');
+        dd(desc);
     }
     if (attr.promoter) {
-        $dl.append("<dt>Responsibility</dt>");
-        $dl.append($("<dd></dd>").text(attr.promoter));
+        dt('Responsibility');
+        dd(attr.promoter);
     }
 
     if (config.text_after) {
