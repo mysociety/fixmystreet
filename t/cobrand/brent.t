@@ -207,6 +207,7 @@ create_contact({ category => 'Request new container', email => 'request@example.
     { code => 'request_ordered_previously', required => 0, automated => 'hidden_field' },
     { code => 'request_contamination_reports', required => 0, automated => 'hidden_field' },
     { code => 'request_property_people', required => 0, automated => 'hidden_field' },
+    { code => 'request_property_type', required => 0, automated => 'hidden_field' },
     { code => 'request_property_nappies', required => 0, automated => 'hidden_field' },
 );
 create_contact({ category => 'Assisted collection add', email => 'Echo-assisted' },
@@ -1348,7 +1349,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'damaged' } }, "Request replacement for damaged refuse container");
         $mech->submit_form_ok({ with_fields =>
                 {
-                    'property_people' => 'Up to 5' ,
+                    'property_type' => 'Shared flat',
+                    'property_people' => 'Up to 5',
                     'property_children' => 'Yes',
                 },
             }, "Answer refuse container questions");
@@ -1388,7 +1390,8 @@ FixMyStreet::override_config {
             $mech->content_contains('Household details', "Questions for extra refuse container");
             $mech->submit_form_ok({ with_fields =>
                     {
-                        'property_people' => 'Up to 5' ,
+                        'property_type' => 'Shared flat',
+                        'property_people' => 'Up to 5',
                         'property_children' => $test->{children},
                     },
                 }, "Request extra container");
