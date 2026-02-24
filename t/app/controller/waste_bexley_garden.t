@@ -2707,6 +2707,10 @@ FixMyStreet::override_config {
         });
 
         $mech->log_in_ok($staff_user->email);
+
+        $mech->get_ok('/waste/20001/garden_renew');
+        $mech->content_lacks('which will renew automatically');
+
         $mech->get_ok('/waste/20001/garden_cancel');
         $mech->submit_form_ok({
             with_fields => {

@@ -315,6 +315,8 @@ sub waste_get_current_payment_method {
     my $uprn = $property->{uprn};
     return unless $uprn;
 
+    return unless $self->{c}->action eq 'waste/garden/cancel';
+
     my $legacy_contract_ids = BexleyContracts::contract_ids_for_uprn($uprn);
     if ($legacy_contract_ids && @$legacy_contract_ids) {
         return 'direct_debit';
