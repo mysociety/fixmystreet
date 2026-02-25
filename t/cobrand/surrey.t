@@ -1,6 +1,7 @@
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 use FixMyStreet::Script::CSVExport;
+use FixMyStreet::Script::UK::AutoClose;
 use File::Temp 'tempdir';
 
 my $mech = FixMyStreet::TestMech->new;
@@ -11,7 +12,8 @@ END { FixMyStreet::App->log->enable('info'); }
 
 use_ok 'FixMyStreet::Cobrand::Surrey';
 
-my $surrey = $mech->create_body_ok(2242, 'Surrey County Council', { cobrand => 'surrey' });
+my $comment_user = $mech->create_user_ok('systemuser@surrey.example.com');
+my $surrey = $mech->create_body_ok(2242, 'Surrey County Council', { cobrand => 'surrey', comment_user => $comment_user });
 my $surrey_staff_user = $mech->create_user_ok( 'staff@example.com', name => 'Staff User', from_body => $surrey );
 $mech->create_contact_ok(body_id => $surrey->id, category => 'Potholes', email => 'potholes@example.org');
 (my $report) = $mech->create_problems_for_body(1, $surrey->id, 'Pothole', {
@@ -130,8 +132,63 @@ FixMyStreet::override_config {
         $mech->clear_emails_ok;
     };
 
+    subtest 'Auto-close Parking illegally reports after 5 days' => sub {
+        $mech->create_contact_ok(body_id => $surrey->id, category => 'Parking illegally', email => 'parking@example.org');
+
+        my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+
+        my ($parking_old) = $mech->create_problems_for_body(1, $surrey->id, 'Old parking report', {
+            category => 'Parking illegally',
+            cobrand => 'surrey',
+            latitude => 51.293415,
+            longitude => -0.441269,
+            areas => '2242',
+            confirmed => $now->clone->subtract(days => 6),
+            state => 'confirmed',
+        });
+
+        my ($parking_new) = $mech->create_problems_for_body(1, $surrey->id, 'New parking report', {
+            category => 'Parking illegally',
+            cobrand => 'surrey',
+            latitude => 51.293415,
+            longitude => -0.441269,
+            areas => '2242',
+            confirmed => $now->clone->subtract(days => 3),
+            state => 'confirmed',
+        });
+
+        my ($potholes_old) = $mech->create_problems_for_body(1, $surrey->id, 'Old pothole report', {
+            category => 'Potholes',
+            cobrand => 'surrey',
+            latitude => 51.293415,
+            longitude => -0.441269,
+            areas => '2242',
+            confirmed => $now->clone->subtract(days => 6),
+            state => 'confirmed',
+        });
+
+        FixMyStreet::Script::UK::AutoClose->new(
+            commit => 1,
+            retain_alerts => 1,
+            body_name => 'Surrey County Council',
+            category => 'Parking illegally',
+            to => 5,
+            closure_text => 'This report has been closed automatically.',
+        )->close;
+
+        $parking_old->discard_changes;
+        $parking_new->discard_changes;
+        $potholes_old->discard_changes;
+
+        is $parking_old->state, 'closed', 'Old parking report is closed';
+        is $parking_new->state, 'confirmed', 'New parking report remains open';
+        is $potholes_old->state, 'confirmed', 'Potholes report remains open';
+
+        my $comment = $parking_old->comments->first;
+        ok $comment, 'Comment was added to closed report';
+        is $comment->text, 'This report has been closed automatically.', 'Comment has correct closure text';
+        is $comment->problem_state, 'closed', 'Comment has correct problem state';
+    };
 };
-
-
 
 done_testing();
