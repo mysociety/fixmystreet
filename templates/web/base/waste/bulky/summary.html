@@ -142,37 +142,7 @@ SET data = form.saved_data;
 
       <hr>
     [% IF sharps %]
-      [% IF data.sharps_collecting == 'Yes' %]
-      <div class="summary-section-header">
-        <h3 class="summary-section--heading">Collection details</h3>
-        [% PROCESS change_answers_button goto='collection_quantities' %]
-      </div>
-      <dl>
-        <dt>Number of 1-litre boxes</dt>
-        <dd>[% data.collect_small_quantity %]</dd>
-        <dt>Number of 5-litre boxes</dt>
-        <dd>[% data.collect_large_quantity %]</dd>
-        <dt>Collection location</dt>
-        <dd>[% data.collect_location == 'Other' ? 'Other: ' _ data.collect_location_other : data.collect_location %]</dd>
-        <dt>Glucose monitoring devices</dt>
-        <dd>[% data.collect_glucose_monitor %]</dd>
-        <dt>Cytotoxic waste</dt>
-        <dd>[% data.collect_cytotoxic %]</dd>
-      </dl>
-      [% END %]
-
-      [% IF data.sharps_delivering == 'Yes' %]
-      <div class="summary-section-header">
-        <h3 class="summary-section--heading">Delivery details</h3>
-        [% PROCESS change_answers_button goto='delivery_details' %]
-      </div>
-      <dl>
-        <dt>Box size</dt>
-        <dd>[% data.deliver_size %]</dd>
-        <dt>Quantity</dt>
-        <dd>[% data.deliver_quantity %]</dd>
-      </dl>
-      [% END %]
+      [% PROCESS 'waste/sharps/_details.html' data = data %]
 
     [% ELSE %]
 

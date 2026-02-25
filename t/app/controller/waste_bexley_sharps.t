@@ -1,4 +1,6 @@
-use Test::MockTime qw(:all);
+# Must be at top
+use Test::MockTime 'set_fixed_time';
+
 use FixMyStreet::Script::Reports;
 use FixMyStreet::TestMech;
 use t::Mock::Bexley;
@@ -51,7 +53,12 @@ FixMyStreet::override_config {
 }, sub {
     subtest 'Eligible property can make sharps booking' => sub {
         $mech->get_ok('/waste/10001');
-        $mech->content_contains('Sharps');
+        $mech->content_contains('Arrange a sharps collection');
+        # Sharps section
+        $mech->content_contains('You need to sign in to see the full details of this property.');
+        $mech->content_contains('Book a collection');
+        $mech->content_lacks('View existing collections');
+        $mech->content_lacks('Check collection details');
 
         $mech->get_ok('/waste/10001/sharps');
         $mech->content_contains('Book sharps collection');
@@ -214,6 +221,9 @@ FixMyStreet::override_config {
 
         $mech->clear_emails_ok();
         FixMyStreet::Script::Reports::send();
+        # Manually set external ID on report
+        $report->external_id('Whitespace-123');
+        $report->update;
         # Email to council and email to user (former is Open311 in real life)
         $mech->email_count_is(2);
         my ( undef, $email_to_user ) = $mech->get_email;
@@ -245,11 +255,26 @@ FixMyStreet::override_config {
         like $email_html, qr/Box size: 1-litre/;
         like $email_html, qr/Quantity: 5/;
 
+        set_fixed_time('2025-06-01T12:00:00Z');
+
         subtest 'View sharps report' => sub {
+            note 'Sharps section on bin days page shows same options because no user logged in';
+            $mech->get_ok('/waste/10001');
+            $mech->content_contains('You need to sign in to see the full details of this property.');
+            $mech->content_contains('Book a collection');
+            $mech->content_lacks('View existing collections');
+            $mech->content_lacks('Check collection details');
+
             $mech->get( '/report/' . $report->id );
             is $mech->res->code, 403, 'cannot view if not logged in';
 
             $mech->log_in_ok( $report->user->email );
+            $mech->get_ok('/waste/10001');
+            $mech->content_lacks('You need to sign in to see the full details of this property.');
+            $mech->content_contains('Book a collection');
+            $mech->content_lacks('View existing collections');
+            $mech->content_contains('Check collection details');
+
             $mech->get_ok( '/report/' . $report->id );
 
             # Report page should show sharps-specific details
@@ -271,10 +296,53 @@ FixMyStreet::override_config {
             $mech->content_lacks('State pension?');
             $mech->content_lacks('Physical disability?');
 
-            $mech->log_out_ok;
+            $mech->content_contains('Cancel this booking');
         };
 
-        $report->delete;
+        subtest 'Cancel sharps collection' => sub {
+            $mech->log_out_ok;
+
+            $mech->get_ok('/waste/10001');
+            $mech->content_lacks('Cancel booking');
+            $mech->get( '/waste/10001/sharps/cancel/' . $report->id );
+            $mech->text_contains('Sign in  or create an account', 'must sign in to cancel');
+
+            $mech->log_in_ok( $report->user->email );
+
+            $mech->get_ok('/waste/10001');
+            $mech->content_contains('Cancel booking');
+
+            $mech->get_ok( '/waste/10001/sharps/cancel/' . $report->id );
+
+            $mech->text_contains('Cancel your sharps collection');
+            $mech->text_contains('I confirm I wish to cancel my sharps collection');
+
+            $mech->text_contains('Collection details');
+            $mech->text_contains('Number of 1-litre boxes3');
+            $mech->text_contains('Number of 5-litre boxes2');
+            $mech->text_contains('Collection locationDoorstep');
+            $mech->text_contains('Glucose monitoring devicesNo');
+            $mech->text_contains('Cytotoxic wasteYes');
+
+            $mech->text_contains('Delivery details');
+            $mech->text_contains('Box size1-litre');
+            $mech->text_contains('Quantity5');
+
+            $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
+
+            $mech->text_contains('Your booking has been cancelled');
+            my $id = $report->id;
+            $mech->text_like(qr/your sharps collection cancellation.*$id/);
+
+            $report->discard_changes;
+
+            like $report->detail, qr/Cancelled at user request/;
+            is $report->state, 'cancelled';
+        };
+
+        $mech->log_out_ok;
+
+        $mech->delete_problems_for_body($body->id);
     };
 
     subtest 'Sharps booking with delivery only' => sub {
