@@ -315,6 +315,46 @@ FixMyStreet::override_config {
             $mech->content_contains('Cancel this booking');
         };
 
+        subtest 'Cancel sharps collection' => sub {
+            $mech->log_out_ok;
+
+            $mech->get_ok('/waste/10001');
+            $mech->content_lacks('Cancel booking');
+            $mech->get( '/waste/10001/sharps/cancel/' . $report->id );
+            $mech->text_contains('Sign in  or create an account', 'must sign in to cancel');
+
+            $mech->log_in_ok( $report->user->email );
+
+            $mech->get_ok('/waste/10001');
+            $mech->content_contains('Cancel booking');
+
+            $mech->get_ok( '/waste/10001/sharps/cancel/' . $report->id );
+
+            $mech->text_contains('Cancel your sharps booking');
+            $mech->text_contains('I confirm I wish to cancel my sharps booking');
+
+            $mech->text_contains('Collection details');
+            $mech->text_contains('Number of 1-litre boxes3');
+            $mech->text_contains('Number of 5-litre boxes2');
+            $mech->text_contains('Collection locationOn the doorstep');
+            $mech->text_contains('Glucose monitoring devicesNo');
+
+            $mech->text_contains('Delivery details');
+            $mech->text_contains('Box size1-litre');
+            $mech->text_contains('Quantity5');
+
+            $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
+
+            $mech->text_contains('Your booking has been cancelled');
+            my $id = $report->id;
+            $mech->text_like(qr/your sharps booking cancellation.*$id/);
+
+            $report->discard_changes;
+
+            like $report->detail, qr/Cancelled at user request/;
+            is $report->state, 'cancelled';
+        };
+
         $mech->log_out_ok;
 
         $mech->delete_problems_for_body($body->id);
