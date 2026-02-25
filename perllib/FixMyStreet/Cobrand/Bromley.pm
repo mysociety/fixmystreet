@@ -75,6 +75,22 @@ my %ALLOW_CLOSED_EVENT_TYPE_IDS = (
 );
 lock_hash(%ALLOW_CLOSED_EVENT_TYPE_IDS);
 
+my %RESOLUTION_CODES = (
+    33 => 'contaminated', # Contaminated
+    66 => 'not-presented',
+    522 => 'contaminated', # Con - Paper & Card
+    523 => 'contaminated', # Con - Food
+    524 => 'contaminated', # Con - Textiles
+    525 => 'contaminated', # Con - Tetra Pack
+    526 => 'contaminated', # Con - Electrical Items
+    527 => 'contaminated', # Con - Nappies
+    528 => 'contaminated', # Con - Rigid Plastics
+    529 => 'contaminated', # Con - Other
+    674 => 'contaminated', # Con - Refuse
+    802 => 'contaminated', # Con - Clinical
+);
+lock_hash(%RESOLUTION_CODES);
+
 sub report_validation {
     my ($self, $report, $errors) = @_;
 
@@ -1022,9 +1038,7 @@ sub return_request_option {
     return 'too-late' unless $service->{report_within_time};
 
     my $resolution_id = $last->{resolution_id} || 0;
-    return 'not-presented' if $resolution_id == 66;
-    return 'contaminated' if $resolution_id == 33;
-
+    return $RESOLUTION_CODES{$resolution_id} if exists $RESOLUTION_CODES{$resolution_id};
     return '';
 }
 
