@@ -111,6 +111,18 @@ FixMyStreet::override_config {
         );
 
         $mech->content_contains('Collection quantities');
+
+        # Validate individual and total collection limits
+        $mech->submit_form_ok(
+            { with_fields => { collect_small_quantity => 6, collect_large_quantity => 0 } } );
+        $mech->content_contains('A maximum of 5 one-litre boxes can be collected per booking');
+        $mech->submit_form_ok(
+            { with_fields => { collect_small_quantity => 0, collect_large_quantity => 4 } } );
+        $mech->content_contains('A maximum of 3 five-litre boxes can be collected per booking');
+        $mech->submit_form_ok(
+            { with_fields => { collect_small_quantity => 5, collect_large_quantity => 4 } } );
+        $mech->content_contains('A maximum of 8 boxes can be collected per booking');
+
         $mech->submit_form_ok(
             {   with_fields => {
                     collect_small_quantity => 3,
@@ -130,6 +142,15 @@ FixMyStreet::override_config {
         );
 
         $mech->content_contains('Delivery details');
+
+        # Validate delivery limits
+        $mech->submit_form_ok(
+            { with_fields => { deliver_size => '5-litre', deliver_quantity => 4 } } );
+        $mech->content_contains('A maximum of 3 five-litre boxes can be delivered per booking');
+        $mech->submit_form_ok(
+            { with_fields => { deliver_size => '1-litre', deliver_quantity => 6 } } );
+        $mech->content_contains('A maximum of 5 one-litre boxes can be delivered per booking');
+
         $mech->submit_form_ok(
             {   with_fields => {
                     deliver_size => '1-litre',
