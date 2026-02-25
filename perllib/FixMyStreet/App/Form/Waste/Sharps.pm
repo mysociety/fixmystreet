@@ -202,15 +202,24 @@ sub validate {
         if ($total == 0) {
             $self->add_form_error('You must specify at least one box for collection');
         } elsif ($total > 8) {
-            $self->add_form_error('You can collect a maximum of 8 boxes at a time');
+            $self->add_form_error('A maximum of 8 boxes can be collected per booking');
+        }
+        if ($small > 5) {
+            $self->add_form_error('A maximum of 5 one-litre boxes can be collected per booking');
+        }
+        if ($large > 3) {
+            $self->add_form_error('A maximum of 3 five-litre boxes can be collected per booking');
         }
     }
 
     if ($self->current_page->name eq 'delivery_details') {
         my $size = $self->field('deliver_size')->value || '';
         my $quantity = $self->field('deliver_quantity')->value || 0;
+        if ($size eq '1-litre' && $quantity > 5) {
+            $self->add_form_error('A maximum of 5 one-litre boxes can be delivered per booking');
+        }
         if ($size eq '5-litre' && $quantity > 3) {
-            $self->add_form_error('You can request a maximum of 3 five-litre boxes');
+            $self->add_form_error('A maximum of 3 five-litre boxes can be delivered per booking');
         }
     }
 }
