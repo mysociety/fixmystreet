@@ -382,7 +382,6 @@ sub get_all_payments {
     return $refs;
 }
 
-# XXX Handle sharps
 sub find_booked_collections {
     my ( $self, $uprn, $recent, $retry ) = @_;
 
@@ -390,14 +389,17 @@ sub find_booked_collections {
     my %pending_states = map { $_ => 1 } FixMyStreet::DB::Result::Problem->open_states;
 
     my @reports = $self->problems->search({
-        category => ['Bulky collection', 'Small items collection'],
+        category => ['Bulky collection', 'Small items collection', 'Sharps collection'],
         uprn => $uprn,
     })->order_by('-id')->all;
 
     my $dt = DateTime->now( time_zone => FixMyStreet->local_time_zone )->truncate( to => 'day' )->subtract ( days => 10 );
     my $out;
     foreach (@reports) {
-        my $key = $_->category eq 'Small items collection' ? 'small_items' : 'bulky';
+        my $key
+            = $_->category eq 'Sharps collection'      ? 'sharps'
+            : $_->category eq 'Small items collection' ? 'small_items'
+            :                                            'bulky';
 
         my $date = $self->collection_date($_);
         next if $recent && $date < $dt;
