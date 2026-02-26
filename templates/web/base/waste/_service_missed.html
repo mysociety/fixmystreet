@@ -12,8 +12,10 @@
 [% ELSIF unit.report_allowed_non_actionable %]
   <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Report+out-of-time+missed+collection&amp;service_id=[% unit.service_id %]" class="waste-service-link">Report a [% unit.service_name FILTER lower %] collection as missed</a>
 [% ELSIF unit.report_locked_out %]
-  [% IF c.cobrand.moniker == 'sutton' and unit.dispute_allowed %]
+  [% IF c.cobrand.moniker == 'sutton' AND unit.dispute_allowed %]
     <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Missed+collection+dispute&amp;service_id=[% unit.service_id %][% '&amp;booking_id=' _ original_booking IF original_booking %]" class="waste-service-link waste-service-descriptor">Report a problem with this missed collection</a>
+  [% ELSIF c.cobrand.moniker == 'sutton' AND unit.dispute_open %]
+    We are investigating the problem with this collection.
   [% ELSE %]
   <span class="waste-service-descriptor">A missed collection cannot be reported;
     [% IF unit.report_locked_out_reason %]

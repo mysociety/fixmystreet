@@ -252,15 +252,23 @@ sub waste_check_can_raise_dispute {
 
 sub _setup_container_request_disputes_for_service {
     my ($self, $row) = @_;
+    my $events = $row->{events};
 
+    my $dispute_event;
+    if ($events) {
+        $dispute_event = ($events->filter({ event_type => 3143 })->list)[0];
+    }
     # check if a dispute is allowed on reports that have been marked as unable to be collected
-    if ($row->{last}->{completed} && $row->{report_locked_out}) {
+    if ($row->{last}->{completed} && $row->{report_locked_out} && !$dispute_event) {
         # and then check if we can open a dispute for this resolution
         if ( $self->waste_check_can_raise_dispute($row->{service_id}, $row->{last}->{resolution}) ) {
             if ( $self->_check_date_within_dispute_window($row->{last}->{completed}) ) {
                 $row->{dispute_allowed} = 1;
             }
         }
+    }
+    if ($dispute_event) {
+        $row->{dispute_open} = 1;
     }
 }
 

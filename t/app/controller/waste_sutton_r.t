@@ -752,6 +752,24 @@ FixMyStreet::override_config {
             like $html_email, qr/respond in the next two working days/, 'Correct text email next steps';
         };
 
+        subtest 'Existing dispute event' => sub {
+            # Now mock there is an existing escalation
+            $e->mock('GetEventsForObject', sub { [ {
+                Id => '112112321',
+                EventTypeId => 3143,
+                EventStateId => 0,
+                ServiceId => 940, # Refuse
+                EventDate => { DateTime => "2022-09-11T18:03:00Z" },
+                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
+            } ] });
+
+            set_fixed_time('2022-09-14T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with this missed collection');
+            $mech->content_contains('We are investigating the problem with this collection.');
+        };
+
+
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
 
