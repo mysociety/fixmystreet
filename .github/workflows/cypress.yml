@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
   test:
     name: Run Cypress tests
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
     - uses: actions/checkout@v4
@@ -21,7 +21,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: local
-        key: ubuntu-22-carton-${{ hashFiles('cpanfile.snapshot') }}
+        key: ubuntu-24-carton-${{ hashFiles('cpanfile.snapshot') }}
 
     - name: Setup cache (cypress)
       uses: actions/cache@v3
@@ -29,12 +29,12 @@ jobs:
         path: |
           ~/.npm
           node_modules
-        key: ubuntu-22-node-12-cypress-3.8.3-coverage
+        key: ubuntu-24-node-12-cypress-3.8.3-coverage
 
     - name: Install packages
       run: |
         sudo apt update
-        sudo apt install -y gettext jhead
+        sudo apt install -y gettext jhead language-pack-en libreadline-dev libpng-dev
         npm install cypress@3.8.3 @cypress/code-coverage@3.9.4
         vendor/bin/carton install --deployment
         commonlib/bin/gettext-makemo FixMyStreet
