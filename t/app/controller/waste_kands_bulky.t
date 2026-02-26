@@ -1360,7 +1360,7 @@ FixMyStreet::override_config {
             $mech->content_contains('Report a problem with this missed collection', 'can report just after window opens');
         };
 
-        my $link;
+        my ($link, $dispute);
         subtest 'Open collection dispute' => sub {
             set_fixed_time('2025-04-10T19:00:00Z');
             $mech->get_ok('/waste/12345');
@@ -1375,13 +1375,13 @@ FixMyStreet::override_config {
             $mech->content_contains('Your enquiry has been submitted');
             $mech->content_contains('Return to property details');
             $mech->content_contains('/waste/12345"');
-            my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-            is $report->category, 'Missed collection dispute', "Correct category";
-            is $report->title, 'Missed collection dispute';
-            is $report->detail, "2/3 Example Street, Sutton, SM2 5HF", "Details of report contain information about problem";
-            is $report->user->email, 'schmoe@example.org', 'User details added to report';
-            is $report->name, 'Joe Schmoe', 'User details added to report';
-            is $report->get_extra_field_value('Notes'), "The gate was open";
+            $dispute = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+            is $dispute->category, 'Missed collection dispute', "Correct category";
+            is $dispute->title, 'Missed collection dispute';
+            is $dispute->detail, "2/3 Example Street, Sutton, SM2 5HF", "Details of report contain information about problem";
+            is $dispute->user->email, 'schmoe@example.org', 'User details added to report';
+            is $dispute->name, 'Joe Schmoe', 'User details added to report';
+            is $dispute->get_extra_field_value('Notes'), "The gate was open";
         };
 
         subtest 'Must be report user to open collection dispute' => sub {
@@ -1463,6 +1463,32 @@ FixMyStreet::override_config {
             $mech->get_ok($l->path_query);
             $mech->content_lacks('Our crews reported that your Bulky waste collection was not made ', 'details of missed bin collection displayed');
             $mech->content_contains('Missed collections can only be disputed');
+        };
+
+        $dispute->update( { external_id => 'dispute-guid' });
+        subtest 'Existing dispute event' => sub {
+            set_fixed_time('2025-04-10T19:30:00Z');
+            $echo->mock( 'GetEventsForObject', sub { [ {
+                Id => '8004',
+                ClientReference => 'LBS-123',
+                Guid => 'booking-guid',
+                ServiceId => 960, # Bulky
+                EventTypeId => 3130, # Bulky collection
+                EventStateId => 19185, # Not Completed
+                EventDate => { DateTime => '2025-04-01T00:00:00Z' },
+                ResolvedDate => { DateTime => '2025-04-08T00:00:00Z' },
+                ResolutionCodeId => 466, # No access - Gate locked
+            }, {
+                Id => '112112321',
+                Guid => 'dispute-guid',
+                EventTypeId => 3143, # Dispute
+                EventStateId => 0,
+                ServiceId => 960, # Bulky
+                EventDate => { DateTime => '2025-04-10T19:01:00Z' },
+            } ] });
+
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with this missed collection', 'cannot report if existing dispute');
         };
     };
 

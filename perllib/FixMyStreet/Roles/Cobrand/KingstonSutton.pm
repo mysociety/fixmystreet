@@ -188,6 +188,7 @@ around booked_check_missed_collection => sub {
     my $service_id = $cfg->{$type . '_service_id'} or return;
 
     my $escalations = $events->filter({ event_type => 3134, service => $service_id });
+    my $disputes = $events->filter({ event_type => 3143, service => $service_id });
     my $missed = $self->{c}->stash->{booked_missed};
     foreach my $guid (keys %$missed) {
         my $missed_event = $missed->{$guid}{report_open};
@@ -232,6 +233,14 @@ around booked_check_missed_collection => sub {
                 $missed->{$guid}{escalations}{missed_open} = $missed_event;
             }
         } elsif ($locked_out) {
+            my $open_dispute = 0;
+            foreach ($disputes->list) {
+                next unless $_->{report};
+                # we are assuming that there is only ever going to be one dispute
+                # open at a time so if there is any dispute then do not allow a
+                # second
+                $open_dispute = 1;
+            }
             my $within_window = $self->_check_date_within_dispute_window(
                 $missed->{$guid}{report_locked_out_date}
             );
@@ -239,7 +248,9 @@ around booked_check_missed_collection => sub {
                 $missed->{$guid}{service_id},
                 $missed->{$guid}{report_locked_out_reason}
             );
-            if ($within_window && $resolution_valid) {
+            if ($open_dispute){
+                $missed->{$guid}{open_dispute} = 1
+            } elsif ($within_window && $resolution_valid) {
                 $missed->{$guid}{dispute_allowed} = 1
             }
         }
