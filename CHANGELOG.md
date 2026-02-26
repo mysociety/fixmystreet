@@ -38,6 +38,7 @@
     - Performance improvements:
         - Use on-disk cache for front page stats rather than memcache. #5763
         - Add an index on problem(confirmed).
+        - Add optional PostGIS nearby database calls.
     - Internal things:
         - Upgrade GitHub Actions to Ubuntu 24.
 

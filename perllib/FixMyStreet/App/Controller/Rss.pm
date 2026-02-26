@@ -130,7 +130,12 @@ sub local_problems_ll : Private {
         }
     }
 
-    $c->stash->{db_params} = [ $lat, $lon, $distance ];
+    my $postgis = FixMyStreet->config('FMS_DB_POSTGIS');
+    if ($postgis) {
+        $c->stash->{db_params} = [ $lon, $lat, $distance*1000 ];
+    } else {
+        $c->stash->{db_params} = [ $lat, $lon, $distance ];
+    }
 
     if ($c->stash->{state} ne 'all') {
         $c->stash->{type} .= '_state';

@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        part: [ 1, 2, 3, 4 ]
+        part: [ 1, 2, 3, 4, 5 ]
 
     env:
       PERL5LIB: local-coverage/lib/perl5
@@ -38,7 +38,7 @@ jobs:
     - name: Install packages
       run: |
         sudo apt update
-        sudo apt install -y gettext jhead language-pack-en language-pack-de language-pack-sv libimage-magick-perl libreadline-dev libpng-dev
+        sudo apt install -y gettext jhead language-pack-en language-pack-de language-pack-sv libimage-magick-perl libreadline-dev libpng-dev postgresql-postgis
         vendor/bin/carton install --deployment
         commonlib/bin/gettext-makemo FixMyStreet
         bin/cpanm --quiet --notest -l local-coverage Devel::Cover JSON::MaybeXS
@@ -58,6 +58,12 @@ jobs:
     - name: Run tests (with coverage, part 4)
       if: matrix.part == 4
       run: script/test --jobs 3 $(find t -name "*.t" ! -path "t/app/controller*" ! -path "t/cobrand*")
+
+    - name: Run tests (with coverage, part 5 for postgis parts)
+      if: matrix.part == 5
+      run: script/test --jobs 3 t/cobrand/restriction.t t/app/controller/rss.t t/app/controller/alert_new.t t/app/controller/around.t t/app/controller/report_inspect.t t/app/model/alert_type.t
+      env:
+        WITH_POSTGIS: 1
 
     - name: Generate coverage report
       if: success()

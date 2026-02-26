@@ -45,6 +45,14 @@ sub spin_up_database {
     $pg->run_psql_scripts('db/fixture.sql');
     $pg->run_psql_scripts('db/generate_secret.sql');
 
+    my $postgis = 0;
+    if ($ENV{WITH_POSTGIS}) {
+        $pg->run_psql('-c', '"CREATE EXTENSION postgis"');
+        $pg->run_psql('-c', '"CREATE EXTENSION btree_gist"');
+        $pg->run_psql_scripts('db/fixture-postgis.sql');
+        $postgis = 1;
+    }
+
     warn sprintf "# Connected to %s\n", $pg->dsn;
 
     return {
@@ -53,6 +61,7 @@ sub spin_up_database {
         FMS_DB_USER => 'postgres',
         FMS_DB_HOST => 'localhost',
         FMS_DB_PASS => '',
+        FMS_DB_POSTGIS => $postgis,
     };
 }
 

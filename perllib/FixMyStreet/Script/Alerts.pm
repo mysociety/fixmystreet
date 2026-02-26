@@ -170,7 +170,7 @@ sub send_alert_type {
             _extra_new_update_data($row, \%data, $cobrand, $schema);
         # this is ward and council problems
         } else {
-            _extra_new_area_data($row, $ref);
+            _extra_new_area_data($row, $ref, 'send_alert_type');
         }
         push @{$data{data}}, $row;
 
@@ -248,9 +248,9 @@ sub _extra_new_update_data {
 }
 
 sub _extra_new_area_data {
-    my ($row, $ref) = @_;
+    my ($row, $ref, $caller) = @_;
 
-    if ( $ref =~ /ward|council/ ) {
+    if ( $ref =~ /ward|council|local_problems/ ) {
         my $nearest_st = FixMyStreet::Geocode::Address->new($row->{geocode})->for_alert;
         $row->{nearest} = $nearest_st;
     }
@@ -258,6 +258,8 @@ sub _extra_new_area_data {
     my $dt = $parser->parse_timestamp( $row->{confirmed} );
     FixMyStreet->set_time_zone($dt);
     $row->{confirmed} = $dt;
+    $row->{confirmed_str} = $dt->strftime('%Y-%m-%d %H:%M:%S')
+        if $caller eq 'send_local_find_nearby';
 
     # Hack in the image for the non-object reports
     my $photo = $row->{photo};
@@ -275,6 +277,63 @@ sub _extra_new_area_data {
 sub send_local {
     my $rs = FixMyStreet::DB->resultset('AlertType');
     my $alert_type = $rs->find( { ref => 'local_problems' } );
+    if (FixMyStreet->config('FMS_DB_POSTGIS')) {
+        send_local_postgis($alert_type);
+    } else {
+        send_local_find_nearby($alert_type);
+    }
+}
+
+sub send_local_postgis {
+    my $alert_type = shift;
+
+    my $states = "'" . join( "', '", FixMyStreet::DB::Result::Problem::visible_states() ) . "'";
+    my $query = "select problem.id, problem.bodies_str, problem.postcode, problem.geocode, problem.confirmed, problem.cobrand,
+        problem.title, problem.detail, problem.photo from problem
+        where
+            ST_DWithin(ST_SetSRID(ST_Point(longitude, latitude), 4326)::geography, ST_SetSRID(ST_Point(?, ?), 4326)::geography, ?)
+        and problem.state in ($states)
+        and problem.non_public = 'f'
+        and extract(epoch from problem.confirmed) >= ?
+        and extract(epoch from problem.confirmed) >= extract(epoch from current_timestamp - '7 days'::interval)
+        and (select whenqueued from alert_sent where alert_sent.alert_id = ? and alert_sent.parameter = problem.id::text) is null
+        and user_id != ?
+        order by (extract(epoch from problem.confirmed) <-> extract(epoch from '3000-01-01'::date))";
+    $query = FixMyStreet::DB->schema->storage->dbh->prepare($query);
+
+    my $schema = $alert_type->result_source->schema;
+    my $alerts = _alert_iterator($schema);
+    while (my ($alert, $cobrand, $longitude, $latitude, $distance) = $alerts->()) {
+        my %data = (
+            template => $alert_type->template,
+            data => [],
+            alert_id => $alert->id,
+            alert_user => $alert->user,
+            lang => $alert->lang,
+            cobrand => $cobrand,
+            cobrand_data => $alert->cobrand_data,
+            schema => $schema,
+        );
+
+        $query->execute($longitude, $latitude, $distance*1000, $alert->whensubscribed->epoch, $alert->id, $alert->user_id);
+        while (my $row = $query->fetchrow_hashref) {
+            next if alert_check_cobrand($alert->cobrand, $row->{cobrand});
+
+            $schema->resultset('AlertSent')->create( {
+                alert_id  => $alert->id,
+                parameter => $row->{id},
+            } );
+
+            _extra_new_area_data($row, 'local_problems', 'send_local_postgis');
+
+            push @{$data{data}}, $row;
+        }
+        _send_aggregated_alert(%data) if @{$data{data}};
+    }
+}
+
+sub send_local_find_nearby {
+    my $alert_type = shift;
     my $schema = $alert_type->result_source->schema;
 
     my $states = "'" . join( "', '", FixMyStreet::DB::Result::Problem::visible_states() ) . "'";
@@ -291,43 +350,15 @@ sub send_local {
     while (my $row = $reports->fetchrow_hashref) {
         $row->{lon_rad} = deg2rad($row->{longitude});
         $row->{lat_rad} = deg2rad(90 - $row->{latitude});
-        my $dt = $parser->parse_timestamp( $row->{confirmed} );
-        FixMyStreet->set_time_zone($dt);
-        $row->{confirmed} = $dt;
-        $row->{confirmed_str} = $dt->strftime('%Y-%m-%d %H:%M:%S');
-        my $nearest_st = FixMyStreet::Geocode::Address->new($row->{geocode})->for_alert;
-        $row->{nearest} = $nearest_st;
-        my $photo = $row->{photo};
-        my $id = $row->{id};
-        $row->{get_first_image_fp} = sub {
-            return FixMyStreet::App::Model::PhotoSet->new({
-                object_id => $id,
-                object_type => 'problem',
-                db_data => $photo,
-            })->get_image_data( num => 0, size => 'fp' );
-        };
+        _extra_new_area_data($row, 'local_problems', 'send_local_find_nearby');
         push @reports, $row;
     }
 
-    my $query = $schema->resultset('Alert')->search( {
-        alert_type   => 'local_problems',
-        whendisabled => undef,
-        confirmed    => 1
-    }, {
-        order_by     => 'id'
-    } );
-    while (my $alert = $query->next) {
-        my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($alert->cobrand)->new();
-        next unless $cobrand->email_host;
-        next if $alert->is_from_abuser;
-
+    my $alerts = _alert_iterator($schema);
+    while (my ($alert, $cobrand, $longitude, $latitude, $distance) = $alerts->()) {
         my $whensubscribed = $alert->whensubscribed->strftime('%Y-%m-%d %H:%M:%S');
-        my $longitude = $alert->parameter;
-        my $latitude  = $alert->parameter2;
         my $lon_rad = deg2rad($longitude);
         my $lat_rad = deg2rad(90 - $latitude);
-        my $distance = $alert->parameter3;
-        $distance ||= FixMyStreet::Gaze::get_radius_containing_population($latitude, $longitude);
         my %data = (
             template => $alert_type->template,
             data => [],
@@ -359,6 +390,32 @@ sub send_local {
         }
         _send_aggregated_alert(%data) if @{$data{data}};
     }
+}
+
+sub _alert_iterator {
+    my $schema = shift;
+    my $alerts = $schema->resultset('Alert')->search( {
+        alert_type   => 'local_problems',
+        whendisabled => undef,
+        confirmed    => 1
+    }, {
+        order_by     => 'id'
+    } );
+    return sub {
+        while (my $alert = $alerts->next) {
+            my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($alert->cobrand)->new();
+            next unless $cobrand->email_host;
+            next if $alert->is_from_abuser;
+
+            my $longitude = $alert->parameter;
+            my $latitude  = $alert->parameter2;
+            my $distance = $alert->parameter3;
+            $distance ||= FixMyStreet::Gaze::get_radius_containing_population($latitude, $longitude);
+
+            return ($alert, $cobrand, $longitude, $latitude, $distance);
+        }
+        return ();
+    };
 }
 
 sub _send_aggregated_alert(%) {

@@ -51,5 +51,11 @@ jobs:
         ~/perl5/perlbrew/bin/perlbrew exec vendor/bin/carton install --deployment
         commonlib/bin/gettext-makemo FixMyStreet
 
+    - name: Add postgis
+      if: matrix.perl_version == '5.40.1'
+      run: |
+        sudo apt install -y postgresql-postgis
+        echo "WITH_POSTGIS=1" >> "$GITHUB_ENV"
+
     - name: Run tests
       run: ~/perl5/perlbrew/bin/perlbrew exec script/test --jobs 3 t
