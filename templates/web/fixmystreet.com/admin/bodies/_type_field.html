@@ -11,8 +11,8 @@
         <label for="type-waste">WasteWorks</label>
     </div>
     <div class="form-check form-check--inline">
-        <input type="radio" name="type" id="type-claim" value="claim"[% ' checked' IF type == 'claim' %]>
-        <label for="type-claim">Red claim</label>
+        <input type="radio" name="type" id="type-form" value="form"[% ' checked' IF type == 'form' OR type == 'claim' %]>
+        <label for="type-form">Form</label>
     </div>
     <div class="form-check form-check--inline">
         <input type="radio" name="type" id="type-noise" aria-describedby="type-noise-hint" value="noise"[% ' checked' IF type == 'noise' %]>

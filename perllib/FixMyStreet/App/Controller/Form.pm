@@ -119,7 +119,6 @@ confirmation email).
 sub form : Private {
     my ($self, $c) = @_;
 
-    $c->stash->{label_for_field} = \&label_for_field;
     $c->forward('pre_form');
 
     # XXX This double form load means double API calls in
@@ -146,7 +145,11 @@ sub form : Private {
 
     # If the form has the already_submitted_error flag set, show the already_submitted template
     if ($form->already_submitted_error) {
-        $c->stash->{template} = 'waste/already_submitted.html';
+        if ($form =~ /Licence/) {
+            $c->stash->{template} = 'licence/already_submitted.html';
+        } else {
+            $c->stash->{template} = 'waste/already_submitted.html';
+        }
     } else {
         # If we have sent a confirmation email, that function will have
         # set a template that we need to show
@@ -154,22 +157,6 @@ sub form : Private {
             unless $c->stash->{sent_confirmation_message};
     }
     $c->stash->{form} = $form;
-}
-
-=head2 label_for_field
-
-This is used in order to reconstruct nice labels from the given option, in e.g. summary page.
-
-=cut
-
-sub label_for_field {
-    my ($form, $field, $key) = @_;
-    my $fn = 'options_' . $field;
-    my @options = $form->field($field)->options;
-    @options = $form->$fn if !@options && $form->can($fn);
-    foreach (@options) {
-        return $_->{label} if $_->{value} eq $key;
-    }
 }
 
 sub pre_form : Private {

@@ -87,6 +87,10 @@ sub display :PathPart('') :Chained('id') :Args(0) {
         $c->detach('/waste/bulky/view');
     }
 
+    if ($problem->cobrand_data eq 'licence') {
+        $c->detach('/licence/view');
+    }
+
     $c->forward('/auth/get_csrf_token');
     $c->forward( 'load_updates' );
     $c->forward( 'format_problem_for_display' );

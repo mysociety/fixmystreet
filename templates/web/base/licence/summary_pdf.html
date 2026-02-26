@@ -1,0 +1,27 @@
+<h1 class="govuk-heading-xl">[% form.title %]</h1>
+
+<p>FMS[% problem.id %]</p>
+
+[% FOR page IN form.fields_for_display %]
+    [% NEXT IF page.hide %]
+    [% NEXT IF page.stage == 'intro' OR page.stage == 'done' %]
+
+    <h2 style="color: #0019A8">[% page.title %]</h2>
+
+    [% FOR field IN page.fields %]
+        [% NEXT IF field.hide %]
+
+        <p style="margin-top:6pt">
+        <strong>[% field.desc %][% IF NOT field.desc.match('[?:.]$') %]:[% END %]</strong>
+        [% field.pretty %]
+        </p>
+
+        [% IF field.desc == 'Number of weeks required'; SET end = form.saved_data.proposed_end_date %]
+            <p style="margin-top:6pt">
+            <strong>Proposed end date:</strong>
+            [% end.day %]/[% end.month %]/[% end.year %]
+            </p>
+        [% END %]
+
+    [% END %]
+[% END %]
