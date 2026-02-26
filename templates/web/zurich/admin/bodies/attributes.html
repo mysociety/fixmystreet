@@ -1,0 +1,130 @@
+[% body_name = body.name | html;
+   INCLUDE 'admin/header.html' title=tprintf(loc('Hierarchical attributes for %s'), body_name) -%]
+
+[% IF updated %]
+  <p>
+    <em>[% updated %]</em>
+  </p>
+[% END %]
+
+[% IF errors.size %]
+    <ul>
+        [% FOREACH error IN errors %]
+            <li class="error">[% error.value %]</li>
+        [% END %]
+    </ul>
+[% END %]
+
+<p>
+    <a href="[% c.uri_for_action('/admin/bodies/edit', [ body.id ]) %]">&larr; [% loc('Back to body') %]</a>
+</p>
+
+<h2>[% loc('Hierarchical attributes') %]</h2>
+
+<form method="post">
+    <input type="hidden" name="token" value="[% csrf_token %]">
+
+    [% FOREACH level_name IN ['Geschäftsbereich', 'Objekt', 'Kategorie'] %]
+        [% level = hierarchical_attributes.$level_name %]
+        [% SET level_entries = level.entries || {} %]
+
+        <div class="admin-box">
+            <h3>[% level_name %]</h3>
+
+                <table class="admin-table" cellspacing="0" cellpadding="2" border="1">
+                    <thead>
+                        <tr>
+                            <th>[% loc('ID') %]</th>
+                            <th>[% loc('Name') %]</th>
+                            [% IF level.parent %]
+                                <th>[% level.parent %]</th>
+                            [% END %]
+                            <th>[% loc('Deleted') %]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        [% IF level_entries.keys.size > 0 %]
+                            [% FOREACH id IN level_entries.keys.sort %]
+                                [% entry = level_entries.$id %]
+                                <tr [% IF entry.deleted %]class="is-deleted"[% END %]>
+                                    <td>[% id %]</td>
+                                    <td>
+                                        <input type="text" name="[% level_name %]_[% id %]_name"
+                                               value="[% entry.name | html %]" size="30" class="form-control"
+                                               [% IF errors.item("${level_name}_${id}_name") %]style="border-color: red;"[% END %]>
+                                        [% IF errors.item("${level_name}_${id}_name") %]
+                                            <div class="error-msg">[% errors.item("${level_name}_${id}_name") %]</div>
+                                        [% END %]
+                                    </td>
+                                    [% IF level.parent %]
+                                        <td>
+                                            <select name="[% level_name %]_[% id %]_parent" class="form-control">
+                                                <option value="">-- [% loc('Select parent') %] --</option>
+                                                [% parent_level = hierarchical_attributes.${level.parent} %]
+                                                [% FOREACH parent_id IN parent_level.entries.keys.sort %]
+                                                    [% parent_entry = parent_level.entries.$parent_id %]
+                                                    [% NEXT IF parent_entry.deleted AND entry.parent_id != parent_id %]
+                                                    <option value="[% parent_id %]"
+                                                        [% ' selected' IF entry.parent_id == parent_id %]>
+                                                        [% parent_entry.name | html %]
+                                                    </option>
+                                                [% END %]
+                                            </select>
+                                        </td>
+                                    [% END %]
+                                    <td>
+                                        <label class="inline">
+                                            <input type="checkbox" name="[% level_name %]_[% id %]_deleted" value="1"
+                                                [% ' checked' IF entry.deleted %]>
+                                            [% loc('Deleted') %]
+                                        </label>
+                                    </td>
+                                </tr>
+                            [% END %]
+                        [% END %]
+
+                        <!-- Add new entry row -->
+                        <tr class="add-new-row">
+                            <td><em>[% loc('New') %]:</em></td>
+                            <td>
+                                <input type="text" id="new_[% level_name %]_name" name="new_[% level_name %]_name"
+                                       size="30" class="form-control" placeholder="[% loc('Enter name') %]"
+                                       [% IF errors.item("new_${level_name}_name") %]style="border-color: red;"[% END %]>
+                                [% IF errors.item("new_${level_name}_name") %]
+                                    <div class="error-msg">[% errors.item("new_${level_name}_name") %]</div>
+                                [% END %]
+                            </td>
+                            [% IF level.parent %]
+                                <td>
+                                    <select id="new_[% level_name %]_parent" name="new_[% level_name %]_parent" class="form-control"
+                                            [% IF errors.item("new_${level_name}_parent") %]style="border-color: red;"[% END %]>
+                                        <option value="">-- [% loc('Select parent') %] --</option>
+                                        [% parent_level = hierarchical_attributes.${level.parent} %]
+                                        [% FOREACH parent_id IN parent_level.entries.keys.sort %]
+                                            [% parent_entry = parent_level.entries.$parent_id %]
+                                            [% NEXT IF parent_entry.deleted %]
+                                            <option value="[% parent_id %]">[% parent_entry.name | html %]</option>
+                                        [% END %]
+                                    </select>
+                                    [% IF errors.item("new_${level_name}_parent") %]
+                                        <div class="error-msg">[% errors.item("new_${level_name}_parent") %]</div>
+                                    [% END %]
+                                </td>
+                            [% END %]
+                            <td><!-- Empty cell for deleted column --></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                [% IF level_entries.keys.size == 0 %]
+                    <p class="no-entries-message"><em>[% loc('No entries yet. Use the form above to add the first entry.') %]</em></p>
+                [% END %]
+
+                <div class="form-actions">
+                    <input type="submit" value="[% loc('Update attributes') %]" class="btn btn-primary">
+                </div>
+        </div>
+    [% END %]
+</form>
+
+[% INCLUDE 'admin/footer.html' %]
