@@ -40,9 +40,4 @@ irc.libera.chat allows for just that (<a
 href="https://web.libera.chat/#fixmystreet">web IRC interface</a>).</p>
 
 </div>
-<div class="column">
-<h3>Twitter</h3>
-
-<p>You can follow and tweet <a href="https://twitter.com/fixmystreet">@fixmystreet</a>.</p>
-</div>
 </div>
