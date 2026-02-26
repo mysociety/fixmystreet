@@ -136,6 +136,12 @@ sub waste_munge_bin_services_open_requests {
     if ($open_requests->{$CONTAINERS{paper_140}}) {
         $open_requests->{$CONTAINERS{paper_240}} = $open_requests->{$CONTAINERS{paper_140}};
     }
+
+    my $wd = FixMyStreet::WorkingDays->new();
+    for my $req (values %$open_requests) {
+        next unless $req;
+        $req->{expected_date} = $wd->add_days($req->{date}, $self->wasteworks_config->{request_timeframe_raw})->set_hour(0);
+    }
 }
 
 sub image_for_unit {
@@ -593,6 +599,100 @@ sub waste_munge_request_data {
         }
         $c->set_param('payment', $cost || undef); # Want to undefine it if free
     }
+}
+
+sub _enquiry_nice_title {
+    my $category = shift;
+    if ($category eq 'Complaint against time') {
+        $category = 'Issue with collection';
+    } elsif ($category eq 'Failure to Deliver Bags/Containers') {
+        $category = 'Issue with delivery';
+    }
+    return $category;
+}
+
+=head2 waste_munge_enquiry_data
+
+Get the right data in place for the bin not returned / waste spillage / escalation categories.
+
+=cut
+
+sub waste_munge_enquiry_data {
+    my ($self, $data) = @_;
+    my $c = $self->{c};
+
+    my $address = $c->stash->{property}->{address};
+
+    $data->{title} = _enquiry_nice_title($data->{category});
+
+    my $detail = "";
+    if ($data->{category} eq 'Complaint against time') {
+        my $event_id = $c->get_param('event_id');
+        my ($echo, $ww) = split /:/, $event_id;
+        $data->{extra_Notes} = "Originally Echo Event #$echo";
+        $data->{extra_original_ref} = $ww;
+        $data->{extra_missed_guid} = $c->get_param('event_guid');
+    } elsif ($data->{category} eq 'Failure to Deliver Bags/Containers') {
+        my $event_id = $c->get_param('event_id');
+        my ($echo, $guid, $ww) = split /:/, $event_id;
+        $data->{extra_Notes} = "Originally Echo Event #$echo";
+        $data->{extra_original_ref} = $ww;
+        $data->{extra_container_request_guid} = $guid;
+    }
+    $detail .= $self->service_name_override({ ServiceId => $data->{service_id} }) . "\n\n";
+    $detail .= $address;
+
+    $data->{detail} = $detail;
+}
+
+=head2 waste_target_days
+
+Configure the number of days a waste event is expected to be resolved in.
+
+=cut
+
+sub waste_target_days {
+    {
+        container_escalation => 5,
+        missed => 2,
+        missed_escalation => 1,
+        missed_bulky => 2,
+        missed_bulky_escalation => 2,
+    }
+}
+
+=head2 waste_day_end_hour
+
+Time that the day ends for the purposes of calculating things like escalation windows
+
+=cut
+
+sub waste_day_end_hour { 0; }
+
+=head2 waste_escalation_window
+
+Configure when the escalation window for waste complaints starts/ends.
+
+=cut
+
+sub waste_escalation_window {
+    my $lengths = {
+        missed_start => 3, # 2 days, plus 1 because time is from 00:00 on missed report day
+        missed_length_weekly => 1,
+        missed_length_fortnightly => 1,
+        container_start => 10,
+        container_length => 10,
+        bulky_start => 3, # 2 days, plus 1 because time is from 00:00 on missed report day
+        bulky_length => 2,
+    };
+    # use smaller windows on staging for testing
+    if (FixMyStreet->config('STAGING_SITE') && !FixMyStreet->test_mode) {
+        for (keys %$lengths) {
+            $lengths->{$_} = 1;
+        }
+    }
+
+    return $lengths;
 }
 
 =head2 container_cost / admin_fee_cost
