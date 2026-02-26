@@ -37,6 +37,7 @@
         - Photos can be included as base64-encoded data: URIs when fetching updates/reports. #5785
     - Performance improvements:
         - Use on-disk cache for front page stats rather than memcache. #5763
+        - Add an index on problem(confirmed).
     - Internal things:
         - Upgrade GitHub Actions to Ubuntu 24.
 
