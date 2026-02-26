@@ -620,6 +620,34 @@ FixMyStreet::override_config {
         is $call_params->{'temp:request'}{sale}{receiptDetails}{name}{surname}, 'Bob Marge';
         is $call_params->{'temp:request'}{sale}{items}{item}[0]{itemDetails}{accountDetails}{name}{surname}, 'Bob Marge';
     };
+
+    subtest 'All eligible property classes show bulky section' => sub {
+        my %eligible = (
+            10001 => 'RD',
+            10005 => 'CE',
+            10006 => 'RH',
+            10007 => 'RI',
+            10008 => 'RE',
+        );
+        for my $uprn ( sort keys %eligible ) {
+            my $class = $eligible{$uprn};
+            $mech->get_ok("/waste/$uprn");
+            $mech->content_contains('Bulky waste', "$class-class property shows bulky section");
+            $mech->content_contains('Arrange a bulky waste collection', "$class-class property shows bulky sidebar link");
+            $mech->get("/waste/$uprn/bulky");
+            is $mech->uri->path, "/waste/$uprn/bulky", "$class-class property can access bulky form";
+        }
+    };
+
+    subtest 'Ineligible property class cannot access bulky' => sub {
+        $mech->get_ok('/waste/10009');
+        $mech->content_lacks('Bulky waste', 'Non-eligible property has no bulky section');
+        $mech->content_lacks('Arrange a bulky waste collection', 'Non-eligible property has no bulky sidebar link');
+
+        $mech->get('/waste/10009/bulky');
+        is $mech->res->previous->code, 302, 'Accessing bulky form redirects';
+        is $mech->uri->path, '/waste/10009', 'Redirected back to property page';
+    };
 };
 
 FixMyStreet::override_config {
