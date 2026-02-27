@@ -399,7 +399,7 @@ sub disable_form_message : Private {
     my $areas = join '|', keys %{$c->stash->{all_areas_mapit}};
     foreach (@{$c->stash->{category_extras}->{$c->stash->{category}}}) {
         next unless ($_->{variable} || '') eq 'false';
-        $_->{description} =~ s/<span style="ward-(?:$areas)\d+">.*?<\/span>//g;
+        $_->{description} =~ s/<span style="ward-(?!$areas)\d+">.*?<\/span>//g;
     }
 
     # do not set disable form message if they are a staff user
