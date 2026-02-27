@@ -705,23 +705,33 @@ property types allowed to book collections.
 
 sub waste_bulky_missed_blocked_codes {
     return {
-        # Partially completed
-        12399 => {
-            507 => 'Not all items presented',
-            380 => 'Some items too heavy',
-        },
-        # Completed
-        12400 => {
-            606 => 'More items presented than booked',
-        },
         # Not Completed
-        12401 => {
-            460 => 'Nothing out',
-            379 => 'Item not as described',
-            100 => 'No access',
-            212 => 'Too heavy',
-            473 => 'Damage on site',
-            234 => 'Hazardous waste',
+        19185 => {
+            50 => 'Address incorrect',
+            1361 => 'H&S - Aggression / Violence',
+            1359 => 'H&S - Damaged container',
+            1358 => 'H&S - Heavy bin / bag',
+            1378 => 'H&S - Other',
+            1362 => 'H&S - Unsafe equipment',
+            1360 => 'H&S - Unsafe surroundings',
+            1146 => 'H&S - Vermin',
+            913 => 'No access - Changed key',
+            615 => 'No access - Dog out',
+            466 => 'No access - Gate locked',
+            616 => 'No access - Weather',
+            617 => 'No access - Parked vehicle',
+            614 => 'No access - Police incident',
+            613 => 'No access - Road works',
+            66 => 'Not presented',
+            646 => 'Various',
+        },
+        # Partially Completed
+        19186 => {
+            all => 'Partially Completed',
+        },
+        # Cancelled
+        19187 => {
+            all => 'Cancelled',
         },
     };
 }

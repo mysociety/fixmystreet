@@ -252,15 +252,23 @@ sub waste_check_can_raise_dispute {
 
 sub _setup_container_request_disputes_for_service {
     my ($self, $row) = @_;
+    my $events = $row->{events};
 
+    my $dispute_event;
+    if ($events) {
+        $dispute_event = ($events->filter({ event_type => 3143 })->list)[0];
+    }
     # check if a dispute is allowed on reports that have been marked as unable to be collected
-    if ($row->{last}->{completed} && $row->{report_locked_out}) {
+    if ($row->{last}->{completed} && $row->{report_locked_out} && !$dispute_event) {
         # and then check if we can open a dispute for this resolution
         if ( $self->waste_check_can_raise_dispute($row->{service_id}, $row->{last}->{resolution}) ) {
             if ( $self->_check_date_within_dispute_window($row->{last}->{completed}) ) {
                 $row->{dispute_allowed} = 1;
             }
         }
+    }
+    if ($dispute_event) {
+        $row->{dispute_open} = 1;
     }
 }
 
@@ -669,6 +677,11 @@ sub waste_munge_enquiry_data {
         $data->{extra_Notes} = "Originally Echo Event #$echo";
         $data->{extra_original_ref} = $ww;
         $data->{extra_missed_guid} = $c->get_param('event_guid');
+    } elsif ($data->{category} eq 'Missed collection dispute') {
+        if (my $booking_id = $c->get_param('booking_id')) {
+            my $report = $c->cobrand->problems->find($booking_id);
+            $data->{extra_original_guid} = $report->external_id;
+        }
     } elsif ($data->{category} eq 'Failure to Deliver Bags/Containers') {
         my $event_id = $c->get_param('event_id');
         my ($echo, $guid, $ww) = split /:/, $event_id;
@@ -746,33 +759,6 @@ sub bulky_allowed_property {
 
 sub bulky_collection_time { { hours => 6, minutes => 0 } }
 sub bulky_cancellation_cutoff_time { { hours => 6, minutes => 0, days_before => 0 } }
-
-sub waste_bulky_missed_blocked_codes {
-    return {
-        # Partially completed
-        12399 => {
-            507 => 'Not all items presented',
-            380 => 'Some items too heavy',
-        },
-        # Completed
-        12400 => {
-            606 => 'More items presented than booked',
-        },
-        # Not Completed
-        12401 => {
-            460 => 'Nothing out',
-            379 => 'Item not as described',
-            100 => 'No access',
-            212 => 'Too heavy',
-            473 => 'Damage on site',
-            234 => 'Hazardous waste',
-        },
-        # Not Completed
-        19185 => {
-            466 => 'Not Available - Gate Locked',
-        },
-    };
-}
 
 =item * There is an 11pm cut-off for looking to book next day collections.
 

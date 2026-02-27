@@ -188,6 +188,7 @@ around booked_check_missed_collection => sub {
     my $service_id = $cfg->{$type . '_service_id'} or return;
 
     my $escalations = $events->filter({ event_type => 3134, service => $service_id });
+    my $disputes = $events->filter({ event_type => 3143, service => $service_id });
     my $missed = $self->{c}->stash->{booked_missed};
     foreach my $guid (keys %$missed) {
         my $missed_event = $missed->{$guid}{report_open};
@@ -232,6 +233,15 @@ around booked_check_missed_collection => sub {
                 $missed->{$guid}{escalations}{missed_open} = $missed_event;
             }
         } elsif ($locked_out) {
+            my $open_dispute = 0;
+            foreach ($disputes->list) {
+                next unless $_->{report};
+                my $original_guid = $_->{report}->get_extra_field_value('original_guid');
+                next unless $original_guid;
+                if ($original_guid eq $guid) {
+                    $open_dispute = 1;
+                }
+            }
             my $within_window = $self->_check_date_within_dispute_window(
                 $missed->{$guid}{report_locked_out_date}
             );
@@ -239,7 +249,9 @@ around booked_check_missed_collection => sub {
                 $missed->{$guid}{service_id},
                 $missed->{$guid}{report_locked_out_reason}
             );
-            if ($within_window && $resolution_valid) {
+            if ($open_dispute){
+                $missed->{$guid}{open_dispute} = 1;
+            } elsif ($within_window && $resolution_valid) {
                 $missed->{$guid}{dispute_allowed} = 1
             }
         }
@@ -369,7 +381,7 @@ sub waste_munge_enquiry_form_pages {
 
     my $booking_id = $c->get_param('booking_id');
     if ($booking_id) {
-        my $report = $c->model('DB::Problem')->find($booking_id);
+        my $report = $c->cobrand->problems->find($booking_id);
         unless ( $report && $c->user_exists && (
                 $c->stash->{is_staff} || $report->user->id == $c->user->id
         ) ) {
