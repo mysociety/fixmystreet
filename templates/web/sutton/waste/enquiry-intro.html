@@ -7,6 +7,7 @@ IF services.$service_id;
     SET service = services.$service_id;
     SET service_name = service.service_name;
     SET resolution = service.last.resolution;
+    SET image = service.last.image;
 END; 
 
 IF booked_missed.$guid;
@@ -24,10 +25,12 @@ END -%]
 
 [%- IF category == 'Missed collection dispute' %]
     [%- IF service_name AND resolution %]
-    <p>
-    Our crews reported that your [% service_name %] collection was not made: [% resolution %].
-    </p>
+    <p>Our crews reported that your [% service_name %] collection was not made:</p>
+    [% resolution | staff_html_markup({ is_body_user => 1 }) %]
     [% END -%]
+    [% IF image %]
+    <p><img src="[% image %]" alt=""></p>
+    [% END %]
 
     <p>
     If you are disputing the reasons for this missed collection please use this form. We will investigate using our onboard 360 degree video cameras and other photo evidence before making a decision.

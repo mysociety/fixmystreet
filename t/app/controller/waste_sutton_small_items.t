@@ -697,7 +697,7 @@ FixMyStreet::override_config {
             set_fixed_time('2025-04-10T19:00:00Z');
             $mech->get_ok('/waste/12345');
             $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
-            $mech->content_contains('Our crews reported that your Small items collection was not made: No access - Gate locked', 'details of missed bin collection displayed');
+            $mech->content_contains('No access - Gate locked', 'details of missed bin collection displayed');
             $mech->content_lacks('This photo provides the evidence', 'No resolution photo text');
             $mech->submit_form_ok( { with_fields => { 'extra_Notes' => 'The gate was open' } }, 'submitted reasons');
             $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } }, 'sumitted name and email');
@@ -735,7 +735,7 @@ FixMyStreet::override_config {
         subtest 'Open collection dispute with photo' => sub {
             $mech->get_ok('/waste/12345');
             $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
-            $mech->content_contains('Our crews reported that your Small items collection was not made: No access - Gate locked', 'details of missed bin collection displayed');
+            $mech->content_contains('No access - Gate locked', 'details of missed bin collection displayed');
             $mech->content_contains('This photo provides the evidence', 'Has resolution photo text');
         };
 
@@ -765,7 +765,7 @@ FixMyStreet::override_config {
             # need to strip the host otherwise we're not logged in
             my $l = URI->new($enq_links[0]);
             $mech->get_ok($l->path_query);
-            $mech->content_contains('Our crews reported that your Small items collection was not made: No access - Gate locked', 'details of missed bin collection displayed');
+            $mech->content_contains('No access - Gate locked', 'details of missed bin collection displayed');
             $mech->content_contains('This photo provides the evidence', 'Has resolution photo text');
         };
 
@@ -781,7 +781,7 @@ FixMyStreet::override_config {
             my @enq_links = grep( /enquiry/, @links );
             my $l = URI->new($enq_links[0]);
             $mech->get_ok($l->path_query);
-            $mech->content_lacks('Our crews reported that your Small items collection was not made ', 'details of missed bin collection displayed');
+            $mech->content_lacks('Our crews reported that your Small items collection was not made', 'details of missed bin collection displayed');
             $mech->content_contains('Missed collections can only be disputed');
         };
     };

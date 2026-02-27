@@ -729,7 +729,7 @@ FixMyStreet::override_config {
             set_fixed_time('2022-09-11T18:01:00Z');
             $mech->get_ok('/waste/12345');
             $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
-            $mech->content_contains('Our crews reported that your Non-Recyclable Refuse collection was not made: Contaminated builder waste', 'details of missed bin collection displayed');
+            $mech->content_contains('Contaminated builder waste', 'details of missed bin collection displayed');
             $mech->content_lacks('This photo provides the evidence', 'No resolution photo text');
             $mech->submit_form_ok( { with_fields => { 'extra_Notes' => 'There was no problem with the bin' } }, 'submitted reasons');
             $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } }, 'sumitted name and email');
