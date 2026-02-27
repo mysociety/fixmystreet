@@ -115,6 +115,10 @@ dl dt {
       background-image: none;
       color: $bucks_charcoal !important;
     }
+    &:disabled {
+      color: transparentize(#000, 0.4) !important;
+      background: #eee;
+    }
 }
 
 label {
