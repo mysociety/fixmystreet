@@ -59,6 +59,7 @@ create_contact($sutton, { category => 'Complaint against time', email => '3134' 
 create_contact($sutton, { category => 'Missed collection dispute', email => '3143' },
     { code => 'Image', description => 'Image', required => 0, datatype => 'image' },
     { code => 'Notes', description => 'Reason for dispute', required => 1, datatype => 'text' },
+    { code => 'original_guid', required => 0, automated => 'hidden_field' },
 );
 
 FixMyStreet::override_config {
@@ -1382,6 +1383,7 @@ FixMyStreet::override_config {
             is $dispute->user->email, 'schmoe@example.org', 'User details added to report';
             is $dispute->name, 'Joe Schmoe', 'User details added to report';
             is $dispute->get_extra_field_value('Notes'), "The gate was open";
+            is $dispute->get_extra_field_value('original_guid'), "booking-guid";
         };
 
         subtest 'Must be report user to open collection dispute' => sub {

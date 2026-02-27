@@ -677,6 +677,11 @@ sub waste_munge_enquiry_data {
         $data->{extra_Notes} = "Originally Echo Event #$echo";
         $data->{extra_original_ref} = $ww;
         $data->{extra_missed_guid} = $c->get_param('event_guid');
+    } elsif ($data->{category} eq 'Missed collection dispute') {
+        if (my $booking_id = $c->get_param('booking_id')) {
+            my $report = $c->cobrand->problems->find($booking_id);
+            $data->{extra_original_guid} = $report->external_id;
+        }
     } elsif ($data->{category} eq 'Failure to Deliver Bags/Containers') {
         my $event_id = $c->get_param('event_id');
         my ($echo, $guid, $ww) = split /:/, $event_id;

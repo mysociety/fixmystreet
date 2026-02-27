@@ -236,10 +236,11 @@ around booked_check_missed_collection => sub {
             my $open_dispute = 0;
             foreach ($disputes->list) {
                 next unless $_->{report};
-                # we are assuming that there is only ever going to be one dispute
-                # open at a time so if there is any dispute then do not allow a
-                # second
-                $open_dispute = 1;
+                my $original_guid = $_->{report}->get_extra_field_value('original_guid');
+                next unless $original_guid;
+                if ($original_guid eq $guid) {
+                    $open_dispute = 1;
+                }
             }
             my $within_window = $self->_check_date_within_dispute_window(
                 $missed->{$guid}{report_locked_out_date}
@@ -249,7 +250,7 @@ around booked_check_missed_collection => sub {
                 $missed->{$guid}{report_locked_out_reason}
             );
             if ($open_dispute){
-                $missed->{$guid}{open_dispute} = 1
+                $missed->{$guid}{open_dispute} = 1;
             } elsif ($within_window && $resolution_valid) {
                 $missed->{$guid}{dispute_allowed} = 1
             }
@@ -380,7 +381,7 @@ sub waste_munge_enquiry_form_pages {
 
     my $booking_id = $c->get_param('booking_id');
     if ($booking_id) {
-        my $report = $c->model('DB::Problem')->find($booking_id);
+        my $report = $c->cobrand->problems->find($booking_id);
         unless ( $report && $c->user_exists && (
                 $c->stash->{is_staff} || $report->user->id == $c->user->id
         ) ) {
