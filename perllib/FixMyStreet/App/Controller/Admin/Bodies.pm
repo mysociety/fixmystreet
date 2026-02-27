@@ -78,7 +78,7 @@ sub body : Chained('/') : PathPart('admin/body') : CaptureArgs(1) {
     my ( $self, $c, $body_id ) = @_;
 
     $c->stash->{body_id} = $body_id;
-    my $body = $c->model('DB::Body')->find($body_id);
+    my $body = $c->model('DB::Body')->find($body_id, { prefetch => 'body_areas' });
     $c->detach( '/page_error_404_not_found', [] ) unless $body;
     $c->stash->{body} = $body;
 
