@@ -395,6 +395,24 @@ sub disable_form_message : Private {
 
     my %out;
 
+    # Ward based message changing. $areas will match one of the MapIt IDs at
+    # this location, within a comma-separated list of numbers; it matches zero
+    # or more integers followed by a comma, then an ID, then comma/quote mark
+    my $areas = '(?:\d+,)*(?:' . (join '|',
+        sort keys %{$c->stash->{all_areas_mapit}}) . ')[,"]';
+    # These regex will remove lines that do not (ids)/do (invert) match one of the MapIt IDs
+    foreach (@{$c->stash->{category_extras}->{$c->stash->{category}}}) {
+        next unless ($_->{variable} || '') eq 'false';
+        $_->{description} =~ s/
+            <p[^>]*data-area-ids="  # Start of a p tag, anything up to the data-area-ids attribute
+            (?!$areas)              # Zero-width negative lookahead - what follows after this must NOT match areas
+            \d+(?:,\d+)*            # One or more integers, separated by commas
+            "[^>]*>.*?<\/p>         # End of the attribute, rest of p tag, contents and end p tag
+            //gsx;
+        # Same as above, but for attribute name and positive lookahead, for removing rows *with* the ID
+        $_->{description} =~ s/<p[^>]*data-area-invert="(?=$areas)\d+(?:,\d+)*"[^>]*>.*?<\/p>//gs;
+    }
+
     # do not set disable form message if they are a staff user
     return \%out if $c->cobrand->call_hook('staff_ignore_form_disable_form');
 

@@ -73,6 +73,7 @@ describe('Gloucester cobrand', function(){
             cy.route('**gloucester.assets*adopted_streets*', 'fixture:gloucester_empty.json').as('gloucester_streets');
 
             cy.visit('http://gloucester.localhost:3001/report/new?longitude=-2.2458&latitude=51.86506');
+            cy.pickCategory('Broken glass');
             cy.wait('@report-ajax');
             cy.wait('@gloucester_plots');
             cy.wait('@gloucester_streets');
@@ -87,6 +88,7 @@ describe('Gloucester cobrand', function(){
             cy.get('.pre-button-messaging').contains("This land is not owned or managed by");
 
             cy.visit('http://gloucester.localhost:3001/report/new?longitude=-2.2458&latitude=51.86506');
+            cy.pickCategory('Broken glass');
             cy.wait('@report-ajax');
             cy.wait('@gloucester_plots');
             cy.wait('@gloucester_streets');
