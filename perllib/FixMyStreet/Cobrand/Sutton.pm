@@ -755,33 +755,6 @@ sub bulky_allowed_property {
 sub bulky_collection_time { { hours => 6, minutes => 0 } }
 sub bulky_cancellation_cutoff_time { { hours => 6, minutes => 0, days_before => 0 } }
 
-sub waste_bulky_missed_blocked_codes {
-    return {
-        # Partially completed
-        12399 => {
-            507 => 'Not all items presented',
-            380 => 'Some items too heavy',
-        },
-        # Completed
-        12400 => {
-            606 => 'More items presented than booked',
-        },
-        # Not Completed
-        12401 => {
-            460 => 'Nothing out',
-            379 => 'Item not as described',
-            100 => 'No access',
-            212 => 'Too heavy',
-            473 => 'Damage on site',
-            234 => 'Hazardous waste',
-        },
-        # Not Completed
-        19185 => {
-            466 => 'Not Available - Gate Locked',
-        },
-    };
-}
-
 =item * There is an 11pm cut-off for looking to book next day collections.
 
 =cut

@@ -386,12 +386,12 @@ subtest 'updating of waste reports' => sub {
         } elsif ($method eq 'GetEventType') {
             return SOAP::Result->new(result => {
                 Workflow => { States => { State => [
-                    { CoreState => 'New', Name => 'New', Id => 12396 },
-                    { CoreState => 'Pending', Name => 'Allocated to Crew', Id => 12398 },
-                    { CoreState => 'Closed', Name => 'Partially Completed', Id => 12399 },
-                    { CoreState => 'Closed', Name => 'Completed', Id => 12400 },
-                    { CoreState => 'Closed', Name => 'Not Completed', Id => 12401 },
-                    { CoreState => 'Cancelled', Name => 'Cancelled', Id => 12402 },
+                    { CoreState => 'New', Name => 'New', Id => 19182 },
+                    { CoreState => 'Pending', Name => 'Allocated to Crew', Id => 19183 },
+                    { CoreState => 'Closed', Name => 'Partially Completed', Id => 19186 },
+                    { CoreState => 'Closed', Name => 'Completed', Id => 19184 },
+                    { CoreState => 'Closed', Name => 'Not Completed', Id => 19185 },
+                    { CoreState => 'Cancelled', Name => 'Cancelled', Id => 19187 },
                 ] } },
             });
         } else {
@@ -421,7 +421,7 @@ subtest 'updating of waste reports' => sub {
     }, sub {
         $mech->clear_emails_ok;
         $normaluser->create_alert($report->id, { cobrand => 'merton', whensubscribed => $date });
-        my $in = $mech->echo_notify_xml('waste-12402-', 1636, 12402, '', 'FMS-' . $report->id);
+        my $in = $mech->echo_notify_xml('waste-19187-', 1636, 19187, '', 'FMS-' . $report->id);
         my $mech2 = $mech->clone;
         $mech2->host('merton.example.org');
 

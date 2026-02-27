@@ -580,7 +580,7 @@ FixMyStreet::override_config {
                             { DateTime => '2025-08-08T12:00:00Z' },
                         EventDate => { DateTime => '2025-08-08T12:00:00Z' },
                         ResolutionCodeId => 232,
-                        EventStateId     => 12400,
+                        EventStateId     => 19184,
                     }
                 ]
             }
@@ -631,7 +631,7 @@ FixMyStreet::override_config {
                             { DateTime => '2025-08-08T12:00:00Z' },
                         EventDate => { DateTime => '2025-08-08T12:00:00Z' },
                         ResolutionCodeId => 232,
-                        EventStateId     => 12400,
+                        EventStateId     => 19184,
                     },
                     # Event for missed collection
                     {   Guid        => '8d222528-4308-44c3-9981-ea6131a6b00f',
@@ -696,7 +696,7 @@ FixMyStreet::override_config {
             set_fixed_time('2025-04-10T19:00:00Z');
             $mech->get_ok('/waste/12345');
             $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
-            $mech->content_contains('Our crews reported that your Small items collection was not made due to Not Available - Gate Locked', 'details of missed bin collection displayed');
+            $mech->content_contains('Our crews reported that your Small items collection was not made: No access - Gate locked', 'details of missed bin collection displayed');
             $mech->content_lacks('This photo provides the evidence', 'No resolution photo text');
             $mech->submit_form_ok( { with_fields => { 'extra_Notes' => 'The gate was open' } }, 'submitted reasons');
             $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } }, 'sumitted name and email');
@@ -734,7 +734,7 @@ FixMyStreet::override_config {
         subtest 'Open collection dispute with photo' => sub {
             $mech->get_ok('/waste/12345');
             $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
-            $mech->content_contains('Our crews reported that your Small items collection was not made due to Not Available - Gate Locked', 'details of missed bin collection displayed');
+            $mech->content_contains('Our crews reported that your Small items collection was not made: No access - Gate locked', 'details of missed bin collection displayed');
             $mech->content_contains('This photo provides the evidence', 'Has resolution photo text');
         };
 
@@ -764,7 +764,7 @@ FixMyStreet::override_config {
             # need to strip the host otherwise we're not logged in
             my $l = URI->new($enq_links[0]);
             $mech->get_ok($l->path_query);
-            $mech->content_contains('Our crews reported that your Small items collection was not made due to Not Available - Gate Locked', 'details of missed bin collection displayed');
+            $mech->content_contains('Our crews reported that your Small items collection was not made: No access - Gate locked', 'details of missed bin collection displayed');
             $mech->content_contains('This photo provides the evidence', 'Has resolution photo text');
         };
 

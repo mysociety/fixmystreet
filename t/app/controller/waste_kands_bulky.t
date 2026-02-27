@@ -818,7 +818,7 @@ FixMyStreet::override_config {
             EventTypeId => 3130,
             ResolvedDate => { DateTime => '2023-07-02T00:00:00Z' },
             ResolutionCodeId => 232,
-            EventStateId => 12400,
+            EventStateId => 19184,
         } ] } );
         $mech->get_ok('/waste/12345');
         $mech->content_lacks('Report a bulky waste collection as missed', 'Too long ago');
@@ -829,7 +829,7 @@ FixMyStreet::override_config {
             EventTypeId => 3130,
             ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
             ResolutionCodeId => 232,
-            EventStateId => 12400,
+            EventStateId => 19184,
         } ] } );
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Report a bulky waste collection as missed', 'In time, normal completion');
@@ -853,20 +853,20 @@ FixMyStreet::override_config {
             Guid => 'a-guid',
             EventTypeId => 3130,
             ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
-            ResolutionCodeId => 379,
-            EventStateId => 12401,
+            ResolutionCodeId => 466,
+            EventStateId => 19185,
         } ] } );
         $mech->get_ok('/waste/12345');
         $mech->content_contains('A missed collection cannot be reported', 'Not completed');
-        $mech->content_contains('Item not as described');
+        $mech->content_contains('Gate locked');
         $mech->get_ok('/waste/12345/report');
         $mech->content_lacks('Bulky waste collection');
         $echo->mock( 'GetEventsForObject', sub { [ {
             Guid => 'a-guid',
             EventTypeId => 3130,
             ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
-            ResolutionCodeId => 100,
-            EventStateId => 12401,
+            ResolutionCodeId => 466,
+            EventStateId => 19185,
         }, {
             EventTypeId => 3145,
             EventStateId => 0,
@@ -1367,7 +1367,7 @@ FixMyStreet::override_config {
             $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
             # save this for checking logged out access below
             $link = $mech->uri;
-            $mech->content_contains('Our crews reported that your Bulky waste collection was not made due to Not Available - Gate Locked', 'details of missed bin collection displayed');
+            $mech->content_contains('Our crews reported that your Bulky waste collection was not made: No access - Gate locked', 'details of missed bin collection displayed');
             $mech->content_lacks('This photo provides the evidence', 'No resolution photo text');
             $mech->submit_form_ok( { with_fields => { 'extra_Notes' => 'The gate was open' } }, 'submitted reasons');
             $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } }, 'sumitted name and email');
@@ -1401,7 +1401,7 @@ FixMyStreet::override_config {
             {
                 user          => $sutton_user,
                 problem_id    => $report->id,
-                text          => 'Not Available - Gate Locked',
+                text          => 'No access - Gate locked',
                 confirmed     => DateTime->now - DateTime::Duration->new( minutes => 15 ),
                 problem_state => 'unable to fix',
                 anonymous     => 0,
@@ -1415,7 +1415,7 @@ FixMyStreet::override_config {
         subtest 'Open collection dispute with photo' => sub {
             $mech->get_ok('/waste/12345');
             $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
-            $mech->content_contains('Our crews reported that your Bulky waste collection was not made due to Not Available - Gate Locked', 'details of missed bin collection displayed');
+            $mech->content_contains('Our crews reported that your Bulky waste collection was not made: No access - Gate locked', 'details of missed bin collection displayed');
             $mech->content_contains('This photo provides the evidence', 'Has resolution photo text');
         };
 
@@ -1432,9 +1432,9 @@ FixMyStreet::override_config {
             $email = $mech->get_email;
             my $email_text = $mech->get_text_body_from_email($email);
             my $email_html = $mech->get_html_body_from_email($email);
-            like $email_text, qr/Not Available - Gate Locked/, 'Reason pulled from comment';
+            like $email_text, qr/No access - Gate locked/, 'Reason pulled from comment';
             like $email_text, qr/report a problem with this missed collection/, 'Report a problem text in text email';
-            like $email_html, qr/Not Available - Gate Locked/, 'Reason pulled from comment';
+            like $email_html, qr/No access - Gate locked/, 'Reason pulled from comment';
             like $email_html, qr/Our crews reported your bulky waste collection was not made/, 'extra bulky waste text included';
             like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
             like $email_html, qr{waste/12345/enquiry}, 'HTML alert contains report link';
@@ -1445,14 +1445,14 @@ FixMyStreet::override_config {
             # need to strip the host otherwise we're not logged in
             my $l = URI->new($enq_links[0]);
             $mech->get_ok($l->path_query);
-            $mech->content_contains('Our crews reported that your Bulky waste collection was not made due to Not Available - Gate Locked', 'details of missed bin collection displayed');
+            $mech->content_contains('Our crews reported that your Bulky waste collection was not made: No access - Gate locked', 'details of missed bin collection displayed');
             $mech->content_contains('This photo provides the evidence', 'Has resolution photo text');
         };
 
         set_fixed_time('2025-04-11T19:00:00Z');
         subtest 'Cannot open collection dispute from email outside window' => sub {
             my $email_html = $mech->get_html_body_from_email($email);
-            like $email_html, qr/Not Available - Gate Locked/, 'Got correct update in html email';
+            like $email_html, qr/No access - Gate locked/, 'Got correct update in html email';
             like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
             like $email_html, qr{waste/12345/enquiry}, 'HTML alert contains report link';
 
