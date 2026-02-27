@@ -217,6 +217,61 @@ sub waste_munge_bin_services_open_requests {
     }
 }
 
+sub _check_date_within_dispute_window {
+    my ($self, $date) = @_;
+
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    # And two working days (from 6pm) have passed
+    my $wd = FixMyStreet::WorkingDays->new();
+    my $start = $wd->add_days($date, 0)->set_hour(18);
+    my $end = $wd->add_days($start, 3)->set_hour(0);
+
+    if ($now >= $start && $now < $end) {
+        return 1;
+    }
+
+    return 0;
+}
+
+=head2 waste_check_can_raise_dispute
+
+Checks if disputes can be raised for the service and resolution text.
+
+=cut
+
+sub waste_check_can_raise_dispute {
+    my ($self, $service_id, $resolution) = @_;
+
+    # currently we allow disputes on all resolution codes
+    return 1;
+}
+
+=head2 Disputes
+
+=cut
+
+sub _setup_container_request_disputes_for_service {
+    my ($self, $row) = @_;
+    my $events = $row->{events};
+
+    my $dispute_event;
+    if ($events) {
+        $dispute_event = ($events->filter({ event_type => 3143 })->list)[0];
+    }
+    # check if a dispute is allowed on reports that have been marked as unable to be collected
+    if ($row->{last}->{completed} && $row->{report_locked_out} && !$dispute_event) {
+        # and then check if we can open a dispute for this resolution
+        if ( $self->waste_check_can_raise_dispute($row->{service_id}, $row->{last}->{resolution}) ) {
+            if ( $self->_check_date_within_dispute_window($row->{last}->{completed}) ) {
+                $row->{dispute_allowed} = 1;
+            }
+        }
+    }
+    if ($dispute_event) {
+        $row->{dispute_open} = 1;
+    }
+}
+
 =head2 image_for_unit
 
 Working out which image to use for which container or service.
@@ -593,7 +648,6 @@ sub request_cost {
     }
 }
 
-
 =head2 waste_munge_enquiry_data
 
 Get the right data in place for the bin not returned / waste spillage / escalation categories.
@@ -623,6 +677,11 @@ sub waste_munge_enquiry_data {
         $data->{extra_Notes} = "Originally Echo Event #$echo";
         $data->{extra_original_ref} = $ww;
         $data->{extra_missed_guid} = $c->get_param('event_guid');
+    } elsif ($data->{category} eq 'Missed collection dispute') {
+        if (my $booking_id = $c->get_param('booking_id')) {
+            my $report = $c->cobrand->problems->find($booking_id);
+            $data->{extra_original_guid} = $report->external_id;
+        }
     } elsif ($data->{category} eq 'Failure to Deliver Bags/Containers') {
         my $event_id = $c->get_param('event_id');
         my ($echo, $guid, $ww) = split /:/, $event_id;
@@ -741,6 +800,27 @@ sub bulky_show_individual_notes {
     my $self = shift;
     return $self->{c}->stash->{small_items} ? 0 : 1;
 }
+
+=head2 waste_bulky_resolution_photo_update
+
+Given a report id get the update with the resolution photo for a bulky waste collection
+
+=cut
+
+sub waste_bulky_resolution_photo_update {
+    my ($self, $report_id) = @_;
+
+    if ($report_id) {
+        my $update = FixMyStreet::DB->resultset('Comment')->search({
+            problem_id => $report_id,
+            problem_state => 'unable to fix',
+            photo => { '!=' => undef },
+        })->first();
+        return $update if $update;
+    }
+}
+
+
 
 =head2 filter_booking_dates
 
