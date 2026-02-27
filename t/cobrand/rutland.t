@@ -32,6 +32,12 @@ $contact2->set_extra_metadata(
 );
 $contact2->update;
 
+my $confirm_contact = $mech->create_contact_ok(
+    body_id => $body->id,
+    category => 'Drains',
+    email => 'Confirm-1234',
+);
+
 my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
     cobrand => 'rutland',
     user => $user,
@@ -52,7 +58,7 @@ for my $update ('in progress', 'unable to fix') {
     } );
 }
 
-subtest 'testing special Open311 behaviour', sub {
+subtest 'testing special Open311 behaviour for SalesForce', sub {
     $report->set_extra_fields();
     $report->update;
     $body->update( { send_method => 'Open311', endpoint => 'http://rutland.endpoint.example.com', jurisdiction => 'FMS', api_key => 'test', send_comments => 1 } );
@@ -73,6 +79,34 @@ subtest 'testing special Open311 behaviour', sub {
     is $c->param('attribute[title]'), $report->title, 'Request had title';
     is $c->param('attribute[description]'), $report->detail, 'Request had description';
     is $c->param('attribute[external_id]'), $report->id, 'Request had correct ID';
+    is $c->param('jurisdiction_id'), 'FMS', 'Request had correct jurisdiction';
+};
+
+my ($confirm_problem) = $mech->create_problems_for_body( 1, $body->id, 'Test', {
+    cobrand => 'rutland',
+    user => $user,
+    category => $confirm_contact->category,
+});
+
+subtest 'testing special Open311 behaviour for Confirm', sub {
+    $body->update( { send_method => 'Open311', endpoint => 'http://rutland.endpoint.example.com', jurisdiction => 'FMS', api_key => 'test', send_comments => 1 } );
+    FixMyStreet::override_config {
+        STAGING_FLAGS => { send_reports => 1 },
+        ALLOWED_COBRANDS => [ 'fixmystreet', 'rutland' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        FixMyStreet::Script::Reports::send();
+    };
+    $report->discard_changes;
+    ok $report->whensent, 'Report marked as sent';
+    is $report->send_method_used, 'Open311', 'Report sent via Open311';
+    is $report->external_id, 248, 'Report has right external ID';
+
+    my $req = Open311->test_req_used;
+    my $c = CGI::Simple->new($req->content);
+    is $c->param('attribute[title]'), $report->title, 'Request had title';
+    is $c->param('attribute[description]'), $report->detail, 'Request had description';
+    is $c->param('attribute[report_url]'), 'http://rutland.example.org/report/' . $confirm_problem->id, 'Request had report_url';
     is $c->param('jurisdiction_id'), 'FMS', 'Request had correct jurisdiction';
 };
 
