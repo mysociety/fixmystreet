@@ -24,9 +24,8 @@ END -%]
 
 [%- IF category == 'Missed collection dispute' %]
     [%- IF service_name AND resolution %]
-    <p>
-    Our crews reported that your [% service_name %] collection was not made: [% resolution %].
-    </p>
+    <p>Our crews reported that your [% service_name %] collection was not made:</p>
+    [% resolution | staff_html_markup({ is_body_user => 1 }) %]
     [% END -%]
 
     <p>
