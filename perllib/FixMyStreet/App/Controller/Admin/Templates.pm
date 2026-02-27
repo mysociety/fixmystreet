@@ -33,6 +33,9 @@ sub view : Path : Args(1) {
     my @templates = $c->stash->{body}->response_templates->search(
         undef,
         {
+            '+columns' => { 'contact_response_templates.contact.msgstr' => \'COALESCE(translation_category.msgstr, contact.category)' },
+            prefetch => { 'contact_response_templates' => 'contact' },
+            join => { 'contact_response_templates' => { contact => 'translation_category' } },
             order_by => 'title'
         }
     );
