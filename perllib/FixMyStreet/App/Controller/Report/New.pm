@@ -395,6 +395,13 @@ sub disable_form_message : Private {
 
     my %out;
 
+    # Ward based message changing
+    my $areas = join '|', keys %{$c->stash->{all_areas_mapit}};
+    foreach (@{$c->stash->{category_extras}->{$c->stash->{category}}}) {
+        next unless ($_->{variable} || '') eq 'false';
+        $_->{description} =~ s/<span style="ward-(?:$areas)\d+">.*?<\/span>//g;
+    }
+
     # do not set disable form message if they are a staff user
     return \%out if $c->cobrand->call_hook('staff_ignore_form_disable_form');
 
