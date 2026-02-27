@@ -37,7 +37,7 @@ subtest 'Authentication' => sub {
             },
         ) {
             $mech->add_header( %{$test->{header}} );
-            $mech->post('http://localhost/api/mss/update/brent', Content => _json_data('good data'));
+            $mech->post('/api/mss/update/brent', Content => _json_data('good data'));
             is $mech->res->code, 401, 'Unauthorised for ' . $test->{text};
         };
     };
@@ -59,17 +59,17 @@ subtest 'Bad data' => sub {
         }
     }, sub {
         $mech->add_header('Content-Type' => 'application/json; charset=UTF-8', 'username' => 'mss', 'password' => 'secret');
-        $mech->post('http://localhost/api/mss/update/brent');
+        $mech->post('/api/mss/update/brent');
         is $mech->res->code, 406, 'Not acceptable response for no body';
-        $mech->post('http://localhost/api/mss/update/brent', Content => '');
+        $mech->post('/api/mss/update/brent', Content => '');
         is $mech->res->code, 406, 'Not acceptable response for empty body';
-        $mech->post('http://localhost/api/mss/update/brent', Content => '{}');
+        $mech->post('/api/mss/update/brent', Content => '{}');
         is $mech->res->code, 400, 'Bad request response for json in wrong format';
         for my $test (
             'extra field', 'malformed date', 'string for id', 'unmapped external status code',
             'empty update id'
         ) {
-            $mech->post('http://localhost/api/mss/update/brent', Content => _json_data($test));
+            $mech->post('/api/mss/update/brent', Content => _json_data($test));
             is $mech->res->code, 400, "Bad request response for " . $test;
         }
     };
@@ -91,9 +91,10 @@ subtest 'Good data' => sub {
         }
     }, sub {
         $mech->add_header('Content-Type' => 'application/json; charset=UTF-8', 'username' => 'mss', 'password' => 'secret');
-        $mech->post('http://localhost/api/mss/update/brent', Content => '{"updates": []}');
+        $mech->post('/api/mss/update/brent', Content => '{"updates": []}');
         is $mech->res->code, 200, "Successful post with no updates";
-        $mech->post('http://localhost/api/mss/update/brent', Content => _json_data('good data'));
+        $mech->host('brent.fixmystreet.com'); # Use hostname from here
+        $mech->post('/api/mss/update', Content => _json_data('good data'));
         is $mech->res->code, 200, "Successful post with update";
         my $comment = $problem->comments->search()->first;
         is $comment->text, 'This has been fixed', 'Comment added to report';
@@ -101,7 +102,7 @@ subtest 'Good data' => sub {
         is $comment->get_extra_metadata('external_status_code'), 'Closed - Completed', 'Comment metadata added';
         $problem->discard_changes;
         is $problem->state, 'fixed - council', 'Report updated by comment';
-        $mech->post('http://localhost/api/mss/update/brent', Content => _json_data('camden report'));
+        $mech->post('/api/mss/update', Content => _json_data('camden report'));
         is $mech->res->code, 200, "Successful post for wrong FMS ID";
         $comment = $camden_problem->comments->search()->first;
         is $comment, undef, "Comment not added to Camden report";

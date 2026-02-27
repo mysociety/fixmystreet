@@ -69,6 +69,15 @@ sub send_questionnaires { 0 }
 
 sub report_sent_confirmation_email { 'external_id' }
 
+=item * Only search Confirm references on the front page
+
+=cut
+
+sub lookup_by_ref {
+    my ($self, $ref) = @_;
+    { external_id => $ref };
+}
+
 =item * Users with a lincolnshire.gov.uk email can always be found in the admin.
 
 =cut

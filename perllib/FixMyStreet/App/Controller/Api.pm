@@ -67,4 +67,4 @@ sub _default_json_responses {
     return $responses->{$code} || '';
 }
 
-return 1;
+1;

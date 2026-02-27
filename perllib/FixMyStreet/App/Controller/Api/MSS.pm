@@ -17,6 +17,11 @@ has allowed_cobrands => (
 
 has body => ( is => 'rw', isa => Maybe[InstanceOf['FixMyStreet::DB::Result::Body']] );
 
+sub update_host : Path('/api/mss/update') : Args(0) {
+    my ($self, $c) = @_;
+    $c->detach('update', [ $c->cobrand->moniker ]);
+}
+
 sub update : Path('/api/mss/update') : Args(1) {
     my ($self, $c, $moniker) = @_;
 
@@ -63,4 +68,4 @@ sub validate_json_post_data : Private {
     }
 }
 
-return 1;
+1;
