@@ -801,7 +801,7 @@ FixMyStreet::override_config {
             EventTypeId => 3130,
             ResolvedDate => { DateTime => '2023-07-02T00:00:00Z' },
             ResolutionCodeId => 232,
-            EventStateId => 12400,
+            EventStateId => 19184,
         } ] } );
         $mech->get_ok('/waste/12345');
         $mech->content_lacks('Report a bulky waste collection as missed', 'Too long ago');
@@ -812,7 +812,7 @@ FixMyStreet::override_config {
             EventTypeId => 3130,
             ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
             ResolutionCodeId => 232,
-            EventStateId => 12400,
+            EventStateId => 19184,
         } ] } );
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Report a bulky waste collection as missed', 'In time, normal completion');
@@ -836,20 +836,20 @@ FixMyStreet::override_config {
             Guid => 'a-guid',
             EventTypeId => 3130,
             ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
-            ResolutionCodeId => 379,
-            EventStateId => 12401,
+            ResolutionCodeId => 466,
+            EventStateId => 19185,
         } ] } );
         $mech->get_ok('/waste/12345');
         $mech->content_contains('A missed collection cannot be reported', 'Not completed');
-        $mech->content_contains('Item not as described');
+        $mech->content_contains('Gate locked');
         $mech->get_ok('/waste/12345/report');
         $mech->content_lacks('Bulky waste collection');
         $echo->mock( 'GetEventsForObject', sub { [ {
             Guid => 'a-guid',
             EventTypeId => 3130,
             ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
-            ResolutionCodeId => 100,
-            EventStateId => 12401,
+            ResolutionCodeId => 466,
+            EventStateId => 19185,
         }, {
             EventTypeId => 3145,
             EventStateId => 0,

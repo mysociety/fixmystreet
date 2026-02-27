@@ -575,7 +575,7 @@ FixMyStreet::override_config {
                             { DateTime => '2025-08-08T12:00:00Z' },
                         EventDate => { DateTime => '2025-08-08T12:00:00Z' },
                         ResolutionCodeId => 232,
-                        EventStateId     => 12400,
+                        EventStateId     => 19184,
                     }
                 ]
             }
@@ -626,7 +626,7 @@ FixMyStreet::override_config {
                             { DateTime => '2025-08-08T12:00:00Z' },
                         EventDate => { DateTime => '2025-08-08T12:00:00Z' },
                         ResolutionCodeId => 232,
-                        EventStateId     => 12400,
+                        EventStateId     => 19184,
                     },
                     # Event for missed collection
                     {   Guid        => '8d222528-4308-44c3-9981-ea6131a6b00f',
