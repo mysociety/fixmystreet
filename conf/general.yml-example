@@ -21,6 +21,10 @@ FMS_DB_USER: 'fms'
 FMS_DB_PASS: ''
 FMS_DB_SSLMODE: 'prefer'
 
+# Enable if your database has postgis and btree_gist installed
+# You must also have updated with fixture-postgis.sql
+FMS_DB_POSTGIS: 0
+
 # The base URL of the install.
 BASE_URL: 'http://www.example.org'
 # Use the below if you're using the Catalyst development server

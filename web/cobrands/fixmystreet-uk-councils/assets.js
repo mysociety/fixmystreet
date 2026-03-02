@@ -1899,6 +1899,17 @@ fixmystreet.assets.surrey.road_not_found = function(layer) {
     }
 };
 
+fixmystreet.assets.surrey.countryside_construct_selected_asset_message = function(asset) {
+    var type = asset.attributes.FEATURE_TYPE_NAME;
+    var loc = asset.attributes.FEATURE_LOCATION;
+    if (!type || !loc) {
+        return;
+    }
+    type = type.replace(/s$/, '');
+    var prefix = /^[AEIOU]/.test(type) ? 'an' : 'a';
+    return 'You have selected ' + prefix + ' <b>' + type + '</b> in ' + loc;
+};
+
 /* TfL */
 
 fixmystreet.assets.tfl = {};
