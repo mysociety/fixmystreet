@@ -271,6 +271,8 @@ sub view : Private {
     $c->stash->{property} = {
         id => $p->waste_property_id,
         address => $p->get_extra_metadata('property_address'),
+        # For Bromley, different refund depending on if property was domestic/trade, stored at time of booking
+        pricing_property_type => $p->get_extra_field_value('property_type'),
     };
 
     my $items_extra;
