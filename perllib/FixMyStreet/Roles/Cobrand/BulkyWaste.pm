@@ -53,6 +53,7 @@ sub small_items_enabled {
 sub bulky_items_master_list { $_[0]->wasteworks_config->{item_list} || [] }
 sub small_items_master_list { $_[0]->wasteworks_config->{small_item_list} || [] }
 sub bulky_per_item_costs { $_[0]->wasteworks_config->{per_item_costs} }
+sub bulky_pop_item_costs { $_[0]->wasteworks_config->{pop_costs} }
 
 sub bulky_nice_item_list {
     my ($self, $report) = @_;
