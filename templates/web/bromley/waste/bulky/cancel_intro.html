@@ -1,7 +1,7 @@
 [% USE pounds = format('%.2f') %]
 [% partial = c.cobrand.bulky_refund_would_be_partial(cancelling_booking) %]
 [% IF partial %]
-  [% minimum_charge_amount = c.cobrand.bulky_minimum_charge %]
+  [% minimum_charge_amount = c.cobrand.bulky_per_item_min_collection_price %]
   [% minimum_charge = pounds(minimum_charge_amount / 100) %]
   [% partial_explainer = "Cancellations within 24 hours of collection are only eligibile to be refunded the amount paid above the minimum charge £" _ minimum_charge _ "." %]
 [% END %]

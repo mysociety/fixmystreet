@@ -12,6 +12,7 @@ my $mech = FixMyStreet::TestMech->new;
 my $sample_file = path(__FILE__)->parent->child("sample.jpg");
 my $sample_file_2 = path(__FILE__)->parent->child("sample2.jpg");
 my $minimum_charge = 500;
+my $minimum_charge_trade = 2700;
 
 my $user = $mech->create_user_ok('bob@example.org');
 
@@ -21,7 +22,7 @@ my $body = $mech->create_body_ok( 2482, 'Bromley Council', {
 $body->set_extra_metadata(
     wasteworks_config => {
         per_item_costs => 1,
-        per_item_min_collection_price => $minimum_charge,
+        per_item_min_collection_price => "$minimum_charge,$minimum_charge_trade",
         items_per_collection_max => 8,
         show_location_page => 'users',
         item_list => [
@@ -65,6 +66,7 @@ create_contact(
     { code => 'Bulky_Collection_Details_Qty' },
     { code => 'GUID' },
     { code => 'reservation' },
+    { code => 'property_type' },
 );
 
 sub domestic_waste_service_units {
@@ -614,7 +616,7 @@ FixMyStreet::override_config {
     $report->delete;
 
     sub test_prices {
-        my ($minimum_cost, $total_cost) = @_;
+        my ($minimum_cost, $total_cost, $total_cost_2) = @_;
         $mech->get_ok('/waste/12345');
         $mech->content_contains('From ' . $minimum_cost);
         $mech->get_ok('/waste/12345/bulky');
@@ -631,23 +633,26 @@ FixMyStreet::override_config {
         );
         $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
         $mech->content_contains($total_cost); # Summary page.
+        $mech->back;
+        $mech->back;
+        $mech->submit_form_ok({
+            form_number => 1,
+            fields => {
+                'item_1' => 'BBQ',
+                'item_2' => 'BBQ',
+            },
+        });
+        $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
+        $mech->content_contains($total_cost_2); # Summary page.
     }
 
     subtest 'Different pricing depending on domestic or trade property' => sub {
         $echo->mock('GetPointAddress', sub { return { %$address,
             PointAddressType => { Id => 151, Name => 'Commercial - Agricultural' }
         } });
-        test_prices('£20.00', '£20.00');
+        test_prices('£27.00', '£27.00', '£40.00');
         $echo->mock('GetPointAddress', sub { $address });
-        test_prices('£10.00', '£10.00');
-    };
-
-    subtest 'Minimum charged enforced' => sub {
-        my $cfg = $body->get_extra_metadata('wasteworks_config');
-        $cfg->{per_item_min_collection_price} = 5000;
-        $body->set_extra_metadata(wasteworks_config => $cfg);
-        $body->update;
-        test_prices('£50.00', '£50.00');
+        test_prices('£10.00', '£10.00', '£20.00');
     };
 
     $pay->mock(query => sub {
