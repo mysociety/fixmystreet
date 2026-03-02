@@ -271,6 +271,11 @@ sub bulky_total_cost {
     my ($self, $data) = @_;
     my $c = $self->{c};
 
+    my %pop_items;
+    if ($self->bulky_pop_item_costs) {
+        %pop_items = map { $_->{name} => 1 } grep { $_->{contains_pops} } @{ $self->bulky_items_master_list };
+    }
+
     if ($self->bulky_free_collection_available) {
         $data->{extra_CHARGEABLE} = 'FREE';
         $c->stash->{payment} = 0;
@@ -310,18 +315,26 @@ sub bulky_total_cost {
             }
         } elsif ($cfg->{band1_price}) {
             my $count = 0;
+            my $has_pops = 0;
             my $max = $c->stash->{booking_maximum};
             for (1..$max) {
                 my $item = $data->{"item_$_"} or next;
+                $has_pops = 1 if $pop_items{$item};
                 $count++;
             }
             if ($count <= $cfg->{band1_max}) {
-                $c->stash->{payment} = $cfg->{band1_price};
+                $c->stash->{payment} = $has_pops ? $cfg->{band1_pop_price} : $cfg->{band1_price};
             } else {
-                $c->stash->{payment} = $cfg->{base_price};
+                $c->stash->{payment} = $has_pops ? $cfg->{base_pop_price} : $cfg->{base_price};
             }
         } else {
-            $c->stash->{payment} = $cfg->{base_price};
+            my $has_pops = 0;
+            my $max = $c->stash->{booking_maximum};
+            for (1..$max) {
+                my $item = $data->{"item_$_"} or next;
+                $has_pops = 1 if $pop_items{$item};
+            }
+            $c->stash->{payment} = $has_pops ? $cfg->{base_pop_price} : $cfg->{base_price};
         }
     }
 
