@@ -153,7 +153,18 @@ sub bulky_pricing_strategy {
         $out = { strategy => 'per_item', min => $min_collection_price };
     } elsif (my $band1_price = $self->wasteworks_config->{band1_price}) {
         my $max = $self->{c}->stash->{booking_maximum};
-        $out = { strategy => 'banded', bands => [ { max => $band1_max, price => $band1_price }, { max => $max, price => $base_price } ] };
+        if ($self->wasteworks_config->{pop_costs}) {
+            $out = { strategy => 'banded_pop', bands =>
+                [
+                    { max => $band1_max, pop_price => $self->wasteworks_config->{band1_pop_price}, price => $band1_price },
+                    { max => $max, pop_price => $self->wasteworks_config->{base_pop_price}, price => $base_price }
+                ]
+            };
+        } else {
+            $out = { strategy => 'banded', bands => [ { max => $band1_max, price => $band1_price }, { max => $max, price => $base_price } ] };
+        }
+    } elsif ($self->wasteworks_config->{pop_costs}) {
+        $out = { strategy => 'pop_costs' };
     } else {
         $out = { strategy => 'single' };
     }
