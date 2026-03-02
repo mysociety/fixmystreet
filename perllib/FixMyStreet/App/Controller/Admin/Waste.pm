@@ -77,7 +77,7 @@ sub edit : Chained('body') : PathPart('') : Args(0) {
             my %keys = (
                 per_item_costs => 'bool',
                 pop_costs => 'bool',
-                per_item_min_collection_price => 'int',
+                per_item_min_collection_price => 'ints',
                 base_price => 'int',
                 base_pop_price => 'int',
                 daily_slots => 'int',
@@ -95,6 +95,15 @@ sub edit : Chained('body') : PathPart('') : Args(0) {
                 my $val = $c->get_param($_);
                 if ($keys{$_} eq 'bool') {
                     $new_cfg->{$_} = $val ? 1 : 0;
+                } elsif ($keys{$_} eq 'ints') {
+                    if ($val) {
+                        my @vals = split /\s*,\s*/, $val;
+                        my $c = grep { $_+0 eq $_ } @vals;
+                        if ($c != @vals) {
+                            $c->stash->{errors}->{site_wide} = "Not an integer";
+                        }
+                    }
+                    $new_cfg->{$_} = $val;
                 } elsif ($keys{$_} eq 'int') {
                     if ($val && $val ne $val+0) {
                         $c->stash->{errors}->{site_wide} = "Not an integer";

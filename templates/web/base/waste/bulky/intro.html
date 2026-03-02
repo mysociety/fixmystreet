@@ -26,7 +26,7 @@
 
     <li>Requesting a [% service_name %] collection usually takes around <strong>10 minutes</strong>.</li>
     <li>Prices start from
-        £[% pounds(cfg.per_item_min_collection_price / 100) %] for weekday bookings
+        £[% pounds(c.cobrand.bulky_minimum_cost / 100) %] for weekday bookings
         [%~ IF cfg.per_item_min_collection_price_saturday %]
             and £[% pounds(cfg.per_item_min_collection_price_saturday / 100) %] for Saturday bookings
         [%~ END %].
