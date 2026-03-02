@@ -1,4 +1,4 @@
-[% SET bodyclass = 'formflow' %]
+[% SET bodyclass = 'formflow parish-page' %]
 
 [% USE date(format = '%A, %-d~~~ %B') ~%]
 [% PROCESS 'govuk/fields.html' ~%]
@@ -7,55 +7,79 @@
 [% PROCESS errors %]
 [% SET data = form.saved_data ~%]
 
-<h1 class="govuk-heading-xl">[% form.title %]</h1>
+<h1 class="govuk-heading-xl govuk-!-margin-bottom-2">[% form.title %]</h1>
+
+<form method="post" style="display:inline">
+    <input type="hidden" name="saved_data" value="[% form.fif.saved_data %]">
+    <input type="hidden" name="goto" value="categories">
+    <input type="submit" class="fake-link govuk-!-margin-bottom-0" value="&#8592; Change your previous answers">
+</form>
+
+<nav aria-label="Form progress bar">
+    <ol class="progress-form is--aligned-left" style="--progress-form-bar-max-width:600px;">
+        <li class="progress-form__step is-complete">
+            <div class="progress-form__circle" aria-hidden="true"></div>
+            <div class="progress-form__label">Your details</div>
+        </li>
+
+        <li class="progress-form__step is-complete">
+            <div class="progress-form__circle" aria-hidden="true"></div>
+            <div class="progress-form__label">Select categories</div>
+        </li>
+
+        <li class="progress-form__step is-active" aria-current="step">
+            <div class="progress-form__circle" aria-hidden="true"></div>
+            <div class="progress-form__label">Review your answers</div>
+        </li>
+
+        <li class="progress-form__step">
+            <div class="progress-form__circle" aria-hidden="true"></div>
+            <div class="progress-form__label">Payment</div>
+        </li>
+    </ol>
+</nav>
 
 <div class="claims__summary">
-<dl class="govuk-summary-list">
-  <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">
-      [% summary_title %]
-    </dt>
-    <dd class="govuk-summary-list__value">
-    </dd>
-    <dd class="govuk-summary-list__actions">
-    </dd>
-  </div>
-
-  [% FOR page IN form.fields_for_display %]
-      [% NEXT IF page.hide %]
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          [% page.title %]
-        </dt>
-        <dd class="govuk-summary-list__value">
-        </dd>
-        <dd class="govuk-summary-list__actions">
-        <form method="post">
-            <input type="hidden" name="saved_data" value="[% form.fif.saved_data %]">
-            <input type="hidden" name="goto" value="[% page.stage %]">
-            <input type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0" value="Change answers">
-        </form>
-        </dd>
-      </div>
-      [% FOR field IN page.fields %]
-      [% NEXT IF field.hide %]
-        <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key govuk-summary-list__key--sub" style="vertical-align:top">[% field.desc %]</dt>
-            <dd class="govuk-summary-list__value">
-                [% IF field.type == 'Photo' %]
-                    [% SET photos = field.value.split(',');
-                       FOR photo IN photos ~%]
-                        <img align="left" src="/photo/temp.[% photo %]">
-                    [% END ~%]
-                [% ELSE %]
-                    [% field.pretty %]
-                [% END %]
-            </dd>
+[% FOR page IN form.fields_for_display %]
+    [% NEXT IF page.hide %]
+    <div class="govuk-summary-card">
+        <div class="govuk-summary-card__title-wrapper">
+            <h2 class="govuk-summary-card__title">
+                [% page.title %]
+            </h2>
+            <div class="govuk-summary-card__actions">
+                <form method="post" style="display:inline">
+                    <input type="hidden" name="saved_data" value="[% form.fif.saved_data %]">
+                    <input type="hidden" name="goto" value="[% page.stage %]">
+                    <input type="submit" class="fake-link" value="Change answers">
+                    <span class="govuk-visually-hidden"> [% page.title | lower %]</span>
+                </form>
+            </div>
         </div>
-       [% END %]
-  [% END %]
-
-</dl>
+        <div class="govuk-summary-card__content">
+            <dl class="govuk-summary-list">
+                [% FOR field IN page.fields %]
+                [% NEXT IF field.hide %]
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        [% field.desc %]
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        [% IF field.type == 'Photo' %]
+                            [% SET photos = field.value.split(',');
+                              FOR photo IN photos ~%]
+                                <img src="/photo/temp.[% photo %]" alt="" style="max-width: 150px; height: auto;">
+                            [% END ~%]
+                        [% ELSE %]
+                            [% field.pretty %]
+                        [% END %]
+                    </dd>
+                </div>
+                [% END %]
+            </dl>
+        </div>
+    </div>
+[% END %]
 
 <form method="post">
     [% PROCESS form %]

@@ -28,10 +28,20 @@ body.goodies {
     }
   }
 
-  .badge-preview {
-    float: $right;
-    margin-top: -3em;
-    margin-#{$left}: 1em;
+  .badge-section {
+    display: grid;
+    gap: 3rem;
+    width: 100%;
+    grid-template-columns: 1fr;
+
+    @media only screen and (min-width: 48em) { 
+      grid-template-columns: 3fr 2fr;
+    }
+
+    .badge-preview {
+      text-align: center;
+      margin: 0 auto;
+    }
   }
 
   .downloads {

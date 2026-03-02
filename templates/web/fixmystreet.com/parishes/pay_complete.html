@@ -1,3 +1,4 @@
+[% SET bodyclass = 'parish-page' %]
 [% INCLUDE 'header.html' title = 'Payment complete' %]
 
 <div class="govuk-panel govuk-panel--confirmation">
@@ -23,14 +24,26 @@ You will now receive any reports made via FixMyStreet within the boundary and ca
 First, we recommend watching the below video to help you get to grips with using FixMyStreet for Parish &amp; Town Councils.
 
 <p>
-[Video]
 
+<div class="video-wrapper">
+  <iframe 
+    src="https://www.youtube.com/embed/S8XhhDKvcmQ?si=k1CosDOFISKYF54_" 
+    title="YouTube video player" 
+    frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    referrerpolicy="strict-origin-when-cross-origin" 
+    allowfullscreen
+  ></iframe>
+</div>
+
+<h3>Manage your account</h3>
 <p>
-Please refer to our FAQs for guidance and information about how to use and get the best out of your subscription.
+Please refer to our FAQs for guidance and information about how to manage your council’s settings”.
 
 <p>
 <a href="/about/faq-parishes">Read our FAQs</a>
 
+<h3>Let everyone know</h3>
 <p>
 Finally, spread the word! Below are some assets to help you promote your FixMyStreet service within your local area.
 
@@ -40,5 +53,19 @@ Finally, spread the word! Below are some assets to help you promote your FixMySt
     <li> An email signature banner to signpost people to the service
     <li> A website badge perhaps?
 </ul>
+
+<a href="/cobrands/fixmystreet.com/posters/parishes-pack.zip" data-goodielink="parishes-pack" class="govuk-button govuk-button--secondary">Download ZIP file</a>
+
+<style>
+    .video-wrapper {
+    max-width: 480px;
+    aspect-ratio: 16 / 9;
+    }
+
+    .video-wrapper iframe {
+    width: 100%;
+    height: 100%;
+    }
+</style>
 
 [% INCLUDE footer.html %]

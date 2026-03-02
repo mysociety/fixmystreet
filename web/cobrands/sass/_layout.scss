@@ -1309,3 +1309,79 @@ textarea.form-error {
 .map-keyboard-drop-pin .keyboard-pin { display: block; }
 .map-keyboard-drop-pin .keyboard-pulsating-dot { display: block; }
 .map-keyboard-remove-pin #keyboard-instructions-remove-pin { display: block; display: flex; }
+
+.parish-page {
+  $content-padding: 3.5em;
+
+  input[type=text], input[type=password], input[type=email], textarea, .autocomplete__wrapper {
+    max-width: 22rem;
+  }
+
+  .govuk-summary-list__key {
+      width: 40%;
+  }
+
+  .dropzone {
+    max-width: 22rem;
+  }
+
+  .content {
+    padding: $content-padding;
+
+    .text-content {
+      max-width: 40rem;
+    }
+  }
+
+  .parishes-usp-section {
+    margin: 3em (-$content-padding) 2.5em;
+    padding: 2em $content-padding;
+
+    .parishes-usp-grid {
+      $column-gap: 1.5rem;
+      column-gap: $column-gap;
+
+      &--card {
+        flex: 1 1 calc(33.333% - #{$column-gap * 2 / 3});
+      }
+    }
+  }
+
+  .help-section {
+    margin: 0 (-$content-padding) (-$content-padding);
+    padding: 2em $content-padding;
+  }
+
+  .columns {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4rem;
+  }
+
+  .parish-category-form {
+    margin-bottom: 2em;
+
+    // Flex columns, so parish-category-list-wrapper can fill vertical space
+    & > div {
+      display: flex;
+      flex-direction: column;
+    }
+
+    // Swap column order so that interactive elements are on right
+    & > :first-child {
+      order: 2;
+    }
+  }
+
+  .parish-category-list-wrapper {
+    position: relative; // to position .parish-category-list
+    min-height: 285px;
+    flex: 1 1 auto; // grow to fill space beside interactive elements
+    margin-bottom: 30px; // match .govuk-form-group
+  }
+
+  .parish-category-list {
+    position: absolute;
+    inset: 0;
+    max-height: none;
+  }
+}
