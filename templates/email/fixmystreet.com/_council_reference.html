@@ -1,5 +1,6 @@
-[% IF sent_confirm_id_ref ~%]
-<p style="[% p_style %]">The report's reference number is <strong>[% sent_confirm_id_ref %]</strong>.
+[% ref = sent_confirm_id_ref || (problem.to_body_named('Lincolnshire') AND problem.external_id) %]
+[% IF ref ~%]
+<p style="[% p_style %]">The report's reference number is <strong>[% sent_confirm_id_ref || problem.external_id %]</strong>.
   Please quote this if you need to contact the council about this report.</p>
 [%~ END %]
 
