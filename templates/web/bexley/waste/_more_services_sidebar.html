@@ -28,6 +28,9 @@
   [% IF property.show_bulky_waste %]
     <li><a href="[% c.uri_for_action('waste/bulky/index', [ property.id ]) %]">Arrange a bulky waste collection</a></li>
   [% END %]
+  [% IF property.show_sharps %]
+    <li><a href="[% c.uri_for_action('waste/bulky/index_sharps', [ property.id ]) %]">Arrange a sharps collection</a></li>
+  [% END %]
   <li><a [% external_new_tab | safe %] href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Request+assisted+collection">Get help with putting your bins out</a></li>
 </ul>
 

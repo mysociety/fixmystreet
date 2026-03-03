@@ -76,8 +76,8 @@ sub bulky_date_label {
     my $format = '%A %e %B';
     my $label = $dt->strftime($format);
 
-    # Saturdays have higher pricing
-    if ( $dt->day_of_week == 6 ) {
+    # Saturdays have higher pricing for bulky, but not sharps
+    if ( $dt->day_of_week == 6 && !$self->{c}->stash->{sharps} ) {
         $label .= ' (extra charge)';
     }
 
@@ -249,6 +249,79 @@ sub bulky_refund_collection {
             resident_email => $collection_report->user->email,
         },
     );
+}
+
+# Sharps
+
+sub sharps_allowed_property {
+    my ( $self, $property ) = @_;
+    my $class = $property->{class} || '';
+    return $self->sharps_enabled && $class =~ /^(RD|RH|RI|RE|CE)/ ? 1 : 0;
+}
+
+sub waste_munge_sharps_data {
+    my ( $self, $data ) = @_;
+
+    my $c = $self->{c};
+    my $property = $c->stash->{property};
+    my $address = $property->{address};
+
+    my ($date, $ref) = split(";", $data->{chosen_date});
+
+    $data->{title} = 'Sharps collection';
+    $data->{detail} = 'Address: ' . $c->stash->{property}->{address};
+    $data->{category} = 'Sharps collection';
+    $data->{extra_collection_date} = $date;
+    $data->{extra_round_instance_id} = $ref;
+
+    if ( $data->{sharps_collecting} eq 'Yes' ) {
+        $data->{extra_sharps_collecting} = 1;
+        $data->{extra_sharps_location}
+            = $data->{collect_location} eq 'Other'
+            ? 'Other: ' . $data->{collect_location_other}
+            : $data->{collect_location};
+        $data->{extra_sharps_collect_small_quantity} = $data->{collect_small_quantity};
+        $data->{extra_sharps_collect_large_quantity} = $data->{collect_large_quantity};
+        $data->{extra_sharps_collect_glucose_monitor} = $data->{collect_glucose_monitor};
+        $data->{extra_sharps_collect_cytotoxic} = $data->{collect_cytotoxic};
+    }
+
+    if ( $data->{sharps_delivering} eq 'Yes' ) {
+        $data->{extra_sharps_delivering} = 1;
+        $data->{extra_sharps_deliver_size} = $data->{deliver_size};
+        $data->{extra_sharps_deliver_quantity} = $data->{deliver_quantity};
+    }
+}
+
+sub waste_reconstruct_sharps_data {
+    my ( $self, $p ) = @_;
+
+    my $date = $p->get_extra_field_value('collection_date');
+    my $ref = $p->get_extra_field_value('round_instance_id');
+    my $saved_data = {
+        chosen_date => "$date;$ref;",
+
+        sharps_collecting => $p->get_extra_field_value('sharps_collecting')
+            ? 'Yes'
+            : 'No',
+        collect_location        => $p->get_extra_field_value('sharps_location'),
+        collect_small_quantity  => $p->get_extra_field_value('sharps_collect_small_quantity'),
+        collect_large_quantity  => $p->get_extra_field_value('sharps_collect_large_quantity'),
+        collect_glucose_monitor => $p->get_extra_field_value('sharps_collect_glucose_monitor'),
+        collect_cytotoxic       => $p->get_extra_field_value('sharps_collect_cytotoxic'),
+
+        sharps_delivering => $p->get_extra_field_value('sharps_delivering')
+            ? 'Yes'
+            : 'No',
+        deliver_size     => $p->get_extra_field_value('sharps_deliver_size'),
+        deliver_quantity => $p->get_extra_field_value('sharps_deliver_quantity'),
+    };
+
+    $saved_data->{name} = $p->name;
+    $saved_data->{email} = $p->user->email;
+    $saved_data->{phone} = $p->phone_waste;
+
+    return $saved_data;
 }
 
 1;

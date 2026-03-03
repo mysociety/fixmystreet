@@ -3,7 +3,10 @@
 [% END %]
 
 [%
-IF report.category == 'Small items collection';
+IF report.category == 'Sharps collection';
+    SET email_summary = "Thank you for booking a sharps collection with " _ cobrand.council_name _ ".";
+    SET bulky_cancel_url = 'sharps/cancel';
+ELSIF report.category == 'Small items collection';
     SET email_summary = "Thank you for booking a small items collection with " _ cobrand.council_name _ ".";
     SET bulky_cancel_url = 'small_items/cancel';
 ELSE;

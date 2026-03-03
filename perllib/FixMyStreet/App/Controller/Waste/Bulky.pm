@@ -8,6 +8,8 @@ use utf8;
 use FixMyStreet::App::Form::Waste::Bulky;
 use FixMyStreet::App::Form::Waste::Bulky::Amend;
 use FixMyStreet::App::Form::Waste::Bulky::Cancel;
+use FixMyStreet::App::Form::Waste::Sharps;
+use FixMyStreet::App::Form::Waste::Sharps::Cancel;
 use FixMyStreet::App::Form::Waste::SmallItems;
 use FixMyStreet::App::Form::Waste::SmallItems::Cancel;
 use FixMyStreet::App::Form::Waste::SmallItems::Amend;
@@ -57,6 +59,21 @@ sub setup_small : Chained('/waste/property') : PathPart('small_items') : Capture
         cobrand => $c->cobrand,
         property => $c->stash->{property},
         type => 'small_items',
+    );
+}
+
+sub setup_sharps : Chained('/waste/property') : PathPart('sharps') : CaptureArgs(0) {
+    my ($self, $c) = @_;
+
+    if ( !$c->stash->{property}{show_sharps} ) {
+        $c->detach('/waste/property_redirect');
+    }
+
+    $c->stash->{sharps} = 1;
+    $c->stash->{booking_class} = $c->cobrand->booking_class->new(
+        cobrand => $c->cobrand,
+        property => $c->stash->{property},
+        type => 'sharps',
     );
 }
 
@@ -211,11 +228,21 @@ sub index_small : PathPart('') : Chained('setup_small') : Args(0) {
     $c->detach('index_booking');
 }
 
+sub index_sharps : PathPart('') : Chained('setup_sharps') : Args(0) {
+    my ($self, $c) = @_;
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Sharps';
+
+    # XXX Config
+    # XXX Check if pending?
+
+    $c->detach('index_booking');
+}
+
 sub index_booking : Private {
     my ($self, $c) = @_;
 
     $c->stash->{first_page} = 'intro';
-    $c->forward('item_list');
+    $c->forward('item_list') unless $c->stash->{sharps};
     $c->forward('form');
 
     if ( $c->stash->{form}->current_page->name eq 'intro' ) {
@@ -263,6 +290,7 @@ sub amend : Chained('setup') : Args(1) {
 
 # Called by F::A::Controller::Report::display if the report in question is
 # a bulky goods collection.
+# Also used for small items and sharps collections.
 sub view : Private {
     my ($self, $c) = @_;
 
@@ -278,6 +306,8 @@ sub view : Private {
         $c->stash->{small_items} = 1;
         $c->stash->{booking_maximum} = $c->cobrand->wasteworks_config->{small_items_per_collection_max} || 5;
         $items_extra = $c->cobrand->call_hook('small_items_extra');
+    } elsif ($p->category eq 'Sharps collection') {
+        $c->stash->{sharps} = 1;
     } else {
         $c->stash->{small_items} = 0;
         $c->stash->{booking_maximum} = $c->cobrand->wasteworks_config->{items_per_collection_max} || 5;
@@ -288,7 +318,10 @@ sub view : Private {
 
     $c->forward('/report/load_updates');
 
-    my $saved_data = $c->cobrand->waste_reconstruct_bulky_data($p);
+    my $saved_data
+        = $c->stash->{sharps}
+        ? $c->cobrand->waste_reconstruct_sharps_data($p)
+        : $c->cobrand->waste_reconstruct_bulky_data($p);
     $c->stash->{form} = {
         items_extra => $items_extra,
         saved_data  => $saved_data,
@@ -301,7 +334,11 @@ sub cancel : Chained('setup') : Args(1) {
     $c->detach( '/auth/redirect' ) unless $c->user_exists;
 
     my $collections = $c->cobrand->find_booked_collections($c->stash->{property}{uprn});
-    my $type = $c->stash->{small_items} ? 'small_items' : 'bulky';
+
+    my $type
+        = $c->stash->{sharps}      ? 'sharps'
+        : $c->stash->{small_items} ? 'small_items'
+        :                            'bulky';
     my $collection = (grep { $_->id == $id } @{$collections->{$type}{pending}})[0];
     $c->detach('/waste/property_redirect')
         if !$c->cobrand->call_hook('bulky_can_cancel_collection', $collection);
@@ -310,12 +347,23 @@ sub cancel : Chained('setup') : Args(1) {
     $c->stash->{first_page} = 'intro';
     $c->stash->{form_class} ||= 'FixMyStreet::App::Form::Waste::Bulky::Cancel';
     $c->stash->{entitled_to_refund} = $c->cobrand->call_hook(bulky_can_refund => $collection);
+
+    $c->stash->{reconstructed_data}
+        = $c->cobrand->waste_reconstruct_sharps_data($collection)
+        if $c->stash->{sharps};
+
     $c->forward('form');
 }
 
 sub cancel_small : PathPart('cancel') : Chained('setup_small') : Args(1) {
     my ( $self, $c, $id ) = @_;
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::SmallItems::Cancel';
+    $c->detach('cancel');
+}
+
+sub cancel_sharps : PathPart('cancel') : Chained('setup_sharps') : Args(1) {
+    my ( $self, $c, $id ) = @_;
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Sharps::Cancel';
     $c->detach('cancel');
 }
 
@@ -387,6 +435,22 @@ sub process_small_items_data : Private {
     }
 
     $c->forward('/waste/add_report', [ $data ]) or return;
+    return 1;
+}
+
+sub process_sharps_data : Private {
+    my ( $self, $c, $form ) = @_;
+    my $data = $form->saved_data;
+
+    $c->cobrand->call_hook( "waste_munge_sharps_data", $data );
+
+    # Read extra details in loop
+    foreach (grep { /^extra_/ } keys %$data) {
+        my ($id) = /^extra_(.*)/;
+        $c->set_param($id, $data->{$_});
+    }
+
+    $c->forward( '/waste/add_report', [$data] ) or return;
     return 1;
 }
 
