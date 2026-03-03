@@ -6,6 +6,7 @@ use FixMyStreet::DB;
 use Open311;
 use Open311::PostServiceRequestUpdates;
 use FixMyStreet::Script::CSVExport;
+use FixMyStreet::Script::Alerts;
 use FixMyStreet::Script::Reports;
 use CGI::Simple;
 use File::Temp 'tempdir';
@@ -461,5 +462,173 @@ sub category_change_update_xml {
 </service_requests_updates>};
     return $xml;
 }
+
+subtest 'external reference in emails from national site' => sub {
+    my $other_body = $mech->create_body_ok(2504, 'Westminster City Council');
+    $mech->create_contact_ok(body => $other_body, category => 'Graffiti', email => 'graffiti@example.org');
+
+    # Create a Lincolnshire report logged on fixmystreet.com
+    my ($lincs_report) = $mech->create_problems_for_body(1, $body->id, 'Pothole on High Street', {
+        cobrand => 'fixmystreet',
+        category => 'Pothole',
+        user => $user2,
+        external_id => 'LCC-12345',
+        confirmed => DateTime->now(),
+        state => 'confirmed',
+        latitude => 52.656144,
+        longitude => -0.502566,
+        areas => '2232',
+    });
+
+    # Create a non-Lincolnshire report logged on fixmystreet.com
+    my ($other_report) = $mech->create_problems_for_body(1, $other_body->id, 'Graffiti on Church Lane', {
+        cobrand => 'fixmystreet',
+        category => 'Graffiti',
+        user => $user2,
+        external_id => 'WST-99999',
+        confirmed => DateTime->now(),
+        state => 'confirmed',
+    });
+
+    subtest 'confirm_report_sent email includes Lincolnshire external_id' => sub {
+        $mech->clear_emails_ok;
+
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'fixmystreet',
+            MAPIT_URL => 'http://mapit.uk/',
+        }, sub {
+            my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('fixmystreet')->new;
+            my $h = {
+                report => $lincs_report,
+                sent_confirm_id_ref => $lincs_report->external_id,
+                cobrand_handler => $lincs_report->body_handler,
+            };
+            $lincs_report->send_logged_email($h, 0, $cobrand);
+        };
+
+        my $email = $mech->get_email;
+        ok $email, 'got confirm_report_sent email for Lincolnshire report';
+        my $text = $mech->get_text_body_from_email($email);
+        like $text, qr/LCC-12345/, 'confirm email contains Lincolnshire external reference';
+        like $text, qr/reference number/, 'contains reference number text';
+
+        $mech->clear_emails_ok;
+    };
+
+    subtest 'confirm_report_sent email does not include external_id for non-Lincolnshire report' => sub {
+        $mech->clear_emails_ok;
+
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'fixmystreet',
+            MAPIT_URL => 'http://mapit.uk/',
+        }, sub {
+            my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('fixmystreet')->new;
+            my $h = { report => $other_report };
+            $other_report->send_logged_email($h, 0, $cobrand);
+        };
+
+        my $email = $mech->get_email;
+        ok $email, 'got confirm email for non-Lincolnshire report';
+        my $text = $mech->get_text_body_from_email($email);
+        unlike $text, qr/WST-99999/, 'does not contain non-Lincolnshire external reference';
+        unlike $text, qr/reference number/, 'no reference number text';
+
+        $mech->clear_emails_ok;
+    };
+
+    subtest 'alert-update email includes Lincolnshire external_id' => sub {
+        $mech->clear_emails_ok;
+
+        # Ensure the report looks sent
+        $lincs_report->update({ whensent => DateTime->now->subtract(days => 1) })
+            unless $lincs_report->whensent;
+
+        my $alert = FixMyStreet::DB->resultset('Alert')->create({
+            user => $user2,
+            parameter => $lincs_report->id,
+            alert_type => 'new_updates',
+            whensubscribed => DateTime->now->subtract(days => 1),
+            confirmed => 1,
+            cobrand => 'fixmystreet',
+        });
+
+        my $comment = FixMyStreet::DB->resultset('Comment')->create({
+            problem_id => $lincs_report->id,
+            user_id => $lincs_user->id,
+            name => 'Council Staff',
+            text => 'We are looking into this pothole.',
+            state => 'confirmed',
+            confirmed => DateTime->now(),
+            mark_fixed => 0,
+            anonymous => 0,
+        });
+
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'fixmystreet',
+            MAPIT_URL => 'http://mapit.uk/',
+        }, sub {
+            FixMyStreet::Script::Alerts::send_updates();
+        };
+
+        my $email = $mech->get_email;
+        ok $email, 'got alert-update email';
+        my $text = $mech->get_text_body_from_email($email);
+        like $text, qr/LCC-12345/, 'alert-update email contains Lincolnshire external reference';
+        like $text, qr/reference number/, 'contains reference number text';
+
+        $comment->delete;
+        $alert->delete;
+        $mech->clear_emails_ok;
+    };
+
+    subtest 'alert-update email does not include external_id for non-Lincolnshire reports' => sub {
+        $mech->clear_emails_ok;
+
+        $other_report->update({ whensent => DateTime->now->subtract(days => 1) })
+            unless $other_report->whensent;
+
+        my $alert = FixMyStreet::DB->resultset('Alert')->create({
+            user => $user2,
+            parameter => $other_report->id,
+            alert_type => 'new_updates',
+            whensubscribed => DateTime->now->subtract(days => 1),
+            confirmed => 1,
+            cobrand => 'fixmystreet',
+        });
+
+        my $comment = FixMyStreet::DB->resultset('Comment')->create({
+            problem_id => $other_report->id,
+            user_id => $lincs_user->id,
+            name => 'Someone',
+            text => 'Still there.',
+            state => 'confirmed',
+            confirmed => DateTime->now(),
+            mark_fixed => 0,
+            anonymous => 0,
+        });
+
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'fixmystreet',
+            MAPIT_URL => 'http://mapit.uk/',
+        }, sub {
+            FixMyStreet::Script::Alerts::send_updates();
+        };
+
+        my $email = $mech->get_email;
+        ok $email, 'got alert-update email for non-Lincolnshire report';
+        my $text = $mech->get_text_body_from_email($email);
+        unlike $text, qr/WST-99999/, 'alert-update email does not contain non-Lincolnshire external reference';
+        unlike $text, qr/reference number/, 'no reference number text for non-Lincolnshire report';
+
+        $comment->delete;
+        $alert->delete;
+        $mech->clear_emails_ok;
+    };
+
+    $lincs_report->comments->delete;
+    $lincs_report->delete;
+    $other_report->comments->delete;
+    $other_report->delete;
+};
 
 done_testing();
