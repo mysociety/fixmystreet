@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 #
-# Close reports in 'Parking illegally' category older than a number of days
+# Close reports in 'Parking enforcement' (display name 'Parking illegally') category older than a number of days
 
 use strict;
 use warnings;
@@ -37,7 +37,7 @@ FixMyStreet::Script::UK::AutoClose->new(
     commit => $opts->commit,
     retain_alerts => 1,
     body_name => 'Surrey County Council',
-    category => 'Parking illegally',
+    category => 'Parking enforcement',
     to => $opts->days,
     closure_text => $opts->closure_text,
 )->close;

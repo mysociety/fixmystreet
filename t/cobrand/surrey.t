@@ -132,13 +132,13 @@ FixMyStreet::override_config {
         $mech->clear_emails_ok;
     };
 
-    subtest 'Auto-close Parking illegally reports after 5 days' => sub {
-        $mech->create_contact_ok(body_id => $surrey->id, category => 'Parking illegally', email => 'parking@example.org');
+    subtest 'Auto-close Parking enforcement reports after 5 days' => sub {
+        $mech->create_contact_ok(body_id => $surrey->id, category => 'Parking enforcement', email => 'parking@example.org', extra => { display_name => 'Parking illegally' });
 
         my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
 
         my ($parking_old) = $mech->create_problems_for_body(1, $surrey->id, 'Old parking report', {
-            category => 'Parking illegally',
+            category => 'Parking enforcement',
             cobrand => 'surrey',
             latitude => 51.293415,
             longitude => -0.441269,
@@ -148,7 +148,7 @@ FixMyStreet::override_config {
         });
 
         my ($parking_new) = $mech->create_problems_for_body(1, $surrey->id, 'New parking report', {
-            category => 'Parking illegally',
+            category => 'Parking enforcement',
             cobrand => 'surrey',
             latitude => 51.293415,
             longitude => -0.441269,
@@ -171,7 +171,7 @@ FixMyStreet::override_config {
             commit => 1,
             retain_alerts => 1,
             body_name => 'Surrey County Council',
-            category => 'Parking illegally',
+            category => 'Parking enforcement',
             to => 5,
             closure_text => 'This report has been closed automatically.',
         )->close;
