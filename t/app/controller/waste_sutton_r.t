@@ -117,8 +117,13 @@ FixMyStreet::override_config {
         echo => { sutton => { bulky_service_id => 960 }},
         payment_gateway => { sutton => {
             cc_url => 'http://example.com',
-            request_replace_cost => 500,
-            request_change_cost => 1500,
+            request_change_cost_refuse_140 => 1500,
+            request_change_cost_refuse_240 => 1500,
+            request_change_cost_paper_240 => 1500,
+            request_replace_cost_refuse_140 => 500,
+            request_replace_cost_refuse_240 => 500,
+            request_replace_cost_refuse_360 => 500,
+            request_replace_cost_paper_240 => 500,
         } },
     },
     STAGING_FLAGS => {
