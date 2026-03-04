@@ -501,7 +501,7 @@ sub waste_munge_request_form_fields {
         my ($key, $value) = ($field_list->[$i], $field_list->[$i+1]);
         next unless $key =~ /^container-(\d+)/;
         my $id = $1;
-        my ($cost, $hint) = $self->request_cost($id, $c->stash->{quantities});
+        my ($cost, $hint, $type) = $self->request_cost($id, $c->stash->{quantities});
 
         my $data = {
             value => $id,
@@ -509,8 +509,7 @@ sub waste_munge_request_form_fields {
             disabled => $value->{disabled},
             hint => $value->{option_hint} || $hint, # In progress overrides
         };
-        $change_cost = $costs->get_cost('request_change_cost_' . $id_to_name{$id}) || 0;
-        if ($cost && $change_cost && $cost == $change_cost) {
+        if ($type && $type eq 'change') {
             push @replace_options, $data;
         } else {
             push @radio_options, $data;
@@ -719,7 +718,7 @@ sub request_cost {
                 my $price = sprintf("£%.2f", $cost / 100);
                 $price =~ s/\.00$//;
                 my $hint = "There is a $price administration/delivery charge to change the size of your container";
-                return ($cost, $hint);
+                return ($cost, $hint, 'change');
             }
         }
     }
@@ -729,7 +728,7 @@ sub request_cost {
                 my $price = sprintf("£%.2f", $cost / 100);
                 $price =~ s/\.00$//;
                 my $hint = "There is a $price administration/delivery charge to replace your container";
-                return ($cost, $hint);
+                return ($cost, $hint, 'replace');
             }
         }
     }
