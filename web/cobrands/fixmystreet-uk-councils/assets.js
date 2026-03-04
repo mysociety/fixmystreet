@@ -370,6 +370,33 @@ fixmystreet.assets.buckinghamshire.prow_selected = function(asset) {
     return 'You have selected ' + type + ' <b>' + id + '</b>';
 };
 
+// Found PROW road
+fixmystreet.assets.buckinghamshire.prow_road_found = function(layer, feature) {
+    fixmystreet.message_controller.road_found(layer, feature);
+    if ( fixmystreet.assets.selectedFeature() ) {
+        // Hide non-stopper message if spot selected
+        delete layer.map_messaging.asset;
+        return;
+    }
+    fixmystreet.assets.named_select_action_found.call(layer, feature);
+};
+
+fixmystreet.assets.buckinghamshire.prow_road_selected = function(asset) {
+    return 'You have selected Right of Way <b>' + asset.attributes.RouteCode + '</b>';
+};
+
+// PROW road not found
+fixmystreet.assets.buckinghamshire.prow_road_not_found = function(layer) {
+    fixmystreet.message_controller.road_not_found(layer);
+    if ( fixmystreet.assets.selectedFeature() ) {
+        // This may never be reached, as selecting a spot PROW asset implies
+        // a road has also been found
+        return;
+    }
+
+    fixmystreet.assets.named_select_action_not_found.call(layer);
+};
+
 fixmystreet.assets.buckinghamshire.streetlight_stylemap = new OpenLayers.StyleMap({
   'default': fixmystreet.assets.style_default,
   'hover': fixmystreet.assets.style_default_hover,
@@ -1847,6 +1874,17 @@ fixmystreet.assets.surrey.road_not_found = function(layer) {
     } else {
         fixmystreet.message_controller.road_not_found(layer);
     }
+};
+
+fixmystreet.assets.surrey.countryside_construct_selected_asset_message = function(asset) {
+    var type = asset.attributes.FEATURE_TYPE_NAME;
+    var loc = asset.attributes.FEATURE_LOCATION;
+    if (!type || !loc) {
+        return;
+    }
+    type = type.replace(/s$/, '');
+    var prefix = /^[AEIOU]/.test(type) ? 'an' : 'a';
+    return 'You have selected ' + prefix + ' <b>' + type + '</b> in ' + loc;
 };
 
 /* TfL */

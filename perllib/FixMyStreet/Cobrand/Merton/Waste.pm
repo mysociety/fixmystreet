@@ -8,7 +8,6 @@ with 'FixMyStreet::Roles::Cobrand::Waste',
 
 use Hash::Util qw(lock_hash);
 use WasteWorks::Costs;
-use FixMyStreet::App::Form::Waste::Report::Merton;
 use FixMyStreet::App::Form::Waste::Request::Merton;
 use FixMyStreet::App::Form::Waste::Request::Merton::Larger;
 
@@ -527,20 +526,37 @@ sub waste_munge_report_form_pages {
     }
 }
 
+sub waste_missed_collection_is_communal {
+    my ($self, $report) = @_;
+    my $service_id = $report->get_extra_field_value('service_id');
+    return $service_id == $SERVICE_IDS{communal_refuse} || $service_id == $SERVICE_IDS{communal_food} || $service_id == $SERVICE_IDS{communal_paper} || $service_id == $SERVICE_IDS{communal_mixed};
+}
+
 sub waste_munge_report_form_fields {
     my ($self, $field_list) = @_;
-    $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Report::SLWP';
+    my $c = $self->{c};
+    if ($c->stash->{communal_property}) {
+        unshift @$field_list, communal_note => {
+            type => 'Notice',
+            widget => 'NoRender',
+            label => 'Please note this is a communal bin, and your report will be submitted on behalf of all associated properties.',
+        };
+    }
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Report::SLWP';
 }
 
 sub waste_munge_enquiry_data {
     my ($self, $data) = @_;
+    my $c = $self->{c};
 
-    my $address = $self->{c}->stash->{property}->{address};
-    $data->{title} = $data->{category};
+    my $address = $c->stash->{property}->{address};
+    my $service_id = $data->{service_id};
+    my $service_name = $c->stash->{services}{$service_id}{service_name};
+    $data->{title} = "$data->{category} concerning $service_name collection";
 
     my $detail;
     if ($data->{category} eq 'Bin not returned' || $data->{category} eq 'Lid not closed') {
-        $detail .= ($data->{'extra_Notes'} ? $data->{'extra_Notes'} : '') . "\n\n";
+        $detail .= ($data->{'extra_Notes'} ? $data->{'extra_Notes'} . "\n\n" : '');
     } else {
         foreach (sort grep { /^extra_/ } keys %$data) {
             $detail .= "$data->{$_}\n\n";

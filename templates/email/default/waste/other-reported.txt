@@ -1,12 +1,25 @@
-[% IF report.category == 'Request new container' ~%][% SET subject_type = 'request' ~%][% ELSE ~%][% SET subject_type = 'report' ~%][% END ~%]
-[% SET subject_text = 'Your ' _ subject_type _ ' has been logged' ~%]
-[% IF cobrand.moniker == 'kingston' ~%]
-    [% SET prefix = 'RBK-' ~%]
-    [% IF report.category == 'Request new container' ~%]
-        [% subject_text = 'Your bin request has been logged' ~%]
-    [% END ~%]
-[% ELSIF cobrand.moniker == 'sutton' %][% SET prefix = 'LBS-' ~%]
-[% ELSE %][% SET prefix = '' %][% END ~%]
+[%
+IF report.category == 'Request new container';
+    SET subject_type = 'request';
+ELSE;
+    SET subject_type = 'report';
+END;
+IF report.category == 'General Enquiry';
+    SET subject_text = 'Thank you for your enquiry';
+ELSE;
+    SET subject_text = 'Your ' _ subject_type _ ' has been logged';
+END;
+IF cobrand.moniker == 'kingston';
+    SET prefix = 'RBK-';
+    IF report.category == 'Request new container';
+        subject_text = 'Your bin request has been logged';
+    END;
+ELSIF cobrand.moniker == 'sutton';
+    SET prefix = 'LBS-';
+ELSE;
+    SET prefix = '';
+END;
+~%]
 Subject: [% subject_text ~%], reference [% prefix %][% report.id %]
 
 Dear [% report.name %],
@@ -88,6 +101,10 @@ Please note that we are unable to return to correct the problem, unless you are 
 [% IF cobrand.moniker == 'brent' %]
 We will arrange another collection as soon as possible over the next two days. Please note that collections may also be attempted on a public holiday/weekend.
 [% ELSIF cobrand.moniker == 'merton' %]
+[% IF cobrand.waste_missed_collection_is_communal(report) ~%]
+Please note this is a communal bin, and your report has been submitted on behalf of all associated properties.
+
+[% END %]
 We will arrange another collection as soon as possible over the next 2 working days.
 
 Did you know...?

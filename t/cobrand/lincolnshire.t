@@ -50,6 +50,16 @@ FixMyStreet::override_config {
         $mech->content_contains('like potholes, broken paving slabs, street lighting, or flooding');
     };
 
+    subtest "searching by external ID works, but not report ID" => sub {
+        (my $report) = $mech->create_problems_for_body(1, $body->id, 'Pothole', { external_id => '123456' });
+        $mech->get_ok('/');
+        $mech->submit_form_ok({ with_fields => { pc => $report->id } });
+        $mech->content_contains('Searching found no reports');
+        $mech->submit_form_ok({ with_fields => { pc => $report->external_id } });
+        is $mech->uri->path, '/report/' . $report->id;
+        $report->delete;
+    };
+
     subtest "fetching problems from Open311 includes user information" => sub {
         my $requests_xml = xml_reports({ id => 123, name => 'John Smith', email => $user_email });
         Open311->_inject_response('/requests.xml', $requests_xml);

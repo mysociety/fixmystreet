@@ -54,11 +54,14 @@ has_page location => (
     update_field_list => sub {
         my ($form) = @_;
         my $fields = {};
-        if ($form->c->cobrand->bulky_show_location_field_mandatory) {
+        my $cobrand = $form->c->cobrand;
+        if ($cobrand->bulky_show_location_field_mandatory) {
             $fields->{location} = { required => 1 };
         }
-        if ($form->c->cobrand->moniker eq 'kingston' || $form->c->cobrand->moniker eq 'sutton') {
+        if ($cobrand->moniker eq 'sutton') {
             $fields->{location}{tags}{hint} = 'For example, ‘On the driveway’';
+        } elsif ($cobrand->moniker eq 'kingston') {
+            $fields->{location}{widget} = 'Text';
         }
 
         my $maxlength
