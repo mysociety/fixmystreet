@@ -449,11 +449,11 @@ sub fields_for_display {
 
         for my $f ( @{ $page->fields } ) {
             my $field = $form->field($f);
-            next if $field->type eq 'Submit';
+            next if $field->type eq 'Submit' || $field->type eq 'Notice';
             my $value = $form->saved_data->{$field->{name}} // '';
             push @{$x->{fields}}, {
                 name => $field->{name},
-                desc => $field->{label},
+                desc => $field->{label} || $field->{option_label},
                 type => $field->type,
                 pretty => $form->format_for_display( $field->{name}, $value ),
                 value => $value,
@@ -512,6 +512,8 @@ sub format_for_display {
         return "";
     } elsif ( $field->{type} eq 'Checkbox' ) {
         return $value ? 'Yes' : 'No';
+    } elsif ( $field->{type} eq 'Multiple' ) {
+        return join(', ', @$value);
     } elsif ( $field->{type} eq 'FileIdUpload' ) {
         if ( ref $value eq 'HASH' && $value->{filenames} ) {
             return join( ', ', @{ $value->{filenames} } );
