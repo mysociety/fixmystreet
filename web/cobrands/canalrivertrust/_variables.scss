@@ -23,6 +23,9 @@ $primary_text: $cobrand_white;
 /* FRONTPAGE */
 $base_bg: $cobrand_grey;
 $base_fg: $cobrand_black;
+$dark_bg: #7B7B7B;
+$dark_fg: $cobrand_black;
+
 $layout_front_stats_color: $cobrand_teal;
 
 /* LINKS */
@@ -126,3 +129,19 @@ $front-main-background-desktop: white url("/cobrands/canalrivertrust/images/crt-
 $front-main-container-background-desktop: $cobrand_white;
 
 $report-forms-wrapper-flex-column-gap: 5rem;
+
+:root {
+  --base-bg: #{$base_bg};
+  --base-fg: #{$base_fg};
+  --primary: #{$primary};
+  --primary-link-color: #{$primary_link_color};
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --base-bg: #{$dark_bg};
+    --base-fg: #{$dark_fg};
+    --primary: #{$cobrand_white};
+    --primary-link-color: #{$cobrand_white};
+  }
+}

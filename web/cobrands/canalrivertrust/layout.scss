@@ -57,3 +57,9 @@ html {
 .big-green-banner {
   border-top: 1px solid $cobrand_white;
 }
+
+/* DARK THEME */
+body {
+  background: var(--base-bg);
+  color: var(--base-fg);
+}

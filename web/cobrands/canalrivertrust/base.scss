@@ -145,4 +145,10 @@ a,
   }
 }
 
+/* DARK THEME */
+body {
+  background: var(--base-bg);
+  color: var(--base-fg);
+}
+
 @import "../fixmystreet-uk-councils/societyworks-footer";
