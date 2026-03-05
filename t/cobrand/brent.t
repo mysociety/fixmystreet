@@ -1387,7 +1387,8 @@ FixMyStreet::override_config {
             },
             # Some extra container referral scenarios
             {
-                should_be_referred => 1,
+                should_be_referred => '1',
+                test_send => 1,
                 reason => 'extra',
                 property_people => '6 or more',
                 property_nappies => 'None',
@@ -1402,6 +1403,7 @@ FixMyStreet::override_config {
             },
             {
                 should_be_referred => 1,
+                test_send => 1,
                 reason => 'extra',
                 property_people => 'Up to 5',
                 property_nappies => '1 or more',
@@ -1518,6 +1520,7 @@ FixMyStreet::override_config {
             },
         )) {
             my $should_be_referred = $_->{should_be_referred};
+            my $test_send = $_->{test_send};
             my $reason = $_->{reason};
             my $people = $_->{property_people};
             my $nappies = $_->{property_nappies};
@@ -1548,15 +1551,13 @@ FixMyStreet::override_config {
                 $mech->submit_form_ok({ with_fields => { 'request_reason' => $reason } }, "Request with reason $reason");
 
                 $mech->content_contains('Household details', "Questions for extra refuse container");
-                $mech->submit_form_ok({ with_fields =>
-                        {
-                            'property_type' => 'Shared flat',  # Doesn't affect refusal/referral logic.
-                            'property_people' => $people,
-                            'property_nappies' => $nappies,
-                            'property_general_waste_bins' => $bins,
-                            'property_largest_general_waste_bin' => $largest_bin_size,
-                        },
-                    }, "Answer household detail questions");
+                $mech->submit_form_ok({ with_fields => { 'property_type' => 'Shared flat' } }); # Doesn't affect refusal/referral logic.
+                $mech->submit_form_ok({ with_fields => { 'property_people' => $people } }, "Answer household detail questions");
+                $mech->submit_form_ok({ with_fields => { 'property_nappies' => $nappies } }, "Answer household detail questions");
+                $mech->submit_form_ok({ with_fields => { 'property_general_waste_bins' => $bins } }, "Answer household detail questions");
+                if ($bins ne 'None') {
+                    $mech->submit_form_ok({ with_fields => { 'property_largest_general_waste_bin' => $largest_bin_size } }, "Answer household detail questions");
+                }
 
                 if ($should_be_referred) {
                     # Exit early to prevent clutter.
@@ -1589,6 +1590,22 @@ FixMyStreet::override_config {
                     $mech->content_lacks('Your container request');
                     $mech->content_lacks('contact you to let you know if your request has been approved');
                     $mech->content_contains('Your property meets current general waste bin capacity requirements');
+                }
+
+                if ($test_send) {
+                    FixMyStreet::Script::Reports::send( 0, 0, 0, $report->id );
+                    my @emails = $mech->get_email;
+                    my ($to_client) = grep { $_->header('To') eq 'referral@example.org' } @emails;
+
+                    # Test we have the phone number provided in the form
+                    my $plain = $mech->get_text_body_from_email($to_client);
+                    my $html = $mech->get_html_body_from_email($to_client);
+
+                    like $plain, qr/request_property_people: $people/;
+                    like $plain, qr/request_property_nappies: $nappies/;
+                    like $plain, qr/request_property_general_waste_bins: $bins/;
+
+                    $mech->clear_emails_ok;
                 }
 
                 # Check what happens if we try and raise another request.
