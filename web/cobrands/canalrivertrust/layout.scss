@@ -1,0 +1,65 @@
+@import "_variables";
+@import "../sass/layout";
+
+/* GENERAL */
+
+html {
+    font-size: 1.25rem;
+}
+
+/* NAVBAR */
+#site-logo {
+  background-image: url("/cobrands/canalrivertrust/images/logo-desktop.svg");
+    background-size: auto 5rem;
+    height: $mappage-header-height;
+    width: 18.875rem;
+}
+
+.nav-menu--main {
+  a, span {
+    font-size: 1rem;
+  }
+
+  a {
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  span {
+    text-decoration: underline;
+    color: $primary_text;
+    text-underline-offset: 0.5rem;
+    &:hover {
+      color: $primary_text;
+    }
+  }
+}
+
+/* FRONTPAGE */
+
+#front-main {
+  padding: 6em 1em;
+  margin-bottom: 5rem;
+
+  #front-main-container {
+    max-width: fit-content;
+    padding: 2em;
+  }
+}
+
+#front_stats {
+  border-color: $cobrand_teal;
+  color: $cobrand_teal;
+}
+
+/* MAP PAGE */
+.big-green-banner {
+  border-top: 1px solid $cobrand_white;
+}
+
+/* DARK THEME */
+body {
+  background: var(--base-bg);
+  color: var(--base-fg);
+}
