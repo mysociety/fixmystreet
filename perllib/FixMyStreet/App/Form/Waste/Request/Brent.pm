@@ -59,6 +59,7 @@ has_page request_extra_refusal => (
 
 has_page replacement => (
     fields => ['request_reason', 'continue'],
+    intro => 'request_refuse_intro.html',
     title => 'Reason for request',
     next => sub {
         my $data = shift;
@@ -172,7 +173,6 @@ has_field how_long_lived => (
 
 has_page request_refuse_container => (
     title => 'Household details',
-    intro => 'refuse_call_us.html',
     fields => [
         'property_type',
         'property_people',
