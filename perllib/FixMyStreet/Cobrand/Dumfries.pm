@@ -268,6 +268,58 @@ sub state_groups_inspect {
 }
 
 
+=head2 validate_response_template_external_status_code
+
+Validates that an external_status_code entered in the admin templates page
+conforms to Dumfries format rules:
+
+- Must have exactly 3 colon-separated segments (status:outcome:priority)
+- Each segment must be either a '*' wildcard, a '+' wildcard, or an Alloy ID
+- Wildcards (* and +) cannot be mixed with other text in a segment
+- All 3 segments must be non-empty
+- At least one segment must be a concrete Alloy ID (not wildcard)
+  i.e. '*:*:*' and '+:+:+' are not valid
+
+Wildcard meanings:
+- '*' matches any value including empty ("don't care")
+- '+' matches any non-empty value ("must have a value")
+
+Returns an error message string if invalid, undef if valid.
+
+=cut
+
+sub validate_response_template_external_status_code {
+    my ($self, $ext_code) = @_;
+
+    return unless defined $ext_code && $ext_code ne '';
+
+    my @parts = split /:/, $ext_code, -1;
+
+    if (@parts != 3) {
+        return 'External status code must have exactly 3 colon-separated parts (status:outcome:priority).';
+    }
+
+    for my $i (0..2) {
+        my $part = $parts[$i];
+
+        if ($part eq '') {
+            return 'External status code cannot have empty segments. All three parts (status:outcome:priority) must have a value.';
+        }
+
+        # Each part must be: exactly '*', exactly '+', or a non-wildcard value (Alloy ID)
+        if ($part ne '*' && $part ne '+' && ($part =~ /\*/ || $part =~ /\+/)) {
+            return 'Wildcards (* and +) cannot be mixed with other text. Each segment must be a single *, a single +, or an Alloy ID.';
+        }
+    }
+
+    # Must have at least one non-wildcard segment
+    my @concrete = grep { $_ ne '*' && $_ ne '+' } @parts;
+    if (!@concrete) {
+        return 'External status code must have at least one concrete value (not empty or wildcard).';
+    }
+
+    return;
+}
 
 
 =head2 response_template_external_status_code_regex_match
@@ -326,7 +378,6 @@ sub response_template_external_status_code_regex_match {
         order => $order,
     };
 }
-
 
 
 1;

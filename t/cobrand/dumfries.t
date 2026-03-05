@@ -60,6 +60,7 @@ my $contact = $mech->create_contact_ok(
 my $reporter = $mech->create_user_ok('reporter@example.com', name => 'Reporter');
 my $staff_user = $mech->create_user_ok('staff@dumgal.gov.uk', name => 'Staff User', from_body => $body);
 my $other_user = $mech->create_user_ok('other@example.com', name => 'Other User');
+my $superuser = $mech->create_user_ok('super@example.com', name => 'Superuser', is_superuser => 1);
 
 # Create problem once and reuse it
 my $problem = FixMyStreet::DB->resultset('Problem')->create({
@@ -644,6 +645,64 @@ subtest 'response_template_for with wildcard matching' => sub {
         $template_plus->delete;
         $template_star->delete;
         $test_problem->delete;
+    };
+};
+
+subtest 'admin template external_status_code validation' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['dumfries'],
+    }, sub {
+        $mech->log_in_ok($superuser->email);
+
+        my @cases = (
+            { name => 'Three non-empty segments is valid', code => 'abc:def:ghi', valid => 1 },
+            { name => 'Star wildcards in segments is valid', code => 'abc:*:*', valid => 1 },
+            { name => 'Plus wildcards in segments is valid', code => 'abc:+:+', valid => 1 },
+            { name => 'Mix of star and plus wildcards is valid', code => 'abc:*:+', valid => 1 },
+            { name => 'Trailing empty segment returns error', code => 'abc:123:', valid => 0, error => 'cannot have empty segments' },
+            { name => 'Leading empty segments return error', code => '::456', valid => 0, error => 'cannot have empty segments' },
+            { name => 'Middle and trailing empty segments return error', code => 'abc::', valid => 0, error => 'cannot have empty segments' },
+            { name => 'All star wildcards returns error', code => '*:*:*', valid => 0, error => 'at least one concrete' },
+            { name => 'All plus wildcards returns error', code => '+:+:+', valid => 0, error => 'at least one concrete' },
+            { name => 'Mix of star and plus wildcards only returns error', code => '*:+:*', valid => 0, error => 'at least one concrete' },
+            { name => 'Empty string returns undef', code => '', valid => 1 },
+            { name => 'Undef returns undef', valid => 1 },
+            { name => 'Single segment returns error', code => 'abc', valid => 0, error => 'exactly 3' },
+            { name => 'Two segments returns error', code => 'abc:def', valid => 0, error => 'exactly 3' },
+            { name => 'Four segments returns error', code => 'abc:def:ghi:jkl', valid => 0, error => 'exactly 3' },
+            { name => 'Wildcard mixed with text at start returns error', code => 'abc*:def:ghi', valid => 0, error => 'cannot be mixed' },
+            { name => 'Wildcard in middle of text returns error', code => 'abc:d*f:ghi', valid => 0, error => 'cannot be mixed' },
+            { name => 'Wildcard at end of text returns error', code => 'abc:def:ghi*', valid => 0, error => 'cannot be mixed' },
+            { name => 'Double wildcard returns error', code => 'abc:**:ghi', valid => 0, error => 'cannot be mixed' },
+        );
+
+        my $i = 0;
+        for my $case (@cases) {
+            subtest $case->{name} => sub {
+                my %fields = (
+                    title => 'Test template',
+                    text => 'Template text',
+                    auto_response => 'on',
+                    defined $case->{code} ? (external_status_code => $case->{code}) : (),
+                );
+
+                $mech->get_ok('/admin/templates/' . $body->id . '/new');
+                $mech->submit_form_ok({ with_fields => \%fields });
+
+                if ($case->{valid}) {
+                    is $mech->uri->path, '/admin/templates/' . $body->id,
+                        'Redirected after valid submission';
+                    $mech->delete_response_template($_)
+                        for $body->response_templates->search({ title => 'Test template' });
+                } else {
+                    is $mech->uri->path, '/admin/templates/' . $body->id . '/new',
+                        'Not redirected on error';
+                    $mech->content_contains($case->{error}, 'Expected validation message shown');
+                }
+            };
+        }
+
+        $mech->log_out_ok;
     };
 };
 
