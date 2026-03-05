@@ -483,4 +483,168 @@ subtest 'MyGovScot OIDC login falls back to payload sub for email' => sub {
     };
 };
 
+subtest 'response_template_for with wildcard matching' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['dumfries'],
+    }, sub {
+        my $test_problem = FixMyStreet::DB->resultset('Problem')->create({
+            postcode           => 'DG1 1AA',
+            bodies_str         => $body->id,
+            areas              => ',2656,',
+            category           => 'Potholes',
+            title              => 'Wildcard template test problem',
+            detail             => 'Test detail',
+            used_map           => 1,
+            name               => 'Reporter',
+            anonymous          => 0,
+            state              => 'confirmed',
+            confirmed          => DateTime->now,
+            lastupdate         => DateTime->now,
+            latitude           => 55.0706,
+            longitude          => -3.9568,
+            user_id            => $reporter->id,
+            cobrand            => 'dumfries',
+        });
+
+        # * wildcard templates
+        my $template_exact = FixMyStreet::DB->resultset('ResponseTemplate')->create({
+            body_id => $body->id,
+            title => 'Exact Match Template',
+            text => 'Exact match response',
+            auto_response => 1,
+            state => '',
+            external_status_code => 'status1:outcome1:priority1',
+        });
+
+        my $template_wildcard_one = FixMyStreet::DB->resultset('ResponseTemplate')->create({
+            body_id => $body->id,
+            title => 'One Wildcard Template',
+            text => 'One wildcard response',
+            auto_response => 1,
+            state => '',
+            external_status_code => 'status1:outcome1:*',
+        });
+
+        my $template_wildcard_two = FixMyStreet::DB->resultset('ResponseTemplate')->create({
+            body_id => $body->id,
+            title => 'Two Wildcard Template',
+            text => 'Two wildcard response',
+            auto_response => 1,
+            state => '',
+            external_status_code => 'status1:*:*',
+        });
+
+        my $template_fallback = FixMyStreet::DB->resultset('ResponseTemplate')->create({
+            body_id => $body->id,
+            title => 'Fallback Template',
+            text => 'Fallback response',
+            auto_response => 1,
+            state => '',
+            external_status_code => 'status_fallback:*:*',
+        });
+
+        # + wildcard templates (use a different prefix to keep these tests isolated)
+        my $template_plus = FixMyStreet::DB->resultset('ResponseTemplate')->create({
+            body_id => $body->id,
+            title => 'Plus Wildcard Template',
+            text => 'Plus wildcard response',
+            auto_response => 1,
+            state => '',
+            external_status_code => 'status_plus:+:+',
+        });
+
+        my $template_star = FixMyStreet::DB->resultset('ResponseTemplate')->create({
+            body_id => $body->id,
+            title => 'Star Wildcard Template',
+            text => 'Star wildcard response',
+            auto_response => 1,
+            state => '',
+            external_status_code => 'status_plus:*:*',
+        });
+
+        subtest 'exact match beats wildcards' => sub {
+            my $template = $test_problem->response_template_for(
+                $body, 'investigating', 'confirmed',
+                'status1:outcome1:priority1', ''
+            );
+            is $template->title, 'Exact Match Template',
+                'Exact match template selected over wildcards';
+        };
+
+        subtest 'more specific wildcard beats less specific' => sub {
+            my $template = $test_problem->response_template_for(
+                $body, 'investigating', 'confirmed',
+                'status1:outcome1:priorityX', ''
+            );
+            is $template->title, 'One Wildcard Template',
+                'One wildcard template beats two wildcard template';
+        };
+
+        subtest 'two wildcards beats three wildcards' => sub {
+            my $template = $test_problem->response_template_for(
+                $body, 'investigating', 'confirmed',
+                'status1:outcomeX:priorityX', ''
+            );
+            is $template->title, 'Two Wildcard Template',
+                'Two wildcard template beats all wildcard template';
+        };
+
+        subtest 'star wildcard matches empty segment' => sub {
+            my $template = $test_problem->response_template_for(
+                $body, 'investigating', 'confirmed',
+                'status1::', ''
+            );
+            is $template->title, 'Two Wildcard Template',
+                'Star wildcard matches empty segments';
+        };
+
+        subtest 'star wildcard fallback works for unmatched statuses' => sub {
+            my $template = $test_problem->response_template_for(
+                $body, 'investigating', 'confirmed',
+                'status_fallback:outcomeX:priorityX', ''
+            );
+            is $template->title, 'Fallback Template',
+                'Fallback star template matches when nothing more specific exists';
+        };
+
+        subtest 'plus wildcard matches non-empty segments' => sub {
+            my $template = $test_problem->response_template_for(
+                $body, 'investigating', 'confirmed',
+                'status_plus:outcome1:priority1', ''
+            );
+            is $template->title, 'Plus Wildcard Template',
+                'Plus wildcard template matches when segments are non-empty';
+        };
+
+        subtest 'plus wildcard does not match empty segments' => sub {
+            my $template = $test_problem->response_template_for(
+                $body, 'investigating', 'confirmed',
+                'status_plus::', ''
+            );
+            is $template->title, 'Star Wildcard Template',
+                'Plus wildcard does not match empty segments, star does';
+        };
+
+        subtest 'no match when external_status_code unchanged' => sub {
+            $test_problem->set_extra_metadata(external_status_code => 'status1:outcome1:priority1');
+            $test_problem->update;
+
+            my $template = $test_problem->response_template_for(
+                $body, 'investigating', 'confirmed',
+                'status1:outcome1:priority1', 'status1:outcome1:priority1'
+            );
+            is $template, undef,
+                'No template when external_status_code has not changed';
+        };
+
+        $template_exact->delete;
+        $template_wildcard_one->delete;
+        $template_wildcard_two->delete;
+        $template_fallback->delete;
+        $template_plus->delete;
+        $template_star->delete;
+        $test_problem->delete;
+    };
+};
+
 done_testing();

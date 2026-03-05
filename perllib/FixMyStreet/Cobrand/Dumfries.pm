@@ -268,4 +268,65 @@ sub state_groups_inspect {
 }
 
 
+
+
+=head2 response_template_external_status_code_regex_match
+
+Returns a SQL clause for matching response templates by external_status_code
+using PostgreSQL regex matching.
+
+Dumfries external status codes from Alloy are colon-separated values
+(status:outcome:priority). Templates can use wildcards:
+
+- '*' matches any value including empty ("don't care")
+- '+' matches any non-empty value ("must have a value")
+
+Examples:
+- Template '123:*:*' matches any update with status 123, regardless of
+  whether outcome/priority are set or what their values are
+- Template '123:+:+' matches updates with status 123 that have values
+  set for both outcome and priority
+
+Returns a hashref with:
+- sql: the SQL WHERE clause fragment
+- bind: arrayref of bind parameters
+- order: the ORDER BY clause for specificity ranking
+
+=cut
+
+sub response_template_external_status_code_regex_match {
+    my ($self, $ext_code) = @_;
+
+    # Convert the template's wildcard pattern to a regex:
+    # - '*' becomes '[^:]*' (match any chars except colon, including empty)
+    # - '+' becomes '[^:]+' (match one or more chars except colon)
+    # We do this in SQL so we can match against all templates in one query
+    my $sql = q{
+        ? ~ ('^' ||
+             REPLACE(REPLACE(me.external_status_code, '*', '[^:]*'), '+', '[^:]+') ||
+             '$')
+    };
+
+    # Order by most specific match first:
+    # 1. Fewest total wildcards (* and +)
+    # 2. Fewest '*' wildcards ('+' is more specific than '*')
+    # 3. Longer codes (tiebreaker)
+    my $order = q{
+        (
+            (LENGTH(me.external_status_code) - LENGTH(REPLACE(me.external_status_code, '*', ''))) +
+            (LENGTH(me.external_status_code) - LENGTH(REPLACE(me.external_status_code, '+', '')))
+        ) ASC,
+        (LENGTH(me.external_status_code) - LENGTH(REPLACE(me.external_status_code, '*', ''))) ASC,
+        me.external_status_code DESC NULLS LAST, contact.category
+    };
+
+    return {
+        sql => $sql,
+        bind => [$ext_code],
+        order => $order,
+    };
+}
+
+
+
 1;
