@@ -1351,7 +1351,7 @@ FixMyStreet::override_config {
             {
                 should_be_referred => 0,
                 reason => 'extra',
-                property_people => 'Up to 5',
+                property_people => '1',
                 property_nappies => '0',
                 property_general_waste_bins => '1',
                 property_largest_general_waste_bin => '140L',
@@ -1364,15 +1364,15 @@ FixMyStreet::override_config {
             {
                 should_be_referred => 0,
                 reason => 'extra',
-                property_people => 'Up to 5',
+                property_people => '1',
                 property_nappies => '1',
-                property_general_waste_bins => '2 or more',
+                property_general_waste_bins => '2',
                 property_largest_general_waste_bin => '140L',
             },
             {
                 should_be_referred => 0,
                 reason => 'extra',
-                property_people => '6 or more',
+                property_people => '6',
                 property_nappies => '1',
                 property_general_waste_bins => '1',
                 property_largest_general_waste_bin => '240L',
@@ -1380,16 +1380,16 @@ FixMyStreet::override_config {
             {
                 should_be_referred => 0,
                 reason => 'extra',
-                property_people => '6 or more',
+                property_people => '6',
                 property_nappies => '1',
                 property_general_waste_bins => '1',
                 property_largest_general_waste_bin => '360L',
             },
             # Some extra container referral scenarios
             {
-                should_be_referred => 1,
+                should_be_referred => '1',
                 reason => 'extra',
-                property_people => '6 or more',
+                property_people => '6',
                 property_nappies => '0',
                 property_general_waste_bins => '1',
                 property_largest_general_waste_bin => '140L',
@@ -1403,8 +1403,8 @@ FixMyStreet::override_config {
             {
                 should_be_referred => 1,
                 reason => 'extra',
-                property_people => 'Up to 5',
-                property_nappies => '1 or more',
+                property_people => '1',
+                property_nappies => '1',
                 property_general_waste_bins => '1',
                 property_largest_general_waste_bin => '140L',
             },
@@ -1412,32 +1412,32 @@ FixMyStreet::override_config {
             {
                 should_be_referred => 0,
                 reason => 'damaged',
-                property_people => 'Up to 5',
+                property_people => '1',
                 property_nappies => '0',
-                property_general_waste_bins => '2 or more',
+                property_general_waste_bins => '2',
                 property_largest_general_waste_bin => '140L',
             },
             {
                 should_be_referred => 0,
                 reason => 'damaged',
-                property_people => 'Up to 5',
-                property_nappies => '1 or more',
-                property_general_waste_bins => '2 or more',
+                property_people => '1',
+                property_nappies => '1',
+                property_general_waste_bins => '2',
                 property_largest_general_waste_bin => '240L',
             },
             {
                 should_be_referred => 0,
                 reason => 'damaged',
-                property_people => '6 or more',
+                property_people => '6',
                 property_nappies => '0',
-                property_general_waste_bins => '2 or more',
+                property_general_waste_bins => '2',
                 property_largest_general_waste_bin => '360L',
             },
             # Some replacement (damaged) container referral scenarios
             {
                 should_be_referred => 1,
                 reason => 'damaged',
-                property_people => 'Up to 5',
+                property_people => '1',
                 property_nappies => '0',
                 property_general_waste_bins => '1',
                 property_largest_general_waste_bin => '140L',
@@ -1445,32 +1445,32 @@ FixMyStreet::override_config {
             {
                 should_be_referred => 1,
                 reason => 'damaged',
-                property_people => 'Up to 5',
-                property_nappies => '1 or more',
+                property_people => '1',
+                property_nappies => '1',
                 property_general_waste_bins => '1',
                 property_largest_general_waste_bin => '360L',
             },
             {
                 should_be_referred => 1,
                 reason => 'damaged',
-                property_people => 'Up to 5',
-                property_nappies => '1 or more',
-                property_general_waste_bins => '2 or more',
+                property_people => '1',
+                property_nappies => '1',
+                property_general_waste_bins => '2',
                 property_largest_general_waste_bin => '140L',
             },
             {
                 should_be_referred => 1,
                 reason => 'damaged',
-                property_people => '6 or more',
-                property_nappies => '1 or more',
-                property_general_waste_bins => '2 or more',
+                property_people => '6',
+                property_nappies => '1',
+                property_general_waste_bins => '2',
                 property_largest_general_waste_bin => '360L',
             },
             # Some missing container rejection scenarios
             {
                 should_be_referred => 0,
                 reason => 'missing',
-                property_people => 'Up to 5',
+                property_people => '1',
                 property_nappies => '0',
                 property_general_waste_bins => '1',
                 property_largest_general_waste_bin => '140L',
@@ -1478,15 +1478,15 @@ FixMyStreet::override_config {
             {
                 should_be_referred => 0,
                 reason => 'missing',
-                property_people => '6 or more',
-                property_nappies => '1 or more',
-                property_general_waste_bins => '2 or more',
+                property_people => '6',
+                property_nappies => '1',
+                property_general_waste_bins => '2',
                 property_largest_general_waste_bin => '140L',
             },
             {
                 should_be_referred => 0,
                 reason => 'missing',
-                property_people => '6 or more',
+                property_people => '6',
                 property_nappies => '0',
                 property_general_waste_bins => '1',
                 property_largest_general_waste_bin => '240L',
@@ -1495,7 +1495,7 @@ FixMyStreet::override_config {
             {
                 should_be_referred => 1,
                 reason => 'missing',
-                property_people => 'Up to 5',
+                property_people => '1',
                 property_nappies => '0',
                 property_general_waste_bins => '0',
                 property_largest_general_waste_bin => '140L',
@@ -1503,7 +1503,7 @@ FixMyStreet::override_config {
             {
                 should_be_referred => 1,
                 reason => 'missing',
-                property_people => '6 or more',
+                property_people => '6',
                 property_nappies => '0',
                 property_general_waste_bins => '1',
                 property_largest_general_waste_bin => '140L',
@@ -1511,7 +1511,7 @@ FixMyStreet::override_config {
             {
                 should_be_referred => 1,
                 reason => 'missing',
-                property_people => '6 or more',
+                property_people => '6',
                 property_nappies => '1',
                 property_general_waste_bins => '1',
                 property_largest_general_waste_bin => '360L',
@@ -1548,15 +1548,13 @@ FixMyStreet::override_config {
                 $mech->submit_form_ok({ with_fields => { 'request_reason' => $reason } }, "Request with reason $reason");
 
                 $mech->content_contains('Household details', "Questions for extra refuse container");
-                $mech->submit_form_ok({ with_fields =>
-                        {
-                            'property_type' => 'Shared flat',  # Doesn't affect refusal/referral logic.
-                            'property_people' => $people,
-                            'property_nappies' => $nappies,
-                            'property_general_waste_bins' => $bins,
-                            'property_largest_general_waste_bin' => $largest_bin_size,
-                        },
-                    }, "Answer household detail questions");
+                $mech->submit_form_ok({ with_fields => { 'property_type' => 'Shared flat' } }); # Doesn't affect refusal/referral logic.
+                $mech->submit_form_ok({ with_fields => { 'property_people' => $people } }, "Answer household detail questions");
+                $mech->submit_form_ok({ with_fields => { 'property_nappies' => $nappies } }, "Answer household detail questions");
+                $mech->submit_form_ok({ with_fields => { 'property_general_waste_bins' => $bins } }, "Answer household detail questions");
+                if ($bins > 0) {
+                    $mech->submit_form_ok({ with_fields => { 'property_largest_general_waste_bin' => $largest_bin_size } }, "Answer household detail questions");
+                }
 
                 if ($should_be_referred) {
                     # Exit early to prevent clutter.

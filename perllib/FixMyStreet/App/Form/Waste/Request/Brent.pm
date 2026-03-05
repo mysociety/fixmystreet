@@ -175,32 +175,15 @@ has_page request_refuse_container => (
     title => 'Household details',
     fields => [
         'property_type',
-        'property_people',
-        'property_nappies',
-        'property_general_waste_bins',
-        'property_largest_general_waste_bin',
         'continue'
     ],
-    next => sub {
-        my $data = shift;
-        my $choice = $data->{'container-choice'};
-
-        # Refuse container requests that aren't referred will be rejected, so we don't
-        # want to bother collecting personal details.
-        if (FixMyStreet::Cobrand::Brent::request_referral($choice, $data)) {
-            $data->{'no_about_you_in_summary'} = 0;
-            $data->{'about_you_skipped'} = 0;
-            return 'about_you';
-        }
-        $data->{'no_about_you_in_summary'} = 1;
-        $data->{'about_you_skipped'} = 1;
-        return 'summary';
-    },
+    next => 'request_refuse_property_people',
 );
 
 has_field property_type =>(
     required => 1,
     type => 'Select',
+    widget => 'RadioGroup',
     label => 'Please select your property type',
     options => [
         { value => 'House (Entire property)',
@@ -212,9 +195,19 @@ has_field property_type =>(
     ],
 );
 
+has_page request_refuse_property_people => (
+    title => 'Household details',
+    fields => [
+        'property_people',
+        'continue'
+    ],
+    next => 'request_refuse_property_nappies',
+);
+
 has_field property_people =>(
     required => 1,
     type => 'Select',
+    widget => 'RadioGroup',
     label => 'How many people live at your property?',
     options => [
         { value => '1', label => 'Up to 5' },
@@ -222,9 +215,19 @@ has_field property_people =>(
     ],
 );
 
+has_page request_refuse_property_nappies => (
+    title => 'Household details',
+    fields => [
+        'property_nappies',
+        'continue'
+    ],
+    next => 'request_refuse_property_general_waste_bins',
+);
+
 has_field property_nappies =>(
     required => 1,
     type => 'Select',
+    widget => 'RadioGroup',
     label => 'How many children in nappies live at your property?',
     options => [
         { value => '0', label => 'None' },
@@ -232,9 +235,44 @@ has_field property_nappies =>(
     ],
 );
 
+sub need_about_you_page {
+    my $data = shift;
+    my $choice = $data->{'container-choice'};
+
+    # Refuse container requests that aren't referred will be rejected, so we don't
+    # want to bother collecting personal details.
+    if (FixMyStreet::Cobrand::Brent::request_referral($choice, $data)) {
+        $data->{'no_about_you_in_summary'} = 0;
+        $data->{'about_you_skipped'} = 0;
+        return 'about_you';
+    }
+    $data->{'no_about_you_in_summary'} = 1;
+    $data->{'about_you_skipped'} = 1;
+    return 'summary';
+}
+
+has_page request_refuse_property_general_waste_bins => (
+    title => 'Household details',
+    fields => [
+        'property_general_waste_bins',
+        'continue'
+    ],
+    next => sub {
+        my $data = shift;
+        my $reason = $data->{request_reason};
+        my $bins = $data->{property_general_waste_bins};
+        if ($reason eq 'missing' && $bins == 0) {
+            $data->{property_largest_general_waste_bin} = 'none';
+            return need_about_you_page($data);
+        }
+        return 'request_refuse_property_largest_general_waste_bin';
+    },
+);
+
 has_field property_general_waste_bins =>(
     required => 1,
     type => 'Select',
+    widget => 'RadioGroup',
     label => 'How many general waste bins do you currently have?',
 );
 
@@ -251,27 +289,29 @@ sub options_property_general_waste_bins {
     return @options;
 }
 
+has_page request_refuse_property_largest_general_waste_bin => (
+    title => 'Household details',
+    fields => [
+        'property_largest_general_waste_bin',
+        'continue'
+    ],
+    next => sub {
+        my $data = shift;
+        return need_about_you_page($data);
+    },
+);
+
 has_field property_largest_general_waste_bin =>(
     required => 1,
     type => 'Select',
+    widget => 'RadioGroup',
     label => 'What size is the largest general waste bin?',
+    options => [
+        { value => '140L', label => '140 Litres' },
+        { value => '240L', label => '240 Litres' },
+        { value => '360L', label => '360 Litres' },
+    ],
 );
-
-sub options_property_largest_general_waste_bin {
-    my $form = shift;
-    my $data = $form->saved_data;
-    my $choice = $data->{'request_reason'};
-    my @options;
-    if ($choice eq 'missing') {
-        # Only the 'missing' request type allows for there being no
-        # existing bins.
-        push @options, { value => 'none', label => 'No bins' };
-    }
-    push @options, { value => '140L', label => '140 Litres' };
-    push @options, { value => '240L', label => '240 Litres' };
-    push @options, { value => '360L', label => '360 Litres' };
-    return @options;
-}
 
 has_field submit => (
     type => 'Submit',
@@ -279,15 +319,5 @@ has_field submit => (
     element_attr => { class => 'govuk-button' },
     order => 999,
 );
-
-sub validate {
-    my $self = shift;
-    return unless $self->page_name eq 'request_refuse_container';
-    my $size_field = $self->field('property_largest_general_waste_bin');
-    my $bins_field = $self->field('property_general_waste_bins');
-    if ($bins_field->value > 0 && $size_field->value eq 'none') {
-        $size_field->add_error('Please provide the size of your largest general waste bin.');
-    }
-}
 
 1;
