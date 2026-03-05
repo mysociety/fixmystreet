@@ -201,7 +201,7 @@ FixMyStreet::override_config {
     subtest 'Introduction page' => sub {
         $mech->get_ok('/waste/12345/small_items');
 
-        $mech->content_contains('Before you start your booking', "On booking introduction page");
+        $mech->content_contains('Before you book', "On booking introduction page");
         $mech->content_contains('2 Example Street, Sutton, SM2 5HF', "Shows correct address");
         $mech->content_contains('a href="tandc_link"', "Link picked up from config");
         $mech->content_contains('There is a maximum of 6 items for a collection', "Max items picked up from config");
@@ -236,7 +236,7 @@ FixMyStreet::override_config {
 
     subtest 'List items' => sub {
         $mech->content_contains('Add items for collection', "On items page");
-        $mech->content_contains('You can book the collection of up to six items.');
+        $mech->content_contains('You can book for up to 6 items.');
         # Why not?
         #$mech->content_contains('2 Example Street, Sutton, SM2 5HF', "Shows correct address");
         $mech->content_contains('option value="Batteries"', "Batteries option");
@@ -248,7 +248,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'Location page' => sub {
-        $mech->content_contains('Location details', "Location page included");
+        $mech->content_contains('Add location details', "Location page included");
         $mech->content_contains('2 Example Street, Sutton, SM2 5HF', "Shows correct address");
         $mech->content_contains('Please tell us where you will place the items for collection (the small items collection crews', 'Small items collection specified');
         $mech->submit_form_ok({ form_number => 2 });
@@ -258,14 +258,14 @@ FixMyStreet::override_config {
 
     subtest 'Booking summary' => sub {
         $mech->content_contains('Booking Summary', "On booking confirmation page");
-        $mech->content_contains("won't be able to amend the booking once submitted", "Shows correct amendment warning for small items");
+        $mech->content_contains("make changes to the booking once submitted", "Shows correct amendment warning for small items");
         $mech->content_lacks('Bookings are not refundable', "Small items service is free so no mention of refunds");
         $mech->content_contains('2 Example Street, Sutton, SM2 5HF', "Shows correct address");
         $mech->content_contains('3 items requested for collection', "3 items for collection");
         $mech->content_contains('Batteries', "Batteries added");
         $mech->content_contains('Small WEEE', "Small WEEE added");
         $mech->content_contains('In the alley', "Location information added");
-        $mech->content_contains('<a href="tandc_link" target="_blank">terms and conditions</a>', 'T&C link addeed');
+        $mech->content_contains('<a href="tandc_link" target="_blank">bulky waste terms and conditions</a>', 'T&C link addeed');
         $mech->submit_form_ok({form_number => 5});
         $mech->content_contains('Terms and conditions field is required', "Can't continue without accepting T&Cs");
         $mech->submit_form_ok({form_number => 5, with_fields => { tandc => 1} });
@@ -528,7 +528,7 @@ FixMyStreet::override_config {
             $mech->submit_form_ok( { with_fields => { chosen_date => '2025-08-12T00:00:00;reserve7d==;2025-08-25T10:20:00'}});
             $mech->content_contains('Add items for collection', "On items page");
             $mech->submit_form_ok();
-            $mech->content_contains('Location details', "Location page included");
+            $mech->content_contains('Add location details', "Location page included");
             $mech->submit_form_ok( {form_number  => 2 });
             $mech->content_contains('Booking Summary', "On booking confirmation page");
             $mech->content_contains('action="http://localhost/waste/12345/small_items/amend/' . $report->id);

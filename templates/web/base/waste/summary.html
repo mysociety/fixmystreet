@@ -32,6 +32,7 @@
     </div>
     [% INCLUDE answers %]
   
+  [% IF !data.no_about_you_in_summary %]
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">
       About you
@@ -61,6 +62,7 @@
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Email</dt>
         <dd class="govuk-summary-list__value">[% data.email %]</dd>
     </div>
+  [% END %]
 
   [% IF data.email_renewal_reminders %]
   <div class="govuk-summary-list__row">
