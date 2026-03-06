@@ -383,3 +383,30 @@
         }
     }
 }
+
+// For /dashboard page.
+// Here so make-css in browser-tests can pick up on the changes.
+// Rest of CSS for this page is in web/cobrands/fixmystreet/dashboard.scss,
+// but that is only loaded for /dashboard page; if it is pulled into here, it
+// may clash with wider CSS.
+
+#overview {
+    tr.is-deleted {
+        background-color: #ffdddd;
+        th.contact-category {
+            text-decoration: line-through;
+        }
+    }
+    tr.is-zero {
+        background-color: #ddddff;
+    }
+    tr.is-unselected-category {
+        display: none;
+    }
+}
+
+.js #overview {
+    tr.is-deleted, tr.is-zero {
+        display: none;
+    }
+}

@@ -143,13 +143,28 @@ sub index : Path : Args(0) {
         $c->stash->{category} = [ $c->get_param_list('category') ];
         my @remove_from_display;
 
+        # Determine which groups and categories are displayed in table
+        my %table_groups_to_display;
+        my %table_categories_to_display;
+
         foreach (@{$c->stash->{category}}) {
-            next unless /^group-(.*)/;
-            for my $contact (@{$group_names{$1}}) {
-                push @{ $c->stash->{category} }, $contact->category;
-                push @remove_from_display, $contact->category;
+            if ( /^group-(.*)/ ) {
+                $table_groups_to_display{$1} = 1;
+
+                for my $contact (@{$group_names{$1}}) {
+                    $table_categories_to_display{ $contact->category } = 1;
+                    push @{ $c->stash->{category} }, $contact->category;
+                    push @remove_from_display, $contact->category;
+                }
+            } else {
+                $table_categories_to_display{$_} = 1;
             }
         }
+
+        $c->stash->{table_groups_to_display}
+            = \%table_groups_to_display;
+        $c->stash->{table_categories_to_display}
+            = \%table_categories_to_display;
 
         my %display_categories = map { $_ => 1 } @{$c->stash->{category}};
         delete $display_categories{$_} for (@remove_from_display);
@@ -306,11 +321,24 @@ sub generate_grouped_data : Private {
                 push @sorting_categories, $category->category;
                 if (!$category_to_group{$category->category}) {
                     $category_to_group{$category->category} = $group->{name};
+
+                    $c->stash->{group_to_category}{ $group->{name} }
+                        { $category->category }{state} = $category->state;
+
                 } else {
                     $category_to_group{$category->category} = 'Multiple';
+
+                    $c->stash->{group_to_category}{'Multiple'}
+                        { $category->category }{state} = $category->state;
+
+                    # Make sure 'Multiple' heading is displayed in table
+                    $c->stash->{table_groups_to_display}{'Multiple'} = 1
+                        if $c->stash->{table_categories_to_display}
+                        { $category->category };
                 }
             }
         };
+
         my ($single_group, $multiple_groups) = part { $category_to_group{$_} eq 'Multiple'} @sorting_categories;
         my @multiple = sort (uniq(@$multiple_groups));
 
@@ -531,4 +559,3 @@ Licensed under the Affero GPL.
 __PACKAGE__->meta->make_immutable;
 
 1;
-
