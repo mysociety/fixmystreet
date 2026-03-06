@@ -480,8 +480,9 @@ sub inspect : Private {
                 = $c->cobrand->call_hook(
                     get_body_handler_for_problem => $problem
                 ) || $c->cobrand;
+            $handler->{c} = $c; # So a cobrand function can access it as normal
             my $record_extra
-                = $handler->call_hook('record_update_extra_fields');
+                = $handler->call_hook('record_update_extra_fields', $problem, \%update_params);
             if (
                 $record_extra->{detailed_information}
                 && ( $problem->get_extra_metadata('detailed_information') // '' )
