@@ -53,6 +53,7 @@ sub small_items_enabled {
 sub bulky_items_master_list { $_[0]->wasteworks_config->{item_list} || [] }
 sub small_items_master_list { $_[0]->wasteworks_config->{small_item_list} || [] }
 sub bulky_per_item_costs { $_[0]->wasteworks_config->{per_item_costs} }
+sub bulky_pop_item_costs { $_[0]->wasteworks_config->{pop_costs} }
 
 sub bulky_nice_item_list {
     my ($self, $report) = @_;
@@ -152,7 +153,18 @@ sub bulky_pricing_strategy {
         $out = { strategy => 'per_item', min => $min_collection_price };
     } elsif (my $band1_price = $self->wasteworks_config->{band1_price}) {
         my $max = $self->{c}->stash->{booking_maximum};
-        $out = { strategy => 'banded', bands => [ { max => $band1_max, price => $band1_price }, { max => $max, price => $base_price } ] };
+        if ($self->wasteworks_config->{pop_costs}) {
+            $out = { strategy => 'banded_pop', bands =>
+                [
+                    { max => $band1_max, pop_price => $self->wasteworks_config->{band1_pop_price}, price => $band1_price },
+                    { max => $max, pop_price => $self->wasteworks_config->{base_pop_price}, price => $base_price }
+                ]
+            };
+        } else {
+            $out = { strategy => 'banded', bands => [ { max => $band1_max, price => $band1_price }, { max => $max, price => $base_price } ] };
+        }
+    } elsif ($self->wasteworks_config->{pop_costs}) {
+        $out = { strategy => 'pop_costs' };
     } else {
         $out = { strategy => 'single' };
     }
@@ -259,6 +271,11 @@ sub bulky_total_cost {
     my ($self, $data) = @_;
     my $c = $self->{c};
 
+    my %pop_items;
+    if ($self->bulky_pop_item_costs) {
+        %pop_items = map { $_->{name} => 1 } grep { $_->{contains_pops} } @{ $self->bulky_items_master_list };
+    }
+
     if ($self->bulky_free_collection_available) {
         $data->{extra_CHARGEABLE} = 'FREE';
         $c->stash->{payment} = 0;
@@ -298,18 +315,26 @@ sub bulky_total_cost {
             }
         } elsif ($cfg->{band1_price}) {
             my $count = 0;
+            my $has_pops = 0;
             my $max = $c->stash->{booking_maximum};
             for (1..$max) {
                 my $item = $data->{"item_$_"} or next;
+                $has_pops = 1 if $pop_items{$item};
                 $count++;
             }
             if ($count <= $cfg->{band1_max}) {
-                $c->stash->{payment} = $cfg->{band1_price};
+                $c->stash->{payment} = $has_pops ? $cfg->{band1_pop_price} : $cfg->{band1_price};
             } else {
-                $c->stash->{payment} = $cfg->{base_price};
+                $c->stash->{payment} = $has_pops ? $cfg->{base_pop_price} : $cfg->{base_price};
             }
         } else {
-            $c->stash->{payment} = $cfg->{base_price};
+            my $has_pops = 0;
+            my $max = $c->stash->{booking_maximum};
+            for (1..$max) {
+                my $item = $data->{"item_$_"} or next;
+                $has_pops = 1 if $pop_items{$item};
+            }
+            $c->stash->{payment} = $has_pops ? $cfg->{base_pop_price} : $cfg->{base_price};
         }
     }
 
