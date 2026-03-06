@@ -1291,7 +1291,22 @@ sub waste_munge_request_data {
 
     my $c = $self->{c};
 
-    for (qw(how_long_lived contamination_reports ordered_previously property_people property_children)) {
+    if ($data->{about_you_skipped}) {
+        $data->{name} = "Waste User";  # Can't use the anonymous account name as it fails validation.
+        $data->{email} = $self->anonymous_account->{email};
+    }
+
+    my @fields = qw(
+        how_long_lived
+        contamination_reports
+        ordered_previously
+        property_people
+        property_nappies
+        property_type
+        property_general_waste_bins
+        property_largest_general_waste_bin
+    );
+    for (@fields) {
         $c->set_param("request_$_", $data->{$_} || '');
     }
     my $referral = request_referral($id, $data);
@@ -1302,7 +1317,7 @@ sub waste_munge_request_data {
     my $address = $c->stash->{property}->{address};
     my $container = $c->stash->{containers}{$id};
     my $reason = $data->{request_reason} || '';
-    my $nice_reason = $c->stash->{label_for_field}->($form, 'request_reason', $reason);
+    my $nice_reason = $form->label_for_field('request_reason', $reason);
 
     my ($action_id, $reason_id);
     my $type = $id;
@@ -1371,12 +1386,27 @@ sub request_referral {
           || $data->{'container-' . $CONTAINER_IDS{rubbish_grey_bin}}
         )
     ) {
+        my $bins = $data->{property_general_waste_bins};
+        my $largest_bin_size = $data->{property_largest_general_waste_bin};
+        my $people = $data->{property_people};
+        my $nappies = $data->{property_nappies};
+
         if ($data->{request_reason} eq 'extra') {
-            if ($data->{property_people} == 6 || $data->{property_children} eq 'Yes') {
-                return 1;
-            }
-        } else {
-          return 1;
+            return 0 if $largest_bin_size ne '140L';
+            return 0 if $bins >= 2;
+            return 0 if $people == 1 && $nappies == 0;
+            return 1;
+        } elsif ($data->{request_reason} eq 'damaged') {
+            return 0 if $people == 1 && $nappies == 0 && $bins >= 2;
+            return 0 if $largest_bin_size ne '140L' && $bins >= 2 && ($people <= 5 || $nappies == 0);
+            return 1;
+        } elsif ($data->{request_reason} eq 'missing') {
+            return 1 if $bins == 0;
+            return 0 if $bins >= 2;
+            # Only single bin scenarios left.
+            return 0 if $people == 1 && $nappies == 0;
+            return 0 if $largest_bin_size ne '140L' && ($people <= 5 || $nappies == 0);
+            return 1;
         }
     }
 }
@@ -1538,10 +1568,7 @@ sub waste_garden_mod_params {
 sub waste_post_report_creation {
     my ($self, $report, $data) = @_;
 
-    if (
-        $report->title =~ /Request new General rubbish bin \(grey bin\)/
-        && $data->{request_reason} eq 'extra'
-        ) {
+    if ($report->title =~ /Request new General rubbish bin \(grey bin\)/) {
 
         if (!$report->get_extra_field_value('request_referral')) {
             $self->{c}->stash->{brent_request_automatic} = 1;
