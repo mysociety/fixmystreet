@@ -60,6 +60,7 @@ my $contact = $mech->create_contact_ok(
 my $reporter = $mech->create_user_ok('reporter@example.com', name => 'Reporter');
 my $staff_user = $mech->create_user_ok('staff@dumgal.gov.uk', name => 'Staff User', from_body => $body);
 my $other_user = $mech->create_user_ok('other@example.com', name => 'Other User');
+my $superuser = $mech->create_user_ok('super@example.com', name => 'Superuser', is_superuser => 1);
 
 # Create problem once and reuse it
 my $problem = FixMyStreet::DB->resultset('Problem')->create({
@@ -448,6 +449,228 @@ subtest 'MyGovScot OIDC login falls back to payload sub for email' => sub {
         is $user->phone, '+447700900000', 'Phone still set from userinfo';
 
         $mech->delete_user('mygov_user_id');
+    };
+};
+
+subtest 'response_template_for with wildcard matching' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['dumfries'],
+    }, sub {
+        my $test_problem = FixMyStreet::DB->resultset('Problem')->create({
+            postcode           => 'DG1 1AA',
+            bodies_str         => $body->id,
+            areas              => ',2656,',
+            category           => 'Potholes',
+            title              => 'Wildcard template test problem',
+            detail             => 'Test detail',
+            used_map           => 1,
+            name               => 'Reporter',
+            anonymous          => 0,
+            state              => 'confirmed',
+            confirmed          => DateTime->now,
+            lastupdate         => DateTime->now,
+            latitude           => 55.0706,
+            longitude          => -3.9568,
+            user_id            => $reporter->id,
+            cobrand            => 'dumfries',
+        });
+
+        # * wildcard templates
+        my $template_exact = FixMyStreet::DB->resultset('ResponseTemplate')->create({
+            body_id => $body->id,
+            title => 'Exact Match Template',
+            text => 'Exact match response',
+            auto_response => 1,
+            state => '',
+            external_status_code => 'status1:outcome1:priority1',
+        });
+
+        my $template_wildcard_one = FixMyStreet::DB->resultset('ResponseTemplate')->create({
+            body_id => $body->id,
+            title => 'One Wildcard Template',
+            text => 'One wildcard response',
+            auto_response => 1,
+            state => '',
+            external_status_code => 'status1:outcome1:*',
+        });
+
+        my $template_wildcard_two = FixMyStreet::DB->resultset('ResponseTemplate')->create({
+            body_id => $body->id,
+            title => 'Two Wildcard Template',
+            text => 'Two wildcard response',
+            auto_response => 1,
+            state => '',
+            external_status_code => 'status1:*:*',
+        });
+
+        my $template_fallback = FixMyStreet::DB->resultset('ResponseTemplate')->create({
+            body_id => $body->id,
+            title => 'Fallback Template',
+            text => 'Fallback response',
+            auto_response => 1,
+            state => '',
+            external_status_code => 'status_fallback:*:*',
+        });
+
+        # + wildcard templates (use a different prefix to keep these tests isolated)
+        my $template_plus = FixMyStreet::DB->resultset('ResponseTemplate')->create({
+            body_id => $body->id,
+            title => 'Plus Wildcard Template',
+            text => 'Plus wildcard response',
+            auto_response => 1,
+            state => '',
+            external_status_code => 'status_plus:+:+',
+        });
+
+        my $template_star = FixMyStreet::DB->resultset('ResponseTemplate')->create({
+            body_id => $body->id,
+            title => 'Star Wildcard Template',
+            text => 'Star wildcard response',
+            auto_response => 1,
+            state => '',
+            external_status_code => 'status_plus:*:*',
+        });
+
+        subtest 'exact match beats wildcards' => sub {
+            my $template = $test_problem->response_template_for(
+                $body, 'investigating', 'confirmed',
+                'status1:outcome1:priority1', ''
+            );
+            is $template->title, 'Exact Match Template',
+                'Exact match template selected over wildcards';
+        };
+
+        subtest 'more specific wildcard beats less specific' => sub {
+            my $template = $test_problem->response_template_for(
+                $body, 'investigating', 'confirmed',
+                'status1:outcome1:priorityX', ''
+            );
+            is $template->title, 'One Wildcard Template',
+                'One wildcard template beats two wildcard template';
+        };
+
+        subtest 'two wildcards beats three wildcards' => sub {
+            my $template = $test_problem->response_template_for(
+                $body, 'investigating', 'confirmed',
+                'status1:outcomeX:priorityX', ''
+            );
+            is $template->title, 'Two Wildcard Template',
+                'Two wildcard template beats all wildcard template';
+        };
+
+        subtest 'star wildcard matches empty segment' => sub {
+            my $template = $test_problem->response_template_for(
+                $body, 'investigating', 'confirmed',
+                'status1::', ''
+            );
+            is $template->title, 'Two Wildcard Template',
+                'Star wildcard matches empty segments';
+        };
+
+        subtest 'star wildcard fallback works for unmatched statuses' => sub {
+            my $template = $test_problem->response_template_for(
+                $body, 'investigating', 'confirmed',
+                'status_fallback:outcomeX:priorityX', ''
+            );
+            is $template->title, 'Fallback Template',
+                'Fallback star template matches when nothing more specific exists';
+        };
+
+        subtest 'plus wildcard matches non-empty segments' => sub {
+            my $template = $test_problem->response_template_for(
+                $body, 'investigating', 'confirmed',
+                'status_plus:outcome1:priority1', ''
+            );
+            is $template->title, 'Plus Wildcard Template',
+                'Plus wildcard template matches when segments are non-empty';
+        };
+
+        subtest 'plus wildcard does not match empty segments' => sub {
+            my $template = $test_problem->response_template_for(
+                $body, 'investigating', 'confirmed',
+                'status_plus::', ''
+            );
+            is $template->title, 'Star Wildcard Template',
+                'Plus wildcard does not match empty segments, star does';
+        };
+
+        subtest 'no match when external_status_code unchanged' => sub {
+            $test_problem->set_extra_metadata(external_status_code => 'status1:outcome1:priority1');
+            $test_problem->update;
+
+            my $template = $test_problem->response_template_for(
+                $body, 'investigating', 'confirmed',
+                'status1:outcome1:priority1', 'status1:outcome1:priority1'
+            );
+            is $template, undef,
+                'No template when external_status_code has not changed';
+        };
+
+        $template_exact->delete;
+        $template_wildcard_one->delete;
+        $template_wildcard_two->delete;
+        $template_fallback->delete;
+        $template_plus->delete;
+        $template_star->delete;
+        $test_problem->delete;
+    };
+};
+
+subtest 'admin template external_status_code validation' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['dumfries'],
+    }, sub {
+        $mech->log_in_ok($superuser->email);
+
+        my @cases = (
+            { name => 'Three non-empty segments is valid', code => 'abc:def:ghi', valid => 1 },
+            { name => 'Star wildcards in segments is valid', code => 'abc:*:*', valid => 1 },
+            { name => 'Plus wildcards in segments is valid', code => 'abc:+:+', valid => 1 },
+            { name => 'Mix of star and plus wildcards is valid', code => 'abc:*:+', valid => 1 },
+            { name => 'Trailing empty segment returns error', code => 'abc:123:', valid => 0, error => 'cannot have empty segments' },
+            { name => 'Leading empty segments return error', code => '::456', valid => 0, error => 'cannot have empty segments' },
+            { name => 'Middle and trailing empty segments return error', code => 'abc::', valid => 0, error => 'cannot have empty segments' },
+            { name => 'All star wildcards returns error', code => '*:*:*', valid => 0, error => 'at least one concrete' },
+            { name => 'All plus wildcards returns error', code => '+:+:+', valid => 0, error => 'at least one concrete' },
+            { name => 'Mix of star and plus wildcards only returns error', code => '*:+:*', valid => 0, error => 'at least one concrete' },
+            { name => 'Empty string returns undef', code => '', valid => 1 },
+            { name => 'Undef returns undef', valid => 1 },
+            { name => 'Single segment returns error', code => 'abc', valid => 0, error => 'exactly 3' },
+            { name => 'Two segments returns error', code => 'abc:def', valid => 0, error => 'exactly 3' },
+            { name => 'Four segments returns error', code => 'abc:def:ghi:jkl', valid => 0, error => 'exactly 3' },
+            { name => 'Wildcard mixed with text at start returns error', code => 'abc*:def:ghi', valid => 0, error => 'cannot be mixed' },
+            { name => 'Wildcard in middle of text returns error', code => 'abc:d*f:ghi', valid => 0, error => 'cannot be mixed' },
+            { name => 'Wildcard at end of text returns error', code => 'abc:def:ghi*', valid => 0, error => 'cannot be mixed' },
+            { name => 'Double wildcard returns error', code => 'abc:**:ghi', valid => 0, error => 'cannot be mixed' },
+        );
+
+        my $i = 0;
+        for my $case (@cases) {
+            subtest $case->{name} => sub {
+                my %fields = (
+                    title => 'Test template',
+                    text => 'Template text',
+                    auto_response => 'on',
+                    defined $case->{code} ? (external_status_code => $case->{code}) : (),
+                );
+
+                $mech->get_ok('/admin/templates/' . $body->id . '/new');
+                $mech->submit_form_ok({ with_fields => \%fields });
+
+                if ($case->{valid}) {
+                    is $mech->uri->path, '/admin/templates/' . $body->id,
+                        'Redirected after valid submission';
+                    $mech->delete_response_template($_)
+                        for $body->response_templates->search({ title => 'Test template' });
+                } else {
+                    is $mech->uri->path, '/admin/templates/' . $body->id . '/new',
+                        'Not redirected on error';
+                    $mech->content_contains($case->{error}, 'Expected validation message shown');
+                }
+            };
+        }
+
+        $mech->log_out_ok;
     };
 };
 
