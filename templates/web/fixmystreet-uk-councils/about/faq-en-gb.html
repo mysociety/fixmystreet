@@ -26,12 +26,16 @@ cleaning</strong> or <strong>clearing</strong>.
 
 <p>
     For these types of issue, please
+    [%~ IF !c.cobrand.feature('contact_us_phone') ~%]
     [%~ IF c.cobrand.feature('contact_us_url') %]
      <a href="[% c.cobrand.feature('contact_us_url') %]">contact us</a>
     [%~ ELSE %]
     contact us
     [%~ END %]
     through the appropriate channel.
+    [% ELSE %]
+    call us on:&nbsp;[%~ c.cobrand.feature('contact_us_phone') %]
+    [% END %]
 </p>
 
 <p>
