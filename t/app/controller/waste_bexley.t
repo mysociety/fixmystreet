@@ -1232,7 +1232,16 @@ FixMyStreet::override_config {
             $email_logged = $mech->get_text_body_from_email($email_logged);
             like $email_logged, qr{Bins requested: $joined};
             like $email_submit, qr{<td><p>New/replacement container</p></td> <td><p>$joined};
-            like $email_submit, qr{<td><p>UPRN</p></td> <td><p>$_->{id}</p></td>}
+            like $email_submit, qr{<td><p>UPRN</p></td> <td><p>$_->{id}</p></td>};
+
+            my $superuser = $mech->create_user_ok(
+                'superuser@example.com',
+                name         => 'Super User',
+                is_superuser => 1
+            );
+            $mech->log_in_ok( $superuser->email );
+            $mech->get( '/report/' . $report->id );
+            $mech->content_contains('value="Waste__Replacement bin enquiry" selected');
         };
     }
 };

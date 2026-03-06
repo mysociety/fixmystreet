@@ -45,8 +45,16 @@ $contact->set_extra_fields( ( {
     order => 1,
     datatype_description => 'datatype',
 } ) );
-$contact->set_extra_metadata( group => ['Roads'] );
+$contact->set_extra_metadata( group => ['Roads', 'Paths'] );
 $contact->update;
+
+my $contact_same_parents = $mech->create_contact_ok(
+    body_id => $isleofwight->id,
+    category => 'Manholes',
+    email => 'manhole@example.org',
+);
+$contact_same_parents->set_extra_metadata( group => ['Roads', 'Paths'] );
+$contact_same_parents->update;
 
 my $user = $mech->create_user_ok('user@example.org', name => 'Test User');
 my $iow_user = $mech->create_user_ok('iow_user@example.org', name => 'IoW User', from_body => $isleofwight);
@@ -586,6 +594,8 @@ subtest "reports are marked for triage upon submission" => sub {
         my $report = $user->problems->first;
         ok $report, "Found the report";
         is $report->state, 'confirmed', 'report confirmed';
+        is $report->category, 'Roads', 'correct initial category';
+        is $report->get_extra_metadata('group'), undef, 'correct initial group';
 
         $mech->clear_emails_ok;
 
@@ -616,7 +626,7 @@ subtest "reports are marked for triage upon submission" => sub {
 
         $mech->submit_form(
             form_id => 'report_inspect_form',
-            fields  => { category => $contact->id },    # Pothole
+            fields  => { category => 'Roads__' . $contact->id },    # Pothole
         );
         $mech->get_ok( '/report/' . $report->id );
         $mech->text_contains(
@@ -624,11 +634,26 @@ subtest "reports are marked for triage upon submission" => sub {
             'Update message describes triage',
         );
         $mech->content_contains(
-            '<option value="Potholes" selected>',
+            '<option value="Roads__Potholes" selected>',
             'Potholes selected as category',
         );
         $mech->content_lacks( '-- Please select --',
             'No blank category available anymore' );
+
+        $report->discard_changes;
+        is $report->category, 'Potholes', 'report has correct category';
+        is $report->get_extra_metadata('group'), 'Roads', 'report has correct group';
+
+        # Set report as 'for triage' again, make sure contact selected
+        $report->update( { state => 'for triage' } );
+        $mech->get_ok( '/report/' . $report->id );
+        $mech->content_contains( '-- Please select --',
+            'Blank category available again' );
+        my $potholes_id = $contact->id;
+        $mech->content_contains(
+            "<option value=\"Roads__$potholes_id\" selected>Potholes (pothole\@example.org)</option>",
+            'correct category selected under correct group',
+        );
     };
 };
 
@@ -676,7 +701,7 @@ for my $cobrand ( 'fixmystreet', 'isleofwight' ) {
             my $cats = $f->find_input('category');
             ok $cats, 'found category element';
             my @values = $cats->possible_values;
-            is_deeply \@values, [ 'H|Roads|Potholes' ], 'correct category list';
+            is_deeply \@values, [ 'G|Paths', 'G|Roads' ], 'correct category list';
         };
     };
 }

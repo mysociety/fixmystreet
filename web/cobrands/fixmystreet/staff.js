@@ -167,6 +167,8 @@ fixmystreet.staff_set_up = {
 
     function updateTemplates(opts) {
         opts.category = opts.category || $inspect_form.find('[name=category]').val();
+        // Remove group from category
+        opts.category = opts.category.replace( /.*__/, '' );
         opts.state = opts.state || $inspect_form.find('[name=state]').val();
         var selector = "[data-category='" + opts.category + "']";
         var data = $inspect_form.find(selector).data('templates') || [];
@@ -200,7 +202,8 @@ fixmystreet.staff_set_up = {
     // On the manage/inspect report form, we already have all the extra inputs
     // in the DOM, we just need to hide/show them as appropriate.
     $inspect_form.find('[name=category]').on('change', function() {
-        var category = $(this).val(),
+        // Remove group from category
+        var category = $(this).val().replace( /.*__/, '' ),
             selector = "[data-category='" + category + "']",
             entry = $inspect_form.find(selector),
             $priorities = $('#problem_priority'),

@@ -13,6 +13,13 @@
             return;
         }
 
+        // NOTE Category as fetched from #report_inspect_form will be in the
+        // form 'group__category'.
+        // Strictly speaking we should split this to get the bare category.
+        // However, #report_inspect_form is used for an existing report (i.e.
+        // there is a report_id), which means /nearby.json will be called,
+        // which ignores the category here in favour of the one saved on the
+        // report.
         var category = $("#report_inspect_form [name=category]").val() || fixmystreet.reporting.selectedCategory().category;
 
         // We check group also, in case that is provided in the config instead of subcat
@@ -189,8 +196,8 @@
         if (!!duplicate_of) {
             return;
         }
-        var category = $("#report_inspect_form [name=category]").val();
-        refresh_duplicate_list(undefined, {}, category);
+
+        refresh_duplicate_list(undefined, {});
     }
 
     // Want to show potential duplicates when a regular user starts a new
