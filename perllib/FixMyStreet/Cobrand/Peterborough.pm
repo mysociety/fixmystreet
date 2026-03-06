@@ -152,7 +152,7 @@ We want to create comments when flytipping metadata information is changed.
 
 sub record_update_extra_fields {
     my ($self, $problem, $update_params) = @_;
-    if ($problem->category =~ /fly tipping/ && $update_params) {
+    if ($problem && $problem->category =~ /fly tipping/ && $update_params) {
         my $param_prefix = lc $problem->category;
         $param_prefix =~ s/[^a-z]//g;
         $param_prefix = "category_" . $param_prefix . "_";
