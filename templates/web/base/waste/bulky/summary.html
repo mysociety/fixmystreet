@@ -125,7 +125,7 @@ SET data = form.saved_data;
                     [% cobrand.bulky_nice_cancellation_cutoff_date(data.chosen_date) %].</p>
                   [% IF cobrand.moniker == 'bromley' %]
                       <p class="govuk-!-margin-bottom-0">
-                          [% minimum_charge = pounds(c.cobrand.bulky_minimum_charge / 100) %]
+                          [% minimum_charge = pounds(c.cobrand.bulky_per_item_min_collection_price / 100) %]
                           You can get a full refund if cancelled by [% cobrand.bulky_nice_collection_time %] on the day prior to your collection.
                           Cancellations within 24 hours of collection are only eligible for a partial refund for any amount paid over the minimum charge of £[% minimum_charge %].
                       </p>
