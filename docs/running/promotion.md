@@ -257,29 +257,15 @@ where to dedicate your time.
 
 ### Social media
 
-Set up accounts on whichever social media is most used in your country: in the
-UK, we have FixMyStreet accounts on Twitter and Facebook. You have the option
-to set up links to your social media accounts in the site’s footer, report
-pages, etc: you can
+Set up accounts on whichever social media is most used in your country.
+You have the option to set up links to your social media accounts in the site’s
+footer, report pages, etc: you can
 [read more about customising your FixMyStreet site here]({{ "/customising/" | relative_url }})
 — or [contact us]({{ "/community/" | relative_url }}) if you need more help.
 
 You’ll need to monitor your accounts daily, in case people ask you questions
 that need a prompt reply. The easiest way is to set up your accounts so that
 you automatically receive an email every time someone mentions you.
-
-For Twitter, go to
-[https://twitter.com/settings/notifications](https://twitter.com/settings/notifications)
-to set your preferences for email alerts. 
-
-<a href="https://twitter.com/settings/notifications"><img src="/assets/img/promo-twitter-screenshot.png" alt="Twitter settings screenshot" /></a>
-
-And for Facebook, go to 
-[https://www.facebook.com/settings?tab=notifications](https://www.facebook.com/settings?tab=notifications)
-to set your preferences for alerts. Click on ‘pages you manage’ to find the
-settings for your FixMyStreet page.
-
-<a href="https://www.facebook.com/settings?tab=notifications"><img src="/assets/img/promo-facebook-screenshot.png" alt="Facebook notifications screenshot" /></a>
 
 Use your social media accounts to send out regular messages to your followers.
 You might:

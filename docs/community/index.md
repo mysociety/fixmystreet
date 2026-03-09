@@ -29,20 +29,3 @@ first.</p>
 
 </div>
 </div>
-
-<div class="contact-options">
-<div class="column">
-<h3>IRC</h3>
-
-<p>If you would like to discuss things in a chat room, the <a
-href="ircs://irc.libera.chat:6697/fixmystreet">#fixmystreet</a> channel on
-irc.libera.chat allows for just that (<a
-href="https://web.libera.chat/#fixmystreet">web IRC interface</a>).</p>
-
-</div>
-<div class="column">
-<h3>Twitter</h3>
-
-<p>You can follow and tweet <a href="https://twitter.com/fixmystreet">@fixmystreet</a>.</p>
-</div>
-</div>
