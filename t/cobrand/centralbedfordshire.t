@@ -5,6 +5,7 @@ use File::Temp 'tempdir';
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Alerts;
 use FixMyStreet::Script::Reports;
+use Open311::GetServiceRequestUpdates;
 use Catalyst::Test 'FixMyStreet::App';
 use FixMyStreet::Script::CSVExport;
 
@@ -40,7 +41,7 @@ $ukc->mock('_fetch_features', sub {
 my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(21070, 'Central Bedfordshire Council', {
-    send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j', cobrand => 'centralbedfordshire' });
+    send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j', cobrand => 'centralbedfordshire', send_comments => 1, blank_updates_permitted => 1 });
 $mech->create_contact_ok(body_id => $body->id, category => 'Bridges', email => "BRIDGES");
 $mech->create_contact_ok(body_id => $body->id, category => 'Cleaning Contract Reports', email => "CLEANING");
 $mech->create_contact_ok(body_id => $body->id, category => 'Potholes', email => "POTHOLES");
@@ -49,6 +50,7 @@ $mech->create_contact_ok(body_id => $body->id, category => 'Jadu', email => "Jad
 my $normal_user = $mech->create_user_ok('test@example.net', name => 'Normal User');
 my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',
     from_body => $body, password => 'password');
+$body->update({ comment_user_id => $staffuser->id });
 
 my ($report) = $mech->create_problems_for_body(1, $body->id, 'Test Report', {
     category => 'Bridges', cobrand => 'centralbedfordshire',
@@ -144,6 +146,51 @@ FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
     STAGING_FLAGS => { send_reports => 1, skip_checks => 0 },
 }, sub {
+    subtest 'It only shows the second queue change update' => sub {
+        my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+<service_requests_updates>
+<request_update>
+<update_id>UPDATE_ID</update_id>
+<service_request_id>CBeds123</service_request_id>
+<status>UNCHANGED</status>
+<external_status_code>CS_CHANGE_QUEUE</external_status_code>
+<description></description>
+<updated_datetime>2026-03-09T15:00:00Z</updated_datetime>
+</request_update>
+</service_requests_updates>
+};
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', extended_statuses => 1 );
+        my $update = Open311::GetServiceRequestUpdates->new({
+            start_date => DateTime->new(year => 2026, month => 3, day => 9, hour => 12),
+            end_date => DateTime->new(year => 2026, month => 3, day => 9, hour => 18),
+        });
+        FixMyStreet::DB->resultset("ResponseTemplate")->create({
+            body => $body,
+            external_status_code => 'CS_CHANGE_QUEUE',
+            state => '',
+            title => 'title',
+            text => 'response template text',
+            auto_response => 1,
+        });
+        $report->update({ external_id => 'CBeds123' });
+
+        my ($local_requests_xml, $count);
+        for (qw(first second third)) {
+            ($local_requests_xml = $requests_xml) =~ s/UPDATE_ID/$_/;
+            Open311->_inject_response('/servicerequestupdates.xml', $local_requests_xml);
+            $update->fetch($o);
+
+            is $report->comments->count, ++$count, 'comment count';
+            my $c = FixMyStreet::DB->resultset('Comment')->search({ external_id => $_ })->first;
+            is $c->text, 'response template text', 'text correct';
+            is $c->problem_state, 'confirmed';
+            is $c->state, $_ eq 'second' ? 'confirmed': 'hidden';
+            is $c->send_state, 'processed', 'marked as processed so not resent';
+        }
+
+        $report->comments->delete;
+    };
+
     subtest "it doesn't send report logged or update emails for Jadu categories" => sub {
         $mech->clear_emails_ok();
 

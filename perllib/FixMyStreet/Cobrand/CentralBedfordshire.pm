@@ -258,6 +258,30 @@ sub open311_post_send {
     $sender->send($row, $h);
 }
 
+=head2 open311_get_update_munging
+
+We only want to receive the second CS_CHANGE_QUEUE update. Whenever we receive
+one, check if it's the second and hide it if not.
+
+=cut
+
+sub open311_get_update_munging {
+    my ($self, $comment, $state, $request) = @_;
+
+    my $esc = $comment->get_extra_metadata('external_status_code') || '';
+    if ($esc eq 'CS_CHANGE_QUEUE') {
+        # Reset ESC back to what it was
+        my $old_esc = FixMyStreet::DB->resultset("Problem")->find($comment->problem->id)->get_extra_metadata('external_status_code');
+        $comment->problem->set_extra_metadata(external_status_code => $old_esc);
+        my $comments = $comment->problem->comments->search({
+            extra => { '@>' => '{"external_status_code":"CS_CHANGE_QUEUE"}' },
+        })->count;
+        if ($comments != 1) {
+            $comment->state('hidden');
+        }
+    }
+}
+
 sub front_stats_show_middle { 'completed' }
 
 sub dashboard_export_problems_add_columns {
