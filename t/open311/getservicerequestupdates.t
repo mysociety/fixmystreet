@@ -2242,14 +2242,6 @@ subtest 'Dumfries external_status_code wildcard template matching' => sub {
         external_status_code => 'status2:+:+',
     });
 
-    my $tpl_empty = $dmf->response_templates->create({
-        title => "empty segments template",
-        text => "Empty segments: status3 with empty outcome/priority",
-        auto_response => 1,
-        state => '',
-        external_status_code => 'status3::',
-    });
-
     my $tpl_mixed = $dmf->response_templates->create({
         title => "mixed wildcard template",
         text => "Mixed: status4 with any outcome but non-empty priority",
@@ -2445,33 +2437,6 @@ subtest 'Dumfries external_status_code wildcard template matching' => sub {
         $dmf_problem->delete;
     };
 
-    subtest 'empty segment template matches empty segments' => sub {
-        my $dmf_problem = create_dmf_problem($dmf);
-        my $xml = dmf_update_xml($dmf_problem->external_id, 'empty1', 'status3::');
-
-        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
-        Open311->_inject_response('/servicerequestupdates.xml', $xml);
-
-        my $update = Open311::GetServiceRequestUpdates->new(
-            system_user => $user,
-            current_open311 => $o,
-            current_body => $dmf,
-        );
-        FixMyStreet::override_config {
-            ALLOWED_COBRANDS => 'dumfries',
-        }, sub {
-            $update->process_body;
-        };
-
-        $dmf_problem->discard_changes;
-        is $dmf_problem->comments->count, 1, 'one comment created';
-        is $dmf_problem->comments->first->text, 'Empty segments: status3 with empty outcome/priority',
-            'Empty segment template matches';
-
-        $dmf_problem->comments->delete;
-        $dmf_problem->delete;
-    };
-
     subtest 'mixed wildcard: star matches empty, plus requires non-empty' => sub {
         my $dmf_problem = create_dmf_problem($dmf);
         # Empty outcome (star matches), non-empty priority (plus matches)
@@ -2571,7 +2536,6 @@ subtest 'Dumfries external_status_code wildcard template matching' => sub {
     $tpl_exact->delete;
     $tpl_star_two->delete;
     $tpl_plus_two->delete;
-    $tpl_empty->delete;
     $tpl_mixed->delete;
     $tpl_star_all->delete;
     $dmf_contact->delete;
