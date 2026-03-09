@@ -18,15 +18,12 @@
     // Custom menu image to match the official Greenwich site.
     background-image: url("/cobrands/greenwich/images/menu.svg");
     background-size: 20px 20px;
+    color: $primary;
 
-    // Don't vertically centre, as Greenwich #site-header
-    // includes the page title and breadcrumbs.
-    top: 0;
+    // The council has a new website so we can center this element.
+    top: 8px;
     transform: none;
-
-    // Instead, just set a height equal to the height of #site-logo,
-    // and rely on the vertical centering of the background-image
-    padding-top: 60px;
+    font-weight: bold;
 }
 
 html.js-nav-open #nav-link {

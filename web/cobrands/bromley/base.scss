@@ -38,9 +38,10 @@
 }
 
 #nav-link {
-  top: 11px;
+  top: 13px;
   right: 0.5em;
   transform: none;
+  color: $primary_b;
 
   body.mappage & {
     top: 7px;
@@ -49,10 +50,6 @@
 
 h1#reports_heading {
   margin-bottom: 0.5em;
-}
-
-#report-cta {
-  right: 4.5em;
 }
 
 // Reset form placeholders so that they match Bromley's
