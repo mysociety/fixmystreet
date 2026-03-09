@@ -289,6 +289,38 @@ FixMyStreet::override_config {
             'Inspection time not cleared when not in extras';
     };
 
+    subtest 'photo already seen not included again' => sub {
+        my $request = {
+            extras => {},
+        };
+        my $photo = '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
+
+        my $existing = FixMyStreet::DB->resultset('Comment')->new({
+            problem_id => $problem->id,
+            user_id    => $staff_user->id,
+            text       => 'Test update with same photo',
+            state      => 'confirmed',
+            confirmed  => DateTime->now,
+            photo => $photo,
+        });
+        $cobrand->open311_get_update_munging($existing, 'investigating', $request);
+        is $existing->photo, $photo;
+        $existing->insert;
+
+        my $comment = FixMyStreet::DB->resultset('Comment')->new({
+            problem_id => $problem->id,
+            user_id    => $staff_user->id,
+            text       => 'Test update with same photo',
+            state      => 'confirmed',
+            confirmed  => DateTime->now,
+            photo => $photo,
+        });
+
+        $cobrand->open311_get_update_munging($comment, 'investigating', $request);
+        is $comment->photo, undef;
+        $existing->delete;
+    };
+
     subtest 'uses Scotland bank holidays' => sub {
         use Test::MockModule;
         my $ukc = Test::MockModule->new('FixMyStreet::Cobrand::UK');

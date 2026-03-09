@@ -81,6 +81,24 @@ sub open311_get_update_munging {
         }
         $problem->update;
     }
+
+    # Check to see if we've seen any images before and ignore them if so
+    my @comments_with_photos = $comment->problem->comments->search({ photo => { "!=" => undef } })->all;
+    my %existing;
+    foreach my $c (@comments_with_photos) {
+        foreach my $id ($c->get_photoset->all_ids) {
+            $existing{$id} = 1;
+        }
+    }
+    my @new_photos = $comment->get_photoset->all_ids;
+    my @to_remove;
+    for (my $i=0; $i<@new_photos; $i++) {
+        my $id = $new_photos[$i];
+        push @to_remove, $i if $existing{$id};
+    }
+    if (@to_remove) {
+        $comment->photo($comment->get_photoset->remove_images(\@to_remove));
+    }
 }
 
 =item * Make a few improvements to the display of geocoder results
