@@ -9,6 +9,20 @@ use Try::Tiny;
 
 BEGIN { extends 'FixMyStreet::App::Controller::Api' };
 
+with 'FixMyStreet::Roles::Syslog';
+
+has log_ident => (
+    is => 'ro',
+    default => sub {
+        my $feature = 'MSS_api_details';
+        my $features = FixMyStreet->config('COBRAND_FEATURES');
+        return unless $features && ref $features eq 'HASH';
+        return unless $features->{$feature} && ref $features->{$feature} eq 'HASH';
+        my $f = $features->{$feature}->{_fallback};
+        return $f->{log_ident};
+    }
+);
+
 has allowed_cobrands => (
     is => 'ro',
     isa => 'ArrayRef[Str]',
@@ -36,6 +50,7 @@ sub update : Path('/api/mss/update') : Args(1) {
     $c->forward('/api/mss/authorise');
 
     $c->forward('/api/mss/get_json_post_data');
+    $self->log($self->post_data);
     $c->forward('/api/mss/validate_json_post_data');
 
     $self->body(FixMyStreet::DB->resultset('Body')->search( { name => $cobrand->council_name } )->first);
