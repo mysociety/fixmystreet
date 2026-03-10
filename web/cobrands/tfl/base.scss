@@ -79,6 +79,25 @@ h3 {
     }
 }
 
+.segmented-control.segmented-control--radio {
+    input:checked+label {
+        color: $white !important; // Overrides rule in _base that assumes $primary_text over $primary passes contrast test.
+        background-color: $primary;
+    }
+
+    // Overrides the mixin tflbutton
+    .btn {
+        background-color: $white;
+        color: $primary_b !important;
+        border: 2px solid $primary;
+
+        &:hover {
+            background-color: $blue-dark;
+            color: $white !important;
+        }
+    }
+}
+
 /* Header */
 
 #site-logo {
