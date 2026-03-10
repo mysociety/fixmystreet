@@ -259,6 +259,20 @@ sub add_parish_wards {
         %$areas,
         %$extra_areas
     );
+
+    if ($self->{c}->action =~ /^dashboard\/(index|heatmap)/) {
+        for my $id (keys %$areas) {
+            my $type = $areas->{$id}->{type};
+            $areas->{$id}->{name} .= ($type eq 'CPC' ? " Parish" : "");
+        }
+
+        if (my $wards = $self->{c}->stash->{children}) {
+            for my $id (keys %$wards) {
+                my $type = $wards->{$id}->{type};
+                $wards->{$id}->{name} .= ($type eq 'UTE' ? " Ward" : "");
+            }
+        }
+    }
 }
 
 sub get_ward_type {

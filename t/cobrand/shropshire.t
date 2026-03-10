@@ -185,16 +185,16 @@ FixMyStreet::override_config {
     subtest 'Dashboard includes parishes' => sub {
         $mech->get_ok('/dashboard');
         $mech->content_contains('Town/parish council');
-        $mech->content_contains('Abdon and Heath');
+        $mech->content_contains('Abdon and Heath Parish');
         $mech->submit_form_ok({ with_fields => { ward => 144013 } });
-        $mech->content_contains('<option value="144013" selected>Oswestry</option>');
+        $mech->content_contains('<option value="144013" selected>Oswestry Parish</option>');
         $mech->content_like(qr{<th scope="row">Total</th>\s*<td>1</td>});
 
         $mech->get_ok('/dashboard/heatmap');
         $mech->content_contains('Town/parish council');
-        $mech->content_contains('Abdon and Heath');
+        $mech->content_contains('Abdon and Heath Parish');
         $mech->submit_form_ok({ with_fields => { wards => 144013 } });
-        $mech->content_contains('<option value="144013" selected>Oswestry</option>');
+        $mech->content_contains('<option value="144013" selected>Oswestry Parish</option>');
     };
 
     subtest 'Dashboard CSV adds column "Private" for "non_public" attribute and "Subscribers" ' => sub {
