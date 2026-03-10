@@ -422,12 +422,11 @@ sub heatmap : Local : Args(0) {
         $c->detach('/reports/ajax', [ 'dashboard/heatmap-list.html' ]);
     }
 
-    my $children = $c->stash->{body}->area_children;
+    $c->stash->{children} = $c->stash->{body}->area_children;
 
     my $parishes = $c->stash->{parish_children} = {};
     $c->cobrand->call_hook(add_parish_wards => $parishes);
 
-    $c->stash->{children} = $children;
     $c->stash->{ward_hash} = { map { $_->{id} => 1 } @{$c->stash->{wards}} } if $c->stash->{wards};
 
     $c->forward('/reports/setup_categories');
