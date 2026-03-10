@@ -169,6 +169,7 @@ sub _process_update {
     $self->_handle_category_change($request, $p);
 
     my $state = $open311->map_state( $request->{status} );
+    $state = $p->state if $state eq 'unchanged';
     my $old_state = $p->state;
     my $external_status_code = $request->{external_status_code} || '';
     my $customer_reference = $request->{customer_reference} || '';

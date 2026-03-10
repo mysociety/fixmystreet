@@ -244,6 +244,17 @@ for my $test (
         end_state => 'in progress',
     },
     {
+        desc => 'unchanged status does not change problem status',
+        description => 'This is a note',
+        external_id => 638344,
+        start_state => 'in progress',
+        comment_status => 'UNCHANGED',
+        mark_fixed => 0,
+        mark_open => 0,
+        problem_state => 'in progress',
+        end_state => 'in progress',
+    },
+    {
         desc => 'action scheduled status changes problem status',
         description => 'This is a note',
         external_id => 638344,
