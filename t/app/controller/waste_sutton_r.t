@@ -134,6 +134,7 @@ FixMyStreet::override_config {
             request_replace_cost_refuse_360 => 500,
             request_replace_cost_paper_240 => 500,
             request_replace_cost_paper_360 => 1500,
+            request_replace_cost_food_indoor_premium => 1500,
         } },
     },
     STAGING_FLAGS => {
@@ -213,6 +214,19 @@ FixMyStreet::override_config {
         like $email, qr/cancel your request/, 'include cancel link text';
         like $email, qr/A refund will not be issued/, 'include no refund text for paid request';
         like $email, qr/waste\/12345\/request\/cancel\//, 'include cancel link';
+    };
+    subtest 'Request a premium caddy' => sub {
+        $mech->get_ok('/waste/12345/request');
+        $mech->content_contains('The Council has continued to provide waste and recycling containers free for as long as possible', 'Intro text included');
+        $mech->content_contains('You can request a larger container if you meet the following criteria', 'Divider intro text included for container sizes');
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 45 }});
+        $mech->submit_form_ok({ with_fields => { 'request_reason' => 'missing' }});
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->content_contains('Continue to payment');
+        $mech->content_contains('Missing (1x to deliver)');
+
+        $mech->waste_submit_check({ with_fields => { process => 'summary' } });
+        is $sent_params->{items}[0]{amount}, 1500;
     };
     subtest 'Request a larger bin than current (120L -> 240L)' => sub {
         $mech->get_ok('/waste/12345/request');
