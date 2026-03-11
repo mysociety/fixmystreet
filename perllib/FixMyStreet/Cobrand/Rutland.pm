@@ -138,4 +138,23 @@ sub ask_ever_reported {
 
 sub on_map_default_status { 'open' }
 
+=item * Customised pin colours
+
+Rutland have
+- Cross icon - grey - for closed
+- Tick icon - green - for fixed
+- Traffic cone icon - yellow - for open (confirmed)
+- Roadworker icon - orange - for in progress/investigating
+
+=cut
+
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+
+    return 'grey-cross' if $p->is_closed || ($context ne 'reports' && !$self->owns_problem($p));
+    return 'green-tick' if $p->is_fixed;
+    return 'yellow-cone' if $p->state eq 'confirmed';
+    return 'orange-work'; # all the other `open_states` like "in progress"
+}
+
 1;
