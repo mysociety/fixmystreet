@@ -576,6 +576,14 @@ $.extend(fixmystreet.utils, {
     }
 
     function marker_click(feature, evt) {
+        // When pinching to zoom, OpenLayers fires clickFeature as the first finger lands
+        // on a pin. The evt has a single PointerEvent in evt.touches[0], and on iOS Safari
+        // PointerEvent.touches holds the full live touch count — two touches indicates a
+        // pinch, so suppress navigation.
+        if (evt && evt.touches && evt.touches[0] && evt.touches[0].touches && evt.touches[0].touches.length > 1) {
+            return;
+        }
+
         $(fixmystreet).trigger('maps:marker_click', feature);
 
         var problem_id = feature.attributes.id;
