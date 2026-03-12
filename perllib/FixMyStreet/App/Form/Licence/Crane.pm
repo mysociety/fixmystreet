@@ -213,8 +213,12 @@ has_page lifting => (
 has_field lifting => (
     type => 'Select',
     widget => 'RadioGroup',
-    label => 'Will any lifting be taking place to or from the public highway from a fixed crane?',
-    tags => { hint => 'If yes, then a Crane (Lift) licence will be required. For vehicular plant hoisting detachable loads from one location to another please refer to our Mobile Cranes process.' },
+    label => 'Will any lifting be taking place to or from the public highway using a fixed crane?',
+    tags => {
+        hint => FixMyStreet::Template::SafeString->new(
+            'If yes, then a Crane (Lift) licence will be required. If no, then a Crane (Oversail) licence will apply for the crane oversailing the public highway only.<br><br>For vehicular plant hoisting detachable loads from one location to another, please refer to our Mobile Cranes process.'
+        ),
+    },
     required => 1,
     options => [
         { label => 'Yes', value => 'Yes' },
@@ -233,7 +237,7 @@ has_field lifting => (
 
 # ==========================================================================
 has_page type => (
-    fields => ['crane_type', 'continue'],
+    fields => ['crane_type', 'crane_type_explanation', 'continue'],
     title => 'Crane type',
     next => 'have_you_considered',
 );
@@ -257,6 +261,14 @@ sub options_crane_type {
         { label => 'Crane (Oversail)', value => 'Crane (Oversail)', disabled => $disabled_oversail },
     );
 }
+
+has_field crane_type_explanation => (
+    type  => 'Notice',
+    label =>
+        'Crane (Lift) — For lifting operations to or from the public highway.<br>Crane (Oversail) — For cranes oversailing the public highway without lifting to/from it.<br><br>You must ensure you select the correct crane licence type for the activity being carried out. Selecting the incorrect licence type may invalidate the licence and could make you liable to prosecution under the Highways Act 1980.',
+    required => 0,
+    widget   => 'NoRender',
+);
 
 # ==========================================================================
 # Have you considered? (TCSR/TTRO + T&Cs)
