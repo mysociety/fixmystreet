@@ -1,5 +1,6 @@
 [% INCLUDE 'admin/header.html' title=tprintf(loc('WasteWorks Configuration for %s'), body.name) -%]
 [% PROCESS 'admin/report_blocks.html' %]
+[% cobrand = body.get_cobrand_handler # We want the body's cobrand, not the cobrand we're on (might not be the same if superuser) %]
 
 [% INCLUDE status_message %]
 
@@ -16,7 +17,7 @@
 <form method="post">
     <input type="hidden" name="token" value="[% csrf_token %]" >
 
-  [% IF body.get_cobrand_handler.bulky_enabled %]
+  [% IF cobrand.bulky_enabled %]
     <h3>Bulky Collections</h3>
 
     <ul>
@@ -60,7 +61,10 @@
 [% END %]
 
     <div>
-    <label for="waste_per_item_min_collection_price">Minimum price for a per-item charged collection (in <strong>pence</strong>)</label>
+    <label for="waste_per_item_min_collection_price">Minimum price for a per-item charged collection
+        (
+        [%~ IF cobrand.moniker == 'bromley' %][Domestic],[Trade] [% END ~%]
+        in <strong>pence</strong>)</label>
     <input class="form-control" type=text name="per_item_min_collection_price" id="waste_per_item_min_collection_price"
         value="[% per_item_min_collection_price %]">
     </div>
@@ -68,7 +72,7 @@
     <hr>
   [% END %]
 
-  [% IF body.get_cobrand_handler.small_items_enabled %]
+  [% IF cobrand.small_items_enabled %]
     <h3>Small Items Collections</h3>
 
     <ul>
@@ -97,7 +101,7 @@
         [% 'checked' IF show_individual_notes %]>
     <label class="inline" for="waste_show_individual_notes">Add text box for extra notes on every item</label>
 
-  [% IF c.cobrand.moniker == 'peterborough' %]
+  [% IF cobrand.moniker == 'peterborough' %]
     <p>
     <label for="waste_daily_slots">Available slots each day</label>
     <input class="form-control" type=text name="daily_slots" id="waste_daily_slots"

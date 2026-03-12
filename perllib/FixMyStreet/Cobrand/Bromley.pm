@@ -1096,7 +1096,6 @@ sub bulky_send_cancellation_confirmation {
             ],
 
             wasteworks_id => $collection_report->id,
-            paid => $self->bulky_booking_paid($collection_report),
             refund_amount => $self->bulky_refund_amount($collection_report),
             collection_date => $self->bulky_nice_collection_date($collection_report),
         },
@@ -1142,6 +1141,9 @@ sub bulky_refund_would_be_partial {
 
 sub bulky_refund_amount {
     my ($self, $collection) = @_;
+
+    return 0 unless $self->bulky_booking_paid($collection);
+
     my $charged = $collection->get_extra_field_value('payment');
     if ($self->bulky_refund_would_be_partial($collection)) {
         my $refund_amount = $charged - $self->bulky_per_item_min_collection_price;

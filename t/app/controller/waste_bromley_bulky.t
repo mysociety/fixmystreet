@@ -553,7 +553,7 @@ FixMyStreet::override_config {
                 $report->update;
                 $mech->get_ok('/waste/12345/bulky/cancel/' . $report->id);
                 $mech->content_contains(
-                    'Cancellations within 24 hours of collection are only eligibile to ' .
+                    'Cancellations within 24 hours of collection are only eligible to ' .
                     'be refunded the amount paid above the minimum charge £5.00.'
                 );
                 $mech->content_contains('If you cancel you will be refunded £0.01.');
