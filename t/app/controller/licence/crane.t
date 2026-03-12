@@ -92,12 +92,17 @@ subtest 'Crane form submission - smoke test' => sub {
         $mech->submit_form_ok({ with_fields => {
             site_obstruct_infrastructure => 'No',
         }});
+
+        $mech->content_contains('tfl.gov.uk/modes/buses');
+        $mech->content_contains('tfl.gov.uk/info-for');
+        $mech->content_contains('www.met.police.uk/contact');
         $mech->submit_form_ok({ with_fields => {
             buses_consulted => 'Yes',
             underground_consulted => 'Yes',
             police_consulted => 'Yes',
             preapp_comments => 'Lots',
         }});
+
         $mech->submit_form_ok({ with_fields => {
             lifting => 'Yes'
         }});
