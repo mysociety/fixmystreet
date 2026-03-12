@@ -1,3 +1,4 @@
+use FixMyStreet::Script::Reports;
 use FixMyStreet::TestMech;
 use File::Temp 'tempdir';
 use Path::Tiny;
@@ -16,7 +17,7 @@ my $body = $mech->create_body_ok(2482, 'TfL', { cobrand => 'tfl' });
 # Create the category for festive licences
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
-    category => 'Festive Decoration licence',
+    category => 'Festive Decorations licence',
     email => 'licence@tfl.gov.uk.example.org'
 );
 
@@ -26,6 +27,7 @@ subtest 'Festive form submission - smoke test' => sub {
         ALLOWED_COBRANDS => 'tfl',
         PHONE_COUNTRY => 'GB',
         COBRAND_FEATURES => {
+            anonymous_account => { tfl => 'anonymous' },
             licencing_forms => { tfl => 1 },
         },
         PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
@@ -72,7 +74,13 @@ subtest 'Festive form submission - smoke test' => sub {
         $mech->submit_form_ok({ with_fields => {
             activity => 'Building repair',
             shown_decorations => 'Illuminated Christmas trees',
-            how_configured => 'cherry picker',
+        }});
+
+        # Installation page
+        $mech->submit_form_ok({ with_fields => {
+            installation_method => 'cherry picker',
+            code_of_practice => 'Yes',
+            electrical_energy => 'No',
         }});
 
         # Site specific pages (one question per page)
@@ -82,10 +90,6 @@ subtest 'Festive form submission - smoke test' => sub {
         }});
         $mech->submit_form_ok({ with_fields => {
             carriageway_incursion => 'No carriageway incursion',
-        }});
-        $mech->submit_form_ok({ with_fields => {
-            code_of_practice => 'Yes',
-            electrical_energy => 'No',
         }});
         $mech->submit_form_ok({ with_fields => {
             site_obstruct_infrastructure => 'No',
@@ -110,7 +114,7 @@ subtest 'Festive form submission - smoke test' => sub {
         $mech->submit_form_ok({ with_fields => {
             upload_insurance => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
             upload_rams => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
-            upload_site_drawing => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
+            upload_map => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
             upload_structural_testing => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
         }});
 
@@ -134,7 +138,7 @@ subtest 'Festive form submission - smoke test' => sub {
 
         # Verify Problem was created
         my $problem = FixMyStreet::DB->resultset('Problem')
-            ->search({ category => 'Festive Decoration licence' })
+            ->search({ category => 'Festive Decorations licence' })
             ->order_by({ -desc => 'id' })->first;
         ok $problem, 'Problem record created';
         is $problem->cobrand_data, 'licence', 'cobrand_data is licence';
@@ -158,12 +162,16 @@ subtest 'Festive form submission - smoke test' => sub {
 
         # Check each upload field has a file reference and the file exists
         my $extra = $problem->get_extra_metadata;
-        for my $field (qw(upload_insurance upload_rams upload_site_drawing upload_structural_testing)) {
+        for my $field (qw(upload_insurance upload_rams upload_map upload_structural_testing)) {
             ok $extra->{$field}, "Extra metadata contains $field";
             ok $extra->{$field}->{files}, "$field has files key";
             my $file_path = $upload_dir->child($extra->{$field}->{files});
             ok -f $file_path, "Uploaded file exists at $file_path";
         }
+
+        # Email sends OK (category name matches existing contact)
+        FixMyStreet::Script::Reports::send;
+        ok $mech->email_count_is(2), 'report sent';
     };
 };
 
