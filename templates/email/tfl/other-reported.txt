@@ -1,3 +1,8 @@
+[%
+IF report.cobrand_data == 'licence';
+    PROCESS 'other-reported-licence.txt';
+ELSE;
+~%]
 Subject: Your report has been logged: [% report.title %]
 
 Hello [% report.name %],
@@ -29,3 +34,4 @@ And details:
 
 This email was sent automatically, from an unmonitored email account - so
 please do not reply to it.
+[% END %]
