@@ -103,7 +103,6 @@ subtest 'Mobile apparatus form submission - smoke test' => sub {
         }});
         $mech->submit_form_ok({ with_fields => {
             carriageway_incursion => 'No carriageway incursion',
-            site_within_450mm => 'No'
         }});
         $mech->submit_form_ok({ with_fields => {
             site_obstruct_infrastructure => 'No',

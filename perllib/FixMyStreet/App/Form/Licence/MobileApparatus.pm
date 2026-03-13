@@ -271,7 +271,7 @@ has_field site_adequate_space => (
 
 # ==========================================================================
 has_page site_carriageway_distance => (
-    fields => ['carriageway_incursion', 'site_within_450mm', 'continue'],
+    fields => ['carriageway_incursion', 'continue'],
     title => 'Carriageway impact',
     next => 'site_infrastructure',
 );
@@ -283,18 +283,6 @@ has_field carriageway_incursion => (
     tags => {
         hint => 'For example, “no carriageway incursion” or “Materials located in loading bay”',
     },
-);
-
-has_field site_within_450mm => (
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'Will any materials be stored within 450mm of the carriageway edge?',
-    tags => { hint => 'If yes, then a site meeting between the applicant and TfL may be required.' },
-    required => 1,
-    options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
-    ],
 );
 
 # ==========================================================================
