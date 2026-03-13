@@ -280,6 +280,7 @@ These are shared for all the forms.
 has_page payment => (
     fields => [
         'payment_transaction_id',
+        'payment_amount',
         'continue'
     ],
     title => 'Payment',
@@ -290,6 +291,11 @@ has_page payment => (
 has_field payment_transaction_id => (
     type => 'Text',
     label => 'Transaction ID',
+);
+
+has_field payment_amount => (
+    type => 'Text',
+    label => 'Amount paid',
 );
 
 sub payment_link { 'LINK' }

@@ -131,6 +131,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
         $mech->content_contains('1S1H8a', 'Correct payment link');
         $mech->submit_form_ok({ with_fields => {
             payment_transaction_id => 'TEST-TRANSACTION-12345',
+            payment_amount => '123.45',
         }});
 
         # Summary page - check it rendered
