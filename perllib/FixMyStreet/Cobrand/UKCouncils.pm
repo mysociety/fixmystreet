@@ -6,6 +6,7 @@ use Carp;
 use List::Util qw(min max);
 use URI::Escape;
 use LWP::Simple;
+use LWP::UserAgent;
 use URI;
 use Try::Tiny;
 use JSON::MaybeXS;
@@ -583,11 +584,17 @@ sub _fetch_features {
     }
 
     my $uri = $self->_fetch_features_url($cfg);
-    my $response = get($uri) or return;
+    my $ua = LWP::UserAgent->new(timeout => 30);
+    my $response = $ua->get($uri);
+    unless ($response->is_success) {
+        $self->{_fetch_features_failed} = 1;
+        return;
+    }
+    my $content = $response->decoded_content;
     if (($cfg->{outputformat}||'') ne 'GML3') {
         my $j = JSON->new->utf8->allow_nonref;
         try {
-            $j = $j->decode($response);
+            $j = $j->decode($content);
         } catch {
             # There was either no asset found, or an error with the WFS
             # call - in either case let's just proceed without the USRN.
@@ -601,7 +608,7 @@ sub _fetch_features {
             SuppressEmpty => undef,
         );
         try {
-            $x = $x->parse_string($response);
+            $x = $x->parse_string($content);
         } catch {
             # There was either no asset found, or an error with the WFS
             # call - in either case we'll respond with no asset found

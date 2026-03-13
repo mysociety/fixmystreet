@@ -76,8 +76,12 @@ sub send {
 
     my $open311 = Open311->new( %open311_params );
 
-    my $skip = $cobrand->call_hook(open311_pre_send => $row, $open311);
-    $skip = $skip && $skip eq 'SKIP';
+    my $pre_send = $cobrand->call_hook(open311_pre_send => $row, $open311);
+    my $skip = $pre_send && $pre_send eq 'SKIP';
+    if ($pre_send && $pre_send =~ /^DEFER(?::(.+))?$/) {
+        $self->error($1 // 'Send deferred');
+        return;
+    }
 
     my $resp;
     if (!$skip) {
