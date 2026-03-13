@@ -10,6 +10,8 @@ sub type { 'excavation' }
 # Human-readable name for display
 sub name { 'Excavation' }
 
+sub tandc_link { 'https://content.tfl.gov.uk/excavation-in-the-highway-guidance-notes-and-terms-conditions.pdf' }
+
 sub next_after_contractor { 'activity' }
 
 # ==========================================================================

@@ -12,6 +12,8 @@ sub type { 'pit-lane' }
 # Human-readable name for display
 sub name { 'Pit Lane' }
 
+sub tandc_link { 'https://content.tfl.gov.uk/pit-lane-guidance-notes-and-terms-conditions.pdf' }
+
 sub next_after_contractor { 'activity' }
 
 # ==========================================================================

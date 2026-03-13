@@ -1,5 +1,5 @@
 [%
-IF problem.cobrand_data == 'licence';
+IF report.cobrand_data == 'licence';
     SET subject = 'New ' _ report.category _ ' application received';
 ELSE;
     IF report.get_extra_field_value('safety_critical') == 'yes';

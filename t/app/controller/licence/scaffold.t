@@ -115,9 +115,9 @@ subtest 'Scaffold form submission - smoke test' => sub {
         }});
 
         $mech->form_with_fields('terms_accepted');
-        $mech->current_form->find_input('terms_accepted', undef, 1)->value('Applicant');
-        $mech->current_form->find_input('terms_accepted', undef, 2)->value('Highway licensing policy');
-        $mech->current_form->find_input('terms_accepted', undef, 3)->value('Standard conditions');
+        $mech->current_form->find_input('terms_accepted', undef, 1)->value('Scaffold terms and conditions');
+        $mech->current_form->find_input('terms_accepted', undef, 2)->value('Highway licensing and other consents policy');
+        $mech->current_form->find_input('terms_accepted', undef, 3)->value('Standard conditions for highway consents');
         $mech->submit_form_ok;
 
         # Uploads page
@@ -191,7 +191,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
                 push @email_parts, [ { $part->header_pairs }, $part->body ];
             });
             like $email_parts[0][0]{'Content-Type'}, qr{multipart/mixed};
-            is $email_parts[0][0]{'Subject'}, 'Problem Report: Scaffold licence';
+            is $email_parts[0][0]{'Subject'}, 'New Scaffold licence application received';
             is $email_parts[0][0]{'To'}, 'TfL <licence@tfl.gov.uk.example.org>';
             like $email_parts[1][0]{'Content-Type'}, qr{multipart/related};
             like $email_parts[2][0]{'Content-Type'}, qr{multipart/alternative};
@@ -201,21 +201,14 @@ subtest 'Scaffold form submission - smoke test' => sub {
 				# could check html here
             like $email_parts[5][0]{'Content-Type'}, qr{image/gif};
             like $email_parts[5][0]{'Content-Disposition'}, qr{email-logo.gif};
-            my $next = 6;
-            if (@email_parts == 11) {
-                # IM installed, so there is a map attachment
-                like $email_parts[6][0]{'Content-Type'}, qr{image/jpeg};
-                like $email_parts[6][0]{'Content-Disposition'}, qr{map.jpeg};
-                $next++;
-            }
-            like $email_parts[$next][0]{'Content-Type'}, qr{application/pdf};
-            like $email_parts[$next++][0]{'Content-Disposition'}, qr{scaffold-licence-application-$id.pdf};
-            like $email_parts[$next][0]{'Content-Type'}, qr{application/pdf};
-            like $email_parts[$next++][0]{'Content-Disposition'}, qr{sample.pdf};
-            like $email_parts[$next][0]{'Content-Type'}, qr{application/pdf};
-            like $email_parts[$next++][0]{'Content-Disposition'}, qr{sample.pdf};
-            like $email_parts[$next][0]{'Content-Type'}, qr{application/pdf};
-            like $email_parts[$next++][0]{'Content-Disposition'}, qr{sample.pdf};
+            like $email_parts[6][0]{'Content-Type'}, qr{application/pdf};
+            like $email_parts[6][0]{'Content-Disposition'}, qr{scaffold-licence-application-$id.pdf};
+            like $email_parts[7][0]{'Content-Type'}, qr{application/pdf};
+            like $email_parts[7][0]{'Content-Disposition'}, qr{sample.pdf};
+            like $email_parts[8][0]{'Content-Type'}, qr{application/pdf};
+            like $email_parts[8][0]{'Content-Disposition'}, qr{sample.pdf};
+            like $email_parts[9][0]{'Content-Type'}, qr{application/pdf};
+            like $email_parts[9][0]{'Content-Disposition'}, qr{sample.pdf};
 
             @email_parts = ();
             $email[1]->walk_parts(sub {
@@ -223,7 +216,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
                 push @email_parts, [ { $part->header_pairs }, $part->body ];
             });
             like $email_parts[0][0]{'Content-Type'}, qr{multipart/related};
-            is $email_parts[0][0]{'Subject'}, 'Your report has been logged: Scaffold licence';
+            is $email_parts[0][0]{'Subject'}, 'FMS' . $problem->id . ' Scaffold licence application received';
             is $email_parts[0][0]{'To'}, 'test@example.com';
             like $email_parts[1][0]{'Content-Type'}, qr{multipart/alternative};
             like $email_parts[2][0]{'Content-Type'}, qr{text/plain};

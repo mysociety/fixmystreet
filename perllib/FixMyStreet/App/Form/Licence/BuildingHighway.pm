@@ -10,6 +10,8 @@ sub type { 'building-over-highway' }
 # Human-readable name for display
 sub name { 'Building over the Highway' }
 
+sub tandc_link { 'https://content.tfl.gov.uk/building-over-the-highway-guidance-notes-and-terms-conditions.pdf' }
+
 sub next_after_contractor { 'activity' }
 
 # ==========================================================================

@@ -80,18 +80,28 @@ has_field road_closure_required => (
 has_field terms_accepted => (
     type => 'Multiple',
     widget => 'CheckboxGroup',
-    label => 'Terms and Conditions',
+    label => 'Confirmation',
+    tags => { hint => 'I confirm that I have read and understood the documents listed below and agree to comply with all requirements set out within them.' },
     required => 1,
-    options => [
-        { label => 'I confirm that I am the applicant applying for this licence', value => 'Applicant' },
-        { label => FixMyStreet::Template::SafeString->new('I confirm that I have read and understood the <a href="https://content.tfl.gov.uk/consents-guidance-highway-licence-applications-v4.pdf">Highway licensing policy</a>'), value => 'Highway licensing policy' },
-        { label => FixMyStreet::Template::SafeString->new('I confirm that I have read and understood the <a href="https://content.tfl.gov.uk/standard-conditions-guidance-highway-licence.pdf">Standard conditions for highways consents</a>'), value => 'Standard conditions' },
-    ],
     validate_method => sub {
         my $self = shift;
         my $vals = $self->value;
         $self->add_error('Please confirm all options') if @$vals < 3;
     },
 );
+
+sub options_terms_accepted {
+    my $name = $_[0]->name;
+    my $tandc_link = $_[0]->tandc_link;
+    my @options;
+    push @options,
+        { label => "<a target='_blank' href='$tandc_link'>$name guidance notes and terms &amp; conditions</a>", value => "$name terms and conditions" },
+        { label => '<a target="_blank" href="https://content.tfl.gov.uk/highway-licensing-and-other-consents-policy.pdf">TfL’s Highways Licensing and Other Consents Policy</a>', value => 'Highway licensing and other consents policy' },
+        { label => '<a target="_blank" href="https://content.tfl.gov.uk/standard-conditions-for-highway-consents.pdf">TfL’s Standard Conditions for Highway Consents</a>', value => 'Standard conditions for highway consents' };
+    foreach (@options) {
+        $_->{label} = FixMyStreet::Template::SafeString->new($_->{label});
+    }
+    return @options;
+}
 
 1;

@@ -12,6 +12,8 @@ sub type { 'crane' }
 # Human-readable name for display
 sub name { 'Crane' }
 
+sub tandc_link { 'https://content.tfl.gov.uk/crane-guidance-notes-and-terms-conditions.pdf' }
+
 sub next_after_contractor { 'details' }
 
 # ==========================================================================
