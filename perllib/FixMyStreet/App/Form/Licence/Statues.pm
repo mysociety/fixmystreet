@@ -47,7 +47,7 @@ has_page location => (
 # ==========================================================================
 has_page activity => (
     fields => ['activity', 'continue'],
-    title => 'Activity',
+    title => 'Purpose of the statues / artworks',
     next => 'site_pedestrian_space',
 );
 

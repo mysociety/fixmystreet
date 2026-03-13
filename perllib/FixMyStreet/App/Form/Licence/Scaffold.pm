@@ -229,7 +229,7 @@ has_field site_within_450mm => (
 
 # ==========================================================================
 has_page site_infrastructure => (
-    fields => ['site_obstruct_infrastructure', 'site_trees_nearby', 'continue'],
+    fields => ['site_obstruct_infrastructure', 'site_trees_nearby', 'site_tfl_structures', 'continue'],
     title => 'Street infrastructure',
     next => 'site_protection',
 );
@@ -253,6 +253,21 @@ has_field site_trees_nearby => (
     required => 1,
     tags => {
         hint => "If yes, the application may be referred to the TfL Green Infrastructure team for further consideration and a site meeting with TfL may be required.",
+    },
+    options => [
+        { label => 'Yes', value => 'Yes' },
+        { label => 'No', value => 'No' },
+    ],
+);
+
+has_field site_tfl_structures => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    label =>
+        'Are there any TfL structures or assets (including bridges, tunnels or buried infrastructure), whether visible or concealed, that could be affected by the proposed scaffold at any stage of its erection, use or dismantling?',
+    required => 1,
+    tags => {
+        hint => "If yes, the application may be referred to the TfL Structures Technical Approvals team for further assessment, and a site meeting with TfL may be required.",
     },
     options => [
         { label => 'Yes', value => 'Yes' },

@@ -262,9 +262,6 @@ has_field upload_rams => (
 has_field upload_map => (
     type => 'FileIdUpload',
     label => 'Map showing the location of each of the decorations',
-    tags => {
-        hint => 'Including measurements and available space maintained for pedestrians',
-    },
     messages => {
         upload_file_not_found => 'Please upload a map',
     },

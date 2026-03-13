@@ -103,6 +103,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
         $mech->submit_form_ok({ with_fields => {
             site_obstruct_infrastructure => 'No',
             site_trees_nearby => 'No',
+            site_tfl_structures => 'No',
         }});
         $mech->submit_form_ok({ with_fields => {
             site_protection_fan => 'No',
