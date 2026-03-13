@@ -66,11 +66,14 @@ subtest 'Temporary Traffic Signs form submission - smoke test' => sub {
         $mech->submit_form_ok({ with_fields => {
             activity => 'Pop-up pizza van',
             sign_contents => 'Pizza van logo and a big arrow',
+            site_existing_direction_signs => 'No',
         }});
 
         # Installation method
         $mech->submit_form_ok({ with_fields => {
             installation_method => 'Cherry picker',
+            site_direct_illumination => 'No',
+            site_use_tfl_electricity => 'No',
         }});
 
         # Site specific pages (one question per page)
@@ -83,9 +86,6 @@ subtest 'Temporary Traffic Signs form submission - smoke test' => sub {
         }});
 
         $mech->submit_form_ok({ with_fields => {
-            site_existing_direction_signs => 'No',
-            site_direct_illumination => 'No',
-            site_use_tfl_electricity => 'No',
             site_obstruct_infrastructure => 'No',
         }});
 
@@ -108,7 +108,7 @@ subtest 'Temporary Traffic Signs form submission - smoke test' => sub {
         $mech->submit_form_ok({ with_fields => {
             upload_insurance => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
             upload_rams => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
-            upload_site_drawing => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
+            upload_map => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
         }});
 
         # Payment page
@@ -156,7 +156,7 @@ subtest 'Temporary Traffic Signs form submission - smoke test' => sub {
 
         # Check each upload field has a file reference and the file exists
         my $extra = $problem->get_extra_metadata;
-        for my $field (qw(upload_insurance upload_rams upload_site_drawing)) {
+        for my $field (qw(upload_insurance upload_rams upload_map)) {
             ok $extra->{$field}, "Extra metadata contains $field";
             ok $extra->{$field}->{files}, "$field has files key";
             my $file_path = $upload_dir->child($extra->{$field}->{files});

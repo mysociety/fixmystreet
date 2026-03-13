@@ -112,11 +112,8 @@ subtest 'Scaffold form submission - smoke test' => sub {
         $mech->submit_form_ok({ with_fields => {
             upload_insurance => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
             upload_rams => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
-            upload_site_drawing => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
-            upload_technical_report => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
-            upload_design_calculation => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
-            upload_load_testing => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
-            upload_check_certificate => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
+            upload_map => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
+            upload_structural_testing => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
         }}, 'Upload page');
 
         # Payment page
@@ -170,11 +167,8 @@ subtest 'Scaffold form submission - smoke test' => sub {
         for my $field (qw(
             upload_insurance
             upload_rams
-            upload_site_drawing
-            upload_technical_report
-            upload_design_calculation
-            upload_load_testing
-            upload_check_certificate
+            upload_map
+            upload_structural_testing
         )) {
 
             ok $extra->{$field}, "Extra metadata contains $field";

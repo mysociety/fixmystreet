@@ -48,8 +48,8 @@ has_page location => (
 # Activity/Sign Contents
 # ==========================================================================
 has_page activity => (
-    fields => ['activity', 'sign_contents', 'continue'],
-    title => 'Activity/Sign Contents',
+    fields => ['activity', 'sign_contents', 'site_existing_direction_signs', 'continue'],
+    title => 'Purpose of the temporary traffic signs',
     next => 'installation',
 );
 
@@ -73,12 +73,24 @@ has_field sign_contents => (
     },
 );
 
+has_field site_existing_direction_signs => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'Are direction signs already provided to the venue?',
+    tags => { hint => 'If yes, then a site meeting between the applicant and TfL will be required.' },
+    required => 1,
+    options => [
+        { label => 'Yes', value => 'Yes' },
+        { label => 'No', value => 'No' },
+    ],
+);
+
 # ==========================================================================
 # Installation method
 # ==========================================================================
 has_page installation => (
-    fields => ['installation_method', 'continue'],
-    title => 'Installation method',
+    fields => ['installation_method', 'site_direct_illumination', 'site_use_tfl_electricity', 'continue'],
+    title => 'Installation',
     next => 'site_pedestrian_space',
 );
 
@@ -89,6 +101,30 @@ has_field installation_method => (
     tags => {
         hint => 'For example, “mobile elevating work platform” or “cherry picker”. Note, a separate mobile apparatus application may also be required',
     },
+);
+
+has_field site_direct_illumination => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'Will any signs be directly illuminated?',
+    tags => { hint => 'If yes, then a site meeting between the applicant and TfL will be required.' },
+    required => 1,
+    options => [
+        { label => 'Yes', value => 'Yes' },
+        { label => 'No', value => 'No' },
+    ],
+);
+
+has_field site_use_tfl_electricity => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'Will you be expecting to draw electrical energy from TfL’s lighting stock?',
+    tags => { hint => 'If yes, then a site meeting between the applicant and TfL will be required.' },
+    required => 1,
+    options => [
+        { label => 'Yes', value => 'Yes' },
+        { label => 'No', value => 'No' },
+    ],
 );
 
 
@@ -142,47 +178,10 @@ has_field carriageway_incursion => (
 
 # ==========================================================================
 has_page site_infrastructure => (
-    fields => ['site_obstruct_infrastructure', 'site_existing_direction_signs', 'site_direct_illumination', 'site_use_tfl_electricity', 'continue'],
+    fields => ['site_obstruct_infrastructure', 'continue'],
     title => 'Street infrastructure',
     next => 'have_you_considered',
 );
-
-has_field site_existing_direction_signs => (
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'Are direction signs already provided to the venue?',
-    tags => { hint => 'If yes, then a site meeting between the applicant and TfL will be required.' },
-    required => 1,
-    options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
-    ],
-);
-
-has_field site_direct_illumination => (
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'Will any signs be directly illuminated?',
-    tags => { hint => 'If yes, then a site meeting between the applicant and TfL will be required.' },
-    required => 1,
-    options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
-    ],
-);
-
-has_field site_use_tfl_electricity => (
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'Will you be expecting to draw electrical energy from TfL’s lighting stock?',
-    tags => { hint => 'If yes, then a site meeting between the applicant and TfL will be required.' },
-    required => 1,
-    options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
-    ],
-);
-
 
 has_field site_obstruct_infrastructure => (
     type => 'Select',
@@ -231,7 +230,7 @@ has_page uploads => (
     fields => [
         'upload_insurance',
         'upload_rams',
-        'upload_site_drawing',
+        'upload_map',
         'upload_additional',
         'continue'
     ],
@@ -243,7 +242,7 @@ has_page uploads => (
         my $fields = {};
         $form->handle_upload('upload_insurance', $fields);
         $form->handle_upload('upload_rams', $fields);
-        $form->handle_upload('upload_site_drawing', $fields);
+        $form->handle_upload('upload_map', $fields);
         $form->handle_upload('upload_additional', $fields);
         return $fields;
     },
@@ -251,7 +250,7 @@ has_page uploads => (
         my ($form) = @_;
         $form->process_upload('upload_insurance');
         $form->process_upload('upload_rams');
-        $form->process_upload('upload_site_drawing');
+        $form->process_upload('upload_map');
         $form->process_upload('upload_additional');
     },
 );
@@ -275,14 +274,14 @@ has_field upload_rams => (
     },
 );
 
-has_field upload_site_drawing => (
+has_field upload_map => (
     type => 'FileIdUpload',
-    label => 'Site drawing',
+    label => 'Map showing the location of each sign',
     tags => {
         hint => 'Including measurements and available space maintained for pedestrians',
     },
     messages => {
-        upload_file_not_found => 'Please upload a site drawing',
+        upload_file_not_found => 'Please upload a map',
     },
 );
 
