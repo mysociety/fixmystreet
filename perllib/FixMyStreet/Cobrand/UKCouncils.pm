@@ -561,7 +561,7 @@ sub _fetch_features {
     }
 
     my $uri = $self->_fetch_features_url($cfg);
-    my $ua = LWP::UserAgent->new;
+    my $ua = LWP::UserAgent->new(timeout => 30);
     my $response = $ua->get($uri);
     unless ($response->is_success) {
         $self->{_fetch_features_failed} = 1;
