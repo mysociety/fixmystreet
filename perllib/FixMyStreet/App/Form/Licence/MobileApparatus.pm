@@ -4,6 +4,8 @@ use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Licence::Base';
 use utf8;
 
+with 'FixMyStreet::App::Form::Licence::Fields::PreApplication';
+
 # Type identifier used in URL
 sub type { 'mobile-apparatus' }
 
@@ -315,53 +317,11 @@ has_field site_obstruct_infrastructure => (
 );
 
 # ==========================================================================
+# Fields provided by PreApplication role
 has_page pre_application => (
     fields => ['buses_consulted', 'underground_consulted', 'police_consulted', 'preapp_comments', 'continue'],
     title => 'Pre-application consultation',
     next => 'have_you_considered',
-);
-
-has_field buses_consulted => (
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'Have TfL Buses been consulted on the proposed works?',
-    required => 1,
-    options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
-    ],
-);
-
-has_field underground_consulted => (
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'Have TfL London Underground – Infrastructure Protection been consulted on the proposed works?',
-    required => 1,
-    options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
-    ],
-);
-
-has_field police_consulted => (
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'Have the Metropolitan Police - Safer Transport Teams been consulted on the proposed works?',
-    required => 1,
-    options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
-    ],
-);
-
-has_field preapp_comments => (
-    type => 'Text',
-    widget => 'Textarea',
-    label => 'Please provide any relevant comments relating to the pre-application consultation in the section below:',
-    required => 1,
-    tags => {
-        hint => 'For example, “crane oversailing the public highway” or “overnight lift for building construction”',
-    },
 );
 
 # ==========================================================================

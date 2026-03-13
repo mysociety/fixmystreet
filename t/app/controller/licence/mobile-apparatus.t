@@ -109,6 +109,9 @@ subtest 'Mobile apparatus form submission - smoke test' => sub {
             site_obstruct_infrastructure => 'No',
         }});
 
+        $mech->content_contains('tfl.gov.uk/modes/buses');
+        $mech->content_contains('tfl.gov.uk/info-for');
+        $mech->content_contains('www.met.police.uk/contact');
         $mech->submit_form_ok({ with_fields => {
             buses_consulted => 'No',
             underground_consulted => 'No',

@@ -47,14 +47,14 @@ has_page location => (
 # ==========================================================================
 has_page activity => (
     fields => ['activity', 'excavation_position', 'continue'],
-    title => 'Purpose of the licence',
+    title => 'Purpose of the excavation',
     next => 'site_pedestrian_space',
 );
 
 has_field activity => (
     type => 'Text',
     widget => 'Textarea',
-    label => 'What activity will the licence be used for?',
+    label => 'What is the reason for the excavation?',
     required => 1,
     tags => {
         hint => 'For example, “trial pit to determine location of underground services”',
@@ -120,7 +120,7 @@ has_field carriageway_incursion => (
 has_field site_within_450mm => (
     type => 'Select',
     widget => 'RadioGroup',
-    label => 'Will any materials be stored withn 450mm of the carriageway edge?',
+    label => 'Will the excavation be within 450mm of the carriageway edge?',
     tags => { hint => 'If yes, then a site meeting between the applicant and TfL may be required.' },
     required => 1,
     options => [
@@ -139,7 +139,7 @@ has_page site_infrastructure => (
 has_field site_obstruct_infrastructure => (
     type => 'Select',
     widget => 'RadioGroup',
-    label => 'Will any decorations obstruct or obscure any of the following: traffic signal, traffic signal controller, bus stop, pedestrian crossing, junction sight line, road lighting column, traffic sign, parking bay, or any ‘ironwork’ in the highway or other street furniture?',
+    label => 'Will the excavation impact any of the following: traffic signal, traffic signal controller, bus stop, pedestrian crossing, junction sight line, road lighting column, traffic sign, parking bay, or any ‘ironwork’ in the highway or other street furniture?',
     tags => { hint => 'If yes, a site meeting between the applicant and TfL may be required.' },
     required => 1,
     options => [
@@ -162,7 +162,7 @@ has_page have_you_considered => (
         'continue'
     ],
     title => 'Additional considerations',
-    intro => 'festive/have_you_considered.html',
+    intro => 'excavation/have_you_considered.html',
     next => 'terms',
 );
 

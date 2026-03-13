@@ -46,9 +46,9 @@ has_page location => (
 # Skip activity
 # ==========================================================================
 has_page activity => (
-    fields => ['activity', 'continue'],
+    fields => ['activity', 'vehicle_directly', 'continue'],
     title => 'Purpose of the skip',
-    next => 'vehicle',
+    next => 'site_pedestrian_space',
 );
 
 has_field activity => (
@@ -61,15 +61,6 @@ has_field activity => (
     },
 );
 
-# ==========================================================================
-# Directly to a vehicle
-# ==========================================================================
-has_page vehicle => (
-    fields => ['vehicle_directly', 'continue'],
-    title => 'Direct loading',
-    next => 'site_pedestrian_space',
-);
-
 has_field vehicle_directly => (
     type => 'Text',
     widget => 'Textarea',
@@ -79,7 +70,6 @@ has_field vehicle_directly => (
         hint => 'Note: there is a presumption against granting consent to builders skips on London’s Red Routes, the preferred means of disposal of materials being to load directly into a waiting vehicle.',
     },
 );
-
 
 # ==========================================================================
 # Site Specific Information (skip-specific questions)
@@ -114,9 +104,9 @@ has_field site_adequate_space => (
 
 # ==========================================================================
 has_page site_carriageway_distance => (
-    fields => ['carriageway_incursion', 'located_on_carriageway', 'continue'],
+    fields => ['carriageway_incursion', 'located_on_carriageway', 'site_obstruct_location', 'continue'],
     title => 'Carriageway impact',
-    next => 'site_obstructions',
+    next => 'site_infrastructure',
 );
 
 has_field carriageway_incursion => (
@@ -140,13 +130,6 @@ has_field located_on_carriageway => (
     ],
 );
 
-# ==========================================================================
-has_page site_obstructions => (
-    fields => ['site_obstruct_location', 'site_obstruct_infrastructure', 'continue'],
-    title => 'Site obstructions',
-    next => 'have_you_considered',
-);
-
 has_field site_obstruct_location => (
     type => 'Select',
     widget => 'RadioGroup',
@@ -159,6 +142,13 @@ has_field site_obstruct_location => (
         { label => 'Yes', value => 'Yes' },
         { label => 'No', value => 'No' },
     ],
+);
+
+# ==========================================================================
+has_page site_infrastructure => (
+    fields => ['site_obstruct_infrastructure', 'continue'],
+    title => 'Street infrastructure',
+    next => 'have_you_considered',
 );
 
 has_field site_obstruct_infrastructure => (
@@ -206,6 +196,7 @@ has_page terms => (
 has_page uploads => (
     fields => [
         'upload_insurance',
+        'upload_rams',
         'upload_site_drawing',
         'upload_additional',
         'continue'
@@ -217,6 +208,7 @@ has_page uploads => (
         my ($form) = @_;
         my $fields = {};
         $form->handle_upload('upload_insurance', $fields);
+        $form->handle_upload('upload_rams', $fields);
         $form->handle_upload('upload_site_drawing', $fields);
         $form->handle_upload('upload_additional', $fields);
         return $fields;
@@ -224,6 +216,7 @@ has_page uploads => (
     post_process => sub {
         my ($form) = @_;
         $form->process_upload('upload_insurance');
+        $form->process_upload('upload_rams');
         $form->process_upload('upload_site_drawing');
         $form->process_upload('upload_additional');
     },
@@ -237,6 +230,14 @@ has_field upload_insurance => (
     },
     messages => {
         upload_file_not_found => 'Please upload your Public Liability Insurance certificate',
+    },
+);
+
+has_field upload_rams => (
+    type => 'FileIdUpload',
+    label => 'Risk Assessment Method Statement (RAMS)',
+    messages => {
+        upload_file_not_found => 'Please upload your Risk Assessment Method Statement',
     },
 );
 

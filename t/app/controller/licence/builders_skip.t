@@ -1,4 +1,5 @@
 use utf8;
+use FixMyStreet::Script::Reports;
 use FixMyStreet::TestMech;
 use File::Temp 'tempdir';
 use Path::Tiny;
@@ -17,7 +18,7 @@ my $body = $mech->create_body_ok(2482, 'TfL', { cobrand => 'tfl' });
 # Create the category for scaffold licences
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
-    category => 'Builder\'s skip licence',
+    category => 'Builder’s skip licence',
     email => 'licence@tfl.gov.uk.example.org'
 );
 
@@ -27,6 +28,7 @@ subtest 'Skip form submission - smoke test' => sub {
         ALLOWED_COBRANDS => 'tfl',
         PHONE_COUNTRY => 'GB',
         COBRAND_FEATURES => {
+            anonymous_account => { tfl => 'anonymous' },
             licencing_forms => { tfl => 1 },
         },
         PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
@@ -46,6 +48,8 @@ subtest 'Skip form submission - smoke test' => sub {
 
         $mech->content_contains('2 weeks');
         $mech->content_lacks('28 weeks');
+        $mech->content_contains(
+            'Builder’s Skip licences are limited to a duration of 26 weeks');
 
         # Dates page (using dynamic dates calculated at test start)
         $mech->submit_form_ok({ with_fields => {
@@ -82,11 +86,11 @@ subtest 'Skip form submission - smoke test' => sub {
         }});
         $mech->submit_form_ok({ with_fields => {
             carriageway_incursion => 'No carriageway incursion',
-            located_on_carriageway => 'No'
+            located_on_carriageway => 'No',
+            site_obstruct_location => 'No',
         }});
         $mech->submit_form_ok({ with_fields => {
             site_obstruct_infrastructure => 'No',
-            site_obstruct_location => 'No',
         }});
 
         # Have you considered page
@@ -107,6 +111,7 @@ subtest 'Skip form submission - smoke test' => sub {
         # Uploads page
         $mech->submit_form_ok({ with_fields => {
             upload_insurance => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
+            upload_rams => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
             upload_site_drawing => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
             upload_additional => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
         }});
@@ -157,6 +162,10 @@ subtest 'Skip form submission - smoke test' => sub {
             my $file_path = $upload_dir->child($extra->{$field}->{files});
             ok -f $file_path, "Uploaded file exists at $file_path";
         }
+
+        # Email sends OK (category name matches existing contact)
+        FixMyStreet::Script::Reports::send;
+        ok $mech->email_count_is(2), 'report sent';
     };
 };
 

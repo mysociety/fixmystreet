@@ -8,7 +8,7 @@ use utf8;
 sub type { 'festive' }
 
 # Human-readable name for display
-sub name { 'Festive Decoration' }
+sub name { 'Festive Decorations' }
 
 sub next_after_contractor { 'activity' }
 
@@ -17,7 +17,7 @@ sub next_after_contractor { 'activity' }
 # ==========================================================================
 has_page intro => (
     fields => ['start'],
-    title => 'Festive Decoration Licence Application',
+    title => 'Festive Decorations Licence Application',
     intro => 'festive/intro.html',
     next => 'location',
 );
@@ -46,15 +46,15 @@ has_page location => (
 # Activity
 # ==========================================================================
 has_page activity => (
-    fields => ['activity', 'shown_decorations', 'how_configured', 'continue'],
-    title => 'Purpose of the licence',
-    next => 'site_pedestrian_space',
+    fields => ['activity', 'shown_decorations', 'continue'],
+    title => 'Purpose of the festive decorations',
+    next => 'installation',
 );
 
 has_field activity => (
     type => 'Text',
     widget => 'Textarea',
-    label => 'What activity will the licence be used for?',
+    label => 'What activity will the festive decorations be used for?',
     required => 1,
     tags => {
         hint => 'For example, “seasonal decorations attached to lamp columns”',
@@ -70,13 +70,46 @@ has_field shown_decorations => (
     },
 );
 
-has_field how_configured => (
+# ==========================================================================
+# Installation method
+# ==========================================================================
+has_page installation => (
+    fields => ['installation_method', 'code_of_practice', 'electrical_energy', 'continue'],
+    title => 'Installation method',
+    next => 'site_pedestrian_space',
+);
+
+has_field installation_method => (
     type => 'Text',
-    label => "How will the decorations be installed?",
+    label => 'How will the decorations be installed?',
     required => 1,
     tags => {
-        hint => 'For example, “mobile elevating work platform” or “cherry picker”. Note, a separate mobile apparatus application may also be required',
+        hint => 'For example, “mobile elevating work platform” or “cherry picker”. Note, a separate mobile apparatus application may also be required.',
     },
+);
+
+has_field code_of_practice => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'Have you read and understood the CSS Seasonal Decorations Code of Practice?',
+    required => 1,
+    tags => { hint => FixMyStreet::Template::SafeString->new('Please read the <a href="https://theilp.org.uk/resources/" target="_blank">Code of Practice</a>. If no, then a site meeting between the applicant and TfL may be required.') },
+    options => [
+        { label => 'Yes', value => 'Yes' },
+        { label => 'No', value => 'No' },
+    ],
+);
+
+has_field electrical_energy => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'Will you be expecting to draw electrical energy from TfL’s lighting stock?',
+    required => 1,
+    tags => { hint => 'If yes, then a site meeting between the applicant and TfL may be required.' },
+    options => [
+        { label => 'Yes', value => 'Yes' },
+        { label => 'No', value => 'No' },
+    ],
 );
 
 # ==========================================================================
@@ -114,7 +147,7 @@ has_field site_adequate_space => (
 has_page site_carriageway_distance => (
     fields => ['carriageway_incursion', 'continue'],
     title => 'Carriageway impact',
-    next => 'site_specific_one',
+    next => 'site_infrastructure',
 );
 
 has_field carriageway_incursion => (
@@ -124,37 +157,6 @@ has_field carriageway_incursion => (
     tags => {
         hint => 'For example, "no carriageway incursion" or "temporary mobile lane closure for installation"',
     },
-);
-
-# ==========================================================================
-has_page site_specific_one => (
-    fields => ['code_of_practice', 'electrical_energy', 'continue'],
-    title => 'Carriageway impact',
-    next => 'site_infrastructure',
-);
-
-has_field code_of_practice => (
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'Have you read and understood the CSS Seasonal Decorations Code of Practice?',
-    required => 1,
-    tags => { hint => FixMyStreet::Template::SafeString->new('Please read the <a href="https://theilp.org.uk/resources/" target="_blank">Code of Practice</a>. If yes, then a site meeting between the applicant and TfL may be required.') },
-    options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
-    ],
-);
-
-has_field electrical_energy => (
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'Will you be expecting to draw electrical energy from TfL’s lighting stock?',
-    required => 1,
-    tags => { hint => 'If yes, then a site meeting between the applicant and TfL may be required.' },
-    options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
-    ],
 );
 
 # ==========================================================================
@@ -210,7 +212,7 @@ has_page uploads => (
     fields => [
         'upload_insurance',
         'upload_rams',
-        'upload_site_drawing',
+        'upload_map',
         'upload_structural_testing',
         'upload_additional',
         'continue'
@@ -223,7 +225,7 @@ has_page uploads => (
         my $fields = {};
         $form->handle_upload('upload_insurance', $fields);
         $form->handle_upload('upload_rams', $fields);
-        $form->handle_upload('upload_site_drawing', $fields);
+        $form->handle_upload('upload_map', $fields);
         $form->handle_upload('upload_structural_testing', $fields);
         $form->handle_upload('upload_additional', $fields);
         return $fields;
@@ -232,7 +234,7 @@ has_page uploads => (
         my ($form) = @_;
         $form->process_upload('upload_insurance');
         $form->process_upload('upload_rams');
-        $form->process_upload('upload_site_drawing');
+        $form->process_upload('upload_map');
         $form->process_upload('upload_structural_testing');
         $form->process_upload('upload_additional');
     },
@@ -257,14 +259,14 @@ has_field upload_rams => (
     },
 );
 
-has_field upload_site_drawing => (
+has_field upload_map => (
     type => 'FileIdUpload',
-    label => 'Site drawing',
+    label => 'Map showing the location of each of the decorations',
     tags => {
         hint => 'Including measurements and available space maintained for pedestrians',
     },
     messages => {
-        upload_file_not_found => 'Please upload a site drawing',
+        upload_file_not_found => 'Please upload a map',
     },
 );
 

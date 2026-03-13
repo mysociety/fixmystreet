@@ -182,7 +182,20 @@ sub options_proposed_duration {
     return @options;
 }
 
-has_field year_warning => ( type => 'Notice', label => '<span id="js-proposed_end_date"></span> All licences are limited to a duration of one year.', required => 0, widget => 'NoRender' );
+has_field year_warning => (
+    type  => 'Notice',
+    build_label_method => sub {
+        my $str = '<span id="js-proposed_end_date"></span> ';
+        my $type = $_[0]->form->type;
+        $str
+            .= $type eq 'builders-skip'
+            ? 'Builder’s Skip licences are limited to a duration of 26 weeks.'
+            : 'All licences are limited to a duration of one year.';
+        return $str;
+    },
+    required => 0,
+    widget   => 'NoRender',
+);
 
 =head2 Applicant/contractor
 
