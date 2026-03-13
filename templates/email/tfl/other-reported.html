@@ -1,4 +1,7 @@
 [%
+IF report.cobrand_data == 'licence';
+    PROCESS 'other-reported-licence.html';
+ELSE;
 
 email_columns = 2;
 
@@ -30,3 +33,4 @@ using the email address associated with the report.</p>
 [% END %]
 
 [% INCLUDE '_email_bottom.html' %]
+[% END %]

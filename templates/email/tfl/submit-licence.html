@@ -1,0 +1,21 @@
+[%
+PROCESS '_email_settings.html';
+email_footer = "";
+email_columns = 1;
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% only_column_style %]">
+    <h1 style="[% h1_style %]">New [% report.category %] application received</h1>
+    <h2 style="[% h2_style %]">[% report.title %]</h2>
+    <p style="[% p_style %]"><strong>Application reference:</strong> FMS[% report.id %]</p>
+    <p style="[% p_style %]"><strong>Category:</strong> [% report.category %]</p>
+
+    [% detail = report.detail | html_para_email(p_style) %]
+    [% cobrand.licence_detail(detail) %]
+
+</th>
+
+[% INCLUDE '_email_bottom.html' %]

@@ -39,6 +39,7 @@ sub process_licence : Private {
     my $data = $form->saved_data;
     my $type = $c->stash->{licence_type};
     my $name = $c->stash->{licence_name};
+    $data->{licence_type} = $type;
 
     # Handle staff submitting on behalf of another user
     my $contributing_as_another_user = $c->user_exists
