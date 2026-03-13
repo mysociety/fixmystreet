@@ -1,4 +1,7 @@
 [%
+IF report.cobrand_data == 'licence';
+    PROCESS 'submit-licence.html';
+ELSE;
 
 PROCESS '_email_settings.html';
 
@@ -57,3 +60,4 @@ of a local problem that they believe might require your attention.</p>
 [% END %]
 
 [% INCLUDE '_email_bottom.html' %]
+[% END %]

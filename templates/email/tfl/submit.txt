@@ -1,4 +1,15 @@
-Subject: [% IF report.get_extra_field_value('safety_critical') == 'yes' %]Dangerous [% report.category %][% ELSE %]Problem[% END %] Report: [% report.title %]
+[%
+IF report.cobrand_data == 'licence';
+    SET subject = 'New ' _ report.category _ ' application received';
+ELSE;
+    IF report.get_extra_field_value('safety_critical') == 'yes';
+        SET subject = 'Dangerous ' _ report.category _ ' Report: ' _ report.title;
+    ELSE;
+        SET subject = 'Problem Report: ' _ report.title;
+    END;
+END
+~%]
+Subject: [% subject %]
 
 [% multiple %]A user of
 [% site_name %] has submitted the following report

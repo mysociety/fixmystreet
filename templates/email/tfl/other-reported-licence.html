@@ -1,0 +1,49 @@
+[%
+PROCESS '_email_settings.html';
+email_columns = 1;
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% only_column_style %]">
+    <h1 style="[% h1_style %]">New [% report.category %] application received</h1>
+
+    <p style="[% p_style %]">
+    Your application for a [% report.category %] is now under review.
+    If the payment amount is incorrect or any required supporting documents are missing, a member of our team will contact you.
+    </p>
+
+    <p style="[% p_style %]">
+    Please note that it will take a <strong>minimum of four weeks</strong> for your licence to be issued.
+    You must not start any works until you receive your licence as all requested dates are subject to coordination checks and cannot be guaranteed.
+    Your application will progress through the following stages:
+    </p>
+
+    <ul>
+        <li>
+            <p style="[% p_style %]"><strong>Initial Review (up to 5 working days)</strong></p>
+            <p style="[% p_style %]">The Licensing Team checks your application and documentation.</p>
+        </li>
+        <li>
+            <p style="[% p_style %]"><strong>Proposal Assessment (up to 10 working days)</strong></p>
+            <p style="[% p_style %]">An Asset Operations Officer reviews the proposals.</p>
+        </li>
+        <li>
+            <p style="[% p_style %]"><strong>Road Space Permit (up to 5 working days)</strong></p>
+            <p style="[% p_style %]">A road space permit is arranged. Once the permit is granted, your licence will be issued.</p>
+        </li>
+    </ul>
+
+    <p style="[% p_style %]">
+        This [% report.category %] application reference number is FMS[% report.id %].
+        Until you have received your TfL licence, please quote this application reference.
+    </p>
+
+    <h2 style="[% h2_style %]">Application details</h2>
+
+    [% detail = report.detail | html_para_email(p_style) %]
+    [% cobrand.licence_detail(detail) %]
+
+</th>
+
+[% INCLUDE '_email_bottom.html' %]
