@@ -112,7 +112,7 @@ subtest 'Banner form submission - smoke test' => sub {
         $mech->submit_form_ok({ with_fields => {
             upload_insurance => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
             upload_rams => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
-            upload_site_drawing => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
+            upload_map => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
             upload_structural_testing_design_calc =>
                 [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
             upload_structural_testing_asset_load =>
@@ -169,7 +169,7 @@ subtest 'Banner form submission - smoke test' => sub {
         for my $field (qw(
             upload_insurance
             upload_rams
-            upload_site_drawing
+            upload_map
             upload_structural_testing_design_calc
             upload_structural_testing_asset_load
             upload_structural_testing_design_cert
