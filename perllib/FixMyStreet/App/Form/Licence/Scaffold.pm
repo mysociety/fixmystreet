@@ -10,7 +10,7 @@ sub type { 'scaffold' }
 # Human-readable name for display
 sub name { 'Scaffold' }
 
-sub next_after_contractor { 'dimensions' }
+sub next_after_applicant { 'dimensions' }
 
 # ==========================================================================
 # Introduction / Before you get started

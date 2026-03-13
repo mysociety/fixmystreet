@@ -64,13 +64,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
             email => 'test@example.com',
             phone => '01234 567890',
             phone_24h => '07911 123456',
-        }});
-
-        # Contractor page - use "same as applicant"
-        $mech->submit_form_ok({ with_fields => {
-            contractor_same_as_applicant => 1,
             contractor_nasc_member => 'Yes',
-            contractor_authorised => 1,
         }});
 
         # Dimensions page
@@ -137,6 +131,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
         $mech->content_contains('1S1H8a', 'Correct payment link');
         $mech->submit_form_ok({ with_fields => {
             payment_transaction_id => 'TEST-TRANSACTION-12345',
+            payment_amount => '123.45',
         }});
 
         # Summary page - check it rendered

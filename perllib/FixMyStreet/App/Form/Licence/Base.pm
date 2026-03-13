@@ -213,14 +213,34 @@ has_page applicant => (
         'email',
         'phone',
         'phone_24h',
+        'contractor_nasc_member',
         'continue'
     ],
+    field_ignore_list => sub {
+        my $page = shift;
+        my $form = $page->form;
+        my $type = $form->type;
+        return [] if $type eq 'scaffold';
+        return ['contractor_nasc_member'];
+    },
     title => 'Applicant details',
     intro => 'applicant.html',
     next => sub { $_[2]->next_after_applicant }
 );
 
 sub next_after_applicant { 'contractor' }
+
+# For Scaffold only, ignored by others
+has_field contractor_nasc_member => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'Are you a member of a regulated scaffolding association, such as NASC?',
+    required => 1,
+    options => [
+        { label => 'Yes', value => 'Yes' },
+        { label => 'No', value => 'No' },
+    ],
+);
 
 # ==========================================================================
 # About You (Principal Contractor)
@@ -235,17 +255,8 @@ has_page contractor => (
         'contractor_email',
         'contractor_phone',
         'contractor_phone_24h',
-        'contractor_nasc_member',
-        'contractor_authorised',
         'continue'
     ],
-    field_ignore_list => sub {
-        my $page = shift;
-        my $form = $page->form;
-        my $type = $form->type;
-        return [] if $type eq 'scaffold';
-        return ['contractor_nasc_member'];
-    },
     title => 'Contractor details',
     next => sub { $_[2]->next_after_contractor },
     tags => {
@@ -255,31 +266,6 @@ has_page contractor => (
             return $form->next_after_applicant ne 'contractor';
         },
     },
-);
-
-# "Scaffold contractor" on scaffold, or is this okay?
-has_field contractor_authorised => (
-    type => 'Checkbox',
-    label => '',
-    option_label => 'I confirm that I am authorised on behalf of the principal contractor named in this application and have been granted full written authority to submit this application on their behalf. I further confirm that all liabilities, insurance requirements, safety obligations, and statutory responsibilities remain with the principal contractor, and that all information supplied has been provided with their consent.',
-    validate_method => sub {
-        my $self = shift;
-        my $same = $self->form->field('contractor_same_as_applicant')->value;
-        $self->add_error('Please confirm') if !$self->value && !$same;
-    },
-    tags => { hide => sub { $_[0]->form->saved_data->{contractor_same_as_applicant} } },
-);
-
-# For Scaffold only, ignored by others
-has_field contractor_nasc_member => (
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'Is the scaffold contractor a member of a regulated scaffolding association, such as NASC?',
-    required => 1,
-    options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
-    ],
 );
 
 =head2 Payment/summary/done
@@ -294,6 +280,7 @@ These are shared for all the forms.
 has_page payment => (
     fields => [
         'payment_transaction_id',
+        'payment_amount',
         'continue'
     ],
     title => 'Payment',
@@ -304,6 +291,11 @@ has_page payment => (
 has_field payment_transaction_id => (
     type => 'Text',
     label => 'Transaction ID',
+);
+
+has_field payment_amount => (
+    type => 'Text',
+    label => 'Amount paid',
 );
 
 sub payment_link { 'LINK' }

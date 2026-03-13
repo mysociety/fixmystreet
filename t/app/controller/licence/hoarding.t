@@ -65,7 +65,6 @@ subtest 'Hoarding form submission - smoke test' => sub {
         # Contractor page - use "same as applicant"
         $mech->submit_form_ok({ with_fields => {
             contractor_same_as_applicant => 1,
-            contractor_authorised => 1,
         }});
 
         # Dimensions page
