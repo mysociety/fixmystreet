@@ -224,7 +224,7 @@ has_field site_scaffolding => (
     label => 'Will any scaffolding be erected within the hoarding?',
     required => 1,
     tags => {
-        hint => FixMyStreet::Template::SafeString->new('If the answer is ‘yes’ there will also be a requirement for a <a href="/licence/scaffold" target="_blank">separate scaffolding application</a>'),
+        hint => FixMyStreet::Template::SafeString->new('If the answer is ‘yes’ a separate <a href="/licence/scaffold" target="_blank">scaffolding application</a> will also be required'),
     },
     options => [
         { label => 'Yes', value => 'Yes' },

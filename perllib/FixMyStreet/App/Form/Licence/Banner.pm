@@ -271,7 +271,7 @@ has_page uploads => (
     fields => [
         'upload_insurance',
         'upload_rams',
-        'upload_site_drawing',
+        'upload_map',
         'upload_structural_testing_design_calc',
         'upload_structural_testing_asset_load',
         'upload_structural_testing_design_cert',
@@ -285,7 +285,7 @@ has_page uploads => (
         my $fields = {};
         $form->handle_upload('upload_insurance', $fields);
         $form->handle_upload('upload_rams', $fields);
-        $form->handle_upload('upload_site_drawing', $fields);
+        $form->handle_upload('upload_map', $fields);
         $form->handle_upload('upload_structural_testing_design_calc', $fields);
         $form->handle_upload('upload_structural_testing_asset_load', $fields);
         $form->handle_upload('upload_structural_testing_design_cert', $fields);
@@ -295,7 +295,7 @@ has_page uploads => (
         my ($form) = @_;
         $form->process_upload('upload_insurance');
         $form->process_upload('upload_rams');
-        $form->process_upload('upload_site_drawing');
+        $form->process_upload('upload_map');
         $form->process_upload('upload_structural_testing_design_calc');
         $form->process_upload('upload_structural_testing_asset_load');
         $form->process_upload('upload_structural_testing_design_cert');
@@ -321,11 +321,11 @@ has_field upload_rams => (
     },
 );
 
-has_field upload_site_drawing => (
+has_field upload_map => (
     type => 'FileIdUpload',
-    label => 'Site drawing',
+    label => 'Map showing the location of the each of the banners',
     messages => {
-        upload_file_not_found => 'Please upload a site drawing',
+        upload_file_not_found => 'Please upload a map',
     },
 );
 
