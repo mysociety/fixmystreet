@@ -4,7 +4,7 @@ use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Licence::Base';
 use utf8;
 
-# Type identifier used in URL: /licence/column-attachements
+# Type identifier used in URL: /licence/column-attachments
 sub type { 'column-attachments' }
 
 # Human-readable name for display
@@ -19,7 +19,7 @@ sub next_after_contractor { 'activity' }
 # ==========================================================================
 has_page intro => (
     fields => ['start'],
-    title => 'Column Attachements Licence Application',
+    title => 'Column Attachments Licence Application',
     intro => 'column-attachments/intro.html',
     next => 'location',
 );
@@ -127,7 +127,7 @@ has_field footway_headroom => (
 has_page site_carriageway_distance => (
     fields => ['carriageway_incursion', 'carriageway_headroom', 'continue'],
     title => 'Carriageway impact',
-    next => 'street_furniture',
+    next => 'site_infrastructure',
 );
 
 has_field carriageway_incursion => (
@@ -152,9 +152,9 @@ has_field carriageway_headroom => (
     ],
 );
 
-has_page 'street_furniture' => (
+has_page 'site_infrastructure' => (
     fields => ['site_near_junction', 'site_obstruct_infrastructure', 'continue'],
-    title => 'Street furniture proximity',
+    title => 'Street infrastructure',
     next => 'have_you_considered',
 );
 
@@ -215,11 +215,8 @@ has_page uploads => (
     fields => [
         'upload_insurance',
         'upload_rams',
-        'upload_site_drawing',
-        'upload_technical_report',
-        'upload_design_calculation',
-        'upload_load_testing',
-        'upload_check_certificate',
+        'upload_map',
+        'upload_structural_testing',
         'continue'
     ],
     title => 'Upload required documents',
@@ -230,22 +227,16 @@ has_page uploads => (
         my $fields = {};
         $form->handle_upload('upload_insurance', $fields);
         $form->handle_upload('upload_rams', $fields);
-        $form->handle_upload('upload_site_drawing', $fields);
-        $form->handle_upload('upload_technical_report', $fields);
-        $form->handle_upload('upload_design_calculation', $fields);
-        $form->handle_upload('upload_load_testing', $fields);
-        $form->handle_upload('upload_check_certificate', $fields);
+        $form->handle_upload('upload_map', $fields);
+        $form->handle_upload('upload_structural_testing', $fields);
         return $fields;
     },
     post_process => sub {
         my ($form) = @_;
         $form->process_upload('upload_insurance');
         $form->process_upload('upload_rams');
-        $form->process_upload('upload_site_drawing');
-        $form->process_upload('upload_technical_report');
-        $form->process_upload('upload_design_calculation');
-        $form->process_upload('upload_load_testing');
-        $form->process_upload('upload_check_certificate');
+        $form->process_upload('upload_map');
+        $form->process_upload('upload_structural_testing');
     },
 );
 
@@ -268,45 +259,22 @@ has_field upload_rams => (
     },
 );
 
-has_field upload_site_drawing => (
+has_field upload_map => (
     type => 'FileIdUpload',
-    label => 'Site drawing',
+    label => 'Map showing the location of each of the column attachments',
     messages => {
-        upload_file_not_found => 'Please upload a site drawing',
+        upload_file_not_found => 'Please upload a map',
     },
 );
 
-has_field upload_technical_report => (
+has_field upload_structural_testing => (
     type => 'FileIdUpload',
-    label => 'Technical Note / report on the design',
+    label => 'Structural testing',
     messages => {
-        upload_file_not_found => 'Please upload a technical report',
+        upload_file_not_found => 'Please upload a structural testing document',
     },
 );
 
-has_field upload_design_calculation => (
-    type => 'FileIdUpload',
-    label => 'Design Calculations - In accordance with CD354 Design of minor structures',
-    messages => {
-        upload_file_not_found => 'Please upload a design calculation',
-    },
-);
-
-has_field upload_load_testing => (
-    type => 'FileIdUpload',
-    label => 'Asset load Testing onsite aligned with design calculations and BS EN40',
-    messages => {
-        upload_file_not_found => 'Please upload a load testing document',
-    },
-);
-
-has_field upload_check_certificate => (
-    type => 'FileIdUpload',
-    label => 'Design and Check Certificate - In accordance with Appendix J of CG 300',
-    messages => {
-        upload_file_not_found => 'Please upload a design and check certificate',
-    },
-);
 
 __PACKAGE__->meta->make_immutable;
 
