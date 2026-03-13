@@ -10,6 +10,8 @@ sub type { 'temporary-traffic-signs' }
 # Human-readable name for display
 sub name { 'Temporary Traffic Signs' }
 
+sub tandc_link { 'https://content.tfl.gov.uk/temporary-traffic-signs-guidance-notes-and-terms-conditions.pdf' }
+
 sub next_after_applicant { 'activity' }
 
 # ==========================================================================

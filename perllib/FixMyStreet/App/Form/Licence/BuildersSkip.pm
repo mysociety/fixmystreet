@@ -10,6 +10,8 @@ sub type { 'builders-skip' }
 # Human-readable name for display
 sub name { 'Builder’s skip' }
 
+sub tandc_link { 'https://content.tfl.gov.uk/builders-skip-guidance-notes-and-terms-conditions.pdf' }
+
 sub next_after_applicant { 'activity' }
 
 # ==========================================================================

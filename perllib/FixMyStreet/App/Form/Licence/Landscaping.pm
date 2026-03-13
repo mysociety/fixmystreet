@@ -10,6 +10,8 @@ sub type { 'landscaping' }
 # Human-readable name for display
 sub name { 'Landscaping/Planting' }
 
+sub tandc_link { 'https://content.tfl.gov.uk/landscaping-planting-guidance-notes-and-terms-conditions.pdf' }
+
 sub next_after_contractor { 'activity' }
 
 # ==========================================================================

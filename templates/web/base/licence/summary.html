@@ -31,7 +31,7 @@
         </dd>
       </div>
       [% FOR field IN page.fields %]
-      [% NEXT IF field.hide %]
+      [% NEXT IF field.hide OR field.name == 'confirmation' %]
         <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% field.desc %]</dt>
             <dd class="govuk-summary-list__value">[% field.pretty | html %]</dd>

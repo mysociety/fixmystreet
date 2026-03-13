@@ -10,6 +10,8 @@ sub type { 'column-attachments' }
 # Human-readable name for display
 sub name { 'Column Attachments' }
 
+sub tandc_link { 'https://content.tfl.gov.uk/column-attachments-guidance-notes-and-terms-conditions.pdf' }
+
 sub next_after_contractor { 'activity' }
 
 # ==========================================================================

@@ -10,6 +10,8 @@ sub type { 'statues-artworks' }
 # Human-readable name for display
 sub name { 'Statues/Artworks' }
 
+sub tandc_link { 'https://content.tfl.gov.uk/statues-artworks-guidance-notes-and-terms-conditions.pdf' }
+
 sub next_after_contractor { 'activity' }
 
 # ==========================================================================

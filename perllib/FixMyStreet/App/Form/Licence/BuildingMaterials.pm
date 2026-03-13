@@ -10,6 +10,8 @@ sub type { 'building-materials' }
 # Human-readable name for display
 sub name { 'Building materials' }
 
+sub tandc_link { 'https://content.tfl.gov.uk/building-materials-guidance-notes-and-terms-conditions.pdf' }
+
 sub next_after_contractor { 'activity' }
 
 # ==========================================================================

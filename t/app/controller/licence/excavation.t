@@ -96,9 +96,9 @@ subtest 'Excavation form submission - smoke test' => sub {
         }});
 
         $mech->form_with_fields('terms_accepted');
-        $mech->current_form->find_input('terms_accepted', undef, 1)->value('Applicant');
-        $mech->current_form->find_input('terms_accepted', undef, 2)->value('Highway licensing policy');
-        $mech->current_form->find_input('terms_accepted', undef, 3)->value('Standard conditions');
+        $mech->current_form->find_input('terms_accepted', undef, 1)->value('Excavation terms and conditions');
+        $mech->current_form->find_input('terms_accepted', undef, 2)->value('Highway licensing and other consents policy');
+        $mech->current_form->find_input('terms_accepted', undef, 3)->value('Standard conditions for highway consents');
         $mech->submit_form_ok;
 
         # Uploads page

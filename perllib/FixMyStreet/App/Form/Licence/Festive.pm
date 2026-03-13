@@ -10,6 +10,8 @@ sub type { 'festive' }
 # Human-readable name for display
 sub name { 'Festive Decorations' }
 
+sub tandc_link { 'https://content.tfl.gov.uk/festive-decorations-guidance-notes-and-terms-conditions.pdf' }
+
 sub next_after_contractor { 'activity' }
 
 # ==========================================================================

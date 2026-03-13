@@ -10,6 +10,8 @@ sub type { 'scaffold' }
 # Human-readable name for display
 sub name { 'Scaffold' }
 
+sub tandc_link { 'https://content.tfl.gov.uk/scaffold-guidance-notes-and-terms-conditions.pdf' }
+
 sub next_after_applicant { 'dimensions' }
 
 # ==========================================================================

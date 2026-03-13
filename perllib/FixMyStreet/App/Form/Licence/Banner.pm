@@ -10,6 +10,8 @@ sub type { 'banner' }
 # Human-readable name for display
 sub name { 'Banner' }
 
+sub tandc_link { 'https://content.tfl.gov.uk/banners-guidance-notes-and-terms-conditions.pdf' }
+
 sub next_after_contractor { 'type' }
 
 # ==========================================================================

@@ -10,6 +10,8 @@ sub type { 'lights-in-trees' }
 # Human-readable name for display
 sub name { 'Lights in Trees' }
 
+sub tandc_link { 'https://content.tfl.gov.uk/lights-in-trees-guidance-notes-and-terms-conditions.pdf' }
+
 sub next_after_contractor { 'installation' }
 
 # ==========================================================================

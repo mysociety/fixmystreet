@@ -10,6 +10,8 @@ sub type { 'hoarding' }
 # Human-readable name for display
 sub name { 'Hoarding' }
 
+sub tandc_link { 'https://content.tfl.gov.uk/hoarding-guidance-notes-and-terms-conditions.pdf' }
+
 sub next_after_contractor { 'dimensions' }
 
 # ==========================================================================

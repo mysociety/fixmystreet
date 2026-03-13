@@ -12,6 +12,8 @@ sub type { 'mobile-apparatus' }
 # Human-readable name for display
 sub name { 'Mobile apparatus' }
 
+sub tandc_link { 'https://content.tfl.gov.uk/mobile-apparatus-guidance-notes-and-terms-conditions.pdf' }
+
 sub next_after_contractor { 'details' }
 
 # ==========================================================================
