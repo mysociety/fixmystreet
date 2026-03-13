@@ -3,6 +3,7 @@ use FixMyStreet::Script::Reports;
 use FixMyStreet::Script::CSVExport;
 use FixMyStreet::Script::UK::AutoClose;
 use File::Temp 'tempdir';
+use LWP::Protocol::PSGI;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -30,6 +31,7 @@ FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'surrey' ],
     MAPIT_URL => 'http://mapit.uk/',
     PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR }, # ensure cached CSVs are tidied
+    STAGING_FLAGS => { send_reports => 1 },
     COBRAND_FEATURES => {
         anonymous_account => {
             surrey => 'anonymous',
@@ -130,6 +132,42 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { category => 'Potholes', title => 'Potholes contact me me@me.co.uk', detail => 'On main road', name => 'Bob Betts', username_register => 'user@example.org' } });
         $mech->content_contains("<p class='form-error'>Please remove any email addresses and other personal information from your report", "Report title with email gives error");
         $mech->clear_emails_ok;
+    };
+
+    subtest 'GIS failure causes report sending to be deferred' => sub {
+        $surrey->update({ send_method => 'Open311', endpoint => 'http://endpoint.example.com', jurisdiction => 'surrey', api_key => 'test' });
+
+        my ($report) = $mech->create_problems_for_body(1, $surrey->id, 'Pothole problem', {
+            category => 'Potholes', cobrand => 'surrey',
+            latitude => 51.293415, longitude => -0.441269, areas => '2242',
+        });
+
+        my $mock_gis = LWP::Protocol::PSGI->register(sub {
+            return [503, ['Content-Type' => 'text/plain'], ['Service Unavailable']];
+        }, host => 'tilma.mysociety.org');
+
+        FixMyStreet::Script::Reports::send();
+
+        $report->discard_changes;
+        ok !$report->whensent, 'Report was not marked as sent';
+        like $report->send_fail_reason, qr/GIS service unavailable/, 'Report has GIS deferral reason';
+    };
+
+    subtest 'GIS returning empty features does not defer report' => sub {
+        my ($report) = $mech->create_problems_for_body(1, $surrey->id, 'Pothole problem', {
+            category => 'Potholes', cobrand => 'surrey',
+            latitude => 51.293415, longitude => -0.441269, areas => '2242',
+        });
+
+        my $mock_gis = LWP::Protocol::PSGI->register(sub {
+            return [200, ['Content-Type' => 'application/json'], ['{"type":"FeatureCollection","features":[]}']];
+        }, host => 'tilma.mysociety.org');
+
+        FixMyStreet::Script::Reports::send();
+
+        $report->discard_changes;
+        ok $report->whensent, 'Report was sent when GIS returns empty features';
+        unlike $report->send_fail_reason // '', qr/GIS service unavailable/, 'Report was not deferred due to GIS';
     };
 
     subtest 'Auto-close Parking enforcement reports after 5 days' => sub {

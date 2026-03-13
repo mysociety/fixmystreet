@@ -363,6 +363,8 @@ sub default_map_zoom { 3 }
 sub open311_pre_send {
     my ($self, $row, $open311) = @_;
 
+    return 'DEFER:GIS service unavailable' if $self->{_fetch_features_failed};
+
     # Surrey want the value *and* the field label to be passed to their API,
     # so we do a slightly horrid thing and encode those two values into a JSON
     # object which we pass as the extra field value over Open311.
