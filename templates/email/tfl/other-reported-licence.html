@@ -1,0 +1,46 @@
+[%
+PROCESS '_email_settings.html';
+email_footer = "";
+email_columns = 1;
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% only_column_style %]">
+    <h1 style="[% h1_style %]">New [% report.category %] application received</h1>
+
+    <p style="[% p_style %]">Your application for a [% report.category %] is now under review by Transport for London.
+    If we find that the payment amount is incorrect or any required supporting documents are missing, we will contact you.</p>
+
+    <p style="[% p_style %]">
+    Please note that it may take up to four weeks for us to issue you your licence. Your application will progress through the following stages:
+    </p>
+
+    <ul>
+        <li>
+            <p style="[% p_style %]"><strong>Initial Review (up to 5 working days)</strong></p>
+            <p style="[% p_style %]">The Licensing Team checks your application and documentation.</p>
+        </li>
+        <li>
+            <p style="[% p_style %]"><strong>Proposal Assessment (up to 10 working days)</strong></p>
+            <p style="[% p_style %]">An Asset Operations Officer reviews the proposals.</p>
+        </li>
+        <li>
+            <p style="[% p_style %]"><strong>Road Space Permit (up to 5 working days)</strong></p>
+            <p style="[% p_style %]">A road space permit is arranged for the works. Once the road space permit is granted, your licence will be issued.</p>
+        </li>
+    </ul>
+
+    <p style="[% p_style %]">
+        This [% report.category %] application reference number is FMS[% report.id %].
+        Until you have received your TfL licence reference please quote this reference if you need to contact us about this application.
+    </p>
+
+    <h2 style="[% h2_style %]">Application details</h2>
+
+    [% report.detail | html_para_email(p_style) %]
+
+</th>
+
+[% INCLUDE '_email_bottom.html' %]

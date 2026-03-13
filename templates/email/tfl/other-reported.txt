@@ -1,4 +1,11 @@
-Subject: Your report has been logged: [% report.title %]
+[%
+IF report.cobrand_data == 'licence';
+    SET subject = 'FMS' _ report.id _ ' ' _ report.category _ ' application received';
+ELSE;
+    SET subject = 'Your report has been logged: ' _ report.title;
+END
+~%]
+Subject: [% subject %]
 
 Hello [% report.name %],
 

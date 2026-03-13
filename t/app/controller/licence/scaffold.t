@@ -216,7 +216,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
                 push @email_parts, [ { $part->header_pairs }, $part->body ];
             });
             like $email_parts[0][0]{'Content-Type'}, qr{multipart/related};
-            is $email_parts[0][0]{'Subject'}, 'Your report has been logged: Scaffold licence';
+            is $email_parts[0][0]{'Subject'}, 'FMS' . $problem->id . ' Scaffold licence application received';
             is $email_parts[0][0]{'To'}, 'test@example.com';
             like $email_parts[1][0]{'Content-Type'}, qr{multipart/alternative};
             like $email_parts[2][0]{'Content-Type'}, qr{text/plain};
