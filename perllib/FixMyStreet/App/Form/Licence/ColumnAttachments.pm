@@ -49,6 +49,7 @@ has_page location_2 => (
     title => 'Location of the Column Attachments (2)',
     intro => 'location.html',
     next => sub { $_[1]->{add_another} ? 'location_3' : 'dates' },
+    tags => { hide => sub { !$_[0]->form->saved_data->{building_name_number_2} } },
 );
 has_field building_name_number_2 => ( type => 'Text', label => 'Building name / number', required => 1 );
 has_field street_name_2 => ( type => 'Text', label => 'Street name', required => 1 );
@@ -60,6 +61,7 @@ has_page location_3 => (
     title => 'Location of the Column Attachments (3)',
     intro => 'location.html',
     next => sub { $_[1]->{add_another} ? 'location_4' : 'dates' },
+    tags => { hide => sub { !$_[0]->form->saved_data->{building_name_number_3} } },
 );
 has_field building_name_number_3 => ( type => 'Text', label => 'Building name / number', required => 1 );
 has_field street_name_3 => ( type => 'Text', label => 'Street name', required => 1 );
@@ -71,6 +73,7 @@ has_page location_4 => (
     title => 'Location of the Column Attachments (4)',
     intro => 'location.html',
     next => sub { $_[1]->{add_another} ? 'location_5' : 'dates' },
+    tags => { hide => sub { !$_[0]->form->saved_data->{building_name_number_4} } },
 );
 has_field building_name_number_4 => ( type => 'Text', label => 'Building name / number', required => 1 );
 has_field street_name_4 => ( type => 'Text', label => 'Street name', required => 1 );
@@ -82,6 +85,7 @@ has_page location_5 => (
     title => 'Location of the Column Attachments (5)',
     intro => 'location.html',
     next => 'dates',
+    tags => { hide => sub { !$_[0]->form->saved_data->{building_name_number_5} } },
 );
 has_field building_name_number_5 => ( type => 'Text', label => 'Building name / number', required => 1 );
 has_field street_name_5 => ( type => 'Text', label => 'Street name', required => 1 );
