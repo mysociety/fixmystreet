@@ -275,9 +275,7 @@ my $upload_fields = [
     'insurance_validity',
     'upload_rams',
     'upload_map',
-    'upload_structural_testing_design_calc',
-    'upload_structural_testing_asset_load',
-    'upload_structural_testing_design_cert',
+    'upload_structural_testing',
     'continue'
 ];
 has_page uploads => (
@@ -311,30 +309,11 @@ has_field upload_map => (
     },
 );
 
-has_field upload_structural_testing_design_calc => (
+has_field upload_structural_testing => (
     type => 'FileIdUpload',
-    label => 'Structural testing: design calculations',
-    tags => { hint => 'In accordance with CD354 Design of minor structures' },
+    label => 'Structural testing',
     messages => {
-        upload_file_not_found => 'Please upload documentation for structural testing: design calculations',
-    },
-);
-
-has_field upload_structural_testing_asset_load => (
-    type => 'FileIdUpload',
-    label => 'Structural testing: Asset load Testing onsite',
-    tags => { hint => 'Aligned with design calculations and BS EN4' },
-    messages => {
-        upload_file_not_found => 'Please upload documentation for structural testing: Asset load Testing onsite',
-    },
-);
-
-has_field upload_structural_testing_design_cert => (
-    type => 'FileIdUpload',
-    label => 'Structural testing: Design and Check Certificate',
-    tags => { hint => 'In accordance with Appendix J of CG 300' },
-    messages => {
-        upload_file_not_found => 'Please upload documentation for structural testing: Design and Check Certificate',
+        upload_file_not_found => 'Please upload a structural testing document',
     },
 );
 
