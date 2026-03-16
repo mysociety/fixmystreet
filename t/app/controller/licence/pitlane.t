@@ -78,6 +78,8 @@ subtest 'Pit lane form submission - smoke test' => sub {
         $mech->submit_form_ok({ with_fields => {
             activity => 'Unloading',
             pit_lane_directly => 'Because',
+            sensitive_times => 'Yes',
+            traffic_holds => 'No',
         }});
 
         # Site specific pages (one question per page)
@@ -89,14 +91,20 @@ subtest 'Pit lane form submission - smoke test' => sub {
             carriageway_incursion => 'No carriageway incursion',
             site_within_450mm => 'No'
         }});
+
         $mech->submit_form_ok({ with_fields => {
             highway_works => 'No',
-            section_278 => 'No',
+            section_278 => 'Yes',
         }});
+        $mech->content_contains('Please provide a reference');
+        $mech->submit_form_ok({ with_fields => {
+            highway_works => 'No',
+            section_278 => 'Yes',
+            reference_section_278 => '123456',
+        }});
+
         $mech->submit_form_ok({ with_fields => {
             site_obstruct_infrastructure => 'No',
-            sensitive_times => 'Yes',
-            traffic_holds => 'No',
         }});
 
         $mech->content_contains('tfl.gov.uk/modes/buses');
@@ -168,6 +176,8 @@ subtest 'Pit lane form submission - smoke test' => sub {
         # "Contact name" is unique to contractor section (applicant uses "Full name")
         $mech->content_lacks('Contact name', 'Contractor fields hidden when same as applicant');
 
+        $mech->content_contains('123456', 'section 278 ref');
+
         # Summary page - submit
         $mech->submit_form_ok({ with_fields => { confirmation => 1 } });
 
@@ -189,6 +199,7 @@ subtest 'Pit lane form submission - smoke test' => sub {
         my $detail = $problem->detail;
         like $detail, qr/\[Location of Pit Lane\]/, 'Detail contains Location section header';
         like $detail, qr/\[Applicant details\]/, 'Detail contains Applicant section header';
+        like $detail, qr/123456/, 'Detail has section 278 ref';
         like $detail, qr/\n\n/, 'Detail has blank lines between sections';
         unlike $detail, qr/Contact name:/, 'Contractor contact name hidden when same as applicant';
 

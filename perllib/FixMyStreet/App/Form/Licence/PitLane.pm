@@ -72,7 +72,7 @@ has_field proposed_end_time => (
 # Pit lane activity
 # ==========================================================================
 has_page activity => (
-    fields => ['activity', 'pit_lane_directly', 'continue'],
+    fields => ['activity', 'pit_lane_directly', 'sensitive_times', 'traffic_holds', 'continue'],
     title => 'Purpose of the pit lane',
     next => 'site_pedestrian_space',
 );
@@ -95,6 +95,30 @@ has_field pit_lane_directly => (
     tags => {
         hint => 'Note, there is a presumption against granting consent to pit lanes on London’s Red Routes; the preferred means of delivery of materials is directly into the construction site',
     },
+);
+
+has_field sensitive_times => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'Will the Pit Lane occupy the highway during traffic sensitive times?',
+    tags => { hint => 'If yes, a site meeting between the applicant and TfL may be required.' },
+    required => 1,
+    options => [
+        { label => 'Yes', value => 'Yes' },
+        { label => 'No', value => 'No' },
+    ],
+);
+
+has_field traffic_holds => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'Will any temporary traffic holds be required during deliveries?',
+    tags => { hint => 'If yes, a site meeting between the applicant and TfL may be required.' },
+    required => 1,
+    options => [
+        { label => 'Yes', value => 'Yes' },
+        { label => 'No', value => 'No' },
+    ],
 );
 
 # ==========================================================================
@@ -158,7 +182,7 @@ has_field site_within_450mm => (
 
 # ==========================================================================
 has_page works => (
-    fields => ['highway_works', 'section_278', 'continue'],
+    fields => ['highway_works', 'section_278', 'reference_section_278', 'continue'],
     title => 'Highway works',
     next => 'site_infrastructure',
 );
@@ -185,9 +209,16 @@ has_field section_278 => (
     ],
 );
 
+has_field reference_section_278 => (
+    type => 'Text',
+    label => 'Reference',
+    required_when => { section_278 => 'Yes' },
+    messages => { required => 'Please provide a reference for the Section 278 Agreement' },
+);
+
 # ==========================================================================
 has_page site_infrastructure => (
-    fields => ['site_obstruct_infrastructure', 'sensitive_times', 'traffic_holds', 'continue'],
+    fields => ['site_obstruct_infrastructure', 'continue'],
     title => 'Street infrastructure',
     next => 'pre_application',
 );
@@ -196,30 +227,6 @@ has_field site_obstruct_infrastructure => (
     type => 'Select',
     widget => 'RadioGroup',
     label => 'Will the pit lane obstruct or obscure any of the following: traffic signals, signal controllers, bus stops, pedestrian crossings, junction sight lines, road lighting columns, traffic signs, parking bays, ironwork in the highway, or other street furniture?',
-    tags => { hint => 'If yes, a site meeting between the applicant and TfL may be required.' },
-    required => 1,
-    options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
-    ],
-);
-
-has_field sensitive_times => (
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'Will the Pit Lane occupy the highway during traffic sensitive times?',
-    tags => { hint => 'If yes, a site meeting between the applicant and TfL may be required.' },
-    required => 1,
-    options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
-    ],
-);
-
-has_field traffic_holds => (
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'Will any temporary traffic holds be required during deliveries?',
     tags => { hint => 'If yes, a site meeting between the applicant and TfL may be required.' },
     required => 1,
     options => [
