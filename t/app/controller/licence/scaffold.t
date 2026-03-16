@@ -75,12 +75,6 @@ subtest 'Scaffold form submission - smoke test' => sub {
             scaffold_width => '2',
         }});
 
-        # Scaffold type page
-        $mech->submit_form_ok({ with_fields => {
-            scaffold_type => 'Scaffold',
-            scaffold_configured => 'Independent',
-        }});
-
         # Activity page
         $mech->submit_form_ok({ with_fields => {
             activity => 'Building repair',
@@ -105,6 +99,12 @@ subtest 'Scaffold form submission - smoke test' => sub {
             site_foundations_surveyed => 'Yes',
         }});
         $mech->submit_form_ok({ with_fields => { site_hoarding_attached => 'No' }});
+
+        # Scaffold type page
+        $mech->submit_form_ok({ with_fields => {
+            scaffold_type => 'Scaffold',
+            scaffold_configured => 'Independent',
+        }});
 
         # Have you considered page
         $mech->submit_form_ok({ with_fields => {
