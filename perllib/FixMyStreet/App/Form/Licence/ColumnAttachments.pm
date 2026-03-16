@@ -21,7 +21,7 @@ has_page intro => (
     fields => ['start'],
     title => 'Column Attachments Licence Application',
     intro => 'column-attachments/intro.html',
-    next => 'location',
+    next => 'location_1',
 );
 
 has_field start => (
@@ -33,14 +33,66 @@ has_field start => (
 # ==========================================================================
 # Location (fields from Fields::Location role)
 # ==========================================================================
-has_page location => (
-    fields => ['building_name_number', 'street_name', 'borough', 'postcode', 'continue'],
+has_page location_1 => (
+    fields => ['building_name_number', 'street_name', 'borough', 'postcode', 'add_another', 'continue'],
     title => 'Location of the Column Attachments',
     intro => 'location.html',
-    next => 'dates',
+    next => sub { $_[1]->{add_another} ? 'location_2' : 'dates' },
     post_process => sub {
         my $form = shift;
         $form->post_process_location;
+    },
+);
+
+has_page location_2 => (
+    fields => ['building_name_number_2', 'street_name_2', 'borough_2', 'postcode_2', 'add_another', 'continue'],
+    title => 'Location of the Column Attachments (2)',
+    intro => 'location.html',
+    next => sub { $_[1]->{add_another} ? 'location_3' : 'dates' },
+);
+has_field building_name_number_2 => ( type => 'Text', label => 'Building name / number', required => 1 );
+has_field street_name_2 => ( type => 'Text', label => 'Street name', required => 1 );
+has_field borough_2 => ( type => 'Text', label => 'Borough', required => 1 );
+has_field postcode_2 => ( type => 'Text', label => 'Postcode', required => 1 );
+
+has_page location_3 => (
+    fields => ['building_name_number_3', 'street_name_3', 'borough_3', 'postcode_3', 'add_another', 'continue'],
+    title => 'Location of the Column Attachments (3)',
+    intro => 'location.html',
+    next => sub { $_[1]->{add_another} ? 'location_4' : 'dates' },
+);
+has_field building_name_number_3 => ( type => 'Text', label => 'Building name / number', required => 1 );
+has_field street_name_3 => ( type => 'Text', label => 'Street name', required => 1 );
+has_field borough_3 => ( type => 'Text', label => 'Borough', required => 1 );
+has_field postcode_3 => ( type => 'Text', label => 'Postcode', required => 1 );
+
+has_page location_4 => (
+    fields => ['building_name_number_4', 'street_name_4', 'borough_4', 'postcode_4', 'add_another', 'continue'],
+    title => 'Location of the Column Attachments (4)',
+    intro => 'location.html',
+    next => sub { $_[1]->{add_another} ? 'location_5' : 'dates' },
+);
+has_field building_name_number_4 => ( type => 'Text', label => 'Building name / number', required => 1 );
+has_field street_name_4 => ( type => 'Text', label => 'Street name', required => 1 );
+has_field borough_4 => ( type => 'Text', label => 'Borough', required => 1 );
+has_field postcode_4 => ( type => 'Text', label => 'Postcode', required => 1 );
+
+has_page location_5 => (
+    fields => ['building_name_number_5', 'street_name_5', 'borough_5', 'postcode_5', 'continue'],
+    title => 'Location of the Column Attachments (5)',
+    intro => 'location.html',
+    next => 'dates',
+);
+has_field building_name_number_5 => ( type => 'Text', label => 'Building name / number', required => 1 );
+has_field street_name_5 => ( type => 'Text', label => 'Street name', required => 1 );
+has_field borough_5 => ( type => 'Text', label => 'Borough', required => 1 );
+has_field postcode_5 => ( type => 'Text', label => 'Postcode', required => 1 );
+
+has_field 'add_another' => (
+    type => 'Submit',
+    value => 'Add another',
+    element_attr => {
+        class => 'govuk-button govuk-button--secondary',
     },
 );
 
@@ -205,7 +257,7 @@ has_page terms => (
         'terms_accepted',
         'continue'
     ],
-    title => 'Terms and conditions',
+    title => 'Terms and conditions confirmation',
     next => 'uploads',
 );
 

@@ -296,7 +296,7 @@ has_page terms => (
         'terms_accepted',
         'continue'
     ],
-    title => 'Terms and conditions',
+    title => 'Terms and conditions confirmation',
     next => 'uploads',
 );
 

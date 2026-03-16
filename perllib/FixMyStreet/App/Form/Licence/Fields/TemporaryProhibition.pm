@@ -88,7 +88,7 @@ has_field terms_accepted => (
     type => 'Multiple',
     widget => 'CheckboxGroup',
     label => 'Confirmation',
-    tags => { hint => 'I confirm that I have read and understood the documents listed below and agree to comply with all requirements set out within them.' },
+    tags => { hint => 'I confirm that I have read and agree to comply with all requirements set out within the documents listed below' },
     required => 1,
     validate_method => sub {
         my $self = shift;
