@@ -50,6 +50,7 @@ subtest 'Festive form submission - smoke test' => sub {
             'proposed_start_date.day' => $start_date->day,
             'proposed_start_date.month' => $start_date->month,
             'proposed_start_date.year' => $start_date->year,
+            proposed_working_times => '9-5',
             'proposed_duration' => 4,
         }});
 

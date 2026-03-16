@@ -90,6 +90,7 @@ subtest 'Date validation' => sub {
             'proposed_start_date.day' => $too_soon->day,
             'proposed_start_date.month' => $too_soon->month,
             'proposed_start_date.year' => $too_soon->year,
+            proposed_working_times => '9-5',
             proposed_duration => 4,
         }});
         $mech->content_contains('Start date must be at least 4 weeks from today',
@@ -100,6 +101,7 @@ subtest 'Date validation' => sub {
             'proposed_start_date.day' => $valid_start->day,
             'proposed_start_date.month' => $valid_start->month,
             'proposed_start_date.year' => $valid_start->year,
+            proposed_working_times => '9-5',
             proposed_duration => 54,
         }});
         $mech->content_contains('is not a valid value',
@@ -110,6 +112,7 @@ subtest 'Date validation' => sub {
             'proposed_start_date.day' => $valid_end->day,
             'proposed_start_date.month' => $valid_end->month,
             'proposed_start_date.year' => $valid_end->year,
+            proposed_working_times => '9-5',
             'proposed_duration' => -4,
         }});
         $mech->content_contains('is not a valid value',
@@ -120,6 +123,7 @@ subtest 'Date validation' => sub {
             'proposed_start_date.day' => $valid_start->day,
             'proposed_start_date.month' => $valid_start->month,
             'proposed_start_date.year' => $valid_start->year,
+            proposed_working_times => '9-5',
             'proposed_duration' => 4,
         }});
         $mech->content_contains('Applicant details',

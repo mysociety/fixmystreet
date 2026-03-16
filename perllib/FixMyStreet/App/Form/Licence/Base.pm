@@ -72,9 +72,16 @@ Includes validation:
 =cut
 
 has_page dates => (
-    fields => ['proposed_start_date', 'proposed_duration', 'year_warning', 'continue'],
+    fields => ['proposed_start_date', 'proposed_working_times', 'proposed_duration', 'year_warning', 'continue'],
     title => 'Proposed working dates',
     intro => 'dates.html',
+    field_ignore_list => sub {
+        my $page = shift;
+        my $form = $page->form;
+        my $type = $form->type;
+        return ['proposed_working_times'] if $type eq 'pit-lane';
+        return [];
+    },
     next => sub {
         my ($data, $params, $form) = @_;
         return 'times' if $form->type eq 'pit-lane';
@@ -109,6 +116,15 @@ has_field proposed_start_date => (
             $field->add_error('Start date must be at least 4 weeks from today');
         }
     },
+);
+
+has_field proposed_working_times => (
+    type => 'Text',
+    label => 'Proposed working times',
+    tags => {
+        hint => 'This should include the time of installation and working times, if applicable',
+    },
+    required => 1,
 );
 
 has_field 'proposed_start_date.day' => ( type => 'MonthDay' );
