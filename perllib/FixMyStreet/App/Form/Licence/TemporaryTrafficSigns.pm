@@ -35,7 +35,7 @@ has_field start => (
 # ==========================================================================
 has_page location => (
     fields => ['building_name_number', 'street_name', 'borough', 'postcode', 'continue'],
-    title => 'Location of the temporary traffic sign',
+    title => 'Location of the temporary traffic signs',
     intro => 'location.html',
     next => 'dates',
     post_process => sub {

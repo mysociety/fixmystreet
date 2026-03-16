@@ -50,7 +50,7 @@ has_page location => (
 has_page dimensions => (
     fields => ['scaffold_height', 'scaffold_length', 'scaffold_width', 'continue'],
     title => 'Scaffold dimensions',
-    next => 'type',
+    next => 'activity',
 );
 
 has_field scaffold_height => (
@@ -108,7 +108,7 @@ has_page type => (
     fields => ['scaffold_type', 'scaffold_configured', 'continue'],
     title => 'Type of scaffold',
     intro => 'scaffold/type.html',
-    next => 'activity',
+    next => 'have_you_considered',
 );
 
 has_field scaffold_type => (
@@ -314,7 +314,7 @@ has_field site_foundations_surveyed => (
 has_page site_hoarding => (
     fields => ['site_hoarding_attached', 'continue'],
     title => 'Hoarding',
-    next => 'have_you_considered',
+    next => 'type',
 );
 
 has_field site_hoarding_attached => (
