@@ -342,6 +342,7 @@ has_page have_you_considered => (
         'bus_stop_suspension',
         'bus_lane_suspension',
         'road_closure_required',
+        'tcsr_website_note',
         'continue'
     ],
     title => 'Additional considerations',

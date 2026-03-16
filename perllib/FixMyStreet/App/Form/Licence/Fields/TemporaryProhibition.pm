@@ -29,18 +29,6 @@ has_field parking_dispensation => (
     tags => { hint => FixMyStreet::Template::SafeString->new('Please consider <a href="https://tfl.gov.uk/modes/driving/red-routes/dispensations" target="_blank" rel="noopener">TfL Red Route dispensations</a>') },
 );
 
-has_field parking_bay_suspension => (
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'Will a parking, loading, disabled or motorcycle parking bay need to be suspended?',
-    required => 1,
-    options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
-    ],
-    tags => { hint => 'If yes, a TCSR will be required, or a possible TTRO' },
-);
-
 has_field bus_stop_suspension => (
     type => 'Select',
     widget => 'RadioGroup',
@@ -65,6 +53,18 @@ has_field bus_lane_suspension => (
     tags => { hint => 'If yes, a TCSR will be required' },
 );
 
+has_field parking_bay_suspension => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'Will a parking, loading, disabled or motorcycle parking bay need to be suspended?',
+    required => 1,
+    options => [
+        { label => 'Yes', value => 'Yes' },
+        { label => 'No', value => 'No' },
+    ],
+    tags => { hint => 'If yes, a TCSR will be required, or a possible TTRO' },
+);
+
 has_field road_closure_required => (
     type => 'Select',
     widget => 'RadioGroup',
@@ -75,6 +75,13 @@ has_field road_closure_required => (
         { label => 'No', value => 'No' },
     ],
     tags => { hint => 'If yes, a TTRO will be required' },
+);
+
+has_field tcsr_website_note => (
+    type  => 'Notice',
+    label => '<p>Please refer to our <a href="https://tfl.gov.uk/info-for/urban-planning-and-construction/our-land-and-infrastructure/highway-licences#on-this-page-3" target="_blank" rel="noopener">website</a> on how to apply for a TCSR or TTRO.</p>',
+    required => 0,
+    widget   => 'NoRender',
 );
 
 has_field terms_accepted => (
