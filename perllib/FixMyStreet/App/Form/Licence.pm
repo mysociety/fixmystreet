@@ -55,12 +55,14 @@ sub generate_pdf {
 
     my ($rc, $next_y);
     ($rc, $next_y) = $pdf->plot_line($next_y, 'black', '<h1>' . $form->title . '</h1>');
-    ($rc, $next_y) = $pdf->plot_line($next_y, 'black', '<p>FMS' . $report->id . '</p>');
+    ($rc, $next_y) = $pdf->plot_line($next_y, 'black', '<p>Application reference: FMS' . $report->id . '</p>');
+    ($rc, $next_y) = $pdf->plot_line($next_y, 'black', '<p>Date of application: ' . $report->created->strftime('%d/%m/%Y') . '</p>');
 
     foreach my $page (@{$form->fields_for_display}) {
         next if $page->{hide};
         next if $page->{stage} eq 'intro' || $page->{stage} eq 'done';
 
+        $page->{title} = 'Applicant Declaration' if $page->{title} eq 'Application Summary';
         my $page_title = "<h2>$page->{title}</h2>";
         my ($rc, $post_title_y) = $pdf->plot_line($next_y, 'white', $page_title);
         if ($rc) {
