@@ -31,6 +31,8 @@ has title => ( is => 'ro' );
 
 has font => ( is => 'ro' );
 
+has header_image => ( is => 'rw' );
+
 has pdf => ( is => 'lazy', default => sub {
     my $pdf = PDF::Builder->new;
     $pdf->title($_[0]->title);
@@ -50,6 +52,9 @@ has pdf => ( is => 'lazy', default => sub {
             bold => FixMyStreet->path_to('web/cobrands/tfl/fonts/Johnston100-Medium.ttf')->stringify,
         }
     );
+    my $image = $pdf->image(
+        FixMyStreet->path_to('web/cobrands/tfl/images/roundel.png')->stringify);
+    $_[0]->header_image($image);
 
     return $pdf;
 } );
@@ -57,8 +62,15 @@ has pdf => ( is => 'lazy', default => sub {
 # Current page - auto creates first one on first use
 has page => ( is => 'rwp', lazy => 1, default => sub { $_[0]->pdf->page() } );
 
+has page_number => ( is => 'rw', default => 0 );
+
 # Current page's text layer - ditto
-has text => ( is => 'rwp', lazy => 1, default => sub { $_[0]->page->text() } );
+has text => ( is => 'rwp', lazy => 1, default => sub {
+    my $self = shift;
+    my $text = $self->page->text();
+    $self->page_setup($text);
+    return $text;
+} );
 
 =head2 plot_line START_Y COLOUR HTML [RECURSE]
 
@@ -73,16 +85,39 @@ plus the next Y value to use for the next piece of text.
 
 =cut
 
+# Measurements in points (1/72in)
+my $a4_w = 595;
+my $a4_h = 842;
+my $margin = 27;
+my $logo_w = 960;
+my $logo_h = 781;
+my $logo_scale = 0.05;
+my $box_first = [
+    $margin,
+    $a4_h - $margin,
+    $a4_w - $margin * 2 - $logo_w * $logo_scale - 12,
+    $a4_h - $margin * 2 - $logo_h * $logo_scale - 12 - $margin
+];
+my $box_subsequent = [
+    $margin,
+    $a4_h - $margin - $logo_h * $logo_scale - 12,
+    $a4_w - $margin * 2,
+    $a4_h - $margin * 2 - $logo_h * $logo_scale - 12 - $margin
+];
+my $box = $box_first;
+
 sub plot_line {
     my ($self, $y, $colour, $line, $recurse) = @_;
     my ($rc, $next_y, $unused) = $self->text->column(
         $self->page, $self->text, undef, $recurse ? 'pre' : 'html', $line,
-        rect => [0+50,842-50,595-100,842-100], # A4 in pt with 50pt margin
+        rect => $box,
         para => [0,0],
         font_info => $self->font . ":normal:normal:$colour",
         start_y => $y,
     );
     if ($rc) {
+        # On pages after the first, start under the logo
+        $box = $box_subsequent;
         $self->add_page();
         $next_y = undef;
         if ($colour ne 'white') {
@@ -111,6 +146,21 @@ sub add_page {
     my $self = shift;
     $self->_set_page($self->pdf->page());
     $self->_set_text($self->page->text());
+    $self->page_setup($self->text);
+}
+
+# Passing in text because it's also used in text's build
+sub page_setup {
+    my ($self, $text) = @_;
+    $self->page_number($self->page_number + 1);
+    my $font = $self->pdf->get_font(face => $self->font, bold => 0, italic => 0);
+    $text->textlabel($a4_w/2, $margin+6, $font, 12, $self->page_number, center => 1, color => 'black');
+
+    my $gfx = $self->page->graphics;
+    $gfx->image($self->header_image,
+        $a4_w - $margin - $logo_w * $logo_scale,
+        $a4_h - $margin - $logo_h * $logo_scale,
+        $logo_scale);
 }
 
 1;
