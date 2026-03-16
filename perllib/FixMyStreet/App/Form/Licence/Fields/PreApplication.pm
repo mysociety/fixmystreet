@@ -69,7 +69,7 @@ has_field police_consulted => (
 has_field preapp_comments => (
     type => 'Text',
     widget => 'Textarea',
-    label => 'If you selected “No” for any of the above, you must explain why. You may also provide any additional relevant comments relating to the pre‑application consultation in the section below.',
+    label => 'If you selected “No” for any of the above, you must explain why. You may also provide any additional relevant comments relating to the pre-application consultation in the section below.',
     required => 1,
 );
 
