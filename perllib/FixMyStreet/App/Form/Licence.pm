@@ -76,6 +76,7 @@ sub generate_pdf {
             my $line = "<p style='margin-top:6pt'><strong>$field->{desc}";
             $line .= ':' unless $field->{desc} =~ /[?:.]$/;
             $line .= "</strong> $field->{pretty}</p>";
+            $line =~ s/<br>/<\/p><p>/g; # Term checkboxes
 
             if ($first_field) {
                 $first_field = 0;
