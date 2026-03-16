@@ -52,7 +52,7 @@ has_page location => (
 
 has_page date_choice => (
     fields => ['date_choice', 'continue'],
-    title => 'Date option',
+    title => 'Number of mobile apparatus operations',
     next => sub {
         $_[0]->{date_choice} eq 'dates' ? 'dates_pick' : 'applicant',
     },
@@ -61,10 +61,14 @@ has_page date_choice => (
 has_field date_choice => (
     type => 'Select',
     widget => 'RadioGroup',
-    label => 'Would you like one to three individual dates, or a 1 or 2 week continuous period?',
+    label => 'Select the number of operations you require',
+    tags => {
+        hint =>
+            'Note, each operation is subject to a 24-hour time limit and anything beyond will be considered as a new operation. If more operations are required then multiple applications will be required.',
+    },
     required => 1,
     options => [
-        { label => 'Individual dates', value => 'dates' },
+        { label => '1, 2 or 3 operations', value => 'dates' },
         { label => '7 operations (1 week continuous)', value => 'week' },
         { label => '14 operations (2 weeks continuous)', value => 'fortnight' },
     ],
