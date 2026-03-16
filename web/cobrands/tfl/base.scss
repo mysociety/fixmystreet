@@ -300,3 +300,14 @@ ol.big-numbers>li {
         margin-right: 1em;
     }
 }
+
+/* GOV.UK form overrides */
+
+.govuk-heading-xl {
+  font-weight: normal;
+}
+.formflow {
+  .govuk-fieldset__heading {
+    font-weight: normal;
+  }
+}
