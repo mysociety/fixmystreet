@@ -342,6 +342,7 @@ has_page have_you_considered => (
         'bus_stop_suspension',
         'bus_lane_suspension',
         'road_closure_required',
+        'tcsr_website_note',
         'continue'
     ],
     title => 'Additional considerations',
@@ -361,51 +362,34 @@ has_page terms => (
 # ==========================================================================
 # Upload required documents (scaffold-specific)
 # ==========================================================================
+my $upload_fields = [
+    'upload_insurance',
+    'insurance_validity',
+    'upload_rams',
+    'upload_scaffold_drawing',
+    'upload_additional',
+    'continue'
+];
 has_page uploads => (
-    fields => [
-        'upload_insurance',
-        'upload_rams',
-        'upload_scaffold_drawing',
-        'upload_additional',
-        'continue'
-    ],
+    fields => $upload_fields,
     title => 'Upload required documents',
     intro => 'uploads.html',
     next => 'payment',
     update_field_list => sub {
         my ($form) = @_;
         my $fields = {};
-        $form->handle_upload('upload_insurance', $fields);
-        $form->handle_upload('upload_rams', $fields);
-        $form->handle_upload('upload_scaffold_drawing', $fields);
-        $form->handle_upload('upload_additional', $fields);
+        foreach (@$upload_fields) {
+            next unless $_ =~ /^upload_/;
+            $form->handle_upload($_, $fields);
+        }
         return $fields;
     },
     post_process => sub {
         my ($form) = @_;
-        $form->process_upload('upload_insurance');
-        $form->process_upload('upload_rams');
-        $form->process_upload('upload_scaffold_drawing');
-        $form->process_upload('upload_additional');
-    },
-);
-
-has_field upload_insurance => (
-    type => 'FileIdUpload',
-    label => 'Public Liability Insurance certificate',
-    tags => {
-        hint => 'Minimum cover of £10 million',
-    },
-    messages => {
-        upload_file_not_found => 'Please upload your Public Liability Insurance certificate',
-    },
-);
-
-has_field upload_rams => (
-    type => 'FileIdUpload',
-    label => 'Risk Assessment Method Statement (RAMS)',
-    messages => {
-        upload_file_not_found => 'Please upload your Risk Assessment Method Statement',
+        foreach (@$upload_fields) {
+            next unless $_ =~ /^upload_/;
+            $form->process_upload($_);
+        }
     },
 );
 

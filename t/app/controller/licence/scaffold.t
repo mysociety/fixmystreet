@@ -52,6 +52,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
             'proposed_start_date.day' => $start_date->day,
             'proposed_start_date.month' => $start_date->month,
             'proposed_start_date.year' => $start_date->year,
+            proposed_working_times => '9-5',
             proposed_duration => 4,
         }});
 
@@ -123,6 +124,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
         # Uploads page
         $mech->submit_form_ok({ with_fields => {
             upload_insurance => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
+            insurance_validity => 'all year',
             upload_rams => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
             upload_scaffold_drawing => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
         }});

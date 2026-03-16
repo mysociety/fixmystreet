@@ -72,9 +72,16 @@ Includes validation:
 =cut
 
 has_page dates => (
-    fields => ['proposed_start_date', 'proposed_duration', 'year_warning', 'continue'],
+    fields => ['proposed_start_date', 'proposed_working_times', 'proposed_duration', 'year_warning', 'continue'],
     title => 'Proposed working dates',
     intro => 'dates.html',
+    field_ignore_list => sub {
+        my $page = shift;
+        my $form = $page->form;
+        my $type = $form->type;
+        return ['proposed_working_times'] if $type eq 'pit-lane';
+        return [];
+    },
     next => sub {
         my ($data, $params, $form) = @_;
         return 'times' if $form->type eq 'pit-lane';
@@ -109,6 +116,15 @@ has_field proposed_start_date => (
             $field->add_error('Start date must be at least 4 weeks from today');
         }
     },
+);
+
+has_field proposed_working_times => (
+    type => 'Text',
+    label => 'Proposed working times',
+    tags => {
+        hint => 'This should include the time of installation and working times, if applicable',
+    },
+    required => 1,
 );
 
 has_field 'proposed_start_date.day' => ( type => 'MonthDay' );
@@ -265,6 +281,41 @@ has_page contractor => (
             my $form = $self->form;
             return $form->next_after_applicant ne 'contractor';
         },
+    },
+);
+
+# ==========================================================================
+# File uploads
+# ==========================================================================
+
+=head2 Insurance
+
+Every form has an upload page of documents.
+
+=cut
+
+has_field upload_insurance => (
+    type => 'FileIdUpload',
+    label => 'Public Liability Insurance certificate',
+    tags => {
+        hint => 'Minimum cover of £10 million',
+    },
+    messages => {
+        upload_file_not_found => 'Please upload your Public Liability Insurance certificate',
+    },
+);
+
+has_field insurance_validity => (
+    type => 'Text',
+    label => 'Period of Public Liability Insurance validity',
+    required => 1,
+);
+
+has_field upload_rams => (
+    type => 'FileIdUpload',
+    label => 'Risk Assessment Method Statement (RAMS)',
+    messages => {
+        upload_file_not_found => 'Please upload your Risk Assessment Method Statement',
     },
 );
 
