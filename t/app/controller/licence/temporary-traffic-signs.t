@@ -145,7 +145,7 @@ subtest 'Temporary Traffic Signs form submission - smoke test' => sub {
         # Detail string should group fields by section with headers and blank lines,
         # making it easier to distinguish e.g. applicant vs contractor answers
         my $detail = $problem->detail;
-        like $detail, qr/\[Location of the temporary traffic sign\]/, 'Detail contains Location section header';
+        like $detail, qr/\[Location of the temporary traffic signs\]/, 'Detail contains Location section header';
         like $detail, qr/\[Applicant details\]/, 'Detail contains Applicant section header';
         like $detail, qr/\n\n/, 'Detail has blank lines between sections';
         unlike $detail, qr/Contact name:/, 'Contractor contact name hidden when same as applicant';
