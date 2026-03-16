@@ -115,11 +115,7 @@ subtest 'Banner form submission - smoke test' => sub {
             insurance_validity => 'all year',
             upload_rams => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
             upload_map => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
-            upload_structural_testing_design_calc =>
-                [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
-            upload_structural_testing_asset_load =>
-                [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
-            upload_structural_testing_design_cert =>
+            upload_structural_testing =>
                 [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
         }});
 
@@ -172,9 +168,7 @@ subtest 'Banner form submission - smoke test' => sub {
             upload_insurance
             upload_rams
             upload_map
-            upload_structural_testing_design_calc
-            upload_structural_testing_asset_load
-            upload_structural_testing_design_cert
+            upload_structural_testing
         )) {
             ok $extra->{$field}, "Extra metadata contains $field";
             ok $extra->{$field}->{files}, "$field has files key";
