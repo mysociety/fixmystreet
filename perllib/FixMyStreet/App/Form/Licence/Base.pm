@@ -284,6 +284,41 @@ has_page contractor => (
     },
 );
 
+# ==========================================================================
+# File uploads
+# ==========================================================================
+
+=head2 Insurance
+
+Every form has an upload page of documents.
+
+=cut
+
+has_field upload_insurance => (
+    type => 'FileIdUpload',
+    label => 'Public Liability Insurance certificate',
+    tags => {
+        hint => 'Minimum cover of £10 million',
+    },
+    messages => {
+        upload_file_not_found => 'Please upload your Public Liability Insurance certificate',
+    },
+);
+
+has_field insurance_validity => (
+    type => 'Text',
+    label => 'Period of Public Liability Insurance validity',
+    required => 1,
+);
+
+has_field upload_rams => (
+    type => 'FileIdUpload',
+    label => 'Risk Assessment Method Statement (RAMS)',
+    messages => {
+        upload_file_not_found => 'Please upload your Risk Assessment Method Statement',
+    },
+);
+
 =head2 Payment/summary/done
 
 These are shared for all the forms.

@@ -150,6 +150,7 @@ subtest 'Pit lane form submission - smoke test' => sub {
         # Uploads page
         $mech->submit_form_ok({ with_fields => {
             upload_insurance => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
+            insurance_validity => 'all year',
             upload_rams => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
             upload_traffic_management => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
         }});
