@@ -4,7 +4,8 @@
 }
 
 @font-face {
-    font-family: 'Johnston100-Medium';
+    font-family: 'Johnston100-Light';
+    font-weight: bold;
     src: url("/cobrands/tfl/fonts/Johnston100-Medium.woff2") format("woff2"),url("/cobrands/tfl/fonts/Johnston100-Medium.woff") format("woff")
 }
 
@@ -126,9 +127,6 @@ h3 {
 }
 
 .postcode-form-box {
-    label {
-        font-family: $bold-font;
-    }
     div {
         display: block;
         border: 0;
