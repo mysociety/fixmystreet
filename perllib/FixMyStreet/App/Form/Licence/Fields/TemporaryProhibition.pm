@@ -102,9 +102,9 @@ sub options_terms_accepted {
     my $tandc_link = $_[0]->tandc_link;
     my @options;
     push @options,
-        { label => "<a target='_blank' href='$tandc_link'>$name guidance notes and terms &amp; conditions</a>", value => "$name terms and conditions" },
-        { label => '<a target="_blank" href="https://content.tfl.gov.uk/highway-licensing-and-other-consents-policy.pdf">TfL’s Highways Licensing and Other Consents Policy</a>', value => 'Highway licensing and other consents policy' },
-        { label => '<a target="_blank" href="https://content.tfl.gov.uk/standard-conditions-for-highway-consents.pdf">TfL’s Standard Conditions for Highway Consents</a>', value => 'Standard conditions for highway consents' };
+        { label => "<a target='_blank' href='$tandc_link'>$name guidance notes and terms &amp; conditions - March 2026</a>", value => "$name guidance notes and terms & conditions - March 2026" },
+        { label => '<a target="_blank" href="https://content.tfl.gov.uk/highway-licensing-and-other-consents-policy.pdf">TfL’s Highways Licensing and Other Consents Policy - March 2026</a>', value => 'Highway licensing and other consents policy - March 2026' },
+        { label => '<a target="_blank" href="https://content.tfl.gov.uk/standard-conditions-for-highway-consents.pdf">TfL’s Standard Conditions for Highway Consents - March 2026</a>', value => 'Standard conditions for highway consents - March 2026' };
     foreach (@options) {
         $_->{label} = FixMyStreet::Template::SafeString->new($_->{label});
     }

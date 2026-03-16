@@ -96,9 +96,9 @@ subtest 'Statues/Artworks form submission - smoke test' => sub {
         }});
 
         $mech->form_with_fields('terms_accepted');
-        $mech->current_form->find_input('terms_accepted', undef, 1)->value('Statues/Artworks terms and conditions');
-        $mech->current_form->find_input('terms_accepted', undef, 2)->value('Highway licensing and other consents policy');
-        $mech->current_form->find_input('terms_accepted', undef, 3)->value('Standard conditions for highway consents');
+        $mech->current_form->find_input('terms_accepted', undef, 1)->value('Statues/Artworks guidance notes and terms & conditions - March 2026');
+        $mech->current_form->find_input('terms_accepted', undef, 2)->value('Highway licensing and other consents policy - March 2026');
+        $mech->current_form->find_input('terms_accepted', undef, 3)->value('Standard conditions for highway consents - March 2026');
         $mech->submit_form_ok;
 
         # Uploads page
