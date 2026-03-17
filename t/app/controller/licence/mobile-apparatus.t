@@ -165,10 +165,12 @@ subtest 'Mobile apparatus form submission - smoke test' => sub {
         # Site specific pages (one question per page)
         $mech->submit_form_ok({ with_fields => {
             footway_incursion => 'No footway incursion',
+            situated_on_footway => 'No',
             site_adequate_space => 'Yes'
         }});
         $mech->submit_form_ok({ with_fields => {
             carriageway_incursion => 'No carriageway incursion',
+            situated_on_carriageway => 'Yes',
         }});
         $mech->submit_form_ok({ with_fields => {
             site_obstruct_infrastructure => 'No',
@@ -182,6 +184,13 @@ subtest 'Mobile apparatus form submission - smoke test' => sub {
             underground_consulted => 'No',
             police_consulted => 'No',
             preapp_comments => 'No',
+        }});
+
+        $mech->content_contains('Mobile apparatus type');
+        $mech->content_like(qr/value="Mobile Apparatus \(Footway\)".*disabled/s);
+        $mech->content_like(qr/value="Mobile Apparatus \(Carriageway\)".*checked/s);
+        $mech->submit_form_ok({ with_fields => {
+            apparatus_type => 'Mobile Apparatus (Carriageway)',
         }});
 
         # Have you considered page
