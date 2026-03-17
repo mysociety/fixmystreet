@@ -33,6 +33,7 @@ my ($opts, $usage) = describe_options(
     ['updates', 'fetch updates'],
     ['start|s:f', 'start time to use (hours before now), defaults to one (reports) or two (updates)' ],
     ['end|e:f', 'end time to use (hours before now), defaults to zero' ],
+    ['report-ids|r:s', 'comma-separated list of service request IDs to fetch (use with --reports and --body)'],
     ['body|b:s@', 'body name(s) to only fetch these bodies' ],
     ['exclude|e:s@', 'body name(s) to exclude from fetching' ],
     ['verbose|v+', 'more verbose output', { default => 0 }],
@@ -40,11 +41,21 @@ my ($opts, $usage) = describe_options(
 );
 $usage->die if $opts->help;
 
+if ($opts->report_ids) {
+    die "--report-ids can only be used with --reports\n" unless $opts->reports;
+    die "--report-ids requires exactly one --body\n" unless $opts->body && @{$opts->body} == 1;
+    die "--report-ids cannot be used with --start or --end\n" if $opts->start || $opts->end;
+}
+
 my %params = (
     verbose => $opts->verbose,
     bodies => $opts->body || [],
     bodies_exclude => $opts->exclude || [],
 );
+
+if ($opts->report_ids) {
+    $params{report_ids} = [ split /,/, $opts->report_ids ];
+}
 
 my $dt = DateTime->now();
 if ($opts->start) {
