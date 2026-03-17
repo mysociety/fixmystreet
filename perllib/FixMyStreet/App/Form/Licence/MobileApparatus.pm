@@ -294,7 +294,7 @@ has_field activity => (
 # Split into one question per page sometimes for better UX with long labels
 # ==========================================================================
 has_page site_pedestrian_space => (
-    fields => ['footway_incursion', 'site_adequate_space', 'continue'],
+    fields => ['footway_incursion', 'situated_on_footway', 'site_adequate_space', 'continue'],
     title => 'Pedestrian space',
     next => 'site_carriageway_distance',
 );
@@ -306,6 +306,17 @@ has_field footway_incursion => (
     tags => {
         hint => 'For example, “1m from building line and 3m unobstructed footway” or “no footway incursion”',
     },
+);
+
+has_field situated_on_footway => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'Will the mobile apparatus be situated primarily on the footway?',
+    required => 1,
+    options => [
+        { label => 'Yes', value => 'Yes' },
+        { label => 'No', value => 'No' },
+    ],
 );
 
 has_field site_adequate_space => (
@@ -322,7 +333,7 @@ has_field site_adequate_space => (
 
 # ==========================================================================
 has_page site_carriageway_distance => (
-    fields => ['carriageway_incursion', 'continue'],
+    fields => ['carriageway_incursion', 'situated_on_carriageway', 'continue'],
     title => 'Carriageway impact',
     next => 'site_infrastructure',
 );
@@ -334,6 +345,18 @@ has_field carriageway_incursion => (
     tags => {
         hint => 'For example, “no carriageway incursion” or “Materials located in loading bay”',
     },
+);
+
+has_field situated_on_carriageway => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    label =>
+        'Will the mobile apparatus be situated on, or have any impact to the carriageway (e.g. requiring a lane closure)?',
+    required => 1,
+    options => [
+        { label => 'Yes', value => 'Yes' },
+        { label => 'No', value => 'No' },
+    ],
 );
 
 # ==========================================================================
@@ -360,7 +383,57 @@ has_field site_obstruct_infrastructure => (
 has_page pre_application => (
     fields => ['buses_consulted', 'underground_consulted', 'police_consulted', 'preapp_comments', 'continue'],
     title => 'Pre-application consultation',
+    next => 'type',
+    post_process => sub {
+        my $form = shift;
+        my $data = $form->saved_data;
+        if ( $data->{situated_on_carriageway} eq 'Yes' ) {
+            $data->{apparatus_type} = 'Mobile Apparatus (Carriageway)';
+        } elsif ( $data->{situated_on_footway} eq 'Yes' ) {
+            $data->{apparatus_type} = 'Mobile Apparatus (Footway)';
+        }
+    },
+);
+
+# ==========================================================================
+# Type
+# ==========================================================================
+has_page type => (
+    fields => ['apparatus_type', 'apparatus_type_notice', 'continue'],
+    title => 'Mobile apparatus type',
     next => 'have_you_considered',
+);
+
+has_field apparatus_type => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'Mobile apparatus type',
+    required => 1,
+);
+
+sub options_apparatus_type {
+    my $self = shift;
+    my $data = $self->form->saved_data;
+
+    my $disabled_footway = $data->{situated_on_carriageway} eq 'Yes' ? 1 : 0;
+
+    return (
+        {   label    => 'Mobile Apparatus (Footway)',
+            value    => 'Mobile Apparatus (Footway)',
+            disabled => $disabled_footway,
+        },
+        {   label => 'Mobile Apparatus (Carriageway)',
+            value => 'Mobile Apparatus (Carriageway)',
+        },
+    );
+}
+
+has_field apparatus_type_notice => (
+    type  => 'Notice',
+    label =>
+        'Based on your selections, the above Mobile Apparatus type will apply. A Mobile Apparatus (Footway) is only suitable for works not impacting live traffic, whereas a Mobile Apparatus (Carriageway) may require lane closures or road closures.',
+    required => 0,
+    widget   => 'NoRender',
 );
 
 # ==========================================================================
