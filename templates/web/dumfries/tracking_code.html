@@ -1,0 +1,181 @@
+[% IF c.config.BASE_URL == "https://www.fixmystreet.com" %]
+<script src="https://cc.cdn.civiccomputing.com/9/cookieControl-9.x.min.js" type="text/javascript"></script>
+<script>
+//@param {string} url - The URL of the script.
+//@param {string} id - A unique ID for the script tag, allowing for removal later.
+
+function loadExternalScript(url, id) {
+    var script = document.createElement('script');
+    script.src = url;
+    script.type = 'text/javascript';
+    script.async = true;
+    script.id = id;
+    document.head.appendChild(script);
+}
+
+/**
+* Helper function to remove a dynamically loaded script.
+* @param {string} id - The ID of the script tag to remove.
+*/
+function removeExternalScript(id) {
+    var script = document.getElementById(id);
+    if (script) {
+        script.remove();
+    }
+}
+
+(function (c, l, a, r, i, t, y) {
+    c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+    t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+    y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+})(window, document, "clarity", "script", "mbeeopx16n");
+
+
+function loadGoogleAnalytics() {
+    var ga = document.createElement('script');
+    ga.type = 'text/javascript';
+    ga.async = true;
+    ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-1W4R1B4CG9';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(ga, s);
+}
+
+window.dataLayer = window.dataLayer || [];
+function gtag() {
+    dataLayer.push(arguments);
+}
+
+gtag('js', new Date());
+gtag('config', 'G-1W4R1B4CG9');
+
+const config = {
+    apiKey: "f9eb586a66b97f320c0cb0a1ed2b5bbedb79b604",
+    product: "PRO_MULTISITE",
+    logConsent: false,
+    consentCookieExpiry: 90,
+    encodeCookie: false,
+    subDomains: true,
+    notifyOnce: false,
+    acceptButton: true,
+    rejectButton: false,
+    toggleType: "slider",
+    closeStyle: "icon",
+    settingsStyle: "button",
+    initialState: "open",
+    layout: "slideout",
+    position: "left",
+    theme: "light",
+    necessaryCookies: ["hide-alert-banner-token"],
+    optionalCookies: [
+        {
+            name: "analytics",
+            label: "Analytical Cookies",
+            description: "<p>Analytical cookies help us to improve our website by collecting and reporting information on its usage.</p>",
+            cookies: ["_cl*", "_ga", "_ga*", "_gid", "_gat", "__utma", "__utmt", "__utmb", "__utmc", "__utmz", "__utmv"],
+            onAccept: function () {
+                // Google Tag Manager / Analytics consent update
+                gtag('consent', 'update', { 'analytics_storage': 'granted' });
+                loadGoogleAnalytics();
+
+                // Microsoft Clarity consent update
+                if (typeof window.clarity === 'function') {
+                    window.clarity('consentv2', {
+                        ad_Storage: "denied",
+                        analytics_Storage: "granted"
+                    });
+                }
+            },
+            onRevoke: function () {
+                gtag('consent', 'update', { 'analytics_storage': 'denied' });
+                if (typeof window.clarity === 'function') {
+                    window.clarity('consentv2', {
+                        ad_Storage: "denied",
+                        analytics_Storage: "denied"
+                    });
+                }
+            },
+            recommendedState: false,
+            lawfulBasis: "consent",
+            thirdPartyCookies: []
+        },
+        {
+            name: "marketing",
+            label: "Marketing Cookies",
+            description: "<p>We use marketing cookies to help us improve the relevancy of advertising campaigns you receive.</p>",
+            cookies: ["_scid", "_gads", "_fbp", "_uetvid", "_qca", "_rp", "sa-user-id"],
+            onAccept: function () {
+                loadExternalScript('https://ads.counciladvertising.net/code/audienceplacement/media/public', 'waste-ad-pixel');
+            },
+            onRevoke: function () {
+                removeExternalScript('waste-ad-pixel');
+            },
+            recommendedState: false,
+            lawfulBasis: "consent"
+        }
+    ],
+    excludedCountries: [],
+    debug: false,
+    setInnerHTML: true,
+    wrapInnerHTML: false,
+    mode: "GDPR",
+    acceptBehaviour: "all",
+    closeOnGlobalChange: true,
+    notifyDismissButton: true,
+    sameSiteCookie: true,
+    sameSiteValue: "Strict",
+    iabCMP: false,
+    statement: {
+        name: "Find out how we use cookies and manage your settings",
+        updated: "25\/03\/2022",
+        url: "https://www.dumfriesandgalloway.gov.uk/council-elections/about-website"
+    },
+    ccpaConfig: [],
+    accessibility: {
+        accessKey: "C",
+        overlay: true,
+        outline: true,
+        disableSiteScrolling: false
+    },
+    text: {
+        title: "This site uses cookies to store information on your computer.",
+        intro: "<p>Some of these cookies are essential to make this website work for you. Others show us how the website is used and can help us improve it.</p>",
+        acceptRecommended: "Accept Recommended Settings",
+        acceptSettings: "I accept",
+        rejectSettings: "I do not accept",
+        necessaryTitle: "Necessary Cookies",
+        necessaryDescription: "<p>Necessary cookies enable core functionality. The website cannot function properly without these cookies, and can only be disabled by changing your browser preferences.</p>",
+        thirdPartyTitle: "Warning: Some cookies require your attention.",
+        thirdPartyDescription: "<p>Consent for the following cookies could not be automatically revoked. Please follow the link(s) below to opt out manually.</p>",
+        on: "Yes",
+        off: "No",
+        notifyTitle: "Your choice regarding cookies on this site",
+        notifyDescription: "<p>We use cookies to optimise site functionality and give you the best possible experience.</p>",
+        accept: "I accept",
+        reject: "I do not accept",
+        settings: "Cookie Preferences",
+        closeLabel: "Close",
+        cornerButton: "Set cookie preferences.",
+        landmark: "Cookie preferences.",
+        showVendors: "Show vendors within this category",
+        thirdPartyCookies: "This vendor may set third party cookies.",
+        readMore: "Read more"
+    },
+    branding: {
+        fontFamily: "'Roboto Flex', Arial, sans-serif;",
+        fontSizeTitle: "em",
+        fontSize: "em",
+        buttonIconWidth: "px",
+        buttonIconHeight: "px",
+        rejectText: null,
+        rejectBackground: "",
+        closeText: "",
+        closeBackground: "",
+        notifyFontColor: "",
+        notifyBackgroundColor: ""
+    },
+    locales: []
+};
+
+CookieControl.load(config);
+</script>
+[% END %]
