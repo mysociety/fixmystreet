@@ -72,7 +72,7 @@ has_field proposed_end_time => (
 # Pit lane activity
 # ==========================================================================
 has_page activity => (
-    fields => ['activity', 'pit_lane_directly', 'sensitive_times', 'traffic_holds', 'continue'],
+    fields => ['activity', 'pit_lane_directly', 'continue'],
     title => 'Purpose of the pit lane',
     next => 'site_pedestrian_space',
 );
@@ -95,30 +95,6 @@ has_field pit_lane_directly => (
     tags => {
         hint => 'Note, there is a presumption against granting consent to pit lanes on London’s Red Routes; the preferred means of delivery of materials is directly into the construction site',
     },
-);
-
-has_field sensitive_times => (
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'Will the Pit Lane occupy the highway during traffic sensitive times?',
-    tags => { hint => 'If yes, a site meeting between the applicant and TfL may be required.' },
-    required => 1,
-    options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
-    ],
-);
-
-has_field traffic_holds => (
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'Will any temporary traffic holds be required during deliveries?',
-    tags => { hint => 'If yes, a site meeting between the applicant and TfL may be required.' },
-    required => 1,
-    options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
-    ],
 );
 
 # ==========================================================================
@@ -245,7 +221,7 @@ has_page pre_application => (
 
 # ==========================================================================
 has_page type_check => (
-    fields => ['significant_impact', 'bus_service_alterations', 'continue'],
+    fields => ['sensitive_times', 'traffic_holds', 'significant_impact', 'bus_service_alterations', 'continue'],
     title => 'Pit Lane type',
     next => 'type',
     post_process => sub {
@@ -256,8 +232,33 @@ has_page type_check => (
         my $bus = $data->{bus_service_alterations} || '';
         if ($duration > 28 || $significant eq 'Yes' || $bus eq 'Yes') {
             $data->{pit_lane_type} = 'Pit Lane (Major)';
+#        } else {
+#            $data->{pit_lane_type} = 'Pit Lane (Minor)';
         }
+
     },
+);
+
+has_field sensitive_times => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'Will the Pit Lane occupy the highway during traffic sensitive times?',
+    required => 1,
+    options => [
+        { label => 'Yes', value => 'Yes' },
+        { label => 'No', value => 'No' },
+    ],
+);
+
+has_field traffic_holds => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'Will any temporary traffic holds be required during deliveries?',
+    required => 1,
+    options => [
+        { label => 'Yes', value => 'Yes' },
+        { label => 'No', value => 'No' },
+    ],
 );
 
 has_field significant_impact => (
@@ -286,6 +287,7 @@ has_field bus_service_alterations => (
 has_page type => (
     fields => ['pit_lane_type', 'continue'],
     title => 'Pit Lane type',
+    intro => 'pitlane/type.html',
     next => 'have_you_considered',
 );
 
@@ -294,11 +296,24 @@ has_field pit_lane_type => (
     widget => 'RadioGroup',
     label => "Pit Lane licence type",
     required => 1,
-    options => [
-        { label => 'Pit Lane (Minor)', value => 'Pit Lane (Minor)' },
-        { label => 'Pit Lane (Major)', value => 'Pit Lane (Major)' },
-    ],
 );
+
+sub options_pit_lane_type {
+    my $self = shift;
+    my $data = $self->form->saved_data;
+    my $disabled_minor = 0;
+
+    my $duration = $data->{proposed_duration};
+    my $significant = $data->{significant_impact} || '';
+    my $bus = $data->{bus_service_alterations} || '';
+    if ($duration > 28 || $significant eq 'Yes' || $bus eq 'Yes') {
+        $disabled_minor = 1;
+    }
+    return (
+        { label => 'Pit Lane (Minor)', value => 'Pit Lane (Minor)', disabled => $disabled_minor },
+        { label => 'Pit Lane (Major)', value => 'Pit Lane (Major)' },
+    );
+}
 
 # ==========================================================================
 # Have you considered? (TCSR/TTRO + T&Cs)

@@ -78,8 +78,6 @@ subtest 'Pit lane form submission - smoke test' => sub {
         $mech->submit_form_ok({ with_fields => {
             activity => 'Unloading',
             pit_lane_directly => 'Because',
-            sensitive_times => 'Yes',
-            traffic_holds => 'No',
         }});
 
         # Site specific pages (one question per page)
@@ -118,22 +116,31 @@ subtest 'Pit lane form submission - smoke test' => sub {
         }});
 
         $mech->submit_form_ok({ with_fields => {
+            sensitive_times => 'Yes',
+            traffic_holds => 'No',
             significant_impact => 'Yes',
             bus_service_alterations => 'No',
         }});
+        $mech->content_like(qr/value="Pit Lane \(Minor\)"\s+disabled/);
         $mech->content_like(qr/value="Pit Lane \(Major\)"\s+checked/);
         $mech->back;
         $mech->submit_form_ok({ with_fields => {
+            sensitive_times => 'Yes',
+            traffic_holds => 'No',
             significant_impact => 'No',
             bus_service_alterations => 'Yes',
         }});
+        $mech->content_like(qr/value="Pit Lane \(Minor\)"\s+disabled/);
         $mech->content_like(qr/value="Pit Lane \(Major\)"\s+checked/);
         $mech->back;
 
         $mech->submit_form_ok({ with_fields => {
+            sensitive_times => 'Yes',
+            traffic_holds => 'No',
             significant_impact => 'No',
             bus_service_alterations => 'No',
         }});
+        $mech->content_unlike(qr/value="Pit Lane \(Minor\)"\s+disabled/);
         $mech->content_unlike(qr/value="Pit Lane \(Major\)"\s+checked/);
 
         $mech->submit_form_ok({ with_fields => {
