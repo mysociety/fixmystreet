@@ -230,10 +230,10 @@ has_page type_check => (
         my $duration = $data->{proposed_duration};
         my $significant = $data->{significant_impact} || '';
         my $bus = $data->{bus_service_alterations} || '';
-        if ($duration > 28 || $significant eq 'Yes' || $bus eq 'Yes') {
+        if ($duration >= 28 || $significant eq 'Yes' || $bus eq 'Yes') {
             $data->{pit_lane_type} = 'Pit Lane (Major)';
-#        } else {
-#            $data->{pit_lane_type} = 'Pit Lane (Minor)';
+        } else {
+            $data->{pit_lane_type} = 'Pit Lane (Minor)';
         }
 
     },
@@ -306,7 +306,7 @@ sub options_pit_lane_type {
     my $duration = $data->{proposed_duration};
     my $significant = $data->{significant_impact} || '';
     my $bus = $data->{bus_service_alterations} || '';
-    if ($duration > 28 || $significant eq 'Yes' || $bus eq 'Yes') {
+    if ($duration >= 28 || $significant eq 'Yes' || $bus eq 'Yes') {
         $disabled_minor = 1;
     }
     return (
