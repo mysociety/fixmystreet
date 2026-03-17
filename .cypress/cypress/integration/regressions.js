@@ -96,4 +96,57 @@ describe('Regression tests', function() {
       cy.get('#form_start_date').should('have.value', '2019-01-01');
     });
 
+    it('does not fire maps:marker_click when a pin is touched with multiple fingers', function() {
+        cy.visit('/around?lon=-2.295894&lat=51.526877&zoom=0');
+        cy.get('image[title="Lights out in tunnel"]').should('exist');
+
+        cy.window().then(function(win) {
+            var fixmystreet = win.fixmystreet;
+            var markerClickFired = false;
+            win.$(fixmystreet).on('maps:marker_click', function() { markerClickFired = true; });
+
+            var feature = fixmystreet.markers.features.filter(function(f) {
+                return f.attributes.title === 'Lights out in tunnel';
+            })[0];
+
+            expect(feature, 'pin feature found in markers').to.not.equal(undefined);
+
+            // We call into OL internals directly rather than dispatching a real touch
+            // event, because OL's feature detection doesn't trigger reliably from
+            // synthetic events in a desktop browser. See the comment in marker_click
+            // for the event structure.
+            fixmystreet.select_feature.handlers.feature.evt = {
+                touches: [{}],
+            };
+            fixmystreet.select_feature.clickFeature(feature);
+
+            expect(markerClickFired, 'maps:marker_click should not fire during pinch').to.equal(false);
+        });
+    });
+
+    it('fires maps:marker_click when a pin is touched with one finger', function() {
+        cy.visit('/around?lon=-2.295894&lat=51.526877&zoom=0');
+        cy.get('image[title="Lights out in tunnel"]').should('exist');
+
+        cy.window().then(function(win) {
+            var fixmystreet = win.fixmystreet;
+            var markerClickFired = false;
+            win.$(fixmystreet).on('maps:marker_click', function() { markerClickFired = true; });
+
+            var feature = fixmystreet.markers.features.filter(function(f) {
+                return f.attributes.title === 'Lights out in tunnel';
+            })[0];
+
+            expect(feature, 'pin feature found in markers').to.not.equal(undefined);
+
+            // Normal tap: finger is already lifted, so touches is empty.
+            fixmystreet.select_feature.handlers.feature.evt = {
+                touches: [],
+            };
+            fixmystreet.select_feature.clickFeature(feature);
+
+            expect(markerClickFired, 'maps:marker_click should fire for single touch').to.equal(true);
+        });
+    });
+
 });

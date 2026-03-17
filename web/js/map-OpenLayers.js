@@ -576,6 +576,14 @@ $.extend(fixmystreet.utils, {
     }
 
     function marker_click(feature, evt) {
+        // When pinching to zoom, OpenLayers fires clickFeature as the first finger lands
+        // on a pin while touches are still active. For a normal tap, the click fires on
+        // touchend when no touches remain, so evt.touches[0] is absent. Suppress
+        // navigation whenever any touch is still held down.
+        if (evt && evt.touches && evt.touches[0]) {
+            return;
+        }
+
         $(fixmystreet).trigger('maps:marker_click', feature);
 
         var problem_id = feature.attributes.id;
