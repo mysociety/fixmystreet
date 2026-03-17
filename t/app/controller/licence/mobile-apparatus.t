@@ -51,20 +51,86 @@ subtest 'Mobile apparatus form submission - smoke test' => sub {
         $mech->back;
 
         $mech->submit_form_ok({ with_fields => {
-            date_choice => 'dates',
+            date_choice => 'dates_1',
         }});
 
         $mech->submit_form_ok({ with_fields => {
-            'date1.day' => $start_date->day,
-            'date1.month' => $start_date->month,
-            'date1.year' => $start_date->year,
-            start_time1 => '9am',
-            end_time1 => '5pm',
-            'date2.day' => $start_date->day,
-            'date2.month' => $start_date->month,
-            'date2.year' => $start_date->year,
-            start_time2 => '9am',
-            end_time2 => '4pm',
+            'start_date_1.day' => $start_date->day,
+            'start_date_1.month' => $start_date->month,
+            'start_date_1.year' => $start_date->year,
+            start_time_1 => '9am',
+            'end_date_1.day' => $start_date->day,
+            'end_date_1.month' => $start_date->month,
+            'end_date_1.year' => $start_date->year,
+            end_time_1 => '5pm',
+        }});
+
+        # Goes to applicant page
+        $mech->content_contains('Applicant details');
+
+        # Back to date_choice
+        $mech->back;
+        $mech->back;
+        $mech->submit_form_ok({ with_fields => {
+            date_choice => 'dates_3',
+        }});
+
+        $mech->submit_form_ok({ with_fields => {
+            'start_date_1.day' => $start_date->day,
+            'start_date_1.month' => $start_date->month,
+            'start_date_1.year' => $start_date->year,
+            start_time_1 => '9am',
+            'end_date_1.day' => $start_date->day,
+            'end_date_1.month' => $start_date->month,
+            'end_date_1.year' => $start_date->year,
+            end_time_1 => '5pm',
+        }});
+        $mech->submit_form_ok({ with_fields => {
+            'start_date_2.day' => $start_date->day,
+            'start_date_2.month' => $start_date->month,
+            'start_date_2.year' => $start_date->year,
+            start_time_2 => '9am',
+            'end_date_2.day' => $start_date->day,
+            'end_date_2.month' => $start_date->month,
+            'end_date_2.year' => $start_date->year,
+            end_time_2 => '5pm',
+        }});
+        $mech->submit_form_ok({ with_fields => {
+            'start_date_3.day' => $start_date->day,
+            'start_date_3.month' => $start_date->month,
+            'start_date_3.year' => $start_date->year,
+            start_time_3 => '9am',
+            'end_date_3.day' => $start_date->day,
+            'end_date_3.month' => $start_date->month,
+            'end_date_3.year' => $start_date->year,
+            end_time_3 => '5pm',
+        }});
+
+        # Back to date_choice again
+        $mech->back for 1..4;
+        $mech->submit_form_ok({ with_fields => {
+            date_choice => 'dates_2',
+        }});
+
+        $mech->submit_form_ok({ with_fields => {
+            'start_date_1.day' => $start_date->day,
+            'start_date_1.month' => $start_date->month,
+            'start_date_1.year' => $start_date->year,
+            start_time_1 => '9am',
+            'end_date_1.day' => $start_date->day,
+            'end_date_1.month' => $start_date->month,
+            'end_date_1.year' => $start_date->year,
+            end_time_1 => '5pm',
+        }});
+        $mech->submit_form_ok({ with_fields => {
+            'start_date_2.day' => $start_date->day,
+            'start_date_2.month' => $start_date->month,
+            'start_date_2.year' => $start_date->year,
+            start_time_2 => '9am',
+            'end_date_2.day' => $start_date->day,
+            'end_date_2.month' => $start_date->month,
+            'end_date_2.year' => $start_date->year,
+            end_time_2 => '5pm',
         }});
 
         # Applicant page
@@ -154,6 +220,11 @@ subtest 'Mobile apparatus form submission - smoke test' => sub {
         # "Contact name" is unique to contractor section (applicant uses "Full name")
         $mech->content_lacks('Contact name', 'Contractor fields hidden when same as applicant');
 
+        # Check date inputs
+        $mech->content_contains('Proposed working dates (Operation 1)');
+        $mech->content_contains('Proposed working dates (Operation 2)');
+        $mech->content_lacks('Proposed working dates (Operation 3)');
+
         # Summary page - submit
         $mech->submit_form_ok({ with_fields => { confirmation => 1 } });
 
@@ -177,6 +248,10 @@ subtest 'Mobile apparatus form submission - smoke test' => sub {
         like $detail, qr/\[Applicant details\]/, 'Detail contains Applicant section header';
         like $detail, qr/\n\n/, 'Detail has blank lines between sections';
         unlike $detail, qr/Contact name:/, 'Contractor contact name hidden when same as applicant';
+
+        like $detail, qr/Proposed working dates \(Operation 1\)/;
+        like $detail, qr/Proposed working dates \(Operation 2\)/;
+        unlike $detail, qr/Proposed working dates \(Operation 3\)/;
 
         # Verify uploads went to the licence_files directory
         my $cfg = FixMyStreet->config('PHOTO_STORAGE_OPTIONS');
