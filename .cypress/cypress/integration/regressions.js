@@ -116,7 +116,7 @@ describe('Regression tests', function() {
             // synthetic events in a desktop browser. See the comment in marker_click
             // for the event structure.
             fixmystreet.select_feature.handlers.feature.evt = {
-                touches: [{ touches: { length: 2 } }],
+                touches: [{}],
             };
             fixmystreet.select_feature.clickFeature(feature);
 
@@ -139,9 +139,9 @@ describe('Regression tests', function() {
 
             expect(feature, 'pin feature found in markers').to.not.equal(undefined);
 
-            // Single touch — guard should not suppress the click.
+            // Normal tap: finger is already lifted, so touches is empty.
             fixmystreet.select_feature.handlers.feature.evt = {
-                touches: [{ touches: { length: 1 } }],
+                touches: [],
             };
             fixmystreet.select_feature.clickFeature(feature);
 
