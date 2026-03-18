@@ -8,8 +8,6 @@ Collection details:
     - Collection location: [% report.get_extra_field_value('sharps_location') %]
 
     - Glucose monitoring devices: [% report.get_extra_field_value('sharps_collect_glucose_monitor') %]
-
-    - Cytotoxic waste: [% report.get_extra_field_value('sharps_collect_cytotoxic') %]
 [% END ~%]
 [% IF report.get_extra_field_value('sharps_delivering') %]
 Delivery details:
