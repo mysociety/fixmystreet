@@ -738,11 +738,14 @@ around 'munge_sendreport_params' => sub {
             my $dir = FixMyStreet->config('PHOTO_STORAGE_OPTIONS')->{UPLOAD_DIR};
             $dir = path($dir, $subdir)->absolute(FixMyStreet->path_to());
             my $data = path($dir, $id)->slurp_raw;
+            my $type = $mime_types->mimeTypeOf($filename);
+            $type = 'application/vnd.ms-outlook' if $filename =~ /\.msg$/i; # Special case not handled
+            $type ||= 'application/octet-stream';
             push @attachments, {
                 body => $data,
                 attributes => {
                     filename => $filename,
-                    content_type => $mime_types->mimeTypeOf($filename),
+                    content_type => $type,
                     encoding => 'base64', # quoted-printable ends up with newlines corrupting binary data
                     name => $filename,
                 },
