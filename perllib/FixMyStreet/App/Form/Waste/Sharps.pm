@@ -78,7 +78,7 @@ has_field collect_large_quantity => (
 );
 
 has_page collection_details => (
-    fields => ['collect_location', 'collect_glucose_monitor', 'collect_cytotoxic', 'continue'],
+    fields => ['collect_location', 'collect_glucose_monitor', 'continue'],
     title => 'Collection details',
     next => sub {
         my $data = $_[0];
@@ -131,17 +131,6 @@ has_field collect_glucose_monitor => (
     widget => 'RadioGroup',
     required => 1,
     label => 'Do any of the boxes contain glucose monitoring devices?',
-    options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
-    ],
-);
-
-has_field collect_cytotoxic => (
-    type => 'Select',
-    widget => 'RadioGroup',
-    required => 1,
-    label => 'Do any of the boxes contain cytotoxic waste?',
     options => [
         { label => 'Yes', value => 'Yes' },
         { label => 'No', value => 'No' },
