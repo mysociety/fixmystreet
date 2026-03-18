@@ -237,7 +237,7 @@
     </tr>
   [% END %]
     <tr class="subtotal">
-        <th scope="row">[% loc('Total (including deleted categories)') %]</th>
+        <th scope="row" id="total-header">[% loc('Total') %]</th>
       [% IF group_by == 'category+state' %]
         <td>[% totals.open OR 0 %]</td>
         <td>[% totals.closed OR 0 %]</td>

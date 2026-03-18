@@ -18,12 +18,13 @@ $(function(){
 
             toggleGroupHeadings();
         });
+    }
 
     var $table_with_deleted_contacts = $('table tr.is-deleted').closest('table');
     var $toggle_deleted_btn = $("<input type='submit' class='btn' value='Show deleted categories' id='toggle-deleted-contacts-btn' style='margin:1em 0;'/>");
 
     // hide/show deleted contact categories
-    if ($table_with_deleted_contacts.length == 1)
+    if ($table_with_deleted_contacts.length == 1) {
         $table_with_deleted_contacts.before($toggle_deleted_btn);
         $toggle_deleted_btn.on('click', function(e){
             e.preventDefault();
@@ -38,6 +39,9 @@ $(function(){
 
             toggleGroupHeadings();
         });
+
+        // Change 'total' header
+        $('#total-header').text('Total (including deleted categories)');
     }
 
     function toggleGroupHeadings() {
