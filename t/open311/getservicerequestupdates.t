@@ -2214,6 +2214,64 @@ subtest 'media_url image has EXIF metadata stripped' => sub {
   } # SKIP
 };
 
+subtest 'media_url image has EXIF orientation applied before stripping' => sub {
+  SKIP: {
+    skip('Image::Magick not available', 6)
+        unless FixMyStreet::ImageMagick::_load_imagemagick();
+
+  my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
+  FixMyStreet::override_config {
+    PHOTO_STORAGE_BACKEND => 'FileSystem',
+    PHOTO_STORAGE_OPTIONS => {
+        UPLOAD_DIR => $UPLOAD_DIR,
+    },
+  }, sub {
+
+    $problem->comments->delete;
+    my $guard = LWP::Protocol::PSGI->register(t::Mock::Static->to_psgi_app, host => 'example.com');
+
+    # Verify the source image has EXIF Orientation=6 and is 100x50
+    my $source_img = Image::Magick->new;
+    my $ua = LWP::UserAgent->new;
+    my $res = $ua->get('http://example.com/image-rotated.jpeg');
+    ok $res->is_success, 'fetched rotated source image';
+    $source_img->BlobToImage($res->decoded_content);
+    is $source_img->Get('EXIF:Orientation'), 6, 'source has orientation=6';
+    is $source_img->Get('width'), 100, 'source pixel width is 100';
+
+    my $local_requests_xml = setup_xml($problem->external_id, 1, "");
+    $local_requests_xml =~ s#</service_request_id>#</service_request_id>
+        <media_url>http://example.com/image-rotated.jpeg</media_url>#;
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/servicerequestupdates.xml', $local_requests_xml);
+
+    $problem->lastupdate( DateTime->now()->subtract( days => 1 ) );
+    $problem->state('confirmed');
+    $problem->update;
+
+    my $update = Open311::GetServiceRequestUpdates->new(
+        system_user => $user,
+        current_open311 => $o,
+        current_body => $bodies{2482},
+    );
+    $update->process_body;
+
+    $problem->discard_changes;
+    is $problem->comments->count, 1, 'comment count';
+    my $c = $problem->comments->first;
+
+    # Read back and verify pixels were rotated (100x50 with orient=6 -> 50x100)
+    my $stored_file = Path::Tiny::path($UPLOAD_DIR, $c->photo);
+    my $img = Image::Magick->new;
+    $img->BlobToImage($stored_file->slurp_raw);
+    is $img->Get('width'), 50, 'stored image width is 50 (auto-rotated)';
+    is $img->Get('height'), 100, 'stored image height is 100 (auto-rotated)';
+
+    $problem->comments->delete;
+  };
+  } # SKIP
+};
+
 subtest 'Dumfries external_status_code wildcard template matching' => sub {
     my $dmf = $bodies{2656};
 

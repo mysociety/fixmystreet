@@ -36,6 +36,13 @@ has image => (
     },
 );
 
+sub auto_orient {
+    my $self = shift;
+    return $self unless $self->image;
+    $self->image->AutoOrient();
+    return $self;
+}
+
 sub strip {
     my $self = shift;
     return $self unless $self->image;

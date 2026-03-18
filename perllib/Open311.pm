@@ -268,8 +268,11 @@ sub _add_photos_to_upload {
         my $i = 0;
         my $photoset = $obj->get_photoset;
         for ( $photoset->all_ids ) {
-            my $photo = $photoset->get_image_data( num => $i++, size => 'full' );
-            $uploads->{"photo$i"} = [ undef, $_, Content_Type => $photo->{content_type}, Content => $photo->{data} ];
+            my $photo = $photoset->get_image_data( num => $i, size => 'full' );
+            my (undef, $ext) = split /\./, $_;
+            my $filename = $obj->id . ".$i.full.$ext";
+            $i++;
+            $uploads->{"photo$i"} = [ undef, $filename, Content_Type => $photo->{content_type}, Content => $photo->{data} ];
         }
         delete $params->{media_url};
     }
@@ -429,10 +432,10 @@ sub add_media {
             }
         }
         if ($photo_blob) {
-            # Strip EXIF metadata and resize, same as user uploads
+            # Auto-orient using EXIF data, then strip metadata and resize
             $photo_blob = try {
                 FixMyStreet::ImageMagick->new(blob => $photo_blob)
-                    ->shrink('2048x2048')->as_blob(magick => 'JPEG');
+                    ->auto_orient->shrink('2048x2048')->as_blob(magick => 'JPEG');
             } catch { $photo_blob };
             push @photos, $photo_blob;
         }
