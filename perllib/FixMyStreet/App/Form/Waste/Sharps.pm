@@ -130,7 +130,11 @@ has_field collect_glucose_monitor => (
     type => 'Select',
     widget => 'RadioGroup',
     required => 1,
-    label => 'Do any of the boxes contain glucose monitoring devices?',
+    label => 'Do you need to dispose of glucose monitoring devices (e.g. Dexcom, Omnipod devices or similar)?',
+    tags => {
+        hint =>
+            'Some glucose monitoring devices are too large for the apertures on the sharps boxes. If you tell us you need to dispose of glucose monitoring devices we will deliver boxes with the lids unattached. Please attach the lid and seal your boxes prior to collection.',
+    },
     options => [
         { label => 'Yes', value => 'Yes' },
         { label => 'No', value => 'No' },
