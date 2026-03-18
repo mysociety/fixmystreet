@@ -268,8 +268,11 @@ sub _add_photos_to_upload {
         my $i = 0;
         my $photoset = $obj->get_photoset;
         for ( $photoset->all_ids ) {
-            my $photo = $photoset->get_image_data( num => $i++, size => 'full' );
-            $uploads->{"photo$i"} = [ undef, $_, Content_Type => $photo->{content_type}, Content => $photo->{data} ];
+            my $photo = $photoset->get_image_data( num => $i, size => 'full' );
+            my (undef, $ext) = split /\./, $_;
+            my $filename = $obj->id . ".$i.full.$ext";
+            $i++;
+            $uploads->{"photo$i"} = [ undef, $filename, Content_Type => $photo->{content_type}, Content => $photo->{data} ];
         }
         delete $params->{media_url};
     }

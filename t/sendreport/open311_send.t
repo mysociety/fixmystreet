@@ -159,6 +159,16 @@ subtest 'test sending photos as file uploads along with a multivalue attribute',
     };
     $photo_report->discard_changes;
     ok $photo_report->whensent, 'Report marked as sent';
+
+    my $req = Open311->test_req_used;
+    my $content = $req->content;
+    my $id = $photo_report->id;
+    my @filenames = sort ($content =~ /filename="([^"]+)"/g);
+    is_deeply \@filenames, [
+        "$id.0.full.jpeg",
+        "$id.1.full.jpeg",
+        "$id.2.full.jpeg",
+    ], 'Uploaded photo filenames match media_url pattern';
 };
 
 my ($bad_category_report) = $mech->create_problems_for_body( 1, $body->id, 'Test', {
