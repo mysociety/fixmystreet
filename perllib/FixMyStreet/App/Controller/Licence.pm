@@ -66,6 +66,8 @@ sub process_licence : Private {
             my $section = "";
             $section .= "[$stage->{title}]\n" if $stage->{title};
             for my $field (@visible_fields) {
+                my $pretty = $field->{pretty};
+                $pretty =~ s/<br>/\n/g;
                 $section .= "$field->{desc}: $field->{pretty}\n";
             }
             push @sections, $section;
