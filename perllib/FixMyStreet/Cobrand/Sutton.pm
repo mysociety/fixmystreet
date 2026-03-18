@@ -94,6 +94,7 @@ of `request_change_cost_${value}_${key}` will be used instead of the usual `chan
 my %CONTAINER_SWAPS_FROM = (
     refuse_140 => ['refuse_240'],
     refuse_240 => ['refuse_360'],
+    paper_240 => ['paper_360'],
 );
 
 =head2 skip_alert_state_changed_to
@@ -440,13 +441,13 @@ sub waste_containers {
         $CONTAINERS{food_240} => 'Communal Food bin (240L)',
         $CONTAINERS{recycling_240} => 'Recycling bin (240L)',
         $CONTAINERS{recycling_360} => 'Recycling bin (360L)',
-        $CONTAINERS{paper_360} => 'Paper recycling bin (360L)',
         $CONTAINERS{paper_1100} => 'Communal Paper bin (1100L)',
         $CONTAINERS{refuse_140} => 'Standard Brown General Waste Wheelie Bin (140L)',
         $CONTAINERS{refuse_240} => 'Larger Brown General Waste Wheelie Bin (240L)',
         $CONTAINERS{refuse_360} => 'Extra Large Brown General Waste Wheelie Bin (360L)',
         $CONTAINERS{refuse_180} => 'Rubbish bin (180L)',
         $CONTAINERS{recycling_box} => 'Mixed Recycling Green Box (55L)',
+        $CONTAINERS{paper_360} => 'Paper and Cardboard Green Wheelie Bin (360L)',
         $CONTAINERS{paper_240} => 'Paper and Cardboard Green Wheelie Bin (240L)',
         $CONTAINERS{paper_140} => 'Paper and Cardboard Green Wheelie Bin (140L)',
         $CONTAINERS{food_indoor} => 'Small Kitchen Food Waste Caddy (7L)',
@@ -559,7 +560,7 @@ sub waste_request_form_first_next {
         my $data = shift;
         my $choice = $data->{"container-choice"};
         return 'about_you' if $choice == $CONTAINERS{recycling_blue_bag} || $choice == $CONTAINERS{paper_bag};
-        foreach ($CONTAINERS{refuse_140}, $CONTAINERS{refuse_240}, $CONTAINERS{paper_240}) {
+        foreach ($CONTAINERS{refuse_140}, $CONTAINERS{refuse_240}, $CONTAINERS{paper_240}, $CONTAINERS{paper_360}) {
             if ($choice == $_ && !$containers->{$_}) {
                 $data->{request_reason} = 'change_capacity';
                 return 'about_you';
@@ -640,8 +641,16 @@ sub waste_munge_request_data {
                 $id_to_remove = $CONTAINERS{refuse_140};
             }
         } elsif ($id == $CONTAINERS{paper_240}) {
+            if ($c->stash->{quantities}{$CONTAINERS{paper_360}}) {
+                $reason_id = '10::10'; # Reduce Capacity
+                $id_to_remove = $CONTAINERS{paper_360};
+            } else {
+                $reason_id = '9::9'; # Increase Capacity
+                $id_to_remove = $CONTAINERS{paper_140};
+            }
+        } elsif ($id == $CONTAINERS{paper_360}) {
             $reason_id = '9::9'; # Increase Capacity
-            $id_to_remove = $CONTAINERS{paper_140};
+            $id_to_remove = $CONTAINERS{paper_240};
         }
     } else {
         # No reason, must be a bag

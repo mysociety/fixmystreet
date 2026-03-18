@@ -123,6 +123,7 @@ my %CONTAINERS = (
     recycling_box => 12,
     recycling_240 => 15,
     recycling_blue_bag => 22,
+    paper_360 => 28,
     paper_240 => 27,
     paper_140 => 26,
     food_indoor_5 => 43,
@@ -334,6 +335,12 @@ sub waste_service_containers {
                     $request_max->{$CONTAINERS{paper_240}} = 1;
                     # Swap 140 for 240 in container list
                     @$containers = map { $_ == $CONTAINERS{paper_140} ? $CONTAINERS{paper_240} : $_ } @$containers;
+                } elsif ($container == $CONTAINERS{paper_240}) {
+                    push @$containers, $CONTAINERS{paper_360};
+                    $request_max->{$CONTAINERS{paper_360}} = 1;
+                } elsif ($container == $CONTAINERS{paper_360}) {
+                    push @$containers, $CONTAINERS{paper_240};
+                    $request_max->{$CONTAINERS{paper_240}} = 1;
                 }
             }
         }
