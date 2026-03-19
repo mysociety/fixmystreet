@@ -247,6 +247,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'Check Open311 sending of the above report' => sub {
+        my $problem = FixMyStreet::DB->resultset('Problem')->to_body( $body->id )->first;
         my $module = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');
         $module->mock(get => sub ($) { '{}' });
         FixMyStreet::Script::Reports::send();
@@ -264,7 +265,7 @@ FixMyStreet::override_config {
                 $found++;
             }
             if ($cd =~ /jpeg/) {
-                is $cd, 'form-data; name="photo1"; filename="' . $image_hash . '"', 'Correct image header';
+                is $cd, 'form-data; name="photo1"; filename="' . $problem->id . '.0.full.jpeg"', 'Correct image header';
                 is $_->header('Content-Type'), 'image/jpeg', 'Correct image content type';
                 $found++;
             }
