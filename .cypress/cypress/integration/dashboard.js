@@ -70,7 +70,7 @@ describe('Dashboard page', function() {
         // Check total is still the same even though deleted not visible
         cy.get('.subtotal td').last().should('contain', 21);
 
-        // Click deleted categories morning
+        // Click deleted categories button
         cy.get('#toggle-deleted-contacts-btn').click();
 
         // Deleted 'Graffiti' should show, but not other hidden ones
