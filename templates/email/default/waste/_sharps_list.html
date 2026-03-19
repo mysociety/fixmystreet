@@ -3,7 +3,8 @@
   <ul>
     <li>Number of 1-litre boxes: [% report.get_extra_field_value('sharps_collect_small_quantity') %]</li>
     <li>Number of 5-litre boxes: [% report.get_extra_field_value('sharps_collect_large_quantity') %]</li>
-    <li>Collection location: [% report.get_extra_field_value('sharps_location') %]</li>
+    <li>Collection location: [% report.get_extra_field_value('collect_location') %]</li>
+    <li>Further access details: [% report.get_extra_field_value('collect_location_other') %]</li>
     <li>Glucose monitoring devices: [% report.get_extra_field_value('sharps_collect_glucose_monitor') %]</li>
   </ul>
 [% END %]

@@ -78,7 +78,7 @@ has_field collect_large_quantity => (
 );
 
 has_page collection_details => (
-    fields => ['collect_location', 'collect_glucose_monitor', 'continue'],
+    fields => ['collect_location', 'collect_location_other', 'collect_glucose_monitor', 'continue'],
     title => 'Collection details',
     next => sub {
         my $data = $_[0];
@@ -93,36 +93,30 @@ has_field collect_location => (
     required => 1,
     label => 'Where are the boxes located?',
     options => [
-        {   label     => 'Inside property',
-            value     => 'Inside property',
-            data_hide => '#form-collect_location_other-row',
-        },
-        {   label     => 'Doorstep',
-            value     => 'Doorstep',
-            data_hide => '#form-collect_location_other-row',
-        },
-        {   label     => 'Other',
-            value     => 'Other',
-            data_show => '#form-collect_location_other-row',
-        },
+        { label => 'On the doorstep', value => 'On the doorstep' },
+        { label => 'In the porch (needs to be unlocked)', value => 'In the porch' },
+        { label => 'By the bins', value => 'By the bins' },
+        { label => 'Report to office (flats or schools only)', value => 'Report to office' },
+        { label => 'By communal entrance (flats only)', value => 'By communal entrance' },
+        { label => 'Somewhere else? (please use the box below)', value => 'Somewhere else' },
     ],
 );
 
 has_field collect_location_other => (
-    label => 'Tell us where you will leave the boxes to be collected',
+    label => 'Further access details',
     type => 'Text',
     widget => 'Textarea',
     maxlength => 250,
     required_when => {
         collect_location => sub {
-            ( $_[1]->form->field('collect_location')->value // '' ) eq 'Other';
+            ( $_[1]->form->field('collect_location')->value // '' ) eq 'Somewhere else';
         },
     },
     messages => {
         required => 'Location details are required',
     },
     tags => {
-        initial_hidden => 1,
+        hint => 'Please use this box to let us know about anything else we need to collect or deliver your sharps boxes',
     },
 );
 
