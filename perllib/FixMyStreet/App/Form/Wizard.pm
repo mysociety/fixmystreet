@@ -451,7 +451,7 @@ sub fields_for_display {
             my $field = $form->field($f);
             next if $field->type eq 'Submit' || $field->type eq 'Notice';
             my $value = $form->saved_data->{$field->{name}} // '';
-            my $desc = $field->{label} || $field->{option_label};
+            my $desc = $field->label || $field->option_label;
             push @{$x->{fields}}, {
                 name => $field->{name},
                 desc => $desc,
@@ -534,7 +534,7 @@ sub format_for_display {
         if ( ref $value eq 'HASH' && $value->{filenames} ) {
             return join( ', ', @{ $value->{filenames} } );
         }
-        return "None";
+        return "Not attached";
     } elsif ( $field->{type} eq 'Photo' ) {
         my $num = split /,/, $value;
         return sprintf(mySociety::Locale::nget("%d photo", "%d photos", $num), $num);
