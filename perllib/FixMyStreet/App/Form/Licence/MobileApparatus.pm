@@ -308,7 +308,7 @@ has_field activity => (
     label => 'What activity will the mobile apparatus be used for?',
     required => 1,
     tags => {
-        hint => 'For example, “mobile elevated working platform for window replacement” or “cherry picker to install column attachments”',
+        hint => 'For example, ‘mobile elevated working platform for window replacement’ or ‘cherry picker to install column attachments’',
     },
 );
 
@@ -327,7 +327,7 @@ has_field footway_incursion => (
     label => 'What is the proposed footway incursion?',
     required => 1,
     tags => {
-        hint => 'For example, “1m from building line and 3m unobstructed footway” or “no footway incursion”',
+        hint => 'For example, ‘1m from building line and 3m unobstructed footway’ or ‘no footway incursion’',
     },
 );
 
@@ -366,7 +366,7 @@ has_field carriageway_incursion => (
     label => 'What is the proposed carriageway incursion?',
     required => 1,
     tags => {
-        hint => 'For example, “no carriageway incursion” or “Materials located in loading bay”',
+        hint => 'For example, ‘no carriageway incursion’ or ‘Materials located in loading bay’',
     },
 );
 

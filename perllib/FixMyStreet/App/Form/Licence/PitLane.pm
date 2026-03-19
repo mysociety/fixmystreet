@@ -83,7 +83,7 @@ has_field activity => (
     label => 'What activity will the pit lane be used for?',
     required => 1,
     tags => {
-        hint => 'For example, "unloading materials for building refurbishment" or "removing waste from building demolition"',
+        hint => 'For example, ‘unloading materials for building refurbishment’ or ‘removing waste from building demolition’',
     },
 );
 
@@ -112,7 +112,7 @@ has_field footway_incursion => (
     label => 'What is the proposed footway incursion?',
     required => 1,
     tags => {
-        hint => 'For example, "1m from building line and 3m unobstructed footway" or "no footway incursion"',
+        hint => 'For example, ‘1m from building line and 3m unobstructed footway’ or ‘no footway incursion’',
     },
 );
 
@@ -140,7 +140,7 @@ has_field carriageway_incursion => (
     label => 'What is the proposed carriageway incursion?',
     required => 1,
     tags => {
-        hint => 'For example, "lane 1 closure to facilitate Pit Lane" or "loading bay closure for Pit Lane"',
+        hint => 'For example, ‘lane 1 closure to facilitate Pit Lane’ or ‘loading bay closure for Pit Lane’',
     },
 );
 

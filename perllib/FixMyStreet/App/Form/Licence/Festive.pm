@@ -59,7 +59,7 @@ has_field activity => (
     label => 'What activity will the festive decorations be used for?',
     required => 1,
     tags => {
-        hint => 'For example, “seasonal decorations attached to lamp columns”',
+        hint => 'For example, ‘seasonal decorations attached to lamp columns’',
     },
 );
 
@@ -68,7 +68,7 @@ has_field shown_decorations => (
     label => 'What will be shown on the festive decorations? We also require an example of the proposed decorations as part of the application.',
     required => 1,
     tags => {
-        hint => 'For example, “illuminated Christmas trees”',
+        hint => 'For example, ‘illuminated Christmas trees’',
     },
 );
 
@@ -86,7 +86,7 @@ has_field installation_method => (
     label => 'How will the decorations be installed?',
     required => 1,
     tags => {
-        hint => 'For example, “mobile elevating work platform” or “cherry picker”. Note, a separate mobile apparatus application may also be required.',
+        hint => 'For example, ‘mobile elevating work platform’ or ‘cherry picker’. Note, a separate mobile apparatus application may also be required.',
     },
 );
 
@@ -129,7 +129,7 @@ has_field footway_incursion => (
     label => 'What is the proposed footway incursion?',
     required => 1,
     tags => {
-        hint => 'For example, "1m from building line and 3m unobstructed footway" or "no footway incursion"',
+        hint => 'For example, ‘1m from building line and 3m unobstructed footway’ or ‘no footway incursion’',
     },
 );
 
@@ -157,7 +157,7 @@ has_field carriageway_incursion => (
     label => 'What is the proposed carriageway incursion?',
     required => 1,
     tags => {
-        hint => 'For example, "no carriageway incursion" or "temporary mobile lane closure for installation"',
+        hint => 'For example, ‘no carriageway incursion’ or ‘temporary mobile lane closure for installation’',
     },
 );
 

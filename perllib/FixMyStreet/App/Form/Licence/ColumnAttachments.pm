@@ -115,7 +115,7 @@ has_field activity => (
     label => 'What activity will the licence be used for?',
     required => 1,
     tags => {
-        hint => 'For example, “sensor attached to lamp columns for temporary traffic monitoring”',
+        hint => 'For example, ‘sensor attached to lamp columns for temporary traffic monitoring’',
     },
 );
 
@@ -131,7 +131,7 @@ has_field installation_method => (
     label => 'How will the column attachment be installed?',
     required => 1,
     tags => {
-        hint => 'For example, “mobile elevating work platform” or “cherry picker”. Note a separate mobile apparatus application may also required',
+        hint => 'For example, ‘mobile elevating work platform’ or ‘cherry picker’. Note a separate mobile apparatus application may also required',
     },
 );
 
@@ -151,7 +151,7 @@ has_field footway_incursion => (
     label => 'What is the proposed footway incursion?',
     required => 1,
     tags => {
-        hint => 'For example, “1m from building line and 3m unobstructed footway” or “no footway incursion”',
+        hint => 'For example, ‘1m from building line and 3m unobstructed footway’ or ‘no footway incursion’',
     },
 );
 
@@ -192,7 +192,7 @@ has_field carriageway_incursion => (
     label => 'What is the proposed carriageway incursion?',
     required => 1,
     tags => {
-        hint => 'For example, “No carriageway incursion” or “temporary mobile lane closure for installation”',
+        hint => 'For example, ‘No carriageway incursion’ or ‘temporary mobile lane closure for installation’',
     },
 );
 

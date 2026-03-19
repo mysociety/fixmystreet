@@ -59,7 +59,7 @@ has_field activity => (
     label => 'What is the reason for the excavation?',
     required => 1,
     tags => {
-        hint => 'For example, “trial pit to determine location of underground services”',
+        hint => 'For example, ‘trial pit to determine location of underground services’',
     },
 );
 
@@ -68,7 +68,7 @@ has_field excavation_position => (
     label => "What is the position and dimensions of the excavation?",
     required => 1,
     tags => {
-        hint => 'For example, “corner between two roads” and “1m by 1m”',
+        hint => 'For example, ‘corner between two roads’ and ‘1m by 1m’',
     },
 );
 
@@ -87,7 +87,7 @@ has_field footway_incursion => (
     label => 'What is the proposed footway incursion?',
     required => 1,
     tags => {
-        hint => 'For example, "1m from building line and 3m unobstructed footway" or "no footway incursion"',
+        hint => 'For example, ‘1m from building line and 3m unobstructed footway’ or ‘no footway incursion’',
     },
 );
 
@@ -115,7 +115,7 @@ has_field carriageway_incursion => (
     label => 'What is the proposed carriageway incursion?',
     required => 1,
     tags => {
-        hint => 'For example, "no carriageway incursion" or "temporary lane closure for installation"',
+        hint => 'For example, ‘no carriageway incursion’ or ‘temporary lane closure for installation’',
     },
 );
 

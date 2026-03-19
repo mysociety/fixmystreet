@@ -59,7 +59,7 @@ has_field activity => (
     label => 'What activity will the licence be used for?',
     required => 1,
     tags => {
-        hint => 'For example, "maintenance of roundabout or central reserve"',
+        hint => 'For example, ‘maintenance of roundabout or central reserve’',
     },
 );
 
@@ -69,7 +69,7 @@ has_field description => (
     label => 'General description of the proposed works',
     required => 1,
     tags => {
-        hint => 'For example, “planting of ten semi mature silver birch trees” or “sponsored maintenance of roundabout landscape maintenance”',
+        hint => 'For example, ‘planting of ten semi mature silver birch trees’ or ‘sponsored maintenance of roundabout landscape maintenance’',
     },
 );
 
@@ -89,7 +89,7 @@ has_field footway_incursion => (
     label => 'What is the proposed footway incursion?',
     required => 1,
     tags => {
-        hint => 'For example, “no footway incursion, planting taking place on the roundabout”',
+        hint => 'For example, ‘no footway incursion, planting taking place on the roundabout’',
     },
 );
 has_field site_adequate_space => (
@@ -117,7 +117,7 @@ has_field carriageway_incursion => (
     label => 'What is the proposed carriageway incursion?',
     required => 1,
     tags => {
-        hint => 'For example, “No carriageway incursion” or “temporary lane closure for planting”',
+        hint => 'For example, ‘No carriageway incursion’ or ‘temporary lane closure for planting’',
     },
 );
 

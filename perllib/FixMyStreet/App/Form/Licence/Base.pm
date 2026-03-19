@@ -374,7 +374,10 @@ has_field confirmation => (
     type => 'Checkbox',
     label => '',
     required => 1,
-    option_label => 'I confirm that the information I have provided in this application is true, complete and accurate to the best of my knowledge. I understand that providing false or misleading information may result in this application being refused or any licence issued being revoked.',
+    build_option_label_method => sub {
+        my $name = $_[0]->form->saved_data->{name};
+        "I, $name, confirm that the information I have provided in this application is true, complete and accurate to the best of my knowledge. I understand that providing false or misleading information may result in this application being refused or any licence issued being revoked.",
+    }
 );
 
 has_field submit => (

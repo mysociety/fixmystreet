@@ -88,21 +88,22 @@ plus the next Y value to use for the next piece of text.
 # Measurements in points (1/72in)
 my $a4_w = 595;
 my $a4_h = 842;
-my $margin = 27;
+my $margin_h = 15/25.4*72;
+my $margin_w = 30/25.4*72;
 my $logo_w = 960;
 my $logo_h = 781;
 my $logo_scale = 0.05;
 my $box_first = [
-    $margin,
-    $a4_h - $margin,
-    $a4_w - $margin * 2 - $logo_w * $logo_scale - 12,
-    $a4_h - $margin * 2 - $logo_h * $logo_scale - 12 - $margin
+    $margin_w,
+    $a4_h - $margin_h,
+    $a4_w - $margin_w * 2 - $logo_w * $logo_scale - 12,
+    $a4_h - $margin_h * 2 - $margin_h
 ];
 my $box_subsequent = [
-    $margin,
-    $a4_h - $margin - $logo_h * $logo_scale - 12,
-    $a4_w - $margin * 2,
-    $a4_h - $margin * 2 - $logo_h * $logo_scale - 12 - $margin
+    $margin_w,
+    $a4_h - $margin_h - $logo_h * $logo_scale - 12,
+    $a4_w - $margin_w * 2,
+    $a4_h - $margin_h * 2 - $margin_h - $logo_h * $logo_scale - 12
 ];
 my $box = $box_first;
 
@@ -154,12 +155,12 @@ sub page_setup {
     my ($self, $text) = @_;
     $self->page_number($self->page_number + 1);
     my $font = $self->pdf->get_font(face => $self->font, bold => 0, italic => 0);
-    $text->textlabel($a4_w/2, $margin+6, $font, 12, $self->page_number, center => 1, color => 'black');
+    $text->textlabel($a4_w/2, $margin_h+6, $font, 12, $self->page_number, center => 1, color => 'black');
 
     my $gfx = $self->page->graphics;
     $gfx->image($self->header_image,
-        $a4_w - $margin - $logo_w * $logo_scale,
-        $a4_h - $margin - $logo_h * $logo_scale,
+        $a4_w - $margin_w - $logo_w * $logo_scale,
+        $a4_h - $margin_h - $logo_h * $logo_scale,
         $logo_scale);
 }
 
