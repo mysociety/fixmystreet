@@ -104,6 +104,7 @@ sub process_licence : Private {
         anonymous          => 0,
         extra              => $data,
     });
+    $problem->set_extra_metadata(phone => $data->{phone}); # Make sure stored somewhere
 
     $c->stash->{detail} = $detail;
 
