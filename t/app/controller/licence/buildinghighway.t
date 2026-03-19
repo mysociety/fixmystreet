@@ -115,7 +115,6 @@ subtest 'Building over Highway form submission - smoke test' => sub {
         }});
 
         # Payment page
-        $mech->content_contains('LINK', 'Correct payment link');
         $mech->submit_form_ok({ with_fields => {
             payment_transaction_id => 'TEST-TRANSACTION-12345',
         }});

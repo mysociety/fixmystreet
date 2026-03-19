@@ -392,14 +392,10 @@ has_field upload_additional => (
     },
 );
 
-sub payment_link {
-    my $self = shift;
-    my $type = $self->saved_data->{pit_lane_type};
-    if ($type eq 'Pit Lane (Major)') {
-        return 'MAJOR';
-    } else {
-        return 'MINOR';
-    }
+sub payment_link_key {
+    my $form = shift;
+    my $type = $form->saved_data->{pit_lane_type};
+    return $type eq 'Pit Lane (Major)' ? 'major' : 'minor';
 }
 
 __PACKAGE__->meta->make_immutable;

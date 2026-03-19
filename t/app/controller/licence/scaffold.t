@@ -29,6 +29,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
         COBRAND_FEATURES => {
             licencing_forms => { tfl => 1 },
             anonymous_account => { tfl => 'anon' },
+            licencing_payment_links => { tfl => { scaffold => { normal => '1S1H8a' } } },
         },
         PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     }, sub {

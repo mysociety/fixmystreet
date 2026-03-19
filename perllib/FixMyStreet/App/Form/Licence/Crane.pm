@@ -353,14 +353,11 @@ has_field upload_additional => (
     },
 );
 
-sub payment_link {
-    my $self = shift;
-    my $type = $self->saved_data->{crane_type};
-    if ($type eq 'Crane (Lift)') {
-        return 'LIFT';
-    } elsif ($type eq 'Crane (Oversail)') {
-        return 'OVERSAIL';
-    }
+sub payment_link_key {
+    my $form = shift;
+    my $type = $form->saved_data->{crane_type};
+    return 'lift' if $type eq 'Crane (Lift)';
+    return 'oversail' if $type eq 'Crane (Oversail)';
 }
 
 __PACKAGE__->meta->make_immutable;
