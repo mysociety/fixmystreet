@@ -147,7 +147,7 @@ has_field scaffold_configured => (
     label => 'How will the scaffold be configured?',
     required => 1,
     tags => {
-        hint => 'For example, “independent”, “gantry” or “cantilever”',
+        hint => 'For example, ‘independent’, ‘gantry’ or ‘cantilever’',
     },
 );
 
@@ -166,7 +166,7 @@ has_field activity => (
     label => 'What activity will the scaffold be used for?',
     required => 1,
     tags => {
-        hint => 'For example, "building repair" or "window replacement"',
+        hint => 'For example, ‘building repair’ or ‘window replacement’',
     },
 );
 
@@ -185,7 +185,7 @@ has_field footway_incursion => (
     label => 'What is the proposed footway incursion?',
     required => 1,
     tags => {
-        hint => 'For example, "1m from building line and 3m unobstructed footway" or "no footway incursion"',
+        hint => 'For example, ‘1m from building line and 3m unobstructed footway’ or ‘no footway incursion’',
     },
 );
 
@@ -213,7 +213,7 @@ has_field carriageway_incursion => (
     label => 'What is the proposed carriageway incursion?',
     required => 1,
     tags => {
-        hint => 'For example, "no carriageway incursion" or "temporary lane closure for installation"',
+        hint => 'For example, ‘no carriageway incursion’ or ‘temporary lane closure for installation’',
     },
 );
 

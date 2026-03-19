@@ -106,7 +106,7 @@ has_field activity => (
     label => 'What activity will the crane be used for?',
     required => 1,
     tags => {
-        hint => 'For example, "crane oversailing the public highway" or "overnight lift for building construction"',
+        hint => 'For example, ‘crane oversailing the public highway’ or ‘overnight lift for building construction’',
     },
 );
 
@@ -134,7 +134,7 @@ has_field footway_incursion => (
     label => 'What is the proposed footway incursion?',
     required => 1,
     tags => {
-        hint => 'For example, "1m from building line and 3m unobstructed footway" or "no footway incursion"',
+        hint => 'For example, ‘1m from building line and 3m unobstructed footway’ or ‘no footway incursion’',
     },
 );
 
@@ -162,7 +162,7 @@ has_field carriageway_incursion => (
     label => 'What is the proposed carriageway incursion?',
     required => 1,
     tags => {
-        hint => 'For example, "no carriageway incursion" or "temporary carriageway closure for crane lift"',
+        hint => 'For example, ‘no carriageway incursion’ or ‘temporary carriageway closure for crane lift’',
     },
 );
 

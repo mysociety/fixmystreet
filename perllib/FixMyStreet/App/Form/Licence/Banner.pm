@@ -120,7 +120,7 @@ has_field banner_type => (
     required => 1,
     tags => {
         hint =>
-            'For example, “Banners attached to lamp columns”, “Placards attached to pedestrian guard rail” or “Banners secured between buildings and overhanging the highway”',
+            'For example, ‘Banners attached to lamp columns’, ‘Placards attached to pedestrian guard rail’ or ‘Banners secured between buildings and overhanging the highway’',
     },
 );
 
@@ -132,7 +132,7 @@ has_field banner_content => (
     required => 1,
     tags => {
         hint =>
-            'For example, “New Community Centre” or “Major Sporting Event”',
+            'For example, ‘New Community Centre’ or ‘Major Sporting Event’',
     },
 );
 
@@ -150,7 +150,7 @@ has_field banner_installation => (
     required => 1,
     tags => {
         hint =>
-            FixMyStreet::Template::SafeString->new('For example, “mobile elevating work platform” or “cherry picker”.<br>Note: a separate mobile apparatus application may also be required'),
+            FixMyStreet::Template::SafeString->new('For example, ‘mobile elevating work platform’ or ‘cherry picker’.<br>Note: a separate mobile apparatus application may also be required'),
     },
 );
 
@@ -172,7 +172,7 @@ has_field footway_incursion => (
     required => 1,
     tags => {
         hint =>
-            'For example, "1m from building line and 3m unobstructed footway" or "no footway incursion"',
+            'For example, ‘1m from building line and 3m unobstructed footway’ or ‘no footway incursion’',
     },
 );
 
@@ -213,7 +213,7 @@ has_field carriageway_incursion => (
     required => 1,
     tags => {
         hint =>
-            'For example, "no carriageway incursion" or "temporary lane closure for installation"',
+            'For example, ‘no carriageway incursion’ or ‘temporary lane closure for installation’',
     },
 );
 

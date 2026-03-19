@@ -59,7 +59,7 @@ has_field activity => (
     label => 'What is the building work over the highway for?',
     required => 1,
     tags => {
-        hint => 'For example, “temporary canopy” or “temporary welfare unit”',
+        hint => 'For example, ‘temporary canopy’ or ‘temporary welfare unit’',
     },
 );
 
@@ -78,7 +78,7 @@ has_field footway_incursion => (
     label => 'What is the proposed footway incursion?',
     required => 1,
     tags => {
-        hint => 'For example, "1m from building line and 3m unobstructed footway" or "no footway incursion"',
+        hint => 'For example, ‘1m from building line and 3m unobstructed footway’ or ‘no footway incursion’',
     },
 );
 
@@ -106,7 +106,7 @@ has_field carriageway_incursion => (
     label => 'What is the proposed carriageway incursion?',
     required => 1,
     tags => {
-        hint => 'For example, "no carriageway incursion" or "temporary lane closure for installation"',
+        hint => 'For example, ‘no carriageway incursion’ or ‘temporary lane closure for installation’',
     },
 );
 

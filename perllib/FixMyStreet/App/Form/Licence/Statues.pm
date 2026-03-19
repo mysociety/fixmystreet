@@ -59,7 +59,7 @@ has_field activity => (
     label => 'What is the activity for which the licence is requested?',
     required => 1,
     tags => {
-        hint => 'For example, “temporary statue to celebrate local event” or “artwork mural”',
+        hint => 'For example, ‘temporary statue to celebrate local event’ or ‘artwork mural’',
     },
 );
 
@@ -82,7 +82,7 @@ has_field footway_incursion => (
     label => 'What is the proposed footway incursion?',
     required => 1,
     tags => {
-        hint => 'For example, "1m from building line and 3m unobstructed footway" or "no footway incursion"',
+        hint => 'For example, ‘1m from building line and 3m unobstructed footway’ or ‘no footway incursion’',
     },
 );
 
@@ -110,7 +110,7 @@ has_field carriageway_incursion => (
     label => 'What is the proposed carriageway incursion?',
     required => 1,
     tags => {
-        hint => 'For example, "no carriageway incursion" or "temporary lane closure for installation"',
+        hint => 'For example, ‘no carriageway incursion’ or ‘temporary lane closure for installation’',
     },
 );
 

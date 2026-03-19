@@ -59,7 +59,7 @@ has_field activity => (
     label => 'What activity will the materials be used for?',
     required => 1,
     tags => {
-        hint => 'For example "new build", "demolition" or "building repair"',
+        hint => 'For example ‘new build’, ‘demolition’ or ‘building repair’',
     },
 );
 
@@ -69,7 +69,7 @@ has_field building_materials_stored => (
     label => 'What type of materials will be stored?',
     required => 1,
     tags => {
-        hint => 'For example "bagged sand", "bricks" or "bagged cement"',
+        hint => 'For example ‘bagged sand’, ‘bricks’ or ‘bagged cement’',
     },
 );
 
@@ -88,7 +88,7 @@ has_field footway_incursion => (
     label => 'What is the proposed footway incursion?',
     required => 1,
     tags => {
-        hint => 'For example, "1m from building line and 3m unobstructed footway" or "no footway incursion"',
+        hint => 'For example, ‘1m from building line and 3m unobstructed footway’ or ‘no footway incursion’',
     },
 );
 
@@ -116,7 +116,7 @@ has_field carriageway_incursion => (
     label => 'What is the proposed carriageway incursion?',
     required => 1,
     tags => {
-        hint => 'For example, "no carriageway incursion" or "Materials located in loading bay"',
+        hint => 'For example, ‘no carriageway incursion’ or ‘Materials located in loading bay’',
     },
 );
 
