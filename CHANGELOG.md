@@ -21,6 +21,7 @@
         - Include report ID in main submit template. #5568
         - Allow per-category timespan for closing inactive reports to updates. #5649
         - Select correct category group on report inspect dropdowns, and allow updating of category group
+        - Dashboard: toggle visibility of deleted categories and categories with no reports
     - Development improvements
         - More logging when `page_error` is called, to aid troubleshooting. #5279
         - Docker changes needed for systemd to work. #5257

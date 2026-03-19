@@ -188,7 +188,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Abdon and Heath Parish');
         $mech->submit_form_ok({ with_fields => { ward => 144013 } });
         $mech->content_contains('<option value="144013" selected>Oswestry Parish</option>');
-        $mech->content_like(qr{<th scope="row">Total</th>\s*<td>1</td>});
+        $mech->content_like(qr{<th scope="row" id="total-header">Total</th>\s*<td>1</td>});
 
         $mech->get_ok('/dashboard/heatmap');
         $mech->content_contains('Town/parish council');
