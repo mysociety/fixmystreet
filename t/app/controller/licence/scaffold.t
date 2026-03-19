@@ -45,7 +45,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
             postcode => 'NW1 1AA',
         }});
 
-        $mech->content_contains('2 weeks (mobile scaffold only)');
+        $mech->content_contains('2 weeks (mobile tower scaffold only)');
 
         # Dates page (using dynamic dates calculated at test start)
         $mech->submit_form_ok({ with_fields => {

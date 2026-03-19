@@ -54,7 +54,7 @@ has_page date_choice => (
     fields => ['date_choice', 'continue'],
     title => 'Number of mobile apparatus operations',
     next => sub {
-        $_[0]->{date_choice} =~ /^dates/ ? 'dates_pick_1' : 'applicant',
+        $_[0]->{date_choice} =~ /^dates/ ? 'dates_pick_1' : 'date_range_pick',
     },
 );
 
@@ -79,6 +79,7 @@ has_field date_choice => (
 has_page dates_pick_1 => (
     _dates_pick_attributes(1),
     next => sub { $_[0]->{date_choice} eq 'dates_1' ? 'applicant' : 'dates_pick_2' },
+    tags => { hide => sub { !$_[0]->form->saved_data->{start_date_1} } },
 );
 
 has_page dates_pick_2 => (
@@ -120,6 +121,8 @@ sub _date_field_attributes {
     );
 }
 
+sub _time_field_attributes { ( type => 'Text', label => "Proposed $_[0] time", required => 1 ) }
+
 sub validate_date {
     my $field = shift;
     my $form = $field->form;
@@ -155,22 +158,14 @@ has_field 'start_date_1.day' => ( type => 'MonthDay' );
 has_field 'start_date_1.month' => ( type => 'Month' );
 has_field 'start_date_1.year' => ( type => 'Year' );
 
-has_field start_time_1 => (
-    type => 'Text',
-    label => 'Proposed start time',
-    required_when => { start_date_1 => sub { $_[0] && ($_[0]->{day} || $_[0]->{month} || $_[0]->{year}) } },
-);
+has_field start_time_1 => ( _time_field_attributes('start') );
 
 has_field end_date_1 => ( _date_field_attributes( 1, 'end' ) );
 has_field 'end_date_1.day' => ( type => 'MonthDay' );
 has_field 'end_date_1.month' => ( type => 'Month' );
 has_field 'end_date_1.year' => ( type => 'Year' );
 
-has_field end_time_1 => (
-    type => 'Text',
-    label => 'Proposed end time',
-    required_when => { end_date_1 => sub { $_[0] && ($_[0]->{day} || $_[0]->{month} || $_[0]->{year}) } },
-);
+has_field end_time_1 => ( _time_field_attributes('end') );
 
 # ==========================================================================
 # Operation 2
@@ -181,22 +176,14 @@ has_field 'start_date_2.day' => ( type => 'MonthDay' );
 has_field 'start_date_2.month' => ( type => 'Month' );
 has_field 'start_date_2.year' => ( type => 'Year' );
 
-has_field start_time_2 => (
-    type => 'Text',
-    label => 'Proposed start time',
-    required_when => { start_date_2 => sub { $_[0] && ($_[0]->{day} || $_[0]->{month} || $_[0]->{year}) } },
-);
+has_field start_time_2 => ( _time_field_attributes('start') );
 
 has_field end_date_2 => ( _date_field_attributes( 2, 'end' ) );
 has_field 'end_date_2.day' => ( type => 'MonthDay' );
 has_field 'end_date_2.month' => ( type => 'Month' );
 has_field 'end_date_2.year' => ( type => 'Year' );
 
-has_field end_time_2 => (
-    type => 'Text',
-    label => 'Proposed end time',
-    required_when => { end_date_2 => sub { $_[0] && ($_[0]->{day} || $_[0]->{month} || $_[0]->{year}) } },
-);
+has_field end_time_2 => ( _time_field_attributes('end') );
 
 # ==========================================================================
 # Operation 3
@@ -207,22 +194,58 @@ has_field 'start_date_3.day' => ( type => 'MonthDay' );
 has_field 'start_date_3.month' => ( type => 'Month' );
 has_field 'start_date_3.year' => ( type => 'Year' );
 
-has_field start_time_3 => (
-    type => 'Text',
-    label => 'Proposed start time',
-    required_when => { start_date_3 => sub { $_[0] && ($_[0]->{day} || $_[0]->{month} || $_[0]->{year}) } },
-);
+has_field start_time_3 => ( _time_field_attributes('start') );
 
 has_field end_date_3 => ( _date_field_attributes( 3, 'end' ) );
 has_field 'end_date_3.day' => ( type => 'MonthDay' );
 has_field 'end_date_3.month' => ( type => 'Month' );
 has_field 'end_date_3.year' => ( type => 'Year' );
 
-has_field end_time_3 => (
-    type => 'Text',
-    label => 'Proposed end time',
-    required_when => { end_date_3 => sub { $_[0] && ($_[0]->{day} || $_[0]->{month} || $_[0]->{year}) } },
+has_field end_time_3 => ( _time_field_attributes('end') );
+
+has_page date_range_pick => (
+    fields => ['proposed_start_date', 'proposed_start_time', 'proposed_end_time', 'continue'],
+    title => 'Proposed working dates',
+    next => 'applicant',
+    tags => { hide => sub { !$_[0]->form->saved_data->{proposed_start_date} } },
 );
+
+has_field proposed_start_date => (
+    type => 'DateTime',
+    label => 'Proposed start date',
+    required => 1,
+    messages => {
+        datetime_invalid => 'Please enter a valid date',
+    },
+    validate_method => sub {
+        my $field = shift;
+        return if $field->has_errors; # Called even if already failed
+
+        my $dt = $field->value or return;
+        my $today = DateTime->today(time_zone => FixMyStreet->local_time_zone);
+        my $min_date = $today->clone->add(weeks => 4);
+
+        if ($dt < $min_date) {
+            $field->add_error('Start date must be at least 4 weeks from today');
+        }
+
+        my $saved_data = $field->form->saved_data;
+        my $end = $dt->clone;
+        if ($saved_data->{date_choice} eq 'week') {
+            $end->add(days => 6);
+        } elsif ($saved_data->{date_choice} eq 'fortnight') {
+            $end->add(days => 13);
+        }
+        $saved_data->{proposed_end_date} = $end;
+    },
+);
+
+has_field 'proposed_start_date.day' => ( type => 'MonthDay' );
+has_field 'proposed_start_date.month' => ( type => 'Month' );
+has_field 'proposed_start_date.year' => ( type => 'Year' );
+
+has_field proposed_start_time => ( _time_field_attributes('start') );
+has_field proposed_end_time => ( _time_field_attributes('end') );
 
 # ==========================================================================
 # Crane details

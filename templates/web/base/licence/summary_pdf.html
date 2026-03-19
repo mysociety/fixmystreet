@@ -16,12 +16,5 @@
         [% field.pretty %]
         </p>
 
-        [% IF field.desc == 'Number of weeks required'; SET end = form.saved_data.proposed_end_date %]
-            <p style="margin-top:6pt">
-            <strong>Proposed end date:</strong>
-            [% end.day %]/[% end.month %]/[% end.year %]
-            </p>
-        [% END %]
-
     [% END %]
 [% END %]

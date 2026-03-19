@@ -1,11 +1,9 @@
 [%
 IF report.cobrand_data == 'licence';
-    SET subject = 'FMS' _ report.id _ ' ' _ report.category _ ' application received';
+    PROCESS 'other-reported-licence.txt';
 ELSE;
-    SET subject = 'Your report has been logged: ' _ report.title;
-END
 ~%]
-Subject: [% subject %]
+Subject: Your report has been logged: [% report.title %]
 
 Hello [% report.name %],
 
@@ -36,3 +34,4 @@ And details:
 
 This email was sent automatically, from an unmonitored email account - so
 please do not reply to it.
+[% END %]

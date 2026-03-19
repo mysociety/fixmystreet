@@ -91,14 +91,6 @@ sub generate_pdf {
                 ($rc, $next_y) = $pdf->plot_line($next_y, '#0019A8', $page_title);
             }
             ($rc, $next_y) = $pdf->plot_line($next_y, 'black', $line);
-
-            # Special showing of calculated end date
-            if ($field->{desc} eq 'Number of weeks required') {
-                my $end = $form->saved_data->{proposed_end_date};
-                my $line = '<p style="margin-top:6pt"><strong>Proposed end date:';
-                $line .= "</strong> $end->{day}/$end->{month}/$end->{year}</p>";
-                ($rc, $next_y) = $pdf->plot_line($next_y, 'black', $line);
-            }
         }
     }
 
