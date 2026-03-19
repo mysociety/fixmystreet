@@ -198,9 +198,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
             like $email_parts[1][0]{'Content-Type'}, qr{multipart/related};
             like $email_parts[2][0]{'Content-Type'}, qr{multipart/alternative};
             like $email_parts[3][0]{'Content-Type'}, qr{text/plain};
-				# could check text here
             like $email_parts[4][0]{'Content-Type'}, qr{text/html};
-				# could check html here
             like $email_parts[5][0]{'Content-Type'}, qr{image/gif};
             like $email_parts[5][0]{'Content-Disposition'}, qr{email-logo.gif};
             like $email_parts[6][0]{'Content-Type'}, qr{application/pdf};

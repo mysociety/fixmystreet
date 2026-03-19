@@ -15,6 +15,7 @@ has bodies_exclude => ( is => 'ro', default => sub { [] } );
 has fetch_all => ( is => 'rw', default => 0 );
 has verbose => ( is => 'ro', default => 0 );
 has report_ids => ( is => 'ro', default => sub { [] } );
+has skip_existing => ( is => 'ro', default => 0 );
 has commit => ( is => 'ro', default => 1 );
 has schema => ( is =>'ro', lazy => 1, default => sub { FixMyStreet::DB->schema->connect } );
 has convert_latlong => ( is => 'rw', default => 0 );
@@ -44,6 +45,17 @@ sub fetch {
         $self->system_user( $body->comment_user );
         $self->convert_latlong( $body->convert_latlong );
         $self->fetch_all( $body->get_extra_metadata('fetch_all_problems') );
+
+        if ($self->skip_existing && @{$self->report_ids}) {
+            my @filtered = $self->filter_existing_ids($body, $self->report_ids);
+            unless (@filtered) {
+                warn "All report IDs already exist for " . $body->name . ", skipping\n"
+                    if $self->verbose;
+                next;
+            }
+            @{$self->report_ids} = @filtered;
+        }
+
         my $args = $self->format_args;
         my $requests = $self->get_requests($o, $body, $args);
         $self->create_problems( $o, $body, $args, $requests );
@@ -87,6 +99,21 @@ sub format_args {
     }
 
     return $args;
+}
+
+sub filter_existing_ids {
+    my ($self, $body, $report_ids) = @_;
+
+    my %existing = map { $_ => 1 }
+        $self->schema->resultset('Problem')->to_body($body)->search(
+            { external_id => { -in => $report_ids } },
+        )->get_column('external_id')->all;
+
+    my @skipped = grep { $existing{$_} } @$report_ids;
+    warn "Skipping already imported IDs for " . $body->name . ": " . join(', ', @skipped) . "\n"
+        if $self->verbose && @skipped;
+
+    return grep { !$existing{$_} } @$report_ids;
 }
 
 sub get_requests {

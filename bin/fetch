@@ -34,6 +34,7 @@ my ($opts, $usage) = describe_options(
     ['start|s:f', 'start time to use (hours before now), defaults to one (reports) or two (updates)' ],
     ['end|e:f', 'end time to use (hours before now), defaults to zero' ],
     ['report-ids|r:s', 'comma-separated list of service request IDs to fetch (use with --reports and --body)'],
+    ['skip-existing', 'skip report IDs that already exist in the database (use with --report-ids)'],
     ['body|b:s@', 'body name(s) to only fetch these bodies' ],
     ['exclude|e:s@', 'body name(s) to exclude from fetching' ],
     ['verbose|v+', 'more verbose output', { default => 0 }],
@@ -45,6 +46,8 @@ if ($opts->report_ids) {
     die "--report-ids can only be used with --reports\n" unless $opts->reports;
     die "--report-ids requires exactly one --body\n" unless $opts->body && @{$opts->body} == 1;
     die "--report-ids cannot be used with --start or --end\n" if $opts->start || $opts->end;
+} elsif ($opts->skip_existing) {
+    die "--skip-existing can only be used with --report-ids\n";
 }
 
 my %params = (
@@ -55,6 +58,7 @@ my %params = (
 
 if ($opts->report_ids) {
     $params{report_ids} = [ split /,/, $opts->report_ids ];
+    $params{skip_existing} = 1 if $opts->skip_existing;
 }
 
 my $dt = DateTime->now();
