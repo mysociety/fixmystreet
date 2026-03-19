@@ -191,7 +191,7 @@ sub options_proposed_duration {
     }
     # Scaffold and Building Materials have a 2 week option
     if ($type eq 'scaffold') {
-        unshift @options, { label => '2 weeks (mobile scaffold only)', value => 2 };
+        unshift @options, { label => '2 weeks (mobile tower scaffold only)', value => 2 };
     } elsif ($type eq 'building-materials') {
         unshift @options, { label => '2 weeks', value => 2 };
     }
