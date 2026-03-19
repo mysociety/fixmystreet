@@ -276,17 +276,15 @@ sub waste_munge_sharps_data {
 
     if ( $data->{sharps_collecting} eq 'Yes' ) {
         $data->{extra_sharps_collecting} = 1;
-        $data->{extra_sharps_location}
-            = $data->{collect_location} eq 'Other'
-            ? 'Other: ' . $data->{collect_location_other}
-            : $data->{collect_location};
+        $data->{extra_collect_location} = $data->{collect_location};
+        $data->{extra_collect_location_other} = $data->{collect_location_other};
         $data->{extra_sharps_collect_small_quantity} = $data->{collect_small_quantity};
         $data->{extra_sharps_collect_large_quantity} = $data->{collect_large_quantity};
-        $data->{extra_sharps_collect_glucose_monitor} = $data->{collect_glucose_monitor};
     }
 
     if ( $data->{sharps_delivering} eq 'Yes' ) {
         $data->{extra_sharps_delivering} = 1;
+        $data->{extra_sharps_deliver_glucose_monitor} = $data->{deliver_glucose_monitor};
         $data->{extra_sharps_deliver_size} = $data->{deliver_size};
         $data->{extra_sharps_deliver_quantity} = $data->{deliver_quantity};
     }
@@ -303,14 +301,15 @@ sub waste_reconstruct_sharps_data {
         sharps_collecting => $p->get_extra_field_value('sharps_collecting')
             ? 'Yes'
             : 'No',
-        collect_location        => $p->get_extra_field_value('sharps_location'),
+        collect_location        => $p->get_extra_field_value('collect_location'),
+        collect_location_other  => $p->get_extra_field_value('collect_location_other'),
         collect_small_quantity  => $p->get_extra_field_value('sharps_collect_small_quantity'),
         collect_large_quantity  => $p->get_extra_field_value('sharps_collect_large_quantity'),
-        collect_glucose_monitor => $p->get_extra_field_value('sharps_collect_glucose_monitor'),
 
         sharps_delivering => $p->get_extra_field_value('sharps_delivering')
             ? 'Yes'
             : 'No',
+        deliver_glucose_monitor => $p->get_extra_field_value('sharps_deliver_glucose_monitor'),
         deliver_size     => $p->get_extra_field_value('sharps_deliver_size'),
         deliver_quantity => $p->get_extra_field_value('sharps_deliver_quantity'),
     };

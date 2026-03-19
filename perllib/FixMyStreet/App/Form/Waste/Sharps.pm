@@ -78,11 +78,11 @@ has_field collect_large_quantity => (
 );
 
 has_page collection_details => (
-    fields => ['collect_location', 'collect_glucose_monitor', 'continue'],
+    fields => ['collect_location', 'collect_location_other', 'continue'],
     title => 'Collection details',
     next => sub {
         my $data = $_[0];
-        return 'delivery_details' if $data->{sharps_delivering} eq 'Yes';
+        return 'delivery_glucose_monitor' if $data->{sharps_delivering} eq 'Yes';
         return 'summary';
     },
 );
@@ -93,40 +93,40 @@ has_field collect_location => (
     required => 1,
     label => 'Where are the boxes located?',
     options => [
-        {   label     => 'Inside property',
-            value     => 'Inside property',
-            data_hide => '#form-collect_location_other-row',
-        },
-        {   label     => 'Doorstep',
-            value     => 'Doorstep',
-            data_hide => '#form-collect_location_other-row',
-        },
-        {   label     => 'Other',
-            value     => 'Other',
-            data_show => '#form-collect_location_other-row',
-        },
+        { label => 'On the doorstep', value => 'On the doorstep' },
+        { label => 'In the porch (needs to be unlocked)', value => 'In the porch' },
+        { label => 'By the bins', value => 'By the bins' },
+        { label => 'Report to office (flats or schools only)', value => 'Report to office' },
+        { label => 'By communal entrance (flats only)', value => 'By communal entrance' },
+        { label => 'Somewhere else? (please use the box below)', value => 'Somewhere else' },
     ],
 );
 
 has_field collect_location_other => (
-    label => 'Tell us where you will leave the boxes to be collected',
+    label => 'Further access details',
     type => 'Text',
     widget => 'Textarea',
     maxlength => 250,
     required_when => {
         collect_location => sub {
-            ( $_[1]->form->field('collect_location')->value // '' ) eq 'Other';
+            ( $_[1]->form->field('collect_location')->value // '' ) eq 'Somewhere else';
         },
     },
     messages => {
         required => 'Location details are required',
     },
     tags => {
-        initial_hidden => 1,
+        hint => 'Please use this box to let us know about anything else we need to collect or deliver your sharps boxes',
     },
 );
 
-has_field collect_glucose_monitor => (
+has_page delivery_glucose_monitor => (
+    fields => ['deliver_glucose_monitor', 'continue'],
+    title => 'Delivery details',
+    next => 'delivery_details',
+);
+
+has_field deliver_glucose_monitor => (
     type => 'Select',
     widget => 'RadioGroup',
     required => 1,
@@ -152,11 +152,27 @@ has_field deliver_size => (
     widget => 'RadioGroup',
     required => 1,
     label => 'What size boxes do you need?',
-    options => [
-        { label => '1-litre', value => '1-litre' },
-        { label => '5-litre', value => '5-litre' },
-    ],
+    tags => {
+        hint => sub {
+            ( $_[0]->form->saved_data->{deliver_glucose_monitor} // '' ) eq 'Yes'
+                ? 'If you are disposing of glucose monitoring devices you can only request 5-litre boxes.'
+                : '';
+        },
+    },
 );
+
+sub options_deliver_size {
+    my $self = shift;
+    my $data = $self->form->saved_data;
+
+    my $disabled_small
+        = ( $data->{deliver_glucose_monitor} // '' ) eq 'Yes' ? 1 : 0;
+
+    return (
+        { label => '1-litre', value => '1-litre', disabled => $disabled_small },
+        { label => '5-litre', value => '5-litre', checked => $disabled_small },
+    );
+}
 
 has_field deliver_quantity => (
     type => 'Select',
