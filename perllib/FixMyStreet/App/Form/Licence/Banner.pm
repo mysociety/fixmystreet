@@ -34,7 +34,7 @@ has_field start => (
 # Location (fields from Fields::Location role)
 # ==========================================================================
 has_page location_1 => (
-    fields => ['building_name_number', 'street_name', 'borough', 'postcode', 'continue'],
+    fields => ['building_name_number', 'street_name', 'borough', 'postcode', 'add_another', 'continue'],
     title => 'Location of the banner/s',
     intro => 'location.html',
     next => sub { $_[1]->{add_another} ? 'location_2' : 'dates' },
