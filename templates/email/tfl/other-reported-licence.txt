@@ -1,0 +1,29 @@
+Subject: FMS[% report.id %] [% report.category %] application received
+
+Your application for a [% report.category %] is now under review.
+If the payment amount is incorrect or any required supporting documents are missing, a member of our team will contact you.
+
+Please note that it will take a minimum of four weeks for your licence to be issued.
+You must not start any works until you receive your licence as all requested dates are subject to coordination checks and cannot be guaranteed.
+Your application will progress through the following stages:
+
+Initial Review (up to 5 working days)
+
+The Licensing Team checks your application and documentation.
+
+Proposal Assessment (up to 10 working days)
+
+An Asset Operations Officer reviews the proposals.
+
+Road Space Permit (up to 5 working days)
+
+A road space permit is arranged. Once the permit is granted, your licence will be issued.
+
+This [% report.category %] application reference number is FMS[% report.id %].
+Until you have received your TfL licence, please quote this application reference.
+
+Application details
+
+[% report.detail %]
+
+[% signature %]
