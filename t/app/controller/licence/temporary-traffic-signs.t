@@ -27,6 +27,7 @@ subtest 'Temporary Traffic Signs form submission - smoke test' => sub {
         PHONE_COUNTRY => 'GB',
         COBRAND_FEATURES => {
             licencing_forms => { tfl => 1 },
+            licencing_payment_links => { tfl => { 'temporary-traffic-signs' => { four => 'LINK' } } },
         },
         PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     }, sub {

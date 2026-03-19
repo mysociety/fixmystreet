@@ -315,14 +315,10 @@ has_field upload_additional => (
     },
 );
 
-sub payment_link {
-    my $self = shift;
-    my $type = $self->saved_data->{hoarding_type};
-    if ($type eq 'Hoarding (Large)') {
-        return 'Large-Payment';
-    } else {
-        return 'Small-Payment';
-    }
+sub payment_link_key {
+    my $form = shift;
+    my $type = $form->saved_data->{hoarding_type};
+    return $type eq 'Hoarding (Large)' ? 'large' : 'small';
 }
 
 __PACKAGE__->meta->make_immutable;

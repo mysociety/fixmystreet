@@ -539,6 +539,13 @@ has_field upload_additional => (
     },
 );
 
+sub payment_link_key {
+    my $form = shift;
+    my $num = $form->saved_data->{date_choice};
+    my $type = $form->saved_data->{apparatus_type};
+    return "$type-$num";
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
