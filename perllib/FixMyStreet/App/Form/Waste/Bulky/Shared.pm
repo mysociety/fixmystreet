@@ -316,11 +316,17 @@ has_field tandc => (
         } elsif ($c->cobrand->moniker eq 'bexley') {
             if ( $c->stash->{sharps} ) {
                 $label = << 'HERE';
-&bull; I understand that collections can take place any time after 6am on the chosen collection day. Items must be accessible at the location given and left in a neat and safe manner. Items cannot be left for collection on the public highway.
+&bull; Collection / delivery of boxes may take place any time after 6am on your chosen day.
 <br>
-&bull; I understand that cancellations are accepted up to one working day before the chosen collection day. Changes can only be made by cancelling and rebooking.
+&bull; Please seal all boxes before collection and leave them neatly and safely at the agreed location.
 <br>
-&bull; I understand that only items added to the booking will be taken and any additional items will be left.
+&bull; We will only collect or deliver the number and type of boxes added to the booking.
+<br>
+&bull; Cancellations are accepted up to one working day before your collection.
+<br>
+&bull; This service is for household sharps collections only. We are unable to provide this service for business customers.
+<br>
+&bull; This service is for residents who are self-treating at home. We cannot collect sharps that are produced by healthcare practitioners who visit your home to treat you. Healthcare practitioners are responsible for removing and disposing of this waste.
 HERE
             } else {
                 $label = << 'HERE';
