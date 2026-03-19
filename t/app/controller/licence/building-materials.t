@@ -27,6 +27,7 @@ subtest 'Building materials form submission - smoke test' => sub {
         PHONE_COUNTRY => 'GB',
         COBRAND_FEATURES => {
             licencing_forms => { tfl => 1 },
+            licencing_payment_links => { tfl => { 'building-materials' => { default => 'LINK' } } },
         },
         PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     }, sub {
@@ -112,6 +113,7 @@ subtest 'Building materials form submission - smoke test' => sub {
         }});
 
         # Payment page
+        $mech->content_contains('LINK', 'Correct payment link');
         $mech->submit_form_ok({ with_fields => {
             payment_transaction_id => 'TEST-TRANSACTION-12345',
         }});

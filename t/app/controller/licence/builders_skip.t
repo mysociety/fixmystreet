@@ -30,6 +30,7 @@ subtest 'Skip form submission - smoke test' => sub {
         COBRAND_FEATURES => {
             anonymous_account => { tfl => 'anonymous' },
             licencing_forms => { tfl => 1 },
+            licencing_payment_links => { tfl => { 'builders-skip' => 'LINK' } },
         },
         PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     }, sub {

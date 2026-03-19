@@ -27,6 +27,7 @@ subtest 'Banner form submission - smoke test' => sub {
         PHONE_COUNTRY => 'GB',
         COBRAND_FEATURES => {
             licencing_forms => { tfl => 1 },
+            licencing_payment_links => { tfl => { banner => 'LINK' } },
         },
         PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     }, sub {
