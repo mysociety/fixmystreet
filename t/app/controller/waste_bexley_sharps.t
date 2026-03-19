@@ -30,7 +30,7 @@ $contact->set_extra_fields(
     { code => 'sharps_collecting', required => 1, automated => 'hidden_field' },
     { code => 'sharps_collect_small_quantity', required => 1, automated => 'hidden_field' },
     { code => 'sharps_collect_large_quantity', required => 1, automated => 'hidden_field' },
-    { code => 'sharps_collect_glucose_monitor', required => 1, automated => 'hidden_field' },
+    { code => 'sharps_deliver_glucose_monitor', required => 1, automated => 'hidden_field' },
 
     { code => 'sharps_delivering', required => 1, automated => 'hidden_field' },
     { code => 'sharps_deliver_size', required => 1, automated => 'hidden_field' },
@@ -142,12 +142,35 @@ FixMyStreet::override_config {
         $mech->submit_form_ok(
             {   with_fields => {
                     collect_location => 'On the doorstep',
-                    collect_glucose_monitor => 'No',
                 }
             }
         );
 
         $mech->content_contains('Delivery details');
+
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    deliver_glucose_monitor => 'Yes',
+                }
+            }
+        );
+
+        $mech->content_contains('you can only request 5-litre boxes');
+        $mech->content_like(qr/value="1-litre"\s*disabled/s);
+        $mech->content_like(qr/value="5-litre"\s*checked/s);
+
+        $mech->back;
+
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    deliver_glucose_monitor => 'No',
+                }
+            }
+        );
+
+        $mech->content_lacks('you can only request 5-litre boxes');
+        $mech->content_unlike(qr/value="1-litre"\s*disabled/s);
+        $mech->content_unlike(qr/value="5-litre"\s*checked/s);
 
         # Validate delivery limits
         $mech->submit_form_ok(
@@ -211,8 +234,8 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('sharps_collecting'), '1';
         is $report->get_extra_field_value('sharps_collect_small_quantity'), '3';
         is $report->get_extra_field_value('sharps_collect_large_quantity'), '2';
-        is $report->get_extra_field_value('sharps_collect_glucose_monitor'), 'No';
         is $report->get_extra_field_value('sharps_delivering'), '1';
+        is $report->get_extra_field_value('sharps_deliver_glucose_monitor'), 'No';
         is $report->get_extra_field_value('sharps_deliver_size'), '1-litre';
         is $report->get_extra_field_value('sharps_deliver_quantity'), '5';
 
@@ -409,8 +432,8 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('sharps_collecting'), '';
         is $report->get_extra_field_value('sharps_collect_small_quantity'), '';
         is $report->get_extra_field_value('sharps_collect_large_quantity'), '';
-        is $report->get_extra_field_value('sharps_collect_glucose_monitor'), '';
         is $report->get_extra_field_value('sharps_delivering'), '1';
+        is $report->get_extra_field_value('sharps_deliver_glucose_monitor'), '';
         is $report->get_extra_field_value('sharps_deliver_size'), '5-litre';
         is $report->get_extra_field_value('sharps_deliver_quantity'), '2';
 
@@ -478,7 +501,6 @@ FixMyStreet::override_config {
             {   with_fields => {
                     collect_location => 'Somewhere else',
                     collect_location_other => 'With the cat',
-                    collect_glucose_monitor => 'No',
                 }
             }
         );
@@ -490,7 +512,6 @@ FixMyStreet::override_config {
         $mech->content_contains('Collection location');
         $mech->content_contains('Somewhere else');
         $mech->content_contains('With the cat');
-        $mech->content_contains('Glucose monitoring devices');
         $mech->content_lacks('Delivery details');
 
         $mech->submit_form_ok(
@@ -518,8 +539,8 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('sharps_collecting'), '1';
         is $report->get_extra_field_value('sharps_collect_small_quantity'), '3';
         is $report->get_extra_field_value('sharps_collect_large_quantity'), '2';
-        is $report->get_extra_field_value('sharps_collect_glucose_monitor'), 'No';
         is $report->get_extra_field_value('sharps_delivering'), '';
+        is $report->get_extra_field_value('sharps_deliver_glucose_monitor'), '';
         is $report->get_extra_field_value('sharps_deliver_size'), '';
         is $report->get_extra_field_value('sharps_deliver_quantity'), '';
 
@@ -535,7 +556,6 @@ FixMyStreet::override_config {
         like $email_txt, qr/Number of 5-litre boxes: 2/;
         like $email_txt, qr/Collection location: Somewhere else/;
         like $email_txt, qr/Further access details: With the cat/;
-        like $email_txt, qr/Glucose monitoring devices: No/;
 
         unlike $email_txt, qr/Delivery details/;
 
@@ -545,7 +565,6 @@ FixMyStreet::override_config {
         like $email_html, qr/Number of 5-litre boxes: 2/;
         like $email_html, qr/Collection location: Somewhere else/;
         like $email_html, qr/Further access details: With the cat/;
-        like $email_html, qr/Glucose monitoring devices: No/;
 
         unlike $email_html, qr/Delivery details/;
 
@@ -584,8 +603,7 @@ FixMyStreet::override_config {
             collect_small_quantity => 3, collect_large_quantity => 2,
         }});
         $mech->submit_form_ok({ with_fields => {
-            collect_location        => 'On the doorstep',
-            collect_glucose_monitor => 'No',
+            collect_location => 'On the doorstep',
         }});
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         $mech->clear_emails_ok;
@@ -620,7 +638,6 @@ FixMyStreet::override_config {
         like $txt, qr/Friday 27 June 2025/, 'Includes collection date (txt)';
         like $txt, qr/Number of 1-litre boxes: 3/, 'Includes 1-litre box count (txt)';
         like $txt, qr/Number of 5-litre boxes: 2/, 'Includes 5-litre box count (txt)';
-        like $txt, qr/Glucose monitoring devices: No/, 'Includes glucose monitor detail (txt)';
         unlike $txt, qr{/waste/10001/sharps/cancel/}, 'No cancel link in reminder (txt)';
 
         like $html, qr/Friday 27 June 2025/, 'Includes collection date (html)';

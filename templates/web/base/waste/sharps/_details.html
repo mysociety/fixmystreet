@@ -12,8 +12,6 @@
     <dd>[% data.collect_location %]</dd>
     <dt>Further access details</dt>
     <dd>[% data.collect_location_other %]</dd>
-    <dt>Glucose monitoring devices</dt>
-    <dd>[% data.collect_glucose_monitor %]</dd>
   </dl>
 [% END %]
 
@@ -23,6 +21,8 @@
     [% TRY %][% PROCESS change_answers_button goto='delivery_details' %][% CATCH file %][% END %]
   </div>
   <dl>
+    <dt>Glucose monitoring devices</dt>
+    <dd>[% data.deliver_glucose_monitor %]</dd>
     <dt>Box size</dt>
     <dd>[% data.deliver_size %]</dd>
     <dt>Quantity</dt>

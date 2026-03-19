@@ -78,11 +78,11 @@ has_field collect_large_quantity => (
 );
 
 has_page collection_details => (
-    fields => ['collect_location', 'collect_location_other', 'collect_glucose_monitor', 'continue'],
+    fields => ['collect_location', 'collect_location_other', 'continue'],
     title => 'Collection details',
     next => sub {
         my $data = $_[0];
-        return 'delivery_details' if $data->{sharps_delivering} eq 'Yes';
+        return 'delivery_glucose_monitor' if $data->{sharps_delivering} eq 'Yes';
         return 'summary';
     },
 );
@@ -120,7 +120,13 @@ has_field collect_location_other => (
     },
 );
 
-has_field collect_glucose_monitor => (
+has_page delivery_glucose_monitor => (
+    fields => ['deliver_glucose_monitor', 'continue'],
+    title => 'Delivery details',
+    next => 'delivery_details',
+);
+
+has_field deliver_glucose_monitor => (
     type => 'Select',
     widget => 'RadioGroup',
     required => 1,
@@ -146,11 +152,27 @@ has_field deliver_size => (
     widget => 'RadioGroup',
     required => 1,
     label => 'What size boxes do you need?',
-    options => [
-        { label => '1-litre', value => '1-litre' },
-        { label => '5-litre', value => '5-litre' },
-    ],
+    tags => {
+        hint => sub {
+            ( $_[0]->form->saved_data->{deliver_glucose_monitor} // '' ) eq 'Yes'
+                ? 'If you are disposing of glucose monitoring devices you can only request 5-litre boxes.'
+                : '';
+        },
+    },
 );
+
+sub options_deliver_size {
+    my $self = shift;
+    my $data = $self->form->saved_data;
+
+    my $disabled_small
+        = ( $data->{deliver_glucose_monitor} // '' ) eq 'Yes' ? 1 : 0;
+
+    return (
+        { label => '1-litre', value => '1-litre', disabled => $disabled_small },
+        { label => '5-litre', value => '5-litre', checked => $disabled_small },
+    );
+}
 
 has_field deliver_quantity => (
     type => 'Select',
