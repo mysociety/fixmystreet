@@ -5,7 +5,9 @@ Collection details:
 
     - Number of 5-litre boxes: [% report.get_extra_field_value('sharps_collect_large_quantity') %]
 
-    - Collection location: [% report.get_extra_field_value('sharps_location') %]
+    - Collection location: [% report.get_extra_field_value('collect_location') %]
+
+    - Further access details: [% report.get_extra_field_value('collect_location_other') %]
 
     - Glucose monitoring devices: [% report.get_extra_field_value('sharps_collect_glucose_monitor') %]
 [% END ~%]
