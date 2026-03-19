@@ -231,6 +231,12 @@ has_field upload_additional => (
     },
 );
 
+sub payment_link_key {
+    my $form = shift;
+    my $weeks = $form->saved_data->{proposed_duration};
+    return $weeks == 2 ? 'two' : 'default';
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;

@@ -358,7 +358,16 @@ has_field payment_warning => (
     widget => 'NoRender',
 );
 
-sub payment_link { 'LINK' }
+sub payment_link {
+    my $form = shift;
+    my $c = $form->c;
+    my $links = $c->cobrand->feature('licencing_payment_links');
+    if ($form->can('payment_link_key')) {
+        my $key = $form->payment_link_key;
+        return $links->{$form->type}{$key};
+    }
+    return $links->{$form->type};
+}
 
 # ==========================================================================
 # Summary

@@ -31,6 +31,11 @@ subtest 'Mobile apparatus form submission - smoke test' => sub {
         PHONE_COUNTRY => 'GB',
         COBRAND_FEATURES => {
             licencing_forms => { tfl => 1 },
+            licencing_payment_links => { tfl => { 'mobile-apparatus' => {
+                'Mobile Apparatus (Carriageway)-dates_2' => 'dates_2-link',
+                'Mobile Apparatus (Carriageway)-week' => 'week-link',
+                'Mobile Apparatus (Carriageway)-fortnight' => 'fortnight-link',
+            } } },
         },
         PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     }, sub {
@@ -191,6 +196,7 @@ subtest 'Mobile apparatus form submission - smoke test' => sub {
                 }});
 
                 # Payment page
+                $mech->content_contains("$_-link");
                 $mech->submit_form_ok({ with_fields => {
                     payment_transaction_id => 'TEST-TRANSACTION-12345',
                 }});
