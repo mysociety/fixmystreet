@@ -410,16 +410,12 @@ has_field upload_additional => (
     },
 );
 
-sub payment_link {
-    my $self = shift;
-    my $type = $self->saved_data->{scaffold_type};
-    if ($type eq 'Scaffold (Mobile Tower)') {
-        return 'https://ebc2test.cybersource.com/ebc2/payByLink/pay/rKoNGpTjrw8wwoygPdsmbNjiPhbCLr98MHR1B2xx9iazhSecgrT8mZziDEUnol6L';
-    } elsif ($type eq 'Scaffold (Large)') {
-        return 'https://ebc2test.cybersource.com/ebc2/payByLink/pay/mzWBnuiA747cclZIDar9r8jF5BConLNld6QWbfZJJfTViBsEggO0jpu68tI7DWMx';
-    } else {
-        return 'https://ebc2test.cybersource.com/ebc2/payByLink/pay/1S1H8aiH78NUYsz3863iSbn1Z7OdesWjzBLAo41i0alca5Q2uM9RPTF3NGYIK5WR';
-    }
+sub payment_link_key {
+    my $form = shift;
+    my $type = $form->saved_data->{scaffold_type};
+    return 'mobile' if $type eq 'Scaffold (Mobile Tower)';
+    return 'large' if $type eq 'Scaffold (Large)';
+    return 'normal';
 }
 
 __PACKAGE__->meta->make_immutable;
