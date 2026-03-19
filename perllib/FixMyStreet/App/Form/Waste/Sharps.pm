@@ -78,7 +78,7 @@ has_field collect_large_quantity => (
 );
 
 has_page collection_details => (
-    fields => ['collect_location', 'collect_glucose_monitor', 'collect_cytotoxic', 'continue'],
+    fields => ['collect_location', 'collect_glucose_monitor', 'continue'],
     title => 'Collection details',
     next => sub {
         my $data = $_[0];
@@ -130,18 +130,11 @@ has_field collect_glucose_monitor => (
     type => 'Select',
     widget => 'RadioGroup',
     required => 1,
-    label => 'Do any of the boxes contain glucose monitoring devices?',
-    options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
-    ],
-);
-
-has_field collect_cytotoxic => (
-    type => 'Select',
-    widget => 'RadioGroup',
-    required => 1,
-    label => 'Do any of the boxes contain cytotoxic waste?',
+    label => 'Do you need to dispose of glucose monitoring devices (e.g. Dexcom, Omnipod devices or similar)?',
+    tags => {
+        hint =>
+            'Some glucose monitoring devices are too large for the apertures on the sharps boxes. If you tell us you need to dispose of glucose monitoring devices we will deliver boxes with the lids unattached. Please attach the lid and seal your boxes prior to collection.',
+    },
     options => [
         { label => 'Yes', value => 'Yes' },
         { label => 'No', value => 'No' },

@@ -283,7 +283,6 @@ sub waste_munge_sharps_data {
         $data->{extra_sharps_collect_small_quantity} = $data->{collect_small_quantity};
         $data->{extra_sharps_collect_large_quantity} = $data->{collect_large_quantity};
         $data->{extra_sharps_collect_glucose_monitor} = $data->{collect_glucose_monitor};
-        $data->{extra_sharps_collect_cytotoxic} = $data->{collect_cytotoxic};
     }
 
     if ( $data->{sharps_delivering} eq 'Yes' ) {
@@ -308,7 +307,6 @@ sub waste_reconstruct_sharps_data {
         collect_small_quantity  => $p->get_extra_field_value('sharps_collect_small_quantity'),
         collect_large_quantity  => $p->get_extra_field_value('sharps_collect_large_quantity'),
         collect_glucose_monitor => $p->get_extra_field_value('sharps_collect_glucose_monitor'),
-        collect_cytotoxic       => $p->get_extra_field_value('sharps_collect_cytotoxic'),
 
         sharps_delivering => $p->get_extra_field_value('sharps_delivering')
             ? 'Yes'
