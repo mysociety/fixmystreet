@@ -30,251 +30,239 @@ subtest 'Mobile apparatus form submission - smoke test' => sub {
         },
         PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     }, sub {
-        $mech->get_ok('/licence/mobile-apparatus');
+        foreach (qw(dates_1 dates_2 dates_3 week fortnight)) {
+            subtest "Testing with date choice $_" => sub {
+                $mech->get_ok('/licence/mobile-apparatus');
 
-        # Intro page
-        $mech->submit_form_ok({ button => 'start' });
+                # Intro page
+                $mech->submit_form_ok({ button => 'start' });
 
-        # Location page
-        $mech->submit_form_ok({ with_fields => {
-            street_name => 'Test Street',
-            building_name_number => '123',
-            borough => 'camden',
-            postcode => 'NW1 1AA',
-        }});
+                # Location page
+                $mech->submit_form_ok({ with_fields => {
+                    street_name => 'Test Street',
+                    building_name_number => '123',
+                    borough => 'camden',
+                    postcode => 'NW1 1AA',
+                }});
 
-        # Dates pages
-        $mech->submit_form_ok({ with_fields => {
-            date_choice => 'week',
-        }});
-        $mech->content_contains('Applicant');
-        $mech->back;
+                # Dates pages
+                $mech->submit_form_ok({ with_fields => {
+                    date_choice => $_,
+                }});
 
-        $mech->submit_form_ok({ with_fields => {
-            date_choice => 'dates_1',
-        }});
+                if ($_ eq 'week' || $_ eq 'fortnight') {
+                    $mech->submit_form_ok({ with_fields => {
+                        'proposed_start_date.day' => $start_date->day,
+                        'proposed_start_date.month' => $start_date->month,
+                        'proposed_start_date.year' => $start_date->year,
+                        proposed_start_time => '9am',
+                        proposed_end_time => '5pm',
+                    }});
+                } else {
+                    $mech->submit_form_ok({ with_fields => {
+                        'start_date_1.day' => $start_date->day,
+                        'start_date_1.month' => $start_date->month,
+                        'start_date_1.year' => $start_date->year,
+                        start_time_1 => '9am',
+                        'end_date_1.day' => $start_date->day,
+                        'end_date_1.month' => $start_date->month,
+                        'end_date_1.year' => $start_date->year,
+                        end_time_1 => '5pm',
+                    }});
+                    if ($_ eq 'dates_1') {
+                        $mech->content_contains('Applicant details');
+                        return;
+                    }
 
-        $mech->submit_form_ok({ with_fields => {
-            'start_date_1.day' => $start_date->day,
-            'start_date_1.month' => $start_date->month,
-            'start_date_1.year' => $start_date->year,
-            start_time_1 => '9am',
-            'end_date_1.day' => $start_date->day,
-            'end_date_1.month' => $start_date->month,
-            'end_date_1.year' => $start_date->year,
-            end_time_1 => '5pm',
-        }});
+                    $mech->submit_form_ok({ with_fields => {
+                        'start_date_2.day' => $start_date->day,
+                        'start_date_2.month' => $start_date->month,
+                        'start_date_2.year' => $start_date->year,
+                        start_time_2 => '9am',
+                        'end_date_2.day' => $start_date->day,
+                        'end_date_2.month' => $start_date->month,
+                        'end_date_2.year' => $start_date->year,
+                        end_time_2 => '5pm',
+                    }});
 
-        # Goes to applicant page
-        $mech->content_contains('Applicant details');
+                    if ($_ eq 'dates_3') {
+                        $mech->submit_form_ok({ with_fields => {
+                            'start_date_3.day' => $start_date->day,
+                            'start_date_3.month' => $start_date->month,
+                            'start_date_3.year' => $start_date->year,
+                            start_time_3 => '9am',
+                            'end_date_3.day' => $start_date->day,
+                            'end_date_3.month' => $start_date->month,
+                            'end_date_3.year' => $start_date->year,
+                            end_time_3 => '5pm',
+                        }});
+                        $mech->content_contains('Applicant details');
+                        return;
+                    }
+                }
 
-        # Back to date_choice
-        $mech->back;
-        $mech->back;
-        $mech->submit_form_ok({ with_fields => {
-            date_choice => 'dates_3',
-        }});
+                # Applicant page
+                $mech->submit_form_ok({ with_fields => {
+                    organisation => 'Test Builder Ltd',
+                    job_title => 'Builder',
+                    name => 'Test Person',
+                    address => '123 Test Street, London, NW1 1AA',
+                    email => 'test@example.com',
+                    phone => '01234 567890',
+                    phone_24h => '07911 123456',
+                }});
 
-        $mech->submit_form_ok({ with_fields => {
-            'start_date_1.day' => $start_date->day,
-            'start_date_1.month' => $start_date->month,
-            'start_date_1.year' => $start_date->year,
-            start_time_1 => '9am',
-            'end_date_1.day' => $start_date->day,
-            'end_date_1.month' => $start_date->month,
-            'end_date_1.year' => $start_date->year,
-            end_time_1 => '5pm',
-        }});
-        $mech->submit_form_ok({ with_fields => {
-            'start_date_2.day' => $start_date->day,
-            'start_date_2.month' => $start_date->month,
-            'start_date_2.year' => $start_date->year,
-            start_time_2 => '9am',
-            'end_date_2.day' => $start_date->day,
-            'end_date_2.month' => $start_date->month,
-            'end_date_2.year' => $start_date->year,
-            end_time_2 => '5pm',
-        }});
-        $mech->submit_form_ok({ with_fields => {
-            'start_date_3.day' => $start_date->day,
-            'start_date_3.month' => $start_date->month,
-            'start_date_3.year' => $start_date->year,
-            start_time_3 => '9am',
-            'end_date_3.day' => $start_date->day,
-            'end_date_3.month' => $start_date->month,
-            'end_date_3.year' => $start_date->year,
-            end_time_3 => '5pm',
-        }});
+                # Contractor page - use "same as applicant"
+                $mech->submit_form_ok({ with_fields => {
+                    contractor_same_as_applicant => 1,
+                }});
 
-        # Back to date_choice again
-        $mech->back for 1..4;
-        $mech->submit_form_ok({ with_fields => {
-            date_choice => 'dates_2',
-        }});
+                # Details page
+                $mech->submit_form_ok({ with_fields => {
+                    model => 'Nokia',
+                    weight => 24,
+                    footprint => 'Small',
+                    capacity => 15,
+                }});
 
-        $mech->submit_form_ok({ with_fields => {
-            'start_date_1.day' => $start_date->day,
-            'start_date_1.month' => $start_date->month,
-            'start_date_1.year' => $start_date->year,
-            start_time_1 => '9am',
-            'end_date_1.day' => $start_date->day,
-            'end_date_1.month' => $start_date->month,
-            'end_date_1.year' => $start_date->year,
-            end_time_1 => '5pm',
-        }});
-        $mech->submit_form_ok({ with_fields => {
-            'start_date_2.day' => $start_date->day,
-            'start_date_2.month' => $start_date->month,
-            'start_date_2.year' => $start_date->year,
-            start_time_2 => '9am',
-            'end_date_2.day' => $start_date->day,
-            'end_date_2.month' => $start_date->month,
-            'end_date_2.year' => $start_date->year,
-            end_time_2 => '5pm',
-        }});
+                # Activity page
+                $mech->submit_form_ok({ with_fields => {
+                    activity => 'Building repair',
+                }});
 
-        # Applicant page
-        $mech->submit_form_ok({ with_fields => {
-            organisation => 'Test Builder Ltd',
-            job_title => 'Builder',
-            name => 'Test Person',
-            address => '123 Test Street, London, NW1 1AA',
-            email => 'test@example.com',
-            phone => '01234 567890',
-            phone_24h => '07911 123456',
-        }});
+                # Site specific pages (one question per page)
+                $mech->submit_form_ok({ with_fields => {
+                    footway_incursion => 'No footway incursion',
+                    situated_on_footway => 'No',
+                    site_adequate_space => 'Yes'
+                }});
+                $mech->submit_form_ok({ with_fields => {
+                    carriageway_incursion => 'No carriageway incursion',
+                    situated_on_carriageway => 'Yes',
+                }});
+                $mech->submit_form_ok({ with_fields => {
+                    site_obstruct_infrastructure => 'No',
+                }});
 
-        # Contractor page - use "same as applicant"
-        $mech->submit_form_ok({ with_fields => {
-            contractor_same_as_applicant => 1,
-        }});
+                $mech->content_contains('tfl.gov.uk/modes/buses');
+                $mech->content_contains('tfl.gov.uk/info-for');
+                $mech->content_contains('www.met.police.uk/contact');
+                $mech->submit_form_ok({ with_fields => {
+                    buses_consulted => 'No',
+                    underground_consulted => 'No',
+                    police_consulted => 'No',
+                    preapp_comments => 'No',
+                }});
 
-        # Details page
-        $mech->submit_form_ok({ with_fields => {
-            model => 'Nokia',
-            weight => 24,
-            footprint => 'Small',
-            capacity => 15,
-        }});
+                $mech->content_contains('Mobile apparatus type');
+                $mech->content_like(qr/value="Mobile Apparatus \(Footway\)".*disabled/s);
+                $mech->content_like(qr/value="Mobile Apparatus \(Carriageway\)".*checked/s);
+                $mech->submit_form_ok({ with_fields => {
+                    apparatus_type => 'Mobile Apparatus (Carriageway)',
+                }});
 
-        # Activity page
-        $mech->submit_form_ok({ with_fields => {
-            activity => 'Building repair',
-        }});
+                # Have you considered page
+                $mech->submit_form_ok({ with_fields => {
+                    parking_dispensation => 'Yes',
+                    parking_bay_suspension => 'No',
+                    bus_stop_suspension => 'Yes',
+                    bus_lane_suspension => 'No',
+                    road_closure_required => 'No',
+                }});
 
-        # Site specific pages (one question per page)
-        $mech->submit_form_ok({ with_fields => {
-            footway_incursion => 'No footway incursion',
-            situated_on_footway => 'No',
-            site_adequate_space => 'Yes'
-        }});
-        $mech->submit_form_ok({ with_fields => {
-            carriageway_incursion => 'No carriageway incursion',
-            situated_on_carriageway => 'Yes',
-        }});
-        $mech->submit_form_ok({ with_fields => {
-            site_obstruct_infrastructure => 'No',
-        }});
+                $mech->form_with_fields('terms_accepted');
+                $mech->current_form->find_input('terms_accepted', undef, 1)->value('Mobile apparatus guidance notes and terms & conditions - March 2026');
+                $mech->current_form->find_input('terms_accepted', undef, 2)->value('Highway licensing and other consents policy - March 2026');
+                $mech->current_form->find_input('terms_accepted', undef, 3)->value('Standard conditions for highway consents - March 2026');
+                $mech->submit_form_ok;
 
-        $mech->content_contains('tfl.gov.uk/modes/buses');
-        $mech->content_contains('tfl.gov.uk/info-for');
-        $mech->content_contains('www.met.police.uk/contact');
-        $mech->submit_form_ok({ with_fields => {
-            buses_consulted => 'No',
-            underground_consulted => 'No',
-            police_consulted => 'No',
-            preapp_comments => 'No',
-        }});
+                # Uploads page
+                $mech->submit_form_ok({ with_fields => {
+                    upload_insurance => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
+                    insurance_validity => 'all year',
+                    upload_rams => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
+                    upload_site_drawing => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
+                    upload_traffic_management => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
+                }});
 
-        $mech->content_contains('Mobile apparatus type');
-        $mech->content_like(qr/value="Mobile Apparatus \(Footway\)".*disabled/s);
-        $mech->content_like(qr/value="Mobile Apparatus \(Carriageway\)".*checked/s);
-        $mech->submit_form_ok({ with_fields => {
-            apparatus_type => 'Mobile Apparatus (Carriageway)',
-        }});
+                # Payment page
+                $mech->submit_form_ok({ with_fields => {
+                    payment_transaction_id => 'TEST-TRANSACTION-12345',
+                }});
 
-        # Have you considered page
-        $mech->submit_form_ok({ with_fields => {
-            parking_dispensation => 'Yes',
-            parking_bay_suspension => 'No',
-            bus_stop_suspension => 'Yes',
-            bus_lane_suspension => 'No',
-            road_closure_required => 'No',
-        }});
+                # Summary page - check it rendered
+                $mech->content_contains('Application Summary', 'Summary page rendered');
 
-        $mech->form_with_fields('terms_accepted');
-        $mech->current_form->find_input('terms_accepted', undef, 1)->value('Mobile apparatus guidance notes and terms & conditions - March 2026');
-        $mech->current_form->find_input('terms_accepted', undef, 2)->value('Highway licensing and other consents policy - March 2026');
-        $mech->current_form->find_input('terms_accepted', undef, 3)->value('Standard conditions for highway consents - March 2026');
-        $mech->submit_form_ok;
+                # Contractor fields should be hidden since "same as applicant" was checked
+                # "Contact name" is unique to contractor section (applicant uses "Full name")
+                $mech->content_lacks('Contact name', 'Contractor fields hidden when same as applicant');
 
-        # Uploads page
-        $mech->submit_form_ok({ with_fields => {
-            upload_insurance => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
-            insurance_validity => 'all year',
-            upload_rams => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
-            upload_site_drawing => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
-            upload_traffic_management => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
-        }});
+                # Check date inputs
+                if ($_ eq 'dates_2') {
+                    $mech->content_contains('Proposed working dates (Operation 1)');
+                    $mech->content_contains('Proposed working dates (Operation 2)');
+                } elsif ($_ eq 'week') {
+                    $mech->content_lacks('Proposed working dates (Operation 1)');
+                    $mech->content_lacks('Proposed working dates (Operation 2)');
+                    $mech->content_contains('Proposed working dates');
+                    $mech->content_contains('29/4/2026');
+                } elsif ($_ eq 'fortnight') {
+                    $mech->content_lacks('Proposed working dates (Operation 1)');
+                    $mech->content_lacks('Proposed working dates (Operation 2)');
+                    $mech->content_contains('Proposed working dates');
+                    $mech->content_contains('6/5/2026');
+                }
+                $mech->content_lacks('Proposed working dates (Operation 3)');
 
-        # Payment page
-        $mech->submit_form_ok({ with_fields => {
-            payment_transaction_id => 'TEST-TRANSACTION-12345',
-        }});
+                # Summary page - submit
+                $mech->submit_form_ok({ with_fields => { confirmation => 1 } });
 
-        # Summary page - check it rendered
-        $mech->content_contains('Application Summary', 'Summary page rendered');
+                # Check we're on confirmation page
+                $mech->content_contains('This is not a licence', 'Shows confirmation page');
 
-        # Contractor fields should be hidden since "same as applicant" was checked
-        # "Contact name" is unique to contractor section (applicant uses "Full name")
-        $mech->content_lacks('Contact name', 'Contractor fields hidden when same as applicant');
+                # Verify Problem was created
+                my $problem = FixMyStreet::DB->resultset('Problem')
+                    ->search({ category => 'Mobile apparatus licence' })
+                    ->order_by({ -desc => 'id' })->first;
+                ok $problem, 'Problem record created';
+                is $problem->cobrand_data, 'licence', 'cobrand_data is licence';
+                is $problem->non_public, 1, 'Problem is non-public';
+                is $problem->user->email, 'test@example.com', 'User email set correctly';
+                is $problem->user->name, 'Test Person', 'User name set correctly';
 
-        # Check date inputs
-        $mech->content_contains('Proposed working dates (Operation 1)');
-        $mech->content_contains('Proposed working dates (Operation 2)');
-        $mech->content_lacks('Proposed working dates (Operation 3)');
+                # Detail string should group fields by section with headers and blank lines,
+                # making it easier to distinguish e.g. applicant vs contractor answers
+                my $detail = $problem->detail;
+                like $detail, qr/\[Location of mobile apparatus\]/, 'Detail contains Location section header';
+                like $detail, qr/\[Applicant details\]/, 'Detail contains Applicant section header';
+                like $detail, qr/\n\n/, 'Detail has blank lines between sections';
+                unlike $detail, qr/Contact name:/, 'Contractor contact name hidden when same as applicant';
 
-        # Summary page - submit
-        $mech->submit_form_ok({ with_fields => { confirmation => 1 } });
+                if ($_ eq 'dates_2') {
+                    like $detail, qr/Proposed working dates \(Operation 1\)/;
+                    like $detail, qr/Proposed working dates \(Operation 2\)/;
+                } elsif ($_ eq 'week') {
+                    like $detail, qr{29/4/2026};
+                } elsif ($_ eq 'fortnight') {
+                    like $detail, qr{6/5/2026};
+                }
+                unlike $detail, qr/Proposed working dates \(Operation 3\)/;
 
-        # Check we're on confirmation page
-        $mech->content_contains('This is not a licence', 'Shows confirmation page');
+                # Verify uploads went to the licence_files directory
+                my $cfg = FixMyStreet->config('PHOTO_STORAGE_OPTIONS');
+                my $upload_dir = path($UPLOAD_DIR, "tfl-licence-mobile-apparatus")->absolute(FixMyStreet->path_to());
 
-        # Verify Problem was created
-        my $problem = FixMyStreet::DB->resultset('Problem')
-            ->search({ category => 'Mobile apparatus licence' })
-            ->order_by({ -desc => 'id' })->first;
-        ok $problem, 'Problem record created';
-        is $problem->cobrand_data, 'licence', 'cobrand_data is licence';
-        is $problem->non_public, 1, 'Problem is non-public';
-        is $problem->user->email, 'test@example.com', 'User email set correctly';
-        is $problem->user->name, 'Test Person', 'User name set correctly';
+                ok -d $upload_dir, 'licence_files directory exists';
 
-        # Detail string should group fields by section with headers and blank lines,
-        # making it easier to distinguish e.g. applicant vs contractor answers
-        my $detail = $problem->detail;
-        like $detail, qr/\[Location of mobile apparatus\]/, 'Detail contains Location section header';
-        like $detail, qr/\[Applicant details\]/, 'Detail contains Applicant section header';
-        like $detail, qr/\n\n/, 'Detail has blank lines between sections';
-        unlike $detail, qr/Contact name:/, 'Contractor contact name hidden when same as applicant';
-
-        like $detail, qr/Proposed working dates \(Operation 1\)/;
-        like $detail, qr/Proposed working dates \(Operation 2\)/;
-        unlike $detail, qr/Proposed working dates \(Operation 3\)/;
-
-        # Verify uploads went to the licence_files directory
-        my $cfg = FixMyStreet->config('PHOTO_STORAGE_OPTIONS');
-        my $upload_dir = path($UPLOAD_DIR, "tfl-licence-mobile-apparatus")->absolute(FixMyStreet->path_to());
-
-        ok -d $upload_dir, 'licence_files directory exists';
-
-        # Check each upload field has a file reference and the file exists
-        my $extra = $problem->get_extra_metadata;
-        for my $field (qw(upload_insurance upload_rams upload_traffic_management upload_site_drawing)) {
-            ok $extra->{$field}, "Extra metadata contains $field";
-            ok $extra->{$field}->{files}, "$field has files key";
-            my $file_path = $upload_dir->child($extra->{$field}->{files});
-            ok -f $file_path, "Uploaded file exists at $file_path";
+                # Check each upload field has a file reference and the file exists
+                my $extra = $problem->get_extra_metadata;
+                for my $field (qw(upload_insurance upload_rams upload_traffic_management upload_site_drawing)) {
+                    ok $extra->{$field}, "Extra metadata contains $field";
+                    ok $extra->{$field}->{files}, "$field has files key";
+                    my $file_path = $upload_dir->child($extra->{$field}->{files});
+                    ok -f $file_path, "Uploaded file exists at $file_path";
+                }
+            };
         }
     };
 };

@@ -55,7 +55,7 @@ after after_build => sub {
     my $page_date_choice = firstidx { $_->{name} eq 'date_choice' } @pages;
     if ($page_date_choice > -1) {
         my $page_dates = firstidx { $_->{name} eq 'dates' } @pages;
-        splice(@pages, $page_dates, 0, splice(@pages, $page_date_choice, 4));
+        splice(@pages, $page_dates, 0, splice(@pages, $page_date_choice, 5));
     }
 
     $form->pages(\@pages);
