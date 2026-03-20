@@ -7,6 +7,10 @@ my $sample_pdf = path(__FILE__)->parent->parent->child("sample.pdf");
 
 # Calculate valid dates for the form (start date must be 4+ weeks from now)
 my $start_date = DateTime->today->add(weeks => 5);
+my $end_week = $start_date->clone->add(days => 6);
+$end_week = join('/', $end_week->day, $end_week->month, $end_week->year);
+my $end_fortnight = $start_date->clone->add(days => 13);
+$end_fortnight = join('/', $end_fortnight->day, $end_fortnight->month, $end_fortnight->year);
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -211,12 +215,12 @@ subtest 'Mobile apparatus form submission - smoke test' => sub {
                     $mech->content_lacks('Proposed working dates (Operation 1)');
                     $mech->content_lacks('Proposed working dates (Operation 2)');
                     $mech->content_contains('Proposed working dates');
-                    $mech->content_contains('29/4/2026');
+                    $mech->content_contains($end_week);
                 } elsif ($_ eq 'fortnight') {
                     $mech->content_lacks('Proposed working dates (Operation 1)');
                     $mech->content_lacks('Proposed working dates (Operation 2)');
                     $mech->content_contains('Proposed working dates');
-                    $mech->content_contains('6/5/2026');
+                    $mech->content_contains($end_fortnight);
                 }
                 $mech->content_lacks('Proposed working dates (Operation 3)');
 
@@ -248,9 +252,9 @@ subtest 'Mobile apparatus form submission - smoke test' => sub {
                     like $detail, qr/Proposed working dates \(Operation 1\)/;
                     like $detail, qr/Proposed working dates \(Operation 2\)/;
                 } elsif ($_ eq 'week') {
-                    like $detail, qr{29/4/2026};
+                    like $detail, qr{$end_week};
                 } elsif ($_ eq 'fortnight') {
-                    like $detail, qr{6/5/2026};
+                    like $detail, qr{$end_fortnight};
                 }
                 unlike $detail, qr/Proposed working dates \(Operation 3\)/;
 
