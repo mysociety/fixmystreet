@@ -8,6 +8,7 @@ use Open311::PopulateServiceList;
 # Create test data
 my $user = $mech->create_user_ok( 'rutland@example.com' );
 my $body = $mech->create_body_ok( 2600, 'Rutland County Council', { cobrand => 'rutland' });
+my $staffuser = $mech->create_user_ok( 'staff@example.com', name => 'Staff', from_body => $body );
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
     category => 'Other',
@@ -36,6 +37,12 @@ my $confirm_contact = $mech->create_contact_ok(
     body_id => $body->id,
     category => 'Drains',
     email => 'Confirm-1234',
+);
+
+my $recategorisation_contact = $mech->create_contact_ok(
+    body_id => $body->id,
+    category => 'Street Cleansing',
+    email => '1234',
 );
 
 my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
@@ -211,6 +218,74 @@ FixMyStreet::override_config {
        });
        $mech->content_contains('Names are limited to ' . $test->{length} . ' characters', "Correct report validation used");
     }
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'rutland' ],
+    MAPIT_URL        => 'http://mapit.uk/',
+    STAGING_FLAGS => { send_reports => 1 },
+}, sub {
+    my ($report, $report2) = $mech->create_problems_for_body(2, $body->id, 'Hedge hanging over road', {
+          cobrand => 'rutland',
+          category => 'Drains',
+          whensent => DateTime->now,
+    });
+
+    subtest 'Report sent to Confirm redirected to Salesforce' => sub {
+        FixMyStreet::Script::Reports::send();
+        $report->update({ external_id => 12345 });
+        $report2->update({ external_id => 34567 });
+
+        my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+                <service_requests_updates>
+                <request_update>
+                <update_id>UPDATE_1</update_id>
+                <service_request_id>12345</service_request_id>
+                <status>OPEN</status>
+                <external_status_code>1600</external_status_code>
+                <updated_datetime>UPDATED_DATETIME</updated_datetime>
+                </request_update>
+                <request_update>
+                <update_id>UPDATE_2</update_id>
+                <service_request_id>34567</service_request_id>
+                <status>OPEN</status>
+                <external_status_code>1601</external_status_code>
+                <updated_datetime>UPDATED_DATETIME</updated_datetime>
+                </request_update>
+                </service_requests_updates>
+            };
+        my $update_dt = DateTime->now(formatter => DateTime::Format::W3CDTF->new);
+        $requests_xml =~ s/UPDATED_DATETIME/$update_dt/g;
+
+        my $o = Open311->new( jurisdiction => 'FMS', endpoint => 'http://rutland.endpoint.example.com', extended_statuses => 1);
+        Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
+
+        my $update = Open311::GetServiceRequestUpdates->new(
+              system_user => $staffuser,
+              current_open311 => $o,
+              current_body => $body,
+              blank_updates_permitted => 1,
+        );
+
+        $update->process_body;
+        $report->discard_changes;
+        $report2->discard_changes;
+
+        is $report->comments->count, 1;
+        is $report->comments->next->state, 'hidden';
+        is $report->category, 'Street Cleansing', 'Category changed';
+        is $report2->category, 'Drains', 'Category remains the same';
+
+        FixMyStreet::Script::Reports::send();
+        $report->discard_changes;
+        $report2->discard_changes;
+
+        is $report->external_id, 248, 'External ID updated after resend';
+        is $report2->external_id, 34567, 'External ID remains with Confirm';
+
+        $report->discard_changes;
+        is $report->comments->count, 1, 'No additional comments added';
+    };
 };
 
 done_testing();
