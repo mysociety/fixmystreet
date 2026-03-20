@@ -61,7 +61,6 @@ FixMyStreet::override_config {
         $mech->content_lacks('Check collection details');
 
         $mech->get_ok('/waste/10001/sharps');
-        $mech->content_contains('Book sharps collection');
         $mech->content_contains('Request a sharps box delivery or collection');
         $mech->content_contains('Before you make a request');
         $mech->submit_form_ok;

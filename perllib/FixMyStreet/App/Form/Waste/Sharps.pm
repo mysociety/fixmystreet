@@ -7,7 +7,7 @@ extends 'FixMyStreet::App::Form::Waste::Bulky::Shared';
 has sharps => ( is => 'ro', default => 1 );
 
 has_page intro => (
-    title => 'Book sharps collection',
+    title => 'Request a sharps box delivery or collection',
     intro => 'sharps/intro.html',
     fields => ['continue'],
     next => 'about_you',
