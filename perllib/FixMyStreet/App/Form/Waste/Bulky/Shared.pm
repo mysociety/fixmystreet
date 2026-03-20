@@ -318,6 +318,7 @@ has_field tandc => (
                 $label = << 'HERE';
 Please tick the box to confirm that you agree to the terms and conditions before submitting your booking.
 <br>
+<br>
 &bull; Collection / delivery of boxes may take place any time after 6am on your chosen day.
 <br>
 &bull; Please seal all boxes before collection and leave them neatly and safely at the agreed location.
