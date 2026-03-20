@@ -56,3 +56,27 @@
     document.getElementById('proposed_start_date').addEventListener('change', updateEndDateFromChecked);
     updateEndDateFromChecked();
 })();
+
+// Mobile Apparatus licence form: update end date when start date changed
+(function() {
+    var row = document.getElementById('form-calculated_end_date-row');
+    if (!row) {
+        return;
+    }
+
+    function updateEndDate() {
+        var d = document.getElementById('proposed_start_date.day').value,
+            m = document.getElementById('proposed_start_date.month').value,
+            y = document.getElementById('proposed_start_date.year').value,
+            date = new Date(y, m-1, d),
+            end = document.getElementById('js-proposed_end_date'),
+            days = +end.dataset.days;
+        date.setDate(date.getDate() + days);
+        if (d && m && y) {
+            end.innerHTML = 'Your proposed end date will be ' + date.toLocaleDateString() + '.<br><br>';
+        }
+    }
+
+    document.getElementById('proposed_start_date').addEventListener('change', updateEndDate);
+    updateEndDate();
+})();
