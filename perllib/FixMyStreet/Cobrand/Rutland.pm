@@ -88,6 +88,26 @@ around open311_extra_data_include => sub {
     return $data;
 };
 
+=head2 open311_get_update_munging
+
+This is used to perform a recategorisation of a report from Confirm to Salesforce
+when a specific update is received.
+
+=cut
+
+sub open311_get_update_munging {
+    my ($self, $comment, $state, $request) = @_;
+    my $problem = $comment->problem;
+
+    my @recategorise_ids = ('1600', '1610', '1611', '1612', '1620', '1621');
+    if (grep { $comment->get_extra_metadata('external_status_code') eq $_ } @recategorise_ids) {
+        $problem->category('Street Cleansing');
+        $comment->state('hidden');
+        $problem->resend;
+        return;
+    }
+}
+
 =item * It provides extra hints to be shown alongside category/group options in the reporting interface.
 
 =cut
