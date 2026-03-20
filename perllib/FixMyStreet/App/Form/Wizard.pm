@@ -455,11 +455,18 @@ sub fields_for_display {
             next if $field->type eq 'Submit' || $field->type eq 'Notice';
             my $value = $form->saved_data->{$field->{name}} // '';
             my $desc = $field->label || $field->option_label;
+            my $pretty = $form->format_for_display( $field->{name}, $value );
+
+            if ($form =~ /::Licence::/ && $field->{name} eq 'confirmation') {
+                $pretty = $desc;
+                $desc = '';
+            }
+
             push @{$x->{fields}}, {
                 name => $field->{name},
                 desc => $desc,
                 type => $field->type,
-                pretty => $form->format_for_display( $field->{name}, $value ),
+                pretty => $pretty,
                 value => $value,
                 ( $field->tag_exists('hide') ? ( hide => $field->get_tag('hide') ) : () ),
             };
