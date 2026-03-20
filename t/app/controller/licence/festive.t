@@ -80,7 +80,6 @@ subtest 'Festive form submission - smoke test' => sub {
         $mech->submit_form_ok({ with_fields => {
             installation_method => 'cherry picker',
             code_of_practice => 'Yes',
-            electrical_energy => 'No',
         }});
 
         # Site specific pages (one question per page)
@@ -93,6 +92,8 @@ subtest 'Festive form submission - smoke test' => sub {
         }});
         $mech->submit_form_ok({ with_fields => {
             site_obstruct_infrastructure => 'No',
+            enough_space => 'Yes',
+            power_supply => 'No',
         }});
 
         # Have you considered page

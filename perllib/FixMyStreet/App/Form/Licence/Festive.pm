@@ -4,6 +4,8 @@ use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Licence::Base';
 use utf8;
 
+with 'FixMyStreet::App::Form::Licence::Fields::Electrical';
+
 # Type identifier used in URL: /licence/festive
 sub type { 'festive' }
 
@@ -76,8 +78,8 @@ has_field shown_decorations => (
 # Installation method
 # ==========================================================================
 has_page installation => (
-    fields => ['installation_method', 'code_of_practice', 'electrical_energy', 'continue'],
-    title => 'Installation method',
+    fields => ['installation_method', 'code_of_practice', 'continue'],
+    title => 'Installation',
     next => 'site_pedestrian_space',
 );
 
@@ -96,18 +98,6 @@ has_field code_of_practice => (
     label => 'Have you read and understood the CSS Seasonal Decorations Code of Practice?',
     required => 1,
     tags => { hint => FixMyStreet::Template::SafeString->new('Please read the <a href="https://theilp.org.uk/resources/" target="_blank">Code of Practice</a>. If no, then a site meeting between the applicant and TfL may be required.') },
-    options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
-    ],
-);
-
-has_field electrical_energy => (
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'Will you be expecting to draw electrical energy from TfL’s lighting stock?',
-    required => 1,
-    tags => { hint => 'If yes, then a site meeting between the applicant and TfL may be required.' },
     options => [
         { label => 'Yes', value => 'Yes' },
         { label => 'No', value => 'No' },
@@ -163,7 +153,7 @@ has_field carriageway_incursion => (
 
 # ==========================================================================
 has_page site_infrastructure => (
-    fields => ['site_obstruct_infrastructure', 'continue'],
+    fields => ['site_obstruct_infrastructure', 'enough_space', 'power_supply', 'mpan_number', 'electrical_information', 'continue'],
     title => 'Street infrastructure',
     next => 'have_you_considered',
 );
