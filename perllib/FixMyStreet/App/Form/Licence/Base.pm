@@ -332,6 +332,7 @@ has_page payment => (
     fields => [
         'payment_transaction_id',
         'payment_amount',
+        'payment_warning',
         'continue'
     ],
     title => 'Payment',
@@ -347,6 +348,13 @@ has_field payment_transaction_id => (
 has_field payment_amount => (
     type => 'Text',
     label => 'Amount paid',
+);
+
+has_field payment_warning => (
+    type  => 'Notice',
+    label => '<strong>Please ensure you have paid the correct amount for your licence type and duration, as an incorrect payment may delay your application.</strong>',
+    required => 0,
+    widget => 'NoRender',
 );
 
 sub payment_link {
