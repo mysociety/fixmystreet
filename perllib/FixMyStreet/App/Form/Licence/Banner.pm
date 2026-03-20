@@ -19,7 +19,7 @@ sub next_after_contractor { 'type' }
 # ==========================================================================
 has_page intro => (
     fields => ['start'],
-    title => 'Banner Licence Application',
+    title => 'Banner licence application',
     intro => 'banner/intro.html',
     next => 'location_1',
 );

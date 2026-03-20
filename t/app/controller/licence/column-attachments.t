@@ -20,7 +20,7 @@ my $contact = $mech->create_contact_ok(
     email => 'licence@tfl.gov.uk.example.org'
 );
 
-subtest 'Scaffold form submission - smoke test' => sub {
+subtest 'Column attachments form submission - smoke test' => sub {
   my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'tfl',
@@ -92,6 +92,8 @@ subtest 'Scaffold form submission - smoke test' => sub {
         $mech->submit_form_ok({ with_fields => {
             site_near_junction => 'No',
             site_obstruct_infrastructure => 'No',
+            enough_space => 'Yes',
+            power_supply => 'No',
         }}, 'street furniture page');
 
         # Have you considered page

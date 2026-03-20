@@ -19,7 +19,7 @@ sub next_after_applicant { 'activity' }
 # ==========================================================================
 has_page intro => (
     fields => ['start'],
-    title => 'Builder’s Skip Licence Application',
+    title => 'Builder’s Skip licence application',
     intro => 'builders-skip/intro.html',
     next => 'location',
 );

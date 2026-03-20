@@ -21,7 +21,7 @@ sub next_after_contractor { 'details' }
 # ==========================================================================
 has_page intro => (
     fields => ['start'],
-    title => 'Crane Licence Application',
+    title => 'Crane licence application',
     intro => 'crane/intro.html',
     next => 'location',
 );

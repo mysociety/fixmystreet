@@ -19,7 +19,7 @@ sub next_after_contractor { 'activity' }
 # ==========================================================================
 has_page intro => (
     fields => ['start'],
-    title => 'Statues/Artworks Licence Application',
+    title => 'Statues/Artworks licence application',
     intro => 'statues/intro.html',
     next => 'location',
 );

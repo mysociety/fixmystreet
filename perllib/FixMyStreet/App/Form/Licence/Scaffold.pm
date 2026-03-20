@@ -19,7 +19,7 @@ sub next_after_applicant { 'dimensions' }
 # ==========================================================================
 has_page intro => (
     fields => ['start'],
-    title => 'Scaffold Licence Application',
+    title => 'Scaffold licence application',
     intro => 'scaffold/intro.html',
     next => 'location',
 );

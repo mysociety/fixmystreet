@@ -89,7 +89,10 @@ subtest 'Lights in trees form submission - smoke test' => sub {
         }});
         $mech->submit_form_ok({ with_fields => {
             site_obstruct_infrastructure => 'No',
-            site_use_tfl_electricity => 'No',
+            enough_space => 'Yes',
+            power_supply => 'Yes',
+            mpan_number => 123,
+            electrical_information => 'Info',
         }});
         # Have you considered page
         $mech->submit_form_ok({ with_fields => {

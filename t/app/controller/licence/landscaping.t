@@ -20,7 +20,7 @@ my $contact = $mech->create_contact_ok(
     email => 'licence@tfl.gov.uk.example.org'
 );
 
-subtest 'Scaffold form submission - smoke test' => sub {
+subtest 'Landscaping form submission - smoke test' => sub {
   my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'tfl',

@@ -19,7 +19,7 @@ sub next_after_contractor { 'activity' }
 # ==========================================================================
 has_page intro => (
     fields => ['start'],
-    title => 'Landscaping/Planting Licence Application',
+    title => 'Landscaping/Planting licence application',
     intro => 'landscaping/intro.html',
     next => 'location',
 );

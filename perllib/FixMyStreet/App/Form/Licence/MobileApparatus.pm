@@ -21,7 +21,7 @@ sub next_after_contractor { 'details' }
 # ==========================================================================
 has_page intro => (
     fields => ['start'],
-    title => 'Mobile apparatus Licence Application',
+    title => 'Mobile apparatus licence application',
     intro => 'mobile-apparatus/intro.html',
     next => 'location',
 );
@@ -384,7 +384,7 @@ has_field situated_on_carriageway => (
 
 # ==========================================================================
 has_page site_infrastructure => (
-    fields => ['site_obstruct_infrastructure', 'continue'],
+    fields => ['site_obstruct_infrastructure', 'load_bearing_assessment', 'continue'],
     title => 'Street infrastructure',
     next => 'pre_application',
 );
@@ -392,8 +392,20 @@ has_page site_infrastructure => (
 has_field site_obstruct_infrastructure => (
     type => 'Select',
     widget => 'RadioGroup',
-    label => 'Will the materials obstruct or obscure any of the following: traffic signal, traffic signal controller, bus stop, pedestrian crossing, junction sight line, road lighting column, traffic sign, parking bay, or any ‘ironwork’ in the highway or other street furniture?',
-    tags => { hint => 'If yes, a site meeting between the applicant and TfL may be required.' },
+    label => 'Will the mobile apparatus obstruct or obscure any street furniture, such as traffic signals, crossings, or signs?',
+    tags => { hint => 'Other examples (not limited to) include bus stops, traffic signal controllers, lighting columns, parking bays, and ironwork.' },
+    required => 1,
+    options => [
+        { label => 'Yes', value => 'Yes' },
+        { label => 'No', value => 'No' },
+    ],
+);
+
+has_field load_bearing_assessment => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'Has a load‑bearing assessment been completed for the ground where the mobile apparatus will operate?',
+    tags => { hint => 'This is mandatory when operating on the footway.' },
     required => 1,
     options => [
         { label => 'Yes', value => 'Yes' },

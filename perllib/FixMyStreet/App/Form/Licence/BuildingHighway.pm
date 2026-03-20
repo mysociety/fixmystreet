@@ -19,7 +19,7 @@ sub next_after_contractor { 'activity' }
 # ==========================================================================
 has_page intro => (
     fields => ['start'],
-    title => 'Building Over Highway Licence Application',
+    title => 'Building Over Highway licence application',
     intro => 'building_over_highway/intro.html',
     next => 'location',
 );

@@ -19,7 +19,7 @@ sub next_after_applicant { 'activity' }
 # ==========================================================================
 has_page intro => (
     fields => ['start'],
-    title => 'Temporary Traffic Signs Licence Application',
+    title => 'Temporary Traffic Signs licence application',
     intro => 'temporary-traffic-signs/intro.html',
     next => 'location_1',
 );

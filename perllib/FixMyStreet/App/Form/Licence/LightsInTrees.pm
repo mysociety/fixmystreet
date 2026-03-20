@@ -4,6 +4,8 @@ use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Licence::Base';
 use utf8;
 
+with 'FixMyStreet::App::Form::Licence::Fields::Electrical';
+
 # Type identifier used in URL: /licence/lights-in-trees
 sub type { 'lights-in-trees' }
 
@@ -19,7 +21,7 @@ sub next_after_contractor { 'installation' }
 # ==========================================================================
 has_page intro => (
     fields => ['start'],
-    title => 'Lights in Trees Licence Application',
+    title => 'Lights in Trees licence application',
     intro => 'lights-in-trees/intro.html',
     next => 'location',
 );
@@ -49,7 +51,7 @@ has_page location => (
 # ==========================================================================
 has_page installation => (
     fields => ['installation_method', 'continue'],
-    title => 'Installation method',
+    title => 'Installation',
     next => 'activity',
 );
 
@@ -130,23 +132,10 @@ has_field carriageway_incursion => (
 
 # ==========================================================================
 has_page site_infrastructure => (
-    fields => ['site_use_tfl_electricity', 'site_obstruct_infrastructure', 'continue'],
+    fields => ['enough_space', 'power_supply', 'mpan_number', 'electrical_information', 'site_obstruct_infrastructure', 'continue'],
     title => 'Street infrastructure',
     next => 'have_you_considered',
 );
-
-has_field site_use_tfl_electricity => (
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'Will you be expecting to draw electrical energy from TfL’s lighting stock?',
-    tags => { hint => 'If yes, then a site meeting between the applicant and TfL may be required.' },
-    required => 1,
-    options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
-    ],
-);
-
 
 has_field site_obstruct_infrastructure => (
     type => 'Select',
