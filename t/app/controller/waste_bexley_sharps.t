@@ -387,6 +387,13 @@ FixMyStreet::override_config {
             }
         );
 
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    deliver_glucose_monitor => 'No',
+                }
+            }
+        );
+
         # Delivery details
         $mech->submit_form_ok(
             {   with_fields => {
@@ -432,7 +439,7 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('sharps_collect_small_quantity'), '';
         is $report->get_extra_field_value('sharps_collect_large_quantity'), '';
         is $report->get_extra_field_value('sharps_delivering'), '1';
-        is $report->get_extra_field_value('sharps_deliver_glucose_monitor'), '';
+        is $report->get_extra_field_value('sharps_deliver_glucose_monitor'), 'No';
         is $report->get_extra_field_value('sharps_deliver_size'), '5-litre';
         is $report->get_extra_field_value('sharps_deliver_quantity'), '2';
 

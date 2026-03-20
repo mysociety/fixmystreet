@@ -27,7 +27,7 @@ has_page collection_and_delivery => (
     next => sub {
         my $data = $_[0];
         return 'collection_quantities' if $data->{sharps_collecting} eq 'Yes';
-        return 'delivery_details';
+        return 'delivery_glucose_monitor';
     },
 );
 
