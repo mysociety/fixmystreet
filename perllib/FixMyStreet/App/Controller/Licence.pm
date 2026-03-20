@@ -68,7 +68,9 @@ sub process_licence : Private {
             for my $field (@visible_fields) {
                 my $pretty = $field->{pretty};
                 $pretty =~ s/<br>/\n/g;
-                $section .= "$field->{desc}: $pretty\n";
+                my $desc = $field->{desc};
+                $desc .= ':' unless !$desc || $desc =~ /[?:.]$/;
+                $section .= "$desc $pretty\n";
             }
             push @sections, $section;
         }
