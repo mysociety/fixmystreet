@@ -151,6 +151,7 @@ subtest 'Mobile apparatus form submission - smoke test' => sub {
                 }});
                 $mech->submit_form_ok({ with_fields => {
                     site_obstruct_infrastructure => 'No',
+                    load_bearing_assessment => 'Yes',
                 }});
 
                 $mech->content_contains('tfl.gov.uk/modes/buses');
