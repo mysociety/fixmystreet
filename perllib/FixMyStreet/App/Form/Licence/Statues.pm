@@ -91,7 +91,6 @@ has_field footway_headroom => (
     widget => 'RadioGroup',
     label => 'Will the headroom over any footway be less than 2.4m?',
     required => 1,
-    tags => { hint => 'If yes, then a site meeting between the applicant and TfL may be required.' },
     options => [
         { label => 'Yes', value => 'Yes' },
         { label => 'No', value => 'No' },
@@ -118,7 +117,6 @@ has_field carriageway_headroom => (
     type => 'Select',
     widget => 'RadioGroup',
     label => 'Will the headroom over any carriageway be less than 6m?',
-    tags => { hint => 'If yes, then a site meeting between the applicant and TfL may be required.' },
     required => 1,
     options => [
         { label => 'Yes', value => 'Yes' },
@@ -136,8 +134,8 @@ has_page site_infrastructure => (
 has_field site_obstruct_infrastructure => (
     type => 'Select',
     widget => 'RadioGroup',
-    label => 'Will the statue/artwork obstruct or obscure any of the following: traffic signals, signal controllers, bus stops, pedestrian crossings, junction sight lines, road lighting columns, traffic signs, parking bays, ironwork in the highway, or other street furniture?',
-    tags => { hint => 'If yes, a site meeting between the applicant and TfL may be required.' },
+    label => 'Will the statue/artwork obstruct or obscure any street furniture, such as traffic signals, crossings, or signs?',
+    tags => { hint => 'Other examples (not limited to) include bus stops, traffic signal controllers, lighting columns, parking bays, and ironwork.' },
     required => 1,
     options => [
         { label => 'Yes', value => 'Yes' },

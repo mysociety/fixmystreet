@@ -204,7 +204,7 @@ has_field 'end_date_3.year' => ( type => 'Year' );
 has_field end_time_3 => ( _time_field_attributes('end') );
 
 has_page date_range_pick => (
-    fields => ['proposed_start_date', 'proposed_start_time', 'proposed_end_time', 'continue'],
+    fields => ['proposed_start_date', 'calculated_end_date', 'proposed_start_time', 'proposed_end_time', 'continue'],
     title => 'Proposed working dates (subject to approval)',
     next => 'applicant',
     tags => { hide => sub { !$_[0]->form->saved_data->{proposed_start_date} } },
@@ -243,6 +243,18 @@ has_field proposed_start_date => (
 has_field 'proposed_start_date.day' => ( type => 'MonthDay' );
 has_field 'proposed_start_date.month' => ( type => 'Month' );
 has_field 'proposed_start_date.year' => ( type => 'Year' );
+
+has_field calculated_end_date => (
+    type  => 'Notice',
+    build_label_method => sub {
+        my $type = $_[0]->form->saved_data->{date_choice};
+        my $days = $type eq 'week' ? 6 : 13;
+        my $str = '<span id="js-proposed_end_date" data-days="' . $days . '"></span>';
+        return $str;
+    },
+    required => 0,
+    widget   => 'NoRender',
+);
 
 has_field proposed_start_time => ( _time_field_attributes('start') );
 has_field proposed_end_time => ( _time_field_attributes('end') );
@@ -322,6 +334,18 @@ has_page site_pedestrian_space => (
     next => 'site_carriageway_distance',
 );
 
+has_field site_adequate_space => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'Will pedestrian space be maintained in line with TfL requirements?',
+    required => 1,
+    tags => { hint => 'A minimum width of 2m on lightly used footways, 3m on medium‑use footways and 4m on busy footways, with no reduction on intensely used footways.' },
+    options => [
+        { label => 'Yes', value => 'Yes' },
+        { label => 'No', value => 'No' },
+    ],
+);
+
 has_field footway_incursion => (
     type => 'Text',
     label => 'What is the proposed footway incursion?',
@@ -336,18 +360,6 @@ has_field situated_on_footway => (
     widget => 'RadioGroup',
     label => 'Will the mobile apparatus be situated primarily on the footway?',
     required => 1,
-    options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
-    ],
-);
-
-has_field site_adequate_space => (
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'Will pedestrian space be maintained in line with TfL requirements - 2m for lightly used footways, 3m for medium-use footways and 4m for busy footways, with no reduction of width for intensely used footways?',
-    required => 1,
-    tags => { hint => 'If no, then a site meeting between the applicant and TfL may be required.' },
     options => [
         { label => 'Yes', value => 'Yes' },
         { label => 'No', value => 'No' },

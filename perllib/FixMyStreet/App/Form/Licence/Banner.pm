@@ -158,12 +158,21 @@ has_field banner_installation => (
 # Site Specific Information (banner-specific questions)
 # ==========================================================================
 has_page site_pedestrian_space => (
-    fields => [
-        'footway_incursion', 'site_adequate_space',
-        'footway_headroom',  'continue'
-    ],
+    fields => [ 'site_adequate_space', 'footway_incursion', 'footway_headroom',  'continue' ],
     title => 'Pedestrian space',
     next => 'site_carriageway_distance',
+);
+
+has_field site_adequate_space => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'Will pedestrian space be maintained in line with TfL requirements?',
+    required => 1,
+    tags => { hint => 'A minimum width of 2m on lightly used footways, 3m on medium‑use footways and 4m on busy footways, with no reduction on intensely used footways.' },
+    options => [
+        { label => 'Yes', value => 'Yes' },
+        { label => 'No', value => 'No' },
+    ],
 );
 
 has_field footway_incursion => (
@@ -176,24 +185,11 @@ has_field footway_incursion => (
     },
 );
 
-has_field site_adequate_space => (
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'Will pedestrian space be maintained in line with TfL requirements - 2m for lightly used footways, 3m for medium-use footways and 4m for busy footways, with no reduction of width for intensely used footways?',
-    required => 1,
-    tags => { hint => 'If no, then a site meeting between the applicant and TfL may be required.' },
-    options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
-    ],
-);
-
 has_field footway_headroom => (
     type => 'Select',
     widget => 'RadioGroup',
     label => 'Will the headroom over any footway be less than 2m?',
     required => 1,
-    tags => { hint => 'If yes, then a site meeting between the applicant and TfL may be required.' },
     options => [
         { label => 'Yes', value => 'Yes' },
         { label => 'No', value => 'No' },
@@ -222,7 +218,6 @@ has_field carriageway_headroom => (
     widget => 'RadioGroup',
     label => 'Will the headroom over any carriageway be less than 6m?',
     required => 1,
-    tags => { hint => 'If yes, then a site meeting between the applicant and TfL may be required.' },
     options => [
         { label => 'Yes', value => 'Yes' },
         { label => 'No', value => 'No' },
@@ -260,7 +255,6 @@ has_field site_lighting_columns => (
     type => 'Select',
     widget => 'RadioGroup',
     label => 'Are any banners proposed to be attached to lighting columns?',
-    tags => { hint => 'If yes, a site meeting between the applicant and TfL may be required.' },
     required => 1,
     options => [
         { label => 'Yes', value => 'Yes' },
@@ -272,7 +266,6 @@ has_field site_near_junction => (
     type => 'Select',
     widget => 'RadioGroup',
     label => 'Will any banners attached to pedestrian guard rails be within 20m of a junction or a pedestrian crossing point?',
-    tags => { hint => 'If yes, a site meeting between the applicant and TfL may be required.' },
     required => 1,
     options => [
         { label => 'Yes', value => 'Yes' },
@@ -283,8 +276,8 @@ has_field site_near_junction => (
 has_field site_obstruct_infrastructure => (
     type => 'Select',
     widget => 'RadioGroup',
-    label => 'Will any banners obstruct or obscure any of the following: traffic signal, traffic signal controller, bus stop, pedestrian crossing, junction sight line, road lighting column, traffic sign, parking bay, or any ‘ironwork’ in the highway or other street furniture?',
-    tags => { hint => 'If yes, a site meeting between the applicant and TfL may be required.' },
+    label => 'Will any banners obstruct or obscure any street furniture, such as traffic signals, crossings, or signs?',
+    tags => { hint => 'Other examples (not limited to) include bus stops, traffic signal controllers, lighting columns, parking bays, and ironwork.' },
     required => 1,
     options => [
         { label => 'Yes', value => 'Yes' },

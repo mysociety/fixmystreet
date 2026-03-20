@@ -86,7 +86,6 @@ has_field aerial_clearance => (
     type => 'Select',
     widget => 'RadioGroup',
     label => 'Will any part of the structure (including any permanent supports) be less than 3.5m above the surface of the footway?',
-    tags => { hint => 'If yes, a site meeting between the applicant and TfL may be required.' },
     required => 1,
     options => [
         { label => 'Yes', value => 'Yes' },
@@ -114,7 +113,6 @@ has_field site_within_450mm => (
     type => 'Select',
     widget => 'RadioGroup',
     label => 'Will any part of the building be within 450mm of the carriageway edge?',
-    tags => { hint => 'If yes, then a site meeting between the applicant and TfL may be required.' },
     required => 1,
     options => [
         { label => 'Yes', value => 'Yes' },
@@ -161,8 +159,8 @@ has_page site_infrastructure => (
 has_field site_obstruct_infrastructure => (
     type => 'Select',
     widget => 'RadioGroup',
-    label => 'Will the building obstruct or obscure any of the following: traffic signals, signal controllers, bus stops, pedestrian crossings, junction sight lines, road lighting columns, traffic signs, parking bays, ironwork in the highway, or other street furniture?',
-    tags => { hint => 'If yes, a site meeting between the applicant and TfL may be required.' },
+    label => 'Will the building obstruct or obscure any street furniture, such as traffic signals, crossings, or signs?',
+    tags => { hint => 'Other examples (not limited to) include bus stops, traffic signal controllers, lighting columns, parking bays, and ironwork.' },
     required => 1,
     options => [
         { label => 'Yes', value => 'Yes' },
