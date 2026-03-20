@@ -21,7 +21,7 @@ sub next_after_contractor { 'details' }
 # ==========================================================================
 has_page intro => (
     fields => ['start'],
-    title => 'Mobile apparatus Licence Application',
+    title => 'Mobile apparatus licence application',
     intro => 'mobile-apparatus/intro.html',
     next => 'location',
 );

@@ -19,7 +19,7 @@ sub next_after_contractor { 'dimensions' }
 # ==========================================================================
 has_page intro => (
     fields => ['start'],
-    title => 'Hoarding Licence Application',
+    title => 'Hoarding licence application',
     intro => 'hoarding/intro.html',
     next => 'location',
 );

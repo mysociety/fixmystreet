@@ -19,7 +19,7 @@ sub next_after_contractor { 'activity' }
 # ==========================================================================
 has_page intro => (
     fields => ['start'],
-    title => 'Festive Decorations Licence Application',
+    title => 'Festive Decorations licence application',
     intro => 'festive/intro.html',
     next => 'location',
 );

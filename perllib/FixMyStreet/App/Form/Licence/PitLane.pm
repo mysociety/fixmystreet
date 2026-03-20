@@ -21,7 +21,7 @@ sub next_after_contractor { 'activity' }
 # ==========================================================================
 has_page intro => (
     fields => ['start'],
-    title => 'Pit Lane Licence Application',
+    title => 'Pit Lane licence application',
     intro => 'pitlane/intro.html',
     next => 'location',
 );

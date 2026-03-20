@@ -19,7 +19,7 @@ sub next_after_contractor { 'activity' }
 # ==========================================================================
 has_page intro => (
     fields => ['start'],
-    title => 'Column Attachments Licence Application',
+    title => 'Column Attachments licence application',
     intro => 'column-attachments/intro.html',
     next => 'location_1',
 );

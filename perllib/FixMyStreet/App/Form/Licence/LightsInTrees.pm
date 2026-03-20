@@ -19,7 +19,7 @@ sub next_after_contractor { 'installation' }
 # ==========================================================================
 has_page intro => (
     fields => ['start'],
-    title => 'Lights in Trees Licence Application',
+    title => 'Lights in Trees licence application',
     intro => 'lights-in-trees/intro.html',
     next => 'location',
 );

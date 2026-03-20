@@ -19,7 +19,7 @@ sub next_after_contractor { 'activity' }
 # ==========================================================================
 has_page intro => (
     fields => ['start'],
-    title => 'Building materials Licence Application',
+    title => 'Building materials licence application',
     intro => 'building-materials/intro.html',
     next => 'location',
 );

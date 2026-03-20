@@ -19,7 +19,7 @@ sub next_after_contractor { 'activity' }
 # ==========================================================================
 has_page intro => (
     fields => ['start'],
-    title => 'Excavation in the Highway Licence Application',
+    title => 'Excavation in the Highway licence application',
     intro => 'excavation/intro.html',
     next => 'location',
 );
