@@ -73,7 +73,7 @@ sub generate_pdf {
         foreach my $field (@{$page->{fields}}) {
             next if $field->{hide};
             my $line = "<p style='margin-top:6pt'><strong>$field->{desc}";
-            $line .= ':' unless $field->{desc} =~ /[?:.]$/;
+            $line .= ':' unless !$field->{desc} || $field->{desc} =~ /[?:.]$/;
             $line .= "</strong> $field->{pretty}</p>";
             $line =~ s/<br>/<\/p><p>/g; # Term checkboxes
 
