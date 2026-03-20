@@ -222,7 +222,7 @@ has_page pre_application => (
 # ==========================================================================
 has_page type_check => (
     fields => ['sensitive_times', 'traffic_holds', 'significant_impact', 'bus_service_alterations', 'continue'],
-    title => 'Pit Lane type',
+    title => 'Pit Lane impact',
     next => 'type',
     post_process => sub {
         my $form = shift;

@@ -87,8 +87,7 @@ has_field tcsr_website_note => (
 has_field terms_accepted => (
     type => 'Multiple',
     widget => 'CheckboxGroup',
-    label => 'Confirmation agreed to',
-    tags => { hint => 'I confirm that I have read and agree to comply with all requirements set out within the documents listed below' },
+    label => 'I confirm that I have read and agree to comply with all requirements set out within the following documents',
     required => 1,
     validate_method => sub {
         my $self = shift;

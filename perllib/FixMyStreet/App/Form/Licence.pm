@@ -62,7 +62,6 @@ sub generate_pdf {
         next if $page->{hide};
         next if $page->{stage} eq 'intro' || $page->{stage} eq 'done';
 
-        $page->{title} = 'Applicant declaration' if $page->{title} eq 'Application Summary';
         my $page_title = "<h2>$page->{title}</h2>";
         my ($rc, $post_title_y) = $pdf->plot_line($next_y, 'white', $page_title);
         if ($rc) {
