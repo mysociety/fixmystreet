@@ -440,9 +440,12 @@ sub fields_for_display {
 
     my $things = [];
     for my $page ( @{ $form->pages } ) {
+        my $title = $page->{title};
+        $title = 'Applicant declaration' if $form =~ /::Licence::/ && $title eq 'Application Summary';
+
         my $x = {
             stage => $page->{name},
-            title => $page->{title},
+            title => $title,
             ( $page->tag_exists('hide') ? ( hide => $page->get_tag('hide') ) : () ),
             fields => []
         };

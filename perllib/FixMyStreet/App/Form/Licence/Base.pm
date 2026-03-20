@@ -73,7 +73,7 @@ Includes validation:
 
 has_page dates => (
     fields => ['proposed_start_date', 'proposed_working_times', 'proposed_duration', 'year_warning', 'continue'],
-    title => 'Proposed working dates',
+    title => 'Proposed working dates (subject to approval)',
     intro => 'dates.html',
     field_ignore_list => sub {
         my $page = shift;

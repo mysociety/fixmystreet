@@ -102,7 +102,7 @@ sub _dates_pick_attributes {
             "start_date_$num", "start_time_$num", "end_date_$num", "end_time_$num",
             'continue'
         ],
-        title => "Proposed working dates (Operation $num)",
+        title => "Proposed working dates (Operation $num) (subject to approval)",
     );
 }
 
@@ -205,7 +205,7 @@ has_field end_time_3 => ( _time_field_attributes('end') );
 
 has_page date_range_pick => (
     fields => ['proposed_start_date', 'proposed_start_time', 'proposed_end_time', 'continue'],
-    title => 'Proposed working dates',
+    title => 'Proposed working dates (subject to approval)',
     next => 'applicant',
     tags => { hide => sub { !$_[0]->form->saved_data->{proposed_start_date} } },
 );
