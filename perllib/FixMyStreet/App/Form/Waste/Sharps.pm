@@ -122,6 +122,7 @@ has_field collect_location_other => (
 
 has_page delivery_glucose_monitor => (
     fields => ['deliver_glucose_monitor', 'continue'],
+    intro => 'sharps/glucose.html',
     title => 'Delivery details',
     next => 'delivery_details',
 );
@@ -131,10 +132,6 @@ has_field deliver_glucose_monitor => (
     widget => 'RadioGroup',
     required => 1,
     label => 'Do you need to dispose of glucose monitoring devices (e.g. Dexcom, Omnipod devices or similar)?',
-    tags => {
-        hint =>
-            'Some glucose monitoring devices are too large for the apertures on the sharps boxes. If you tell us you need to dispose of glucose monitoring devices we will deliver boxes with the lids unattached. Please attach the lid and seal your boxes prior to collection.',
-    },
     options => [
         { label => 'Yes', value => 'Yes' },
         { label => 'No', value => 'No' },
