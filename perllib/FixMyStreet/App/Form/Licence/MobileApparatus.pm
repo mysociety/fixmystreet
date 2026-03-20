@@ -334,6 +334,18 @@ has_page site_pedestrian_space => (
     next => 'site_carriageway_distance',
 );
 
+has_field site_adequate_space => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'Will pedestrian space be maintained in line with TfL requirements?',
+    required => 1,
+    tags => { hint => 'A minimum width of 2m on lightly used footways, 3m on medium‑use footways and 4m on busy footways, with no reduction on intensely used footways.' },
+    options => [
+        { label => 'Yes', value => 'Yes' },
+        { label => 'No', value => 'No' },
+    ],
+);
+
 has_field footway_incursion => (
     type => 'Text',
     label => 'What is the proposed footway incursion?',
@@ -348,18 +360,6 @@ has_field situated_on_footway => (
     widget => 'RadioGroup',
     label => 'Will the mobile apparatus be situated primarily on the footway?',
     required => 1,
-    options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
-    ],
-);
-
-has_field site_adequate_space => (
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'Will pedestrian space be maintained in line with TfL requirements - 2m for lightly used footways, 3m for medium-use footways and 4m for busy footways, with no reduction of width for intensely used footways?',
-    required => 1,
-    tags => { hint => 'If no, then a site meeting between the applicant and TfL may be required.' },
     options => [
         { label => 'Yes', value => 'Yes' },
         { label => 'No', value => 'No' },
