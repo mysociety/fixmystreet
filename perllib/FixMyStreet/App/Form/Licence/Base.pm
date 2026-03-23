@@ -313,9 +313,9 @@ has_field insurance_validity => (
 
 has_field upload_rams => (
     type => 'FileIdUpload',
-    label => 'Risk Assessment Method Statement (RAMS)',
+    label => 'Risk Assessment and Method Statement (RAMS)',
     messages => {
-        upload_file_not_found => 'Please upload your Risk Assessment Method Statement',
+        upload_file_not_found => 'Please upload your Risk Assessment and Method Statement',
     },
 );
 
