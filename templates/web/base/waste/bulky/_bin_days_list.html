@@ -1,4 +1,12 @@
 [%
+IF type == 'sharps';
+    SET next_date_key = 'Next booking';
+    SET check_key = 'Check booking details';
+ELSE;
+    SET next_date_key = 'Next collection';
+    SET check_key = 'Check collection details';
+END;
+
   # We shouldn't make it obvious if a property has sharps collections, so
   # show same message regardless of whether there is a booking or not.
 %]
@@ -13,7 +21,7 @@
       [% NEXT UNLESS c.cobrand.bulky_can_view_collection(booking) %]
       <dl class="govuk-summary-list">
         <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Next collection</dt>
+          <dt class="govuk-summary-list__key">[% next_date_key %]</dt>
           <dd class="govuk-summary-list__value">[% c.cobrand.bulky_nice_collection_date(booking) %]</dd>
         </div>
         <div class="govuk-summary-list__row">
@@ -31,7 +39,7 @@
       </dl>
 
       <div class="waste-services-launch-panel">
-          <a class="btn btn--primary govuk-!-margin-bottom-2" href="/report/[% booking.id %]">Check collection details</a>
+          <a class="btn btn--primary govuk-!-margin-bottom-2" href="/report/[% booking.id %]">[% check_key %]</a>
           [% IF c.cobrand.bulky_can_amend_collection(booking) %]
             [% IF type == 'bulky' %]
               <a class="btn btn--primary govuk-!-margin-bottom-2" href="[% c.uri_for_action('waste/bulky/amend', [ property.id, booking.id ]) %]">Amend booking</a>
@@ -58,7 +66,7 @@
       <!-- #04 Should only display when: There is NO booking AND is a signed user -->
       <dl class="govuk-summary-list">
         <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Next collection</dt>
+          <dt class="govuk-summary-list__key">[% next_date_key %]</dt>
           <dd class="govuk-summary-list__value"> None booked </dd>
         </div>
       </dl>
@@ -84,7 +92,7 @@
         </div>
       </dl>
       <div class="waste-services-launch-panel">
-          <a class="btn btn--primary govuk-!-margin-bottom-2" href="/report/[% booking.id %]">Check collection details</a>
+          <a class="btn btn--primary govuk-!-margin-bottom-2" href="/report/[% booking.id %]">[% check_key %]</a>
           [% PROCESS 'waste/_service_missed.html' unit=booked_missed.$booking_guid original_booking=booking.id no_default=1 %]
           [% IF c.cobrand.moniker == 'sutton' %]
           [% IF booked_missed.$booking_guid.escalations.missed_open %]

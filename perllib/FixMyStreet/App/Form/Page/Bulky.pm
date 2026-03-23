@@ -13,8 +13,10 @@ package FixMyStreet::App::Form::Page::Bulky;
 use Moose;
 extends 'FixMyStreet::App::Form::Page::Waste';
 
-sub _build_title {
+sub build_title {
     my $self = shift;
+
+    return $self->build_title_method->($self) if $self->build_title_method;
 
     my $cobrand = $self->form->{c}->cobrand->moniker;
     if ($cobrand =~ /^(kingston|sutton|merton|bexley)$/) {

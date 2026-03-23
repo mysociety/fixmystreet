@@ -40,6 +40,9 @@
             [% IF c.cobrand.call_hook('small_items_enabled') %]
               <li>Book a small items collection</li>
             [% END %]
+            [% IF c.cobrand.call_hook('sharps_enabled') %]
+            <li>Request a sharps box delivery or collection</li>
+            [% END %]
 
             [% IF c.cobrand.moniker == 'bexley' %]
               <li>Get help with putting your bins out</li>

@@ -19,8 +19,13 @@ sub with_bins_wanted {
     #return $cobrand eq 'merton';
 }
 
+sub build_title_ggw {
+    my $name = $_[0]->form->c->cobrand->garden_service_name;
+    return "Subscribe to the $name";
+}
+
 has_page choice => (
-    title_ggw => 'Subscribe to the %s',
+    build_title_method => \&build_title_ggw,
     fields => ['container_choice', 'continue'],
     next => sub {
         return 'sacks_details' if $_[0]->{container_choice} eq 'sack';
@@ -31,7 +36,7 @@ has_page choice => (
 with 'FixMyStreet::App::Form::Waste::Garden::Sacks::Choice';
 
 has_page sacks_details => (
-    title_ggw => 'Subscribe to the %s',
+    build_title_method => \&build_title_ggw,
     template => 'waste/garden/sacks/subscribe_details.html',
     fields => ['bins_wanted', 'payment_method', 'payment_explanation', 'cheque_reference', 'name', 'email', 'phone', 'password', 'continue_review'],
     field_ignore_list => sub {

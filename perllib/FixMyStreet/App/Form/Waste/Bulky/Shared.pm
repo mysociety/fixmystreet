@@ -19,7 +19,12 @@ has sharps => ( is => 'ro', default => 0 );
 
 has_page choose_date_earlier => (
     fields => [ 'continue', 'chosen_date', 'show_later_dates' ],
-    title => 'Choose date for collection',
+    build_title_method => sub {
+        if ($_[0]->form->sharps) {
+            return 'Choose date for collection or delivery';
+        }
+        'Choose date for collection';
+    },
     template => 'waste/bulky/choose_date.html',
     next => sub {
         my $params = $_[1];

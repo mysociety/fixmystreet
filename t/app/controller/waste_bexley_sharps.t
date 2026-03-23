@@ -58,7 +58,7 @@ FixMyStreet::override_config {
         $mech->content_contains('You need to sign in to see the full details of this property.');
         $mech->content_contains('Book a collection');
         $mech->content_lacks('View existing collections');
-        $mech->content_lacks('Check collection details');
+        $mech->content_lacks('Check booking details');
 
         $mech->get_ok('/waste/10001/sharps');
         $mech->content_contains('Request a sharps box delivery or collection');
@@ -280,7 +280,7 @@ FixMyStreet::override_config {
             $mech->content_contains('You need to sign in to see the full details of this property.');
             $mech->content_contains('Book a collection');
             $mech->content_lacks('View existing collections');
-            $mech->content_lacks('Check collection details');
+            $mech->content_lacks('Check booking details');
 
             $mech->get( '/report/' . $report->id );
             is $mech->res->code, 403, 'cannot view if not logged in';
@@ -290,12 +290,12 @@ FixMyStreet::override_config {
             $mech->content_lacks('You need to sign in to see the full details of this property.');
             $mech->content_contains('Book a collection');
             $mech->content_lacks('View existing collections');
-            $mech->content_contains('Check collection details');
+            $mech->content_contains('Check booking details');
 
             $mech->get_ok( '/report/' . $report->id );
 
             # Report page should show sharps-specific details
-            $mech->text_contains('Your sharps collection');
+            $mech->text_contains('Your sharps booking');
 
             $mech->text_contains('Collection details');
             $mech->text_contains('Number of 1-litre boxes3');
@@ -330,8 +330,8 @@ FixMyStreet::override_config {
 
             $mech->get_ok( '/waste/10001/sharps/cancel/' . $report->id );
 
-            $mech->text_contains('Cancel your sharps collection');
-            $mech->text_contains('I confirm I wish to cancel my sharps collection');
+            $mech->text_contains('Cancel your sharps booking');
+            $mech->text_contains('I confirm I wish to cancel my sharps booking');
 
             $mech->text_contains('Collection details');
             $mech->text_contains('Number of 1-litre boxes3');
@@ -347,7 +347,7 @@ FixMyStreet::override_config {
 
             $mech->text_contains('Your booking has been cancelled');
             my $id = $report->id;
-            $mech->text_like(qr/your sharps collection cancellation.*$id/);
+            $mech->text_like(qr/your sharps booking cancellation.*$id/);
 
             $report->discard_changes;
 

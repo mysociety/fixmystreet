@@ -5,7 +5,7 @@ use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste';
 
 has_page intro => (
-    title => 'Cancel your sharps collection',
+    title => 'Cancel your sharps booking',
     intro => 'bulky/cancel_intro.html',
     fields => [ 'confirm', 'submit' ],
     finished => sub {
@@ -15,13 +15,13 @@ has_page intro => (
 );
 
 has_page done => (
-    title => 'Sharps collection cancelled',
+    title => 'Sharps booking cancelled',
     template => 'waste/bulky/booking_cancellation.html',
 );
 
 has_field confirm => (
     type => 'Checkbox',
-    option_label => 'I confirm I wish to cancel my sharps collection',
+    option_label => 'I confirm I wish to cancel my sharps booking',
     required => 1,
     label => "Confirm",
 );
