@@ -44,113 +44,25 @@ has_page location_1 => (
     },
 );
 
-has_page location_2 => (
-    fields => ['building_name_number_2', 'street_name_2', 'borough_2', 'postcode_2', 'add_another', 'continue'],
-    title => 'Location of the temporary traffic signs (2)',
-    intro => 'location.html',
-    next => sub { $_[1]->{add_another} ? 'location_3' : 'dates' },
-    tags => { hide => sub { !$_[0]->form->saved_data->{building_name_number_2} } },
-);
-has_field building_name_number_2 => ( type => 'Text', label => 'Building name / number', required => 1 );
-has_field street_name_2 => ( type => 'Text', label => 'Street name', required => 1 );
-has_field borough_2 => ( type => 'Text', label => 'Borough', required => 1 );
-has_field postcode_2 => ( type => 'Text', label => 'Postcode', required => 1 );
-
-has_page location_3 => (
-    fields => ['building_name_number_3', 'street_name_3', 'borough_3', 'postcode_3', 'add_another', 'continue'],
-    title => 'Location of the temporary traffic signs (3)',
-    intro => 'location.html',
-    next => sub { $_[1]->{add_another} ? 'location_4' : 'dates' },
-    tags => { hide => sub { !$_[0]->form->saved_data->{building_name_number_3} } },
-);
-has_field building_name_number_3 => ( type => 'Text', label => 'Building name / number', required => 1 );
-has_field street_name_3 => ( type => 'Text', label => 'Street name', required => 1 );
-has_field borough_3 => ( type => 'Text', label => 'Borough', required => 1 );
-has_field postcode_3 => ( type => 'Text', label => 'Postcode', required => 1 );
-
-has_page location_4 => (
-    fields => ['building_name_number_4', 'street_name_4', 'borough_4', 'postcode_4', 'add_another', 'continue'],
-    title => 'Location of the temporary traffic signs (4)',
-    intro => 'location.html',
-    next => sub { $_[1]->{add_another} ? 'location_5' : 'dates' },
-    tags => { hide => sub { !$_[0]->form->saved_data->{building_name_number_4} } },
-);
-has_field building_name_number_4 => ( type => 'Text', label => 'Building name / number', required => 1 );
-has_field street_name_4 => ( type => 'Text', label => 'Street name', required => 1 );
-has_field borough_4 => ( type => 'Text', label => 'Borough', required => 1 );
-has_field postcode_4 => ( type => 'Text', label => 'Postcode', required => 1 );
-
-has_page location_5 => (
-    fields => ['building_name_number_5', 'street_name_5', 'borough_5', 'postcode_5', 'add_another', 'continue'],
-    title => 'Location of the temporary traffic signs (5)',
-    intro => 'location.html',
-    next => sub { $_[1]->{add_another} ? 'location_6' : 'dates' },
-    tags => { hide => sub { !$_[0]->form->saved_data->{building_name_number_5} } },
-);
-has_field building_name_number_5 => ( type => 'Text', label => 'Building name / number', required => 1 );
-has_field street_name_5 => ( type => 'Text', label => 'Street name', required => 1 );
-has_field borough_5 => ( type => 'Text', label => 'Borough', required => 1 );
-has_field postcode_5 => ( type => 'Text', label => 'Postcode', required => 1 );
-
-has_page location_6 => (
-    fields => ['building_name_number_6', 'street_name_6', 'borough_6', 'postcode_6', 'add_another', 'continue'],
-    title => 'Location of the temporary traffic signs (6)',
-    intro => 'location.html',
-    next => sub { $_[1]->{add_another} ? 'location_7' : 'dates' },
-    tags => { hide => sub { !$_[0]->form->saved_data->{building_name_number_6} } },
-);
-has_field building_name_number_6 => ( type => 'Text', label => 'Building name / number', required => 1 );
-has_field street_name_6 => ( type => 'Text', label => 'Street name', required => 1 );
-has_field borough_6 => ( type => 'Text', label => 'Borough', required => 1 );
-has_field postcode_6 => ( type => 'Text', label => 'Postcode', required => 1 );
-
-has_page location_7 => (
-    fields => ['building_name_number_7', 'street_name_7', 'borough_7', 'postcode_7', 'add_another', 'continue'],
-    title => 'Location of the temporary traffic signs (7)',
-    intro => 'location.html',
-    next => sub { $_[1]->{add_another} ? 'location_8' : 'dates' },
-    tags => { hide => sub { !$_[0]->form->saved_data->{building_name_number_7} } },
-);
-has_field building_name_number_7 => ( type => 'Text', label => 'Building name / number', required => 1 );
-has_field street_name_7 => ( type => 'Text', label => 'Street name', required => 1 );
-has_field borough_7 => ( type => 'Text', label => 'Borough', required => 1 );
-has_field postcode_7 => ( type => 'Text', label => 'Postcode', required => 1 );
-
-has_page location_8 => (
-    fields => ['building_name_number_8', 'street_name_8', 'borough_8', 'postcode_8', 'add_another', 'continue'],
-    title => 'Location of the temporary traffic signs (8)',
-    intro => 'location.html',
-    next => sub { $_[1]->{add_another} ? 'location_9' : 'dates' },
-    tags => { hide => sub { !$_[0]->form->saved_data->{building_name_number_8} } },
-);
-has_field building_name_number_8 => ( type => 'Text', label => 'Building name / number', required => 1 );
-has_field street_name_8 => ( type => 'Text', label => 'Street name', required => 1 );
-has_field borough_8 => ( type => 'Text', label => 'Borough', required => 1 );
-has_field postcode_8 => ( type => 'Text', label => 'Postcode', required => 1 );
-
-has_page location_9 => (
-    fields => ['building_name_number_9', 'street_name_9', 'borough_9', 'postcode_9', 'add_another', 'continue'],
-    title => 'Location of the temporary traffic signs (9)',
-    intro => 'location.html',
-    next => sub { $_[1]->{add_another} ? 'location_10' : 'dates' },
-    tags => { hide => sub { !$_[0]->form->saved_data->{building_name_number_9} } },
-);
-has_field building_name_number_9 => ( type => 'Text', label => 'Building name / number', required => 1 );
-has_field street_name_9 => ( type => 'Text', label => 'Street name', required => 1 );
-has_field borough_9 => ( type => 'Text', label => 'Borough', required => 1 );
-has_field postcode_9 => ( type => 'Text', label => 'Postcode', required => 1 );
-
-has_page location_10 => (
-    fields => ['building_name_number_10', 'street_name_10', 'borough_10', 'postcode_10', 'continue'],
-    title => 'Location of the temporary traffic signs (10)',
-    intro => 'location.html',
-    next => 'dates',
-    tags => { hide => sub { !$_[0]->form->saved_data->{building_name_number_10} } },
-);
-has_field building_name_number_10 => ( type => 'Text', label => 'Building name / number', required => 1 );
-has_field street_name_10 => ( type => 'Text', label => 'Street name', required => 1 );
-has_field borough_10 => ( type => 'Text', label => 'Borough', required => 1 );
-has_field postcode_10 => ( type => 'Text', label => 'Postcode', required => 1 );
+for my $page (2..10) {
+    my $next = 'dates';
+    my $fields = ["building_name_number_$page", "street_name_$page", "borough_$page", "postcode_$page", 'continue'];
+    if ($page < 10) {
+        $next = sub { $_[1]->{add_another} ? 'location_' . ($page+1) : 'dates' };
+        push @$fields, 'add_another';
+    }
+    has_page "location_$page" => (
+        fields => $fields,
+        title => "Location of the temporary traffic signs ($page)",
+        intro => 'location.html',
+        next => $next,
+        tags => { hide => sub { !$_[0]->form->saved_data->{"building_name_number_$page"} } },
+    );
+    has_field "building_name_number_$page" => ( type => 'Text', label => 'Building name / number', required => 1 );
+    has_field "street_name_$page" => ( type => 'Text', label => 'Street name', required => 1 );
+    has_field "borough_$page" => ( type => 'Text', label => 'Borough', required => 1 );
+    has_field "postcode_$page" => ( type => 'Text', label => 'Postcode', required => 1 );
+}
 
 has_field 'add_another' => (
     type => 'Submit',

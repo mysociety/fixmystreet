@@ -153,55 +153,21 @@ sub validate_date {
 # Operation 1
 # ==========================================================================
 
-has_field start_date_1 => ( _date_field_attributes( 1, 'start' ) );
-has_field 'start_date_1.day' => ( type => 'MonthDay' );
-has_field 'start_date_1.month' => ( type => 'Month' );
-has_field 'start_date_1.year' => ( type => 'Year' );
+for my $page (1..3) {
+    has_field "start_date_$page" => ( _date_field_attributes( $page, 'start' ) );
+    has_field "start_date_$page.day" => ( type => 'MonthDay' );
+    has_field "start_date_$page.month" => ( type => 'Month' );
+    has_field "start_date_$page.year" => ( type => 'Year' );
 
-has_field start_time_1 => ( _time_field_attributes('start') );
+    has_field "start_time_$page" => ( _time_field_attributes('start') );
 
-has_field end_date_1 => ( _date_field_attributes( 1, 'end' ) );
-has_field 'end_date_1.day' => ( type => 'MonthDay' );
-has_field 'end_date_1.month' => ( type => 'Month' );
-has_field 'end_date_1.year' => ( type => 'Year' );
+    has_field "end_date_$page" => ( _date_field_attributes( $page, 'end' ) );
+    has_field "end_date_$page.day" => ( type => 'MonthDay' );
+    has_field "end_date_$page.month" => ( type => 'Month' );
+    has_field "end_date_$page.year" => ( type => 'Year' );
 
-has_field end_time_1 => ( _time_field_attributes('end') );
-
-# ==========================================================================
-# Operation 2
-# ==========================================================================
-
-has_field start_date_2 => ( _date_field_attributes( 2, 'start' ) );
-has_field 'start_date_2.day' => ( type => 'MonthDay' );
-has_field 'start_date_2.month' => ( type => 'Month' );
-has_field 'start_date_2.year' => ( type => 'Year' );
-
-has_field start_time_2 => ( _time_field_attributes('start') );
-
-has_field end_date_2 => ( _date_field_attributes( 2, 'end' ) );
-has_field 'end_date_2.day' => ( type => 'MonthDay' );
-has_field 'end_date_2.month' => ( type => 'Month' );
-has_field 'end_date_2.year' => ( type => 'Year' );
-
-has_field end_time_2 => ( _time_field_attributes('end') );
-
-# ==========================================================================
-# Operation 3
-# ==========================================================================
-
-has_field start_date_3 => ( _date_field_attributes( 3, 'start' ) );
-has_field 'start_date_3.day' => ( type => 'MonthDay' );
-has_field 'start_date_3.month' => ( type => 'Month' );
-has_field 'start_date_3.year' => ( type => 'Year' );
-
-has_field start_time_3 => ( _time_field_attributes('start') );
-
-has_field end_date_3 => ( _date_field_attributes( 3, 'end' ) );
-has_field 'end_date_3.day' => ( type => 'MonthDay' );
-has_field 'end_date_3.month' => ( type => 'Month' );
-has_field 'end_date_3.year' => ( type => 'Year' );
-
-has_field end_time_3 => ( _time_field_attributes('end') );
+    has_field "end_time_$page" => ( _time_field_attributes('end') );
+}
 
 has_page date_range_pick => (
     fields => ['proposed_start_date', 'calculated_end_date', 'proposed_start_time', 'proposed_end_time', 'continue'],
