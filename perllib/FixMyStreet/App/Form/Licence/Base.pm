@@ -347,7 +347,8 @@ has_field payment_transaction_id => (
 
 has_field payment_amount => (
     type => 'Text',
-    label => 'Amount paid',
+    label => 'Amount paid (£)',
+    tags => { number => 1 },
 );
 
 has_field payment_warning => (

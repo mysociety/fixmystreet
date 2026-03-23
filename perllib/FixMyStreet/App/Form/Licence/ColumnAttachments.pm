@@ -46,53 +46,32 @@ has_page location_1 => (
     },
 );
 
-has_page location_2 => (
-    fields => ['building_name_number_2', 'street_name_2', 'borough_2', 'postcode_2', 'add_another', 'continue'],
-    title => 'Location of the Column Attachments (2)',
-    intro => 'column-attachments/location.html',
-    next => sub { $_[1]->{add_another} ? 'location_3' : 'dates' },
-    tags => { hide => sub { !$_[0]->form->saved_data->{building_name_number_2} } },
-);
-has_field building_name_number_2 => ( type => 'Text', label => 'Building name / number', required => 1 );
-has_field street_name_2 => ( type => 'Text', label => 'Street name', required => 1 );
-has_field borough_2 => ( type => 'Text', label => 'Borough', required => 1 );
-has_field postcode_2 => ( type => 'Text', label => 'Postcode', required => 1 );
-
-has_page location_3 => (
-    fields => ['building_name_number_3', 'street_name_3', 'borough_3', 'postcode_3', 'add_another', 'continue'],
-    title => 'Location of the Column Attachments (3)',
-    intro => 'column-attachments/location.html',
-    next => sub { $_[1]->{add_another} ? 'location_4' : 'dates' },
-    tags => { hide => sub { !$_[0]->form->saved_data->{building_name_number_3} } },
-);
-has_field building_name_number_3 => ( type => 'Text', label => 'Building name / number', required => 1 );
-has_field street_name_3 => ( type => 'Text', label => 'Street name', required => 1 );
-has_field borough_3 => ( type => 'Text', label => 'Borough', required => 1 );
-has_field postcode_3 => ( type => 'Text', label => 'Postcode', required => 1 );
-
-has_page location_4 => (
-    fields => ['building_name_number_4', 'street_name_4', 'borough_4', 'postcode_4', 'add_another', 'continue'],
-    title => 'Location of the Column Attachments (4)',
-    intro => 'column-attachments/location.html',
-    next => sub { $_[1]->{add_another} ? 'location_5' : 'dates' },
-    tags => { hide => sub { !$_[0]->form->saved_data->{building_name_number_4} } },
-);
-has_field building_name_number_4 => ( type => 'Text', label => 'Building name / number', required => 1 );
-has_field street_name_4 => ( type => 'Text', label => 'Street name', required => 1 );
-has_field borough_4 => ( type => 'Text', label => 'Borough', required => 1 );
-has_field postcode_4 => ( type => 'Text', label => 'Postcode', required => 1 );
-
-has_page location_5 => (
-    fields => ['building_name_number_5', 'street_name_5', 'borough_5', 'postcode_5', 'continue'],
-    title => 'Location of the Column Attachments (5)',
-    intro => 'column-attachments/location.html',
-    next => 'dates',
-    tags => { hide => sub { !$_[0]->form->saved_data->{building_name_number_5} } },
-);
-has_field building_name_number_5 => ( type => 'Text', label => 'Building name / number', required => 1 );
-has_field street_name_5 => ( type => 'Text', label => 'Street name', required => 1 );
-has_field borough_5 => ( type => 'Text', label => 'Borough', required => 1 );
-has_field postcode_5 => ( type => 'Text', label => 'Postcode', required => 1 );
+foreach my $page (2..5) {
+    my $next = 'dates';
+    my $fields = ["building_name_number_$page", "street_name_$page", "borough_$page", "postcode_$page", 'continue'];
+    if ($page < 5) {
+        $next = sub { $_[1]->{add_another} ? 'location_' . ($page+1) : 'dates' };
+        push @$fields, 'add_another';
+    }
+    has_page "location_$page" => (
+        fields => $fields,
+        update_field_list => sub {
+            my $data = $_[0]->saved_data;
+            return {
+                "street_name_$page" => { default => $data->{street_name} },
+                "borough_$page" => { default => $data->{borough} },
+            }
+        },
+        title => "Location of the Column Attachments ($page)",
+        intro => 'column-attachments/location.html',
+        next => $next,
+        tags => { hide => sub { !$_[0]->form->saved_data->{"building_name_number_$page"} } },
+    );
+    has_field "building_name_number_$page" => ( type => 'Text', label => 'Building name / number', required => 1 );
+    has_field "street_name_$page" => ( type => 'Text', label => 'Street name', disabled => 1 );
+    has_field "borough_$page" => ( type => 'Text', label => 'Borough', disabled => 1 );
+    has_field "postcode_$page" => ( type => 'Text', label => 'Postcode', required => 1 );
+}
 
 has_field 'add_another' => (
     type => 'Submit',

@@ -53,7 +53,7 @@ has pdf => ( is => 'lazy', default => sub {
         }
     );
     my $image = $pdf->image(
-        FixMyStreet->path_to('web/cobrands/tfl/images/roundel.png')->stringify);
+        FixMyStreet->path_to('web/cobrands/tfl/images/pdf-footer.png')->stringify);
     $_[0]->header_image($image);
 
     return $pdf;
@@ -90,22 +90,15 @@ my $a4_w = 595;
 my $a4_h = 842;
 my $margin_h = 15/25.4*72;
 my $margin_w = 30/25.4*72;
-my $logo_w = 960;
-my $logo_h = 781;
-my $logo_scale = 0.05;
-my $box_first = [
+my $logo_scale = 0.48;
+my $logo_w = 1241 * $logo_scale;
+my $logo_h = 173 * $logo_scale;
+my $box = [
     $margin_w,
     $a4_h - $margin_h,
-    $a4_w - $margin_w * 2 - $logo_w * $logo_scale - 12,
-    $a4_h - $margin_h * 2 - $margin_h
-];
-my $box_subsequent = [
-    $margin_w,
-    $a4_h - $margin_h - $logo_h * $logo_scale - 12,
     $a4_w - $margin_w * 2,
-    $a4_h - $margin_h * 2 - $margin_h - $logo_h * $logo_scale - 12
+    $a4_h - $margin_h * 2 - $logo_h
 ];
-my $box = $box_first;
 
 sub plot_line {
     my ($self, $y, $colour, $line, $recurse) = @_;
@@ -118,7 +111,6 @@ sub plot_line {
     );
     if ($rc) {
         # On pages after the first, start under the logo
-        $box = $box_subsequent;
         $self->add_page();
         $next_y = undef;
         if ($colour ne 'white') {
@@ -155,13 +147,10 @@ sub page_setup {
     my ($self, $text) = @_;
     $self->page_number($self->page_number + 1);
     my $font = $self->pdf->get_font(face => $self->font, bold => 0, italic => 0);
-    $text->textlabel($a4_w/2, $margin_h+6, $font, 12, $self->page_number, center => 1, color => 'black');
+    $text->textlabel($a4_w/2, $logo_h+6, $font, 12, $self->page_number, center => 1, color => 'black');
 
     my $gfx = $self->page->graphics;
-    $gfx->image($self->header_image,
-        $a4_w - $margin_w - $logo_w * $logo_scale,
-        $a4_h - $margin_h - $logo_h * $logo_scale,
-        $logo_scale);
+    $gfx->image($self->header_image, $a4_w/2 - $logo_w/2, 0, $logo_scale);
 }
 
 1;
