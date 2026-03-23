@@ -86,6 +86,10 @@
 [% IF field.label %]
     [% IF field.get_tag('safe') == 'label' %]
       [% field.label | safe %]
+    [% ELSIF form_class.match('::Licence::') %]
+      <legend class="govuk-fieldset__legend">
+        [% field.label %]
+      </legend>
     [% ELSE %]
       <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
         <h2 class="govuk-fieldset__heading">
@@ -179,11 +183,17 @@
 
 [% BLOCK radio %]
   <fieldset class="govuk-fieldset" aria-describedby="[% IF field.get_tag('hint') %][% field.id %]-hint [% END %][% IF error %][% field.id %]-error[% END %]">
-    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+    [% IF form_class.match('::Licence::') %]
+      <legend class="govuk-fieldset__legend">
+        [% field.label %]
+      </legend>
+    [% ELSE %]
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
         <h2 class="govuk-fieldset__heading">
           [% field.label %]
         </h2>
-    </legend>
+      </legend>
+    [% END %]
 [% IF field.get_tag('hint') %]
     <div id="[% field.id %]-hint" class="govuk-hint">[% field.get_tag('hint') %]</div>
 [% END %]
