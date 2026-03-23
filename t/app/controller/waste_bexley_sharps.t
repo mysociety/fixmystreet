@@ -261,6 +261,8 @@ FixMyStreet::override_config {
         like $email_txt, qr/Box size: 1-litre/;
         like $email_txt, qr/Quantity: 5/;
 
+        unlike $email_txt, qr/terms and conditions/;
+
         my $email_html = $mech->get_html_body_from_email($email_to_user);
         like $email_html, qr/Thank you for booking a sharps collection/;
 
@@ -271,6 +273,8 @@ FixMyStreet::override_config {
 
         like $email_html, qr/Box size: 1-litre/;
         like $email_html, qr/Quantity: 5/;
+
+        unlike $email_html, qr/terms and conditions/;
 
         set_fixed_time('2025-06-01T12:00:00Z');
 
