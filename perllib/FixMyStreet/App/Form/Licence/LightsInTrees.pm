@@ -139,6 +139,7 @@ has_page site_infrastructure => (
 
 has_field site_obstruct_infrastructure => (
     type => 'Select',
+    order => -1,
     widget => 'RadioGroup',
     label => 'Will the decorations obstruct or obscure any street furniture, such as traffic signals, crossings, or signs?',
     tags => { hint => 'Other examples (not limited to) include bus stops, traffic signal controllers, lighting columns, parking bays, and ironwork.' },

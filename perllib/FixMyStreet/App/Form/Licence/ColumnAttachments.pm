@@ -219,6 +219,7 @@ has_field site_near_junction => (
     widget => 'RadioGroup',
     label => 'Will any attachments be within 20m of a junction or a pedestrian crossing point?',
     required => 1,
+    order => -2,
     options => [
         { label => 'Yes', value => 'Yes' },
         { label => 'No', value => 'No' },
@@ -231,6 +232,7 @@ has_field site_obstruct_infrastructure => (
     label => 'Will any attachments obstruct or obscure any street furniture, such as traffic signals, crossings, or signs?',
     tags => { hint => 'Other examples (not limited to) include bus stops, traffic signal controllers, lighting columns, parking bays, and ironwork.' },
     required => 1,
+    order => -1,
     options => [
         { label => 'Yes', value => 'Yes' },
         { label => 'No', value => 'No' },

@@ -44,7 +44,7 @@ has_field mpan_number => (
     type => 'Text',
     label => 'If this installation will draw electricity, please provide the MPAN (Meter Point Administration Number)',
     tags => {
-        hint => 'If the installation will draw power, you must provide electrical design documentation as set out in the guidance notes Electrical Addendum. Attachments that remain in place for more than 8 weeks must also meet the structural testing requirements set out in the Structures Addendum.',
+        hint => 'You must provide electrical design documentation as set out in the guidance notes Electrical Addendum if power is required. Attachments that remain in place for more than 8 weeks must also meet the structural testing requirements set out in the Structures Addendum.',
     },
     required_when => {
     },
