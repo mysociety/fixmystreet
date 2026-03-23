@@ -29,8 +29,15 @@ FixMyStreet::override_config {
 
         subtest 'Front page has correct wording' => sub {
             $mech->get_ok("/");
-            $mech->content_contains("<h1>Report, view local roads and lighting problems</h1>");
-            $mech->content_contains("(like potholes, blocked drains, broken paving, or street lighting)");
+            $mech->content_contains("<h1>Report or check a road or street lighting problem</h1>");
+            $mech->content_contains("Such as potholes, blocked drains, broken paving or street lighting");
+            $mech->content_contains("Enter a postcode, a street name and area, or a reference number from an existing report");
+
+            # Index steps
+            $mech->content_contains("enter a postcode, a street name and area or a reference number from an existing report");
+            $mech->content_contains("locate the problem on a map of the area");
+            $mech->content_contains("enter details of the problem");
+            $mech->content_contains("confirm the report and we will investigate");
         };
 
         subtest 'faq contains contact_us_phone substitutions' => sub {
