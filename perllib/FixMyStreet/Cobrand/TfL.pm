@@ -763,7 +763,7 @@ around 'munge_sendreport_params' => sub {
 # Change those page names to bold in email
 sub licence_detail {
     my ($self, $text) = @_;
-    $text =~ s/(<p style="margin: 0 0 0.8em 0;">\s*)\[(.*?)\]/<strong>\1\2<\/strong>/g;
+    $text =~ s/(<p style="margin: 0 0 0.8em 0;">\s*)\[(.*?)\]/$1<strong>$2<\/strong>/g;
     return FixMyStreet::Template::SafeString->new($text);
 }
 

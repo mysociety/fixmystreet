@@ -102,56 +102,6 @@ has_field scaffold_width => (
 );
 
 # ==========================================================================
-# Scaffold type
-# ==========================================================================
-has_page type => (
-    fields => ['scaffold_type', 'scaffold_configured', 'continue'],
-    title => 'Type of scaffold',
-    intro => 'scaffold/type.html',
-    next => 'have_you_considered',
-);
-
-has_field scaffold_type => (
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'Scaffold type',
-    required => 1,
-);
-
-sub options_scaffold_type {
-    my $self = shift;
-    my $data = $self->form->saved_data;
-    my ($disabled_normal, $disabled_large, $disabled_mobile) = (0, 0, 0);
-    if ($data->{proposed_duration} == 2) {
-        $disabled_normal = 1;
-        $disabled_large = 1;
-    } elsif ($data->{scaffold_length} >= 10) {
-        $disabled_normal = 1;
-        $disabled_mobile = 1;
-    } else {
-        $disabled_large = 1;
-        $disabled_mobile = 1;
-    }
-    return (
-        { label => 'Scaffold', value => 'Scaffold', disabled => $disabled_normal,
-            hint => 'A standard scaffold less than 10 metres in length' },
-        { label => 'Scaffold (Large)', value => 'Scaffold (Large)', disabled => $disabled_large,
-            hint => 'Any scaffold 10 metres or greater in length' },
-        { label => 'Scaffold (Mobile Tower)', value => 'Scaffold (Mobile Tower)', disabled => $disabled_mobile,
-            hint => 'For small mobile scaffold towers, only valid up to two weeks' },
-    );
-}
-
-has_field scaffold_configured => (
-    type => 'Text',
-    label => 'How will the scaffold be configured?',
-    required => 1,
-    tags => {
-        hint => 'For example, ‘independent’, ‘gantry’ or ‘cantilever’',
-    },
-);
-
-# ==========================================================================
 # Scaffold activity
 # ==========================================================================
 has_page activity => (
@@ -327,6 +277,56 @@ has_field site_hoarding_attached => (
         { label => 'Yes', value => 'Yes' },
         { label => 'No', value => 'No' },
     ],
+);
+
+# ==========================================================================
+# Scaffold type
+# ==========================================================================
+has_page type => (
+    fields => ['scaffold_type', 'scaffold_configured', 'continue'],
+    title => 'Type of scaffold',
+    intro => 'scaffold/type.html',
+    next => 'have_you_considered',
+);
+
+has_field scaffold_type => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'Scaffold type',
+    required => 1,
+);
+
+sub options_scaffold_type {
+    my $self = shift;
+    my $data = $self->form->saved_data;
+    my ($disabled_normal, $disabled_large, $disabled_mobile) = (0, 0, 0);
+    if ($data->{proposed_duration} == 2) {
+        $disabled_normal = 1;
+        $disabled_large = 1;
+    } elsif ($data->{scaffold_length} >= 10) {
+        $disabled_normal = 1;
+        $disabled_mobile = 1;
+    } else {
+        $disabled_large = 1;
+        $disabled_mobile = 1;
+    }
+    return (
+        { label => 'Scaffold', value => 'Scaffold', disabled => $disabled_normal,
+            hint => 'A standard scaffold less than 10 metres in length' },
+        { label => 'Scaffold (Large)', value => 'Scaffold (Large)', disabled => $disabled_large,
+            hint => 'Any scaffold 10 metres or greater in length' },
+        { label => 'Scaffold (Mobile Tower)', value => 'Scaffold (Mobile Tower)', disabled => $disabled_mobile,
+            hint => 'For small mobile scaffold towers, only valid up to two weeks' },
+    );
+}
+
+has_field scaffold_configured => (
+    type => 'Text',
+    label => 'How will the scaffold be configured?',
+    required => 1,
+    tags => {
+        hint => 'For example, ‘independent’, ‘gantry’ or ‘cantilever’',
+    },
 );
 
 # ==========================================================================
