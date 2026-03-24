@@ -219,6 +219,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
             like $email_parts[0][0]{'Content-Type'}, qr{multipart/related};
             is $email_parts[0][0]{'Subject'}, 'FMS' . $problem->id . ' Scaffold licence application received';
             is $email_parts[0][0]{'To'}, 'test@example.com';
+            is $email_parts[0][0]{'Cc'}, 'licence@tfl.gov.uk.example.org';
             like $email_parts[1][0]{'Content-Type'}, qr{multipart/alternative};
             like $email_parts[2][0]{'Content-Type'}, qr{text/plain};
 				# could check text here
