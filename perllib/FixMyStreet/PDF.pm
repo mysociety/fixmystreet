@@ -31,8 +31,6 @@ has title => ( is => 'ro' );
 
 has font => ( is => 'ro' );
 
-has header_image => ( is => 'rw' );
-
 has pdf => ( is => 'lazy', default => sub {
     my $pdf = PDF::Builder->new;
     $pdf->title($_[0]->title);
@@ -52,25 +50,14 @@ has pdf => ( is => 'lazy', default => sub {
             bold => FixMyStreet->path_to('web/cobrands/tfl/fonts/Johnston100-Medium.ttf')->stringify,
         }
     );
-    my $image = $pdf->image(
-        FixMyStreet->path_to('web/cobrands/tfl/images/pdf-footer.png')->stringify);
-    $_[0]->header_image($image);
-
     return $pdf;
 } );
 
 # Current page - auto creates first one on first use
 has page => ( is => 'rwp', lazy => 1, default => sub { $_[0]->pdf->page() } );
 
-has page_number => ( is => 'rw', default => 0 );
-
 # Current page's text layer - ditto
-has text => ( is => 'rwp', lazy => 1, default => sub {
-    my $self = shift;
-    my $text = $self->page->text();
-    $self->page_setup($text);
-    return $text;
-} );
+has text => ( is => 'rwp', lazy => 1, default => sub { $_[0]->page->text() } );
 
 =head2 plot_line START_Y COLOUR HTML [RECURSE]
 
@@ -127,7 +114,10 @@ Note the object is unusable after this point.
 
 =cut
 
-sub to_string { $_[0]->pdf->to_string }
+sub to_string {
+    $_[0]->add_footer;
+    $_[0]->pdf->to_string
+}
 
 =head2 add_page
 
@@ -139,18 +129,22 @@ sub add_page {
     my $self = shift;
     $self->_set_page($self->pdf->page());
     $self->_set_text($self->page->text());
-    $self->page_setup($self->text);
 }
 
-# Passing in text because it's also used in text's build
-sub page_setup {
-    my ($self, $text) = @_;
-    $self->page_number($self->page_number + 1);
-    my $font = $self->pdf->get_font(face => $self->font, bold => 0, italic => 0);
-    $text->textlabel($a4_w/2, $logo_h+6, $font, 12, $self->page_number, center => 1, color => 'black');
+sub add_footer {
+    my $self = shift;
+    my $pdf = $self->pdf;
+    my $image = $pdf->image(
+        FixMyStreet->path_to('web/cobrands/tfl/images/pdf-footer.png')->stringify);
+    my $font = $pdf->get_font(face => $self->font, bold => 0, italic => 0);
+    my $num = $pdf->page_count;
 
-    my $gfx = $self->page->graphics;
-    $gfx->image($self->header_image, $a4_w/2 - $logo_w/2, 0, $logo_scale);
+    for (1..$num) {
+        my $page = $pdf->open_page($_);
+        $page->graphics->image($image, $a4_w/2 - $logo_w/2, 0, $logo_scale);
+        my $line = sprintf("%d of %d", $_, $num);
+        $page->text->textlabel($a4_w/2, $logo_h+6, $font, 12, $line, center => 1, color => 'black');
+    }
 }
 
 1;
