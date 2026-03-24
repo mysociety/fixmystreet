@@ -759,6 +759,14 @@ around 'munge_sendreport_params' => sub {
     }
 };
 
+# We write the detail as [page name]\nfields\n\n[page name]..
+# Change those page names to bold in email
+sub licence_detail {
+    my ($self, $text) = @_;
+    $text =~ s/(<p style="margin: 0 0 0.8em 0;">\s*)\[(.*?)\]/<strong>\1\2<\/strong>/g;
+    return FixMyStreet::Template::SafeString->new($text);
+}
+
 sub is_hardcoded_category {
     my ($self, $category) = @_;
 

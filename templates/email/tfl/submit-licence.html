@@ -13,7 +13,8 @@ INCLUDE '_email_top.html';
     <p style="[% p_style %]"><strong>Application reference:</strong> FMS[% report.id %]</p>
     <p style="[% p_style %]"><strong>Category:</strong> [% report.category %]</p>
 
-    [% report.detail | html_para_email(p_style) %]
+    [% detail = report.detail | html_para_email(p_style) %]
+    [% cobrand.licence_detail(detail) %]
 
 </th>
 

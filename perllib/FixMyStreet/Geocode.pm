@@ -56,7 +56,7 @@ sub string {
         $service = __PACKAGE__ . '::OSM';
     }
 
-    my $out = $service->string($s, $c->cobrand);
+    my $out = $service->string($s, $c->cobrand, $c->stash->{allow_single_geocode_match_strings});
     $c->stash->{geocoder_url} = delete $out->{geocoder_url};
     return $out;
 }

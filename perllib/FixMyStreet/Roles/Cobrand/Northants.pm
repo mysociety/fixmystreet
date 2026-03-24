@@ -14,6 +14,7 @@ FixMyStreet::Roles::Cobrand::Northants - shared code between West & Northants co
 
 sub open311_extra_data_exclude { [ 'emergency' ] }
 
+sub max_title_length { 120 }
 
 =item * Includes all Northamptonshire reports before April 2021 and ones after within the boundary.
 

@@ -41,7 +41,8 @@ INCLUDE '_email_top.html';
 
     <h2 style="[% h2_style %]">Application details</h2>
 
-    [% report.detail | html_para_email(p_style) %]
+    [% detail = report.detail | html_para_email(p_style) %]
+    [% cobrand.licence_detail(detail) %]
 
 </th>
 

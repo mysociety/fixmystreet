@@ -83,21 +83,21 @@ sub admin_district {
 # Looks up on Zurich web service a user-inputted location.
 # Returns array of (LAT, LON, ERROR), where ERROR is either undef, a string, or
 # an array of matches if there are more than one.
-# If there is no ambiguity, returns only a {lat,long} hash, unless allow_single_match_string is true
+# If there is no ambiguity, returns only a {lat,long} hash, unless allow_single is true
 # (because the auto-complete use of this (in /around) should send the matched name even though it's not ambiguous).
 #
 # The information in the query may be used to disambiguate the location in cobranded 
 # versions of the site.
 
 sub string {
-    my ( $cls, $s, $c ) = @_;
+    my ( $cls, $s, $c, $allow_single ) = @_;
 
     setup_soap();
 
     my $cache_dir = path(FixMyStreet->config('GEO_CACHE'), 'zurich')->absolute(FixMyStreet->path_to());
     my $cache_file = $cache_dir->child(md5_hex($s));
     my $result;
-    $c->stash->{geocoder_url} = $s;
+    my $out = { geocoder_url => $s };
     if (-s $cache_file && -M $cache_file <= 7 && !FixMyStreet->config('STAGING_SITE')) {
         $result = retrieve($cache_file);
     } else {
@@ -116,7 +116,8 @@ sub string {
     }
 
     if (!$result || !$result->{Location}) {
-        return { error => _('Sorry, we could not parse that location. Please try again.') };
+        $out->{error} = _('Sorry, we could not parse that location. Please try again.');
+        return $out;
     }
 
     my $results = $result->{Location};
@@ -135,10 +136,13 @@ sub string {
         push (@valid_locations, $_);
         last if lc($_->{text}) eq lc($s);
     }
-    if (scalar @valid_locations == 1 && ! $c->stash->{allow_single_geocode_match_strings} ) {
-        return { latitude => $latitude, longitude => $longitude };
+    if (scalar @valid_locations == 1 && !$allow_single) {
+        $out->{latitude} = $latitude;
+        $out->{longitude} = $longitude;
+        return $out;
     }
-    return { error => $error };
+    $out->{error} = $error;
+    return $out;
 }
 
 sub log_message {
