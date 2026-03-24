@@ -537,11 +537,17 @@ sub confirm {
 
 sub send_logged_email {
     my ($self, $h, $nomail, $cobrand) = @_;
+
+    my $to = { To => $self->user->email };
+    if ($h->{report}->cobrand_data eq 'licence') {
+        my $email = $h->{report}->get_extra_metadata('sent_to');
+        $to->{Cc} = join(',', @$email) if $email && @$email;
+    }
     FixMyStreet::Email::send_cron(
         $self->result_source->schema,
         'confirm_report_sent.txt',
         $h,
-        { To => $self->user->email },
+        $to,
         undef,
         $nomail,
         $cobrand,
