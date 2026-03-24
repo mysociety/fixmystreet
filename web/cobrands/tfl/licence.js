@@ -80,3 +80,17 @@
     document.getElementById('proposed_start_date').addEventListener('change', updateEndDate);
     updateEndDate();
 })();
+
+// Amount paid have nicer error message
+(function() {
+    var inputs = document.querySelectorAll('input[inputmode="decimal"]');
+    [].forEach.call(inputs, function(input) {
+        input.addEventListener("input", function() {
+            if (input.validity.patternMismatch) {
+                input.setCustomValidity("Please only provide a number");
+            } else {
+                input.setCustomValidity("");
+            }
+        });
+    });
+})();
