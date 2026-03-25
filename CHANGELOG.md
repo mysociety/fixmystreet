@@ -22,6 +22,8 @@
         - Allow per-category timespan for closing inactive reports to updates. #5649
         - Dashboard: toggle visibility of deleted categories and categories with no reports
         - Select correct category group on report inspect dropdowns, and allow updating of category group
+        - Allow search of non-integer external IDs.
+        - List categories that prevent reporting.
     - Development improvements
         - More logging when `page_error` is called, to aid troubleshooting. #5279
         - Docker changes needed for systemd to work. #5257

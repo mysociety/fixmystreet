@@ -1,0 +1,320 @@
+<?xml version='1.0' encoding="UTF-8" ?>
+<wfs:FeatureCollection
+   xmlns:ms="http://mapserver.gis.umn.edu/mapserver"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:wfs="http://www.opengis.net/wfs"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://mapserver.gis.umn.edu/mapserver https://tilma.staging.mysociety.org:80/mapserver/highways?SERVICE=WFS&amp;VERSION=1.1.0&amp;REQUEST=DescribeFeatureType&amp;TYPENAME=Highways&amp;OUTPUTFORMAT=text/xml;%20subtype=gml/3.1.1  http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+      <gml:boundedBy>
+      	<gml:Envelope srsName="EPSG:3857">
+      		<gml:lowerCorner>-334002.872511 7390296.291646</gml:lowerCorner>
+      		<gml:upperCorner>-333142.466707 7391681.513617</gml:upperCorner>
+      	</gml:Envelope>
+      </gml:boundedBy>
+    <gml:featureMember>
+      <ms:Highways gml:id="Highways.">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-333653.569473 7390882.407077</gml:lowerCorner>
+        		<gml:upperCorner>-333531.572205 7390985.696174</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:LineString srsName="EPSG:3857">
+            <gml:posList srsDimension="2">-333653.569473 7390985.696174 -333618.142551 7390951.191546 -333531.572205 7390882.407077 </gml:posList>
+          </gml:LineString>
+        </ms:msGeometry>
+        <ms:ROA_NUMBER></ms:ROA_NUMBER>
+        <ms:sect_label></ms:sect_label>
+        <ms:area_name></ms:area_name>
+        <ms:descriptor>High Street</ms:descriptor>
+      </ms:Highways>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Highways gml:id="Highways.">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-333658.883539 7390985.696174</gml:lowerCorner>
+        		<gml:upperCorner>-333653.569473 7390990.871867</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:LineString srsName="EPSG:3857">
+            <gml:posList srsDimension="2">-333658.883539 7390990.871867 -333653.569473 7390985.696174 </gml:posList>
+          </gml:LineString>
+        </ms:msGeometry>
+        <ms:ROA_NUMBER></ms:ROA_NUMBER>
+        <ms:sect_label></ms:sect_label>
+        <ms:area_name></ms:area_name>
+        <ms:descriptor>High Street</ms:descriptor>
+      </ms:Highways>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Highways gml:id="Highways.">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-333934.728984 7391264.435146</gml:lowerCorner>
+        		<gml:upperCorner>-333870.655529 7391347.547498</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:LineString srsName="EPSG:3857">
+            <gml:posList srsDimension="2">-333934.728984 7391347.547498 -333911.574517 7391316.367792 -333870.655529 7391264.435146 </gml:posList>
+          </gml:LineString>
+        </ms:msGeometry>
+        <ms:ROA_NUMBER></ms:ROA_NUMBER>
+        <ms:sect_label></ms:sect_label>
+        <ms:area_name></ms:area_name>
+        <ms:descriptor>High Street</ms:descriptor>
+      </ms:Highways>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Highways gml:id="Highways.">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-333762.107835 7391065.758962</gml:lowerCorner>
+        		<gml:upperCorner>-333723.918160 7391110.184986</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:LineString srsName="EPSG:3857">
+            <gml:posList srsDimension="2">-333762.107835 7391110.184986 -333735.252343 7391079.058760 -333723.918160 7391065.758962 </gml:posList>
+          </gml:LineString>
+        </ms:msGeometry>
+        <ms:ROA_NUMBER></ms:ROA_NUMBER>
+        <ms:sect_label></ms:sect_label>
+        <ms:area_name></ms:area_name>
+        <ms:descriptor>High Street</ms:descriptor>
+      </ms:Highways>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Highways gml:id="Highways.">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-333316.598244 7390296.291646</gml:lowerCorner>
+        		<gml:upperCorner>-333142.466707 7390750.685986</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:LineString srsName="EPSG:3857">
+            <gml:posList srsDimension="2">-333316.598244 7390750.685986 -333307.766992 7390743.809884 -333288.308454 7390726.582227 -333245.550961 7390667.674309 -333234.849261 7390652.072279 -333215.192316 7390620.843360 -333202.545648 7390591.265059 -333191.546013 7390554.661370 -333182.392151 7390525.033484 -333176.706113 7390493.605775 -333159.201234 7390367.821485 -333147.928961 7390311.967770 -333142.466707 7390296.291646 </gml:posList>
+          </gml:LineString>
+        </ms:msGeometry>
+        <ms:ROA_NUMBER></ms:ROA_NUMBER>
+        <ms:sect_label></ms:sect_label>
+        <ms:area_name></ms:area_name>
+        <ms:descriptor>A7T From High Street Langolm To B6318</ms:descriptor>
+      </ms:Highways>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Highways gml:id="Highways.">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-334002.872511 7391470.867780</gml:lowerCorner>
+        		<gml:upperCorner>-333990.026671 7391549.834242</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:LineString srsName="EPSG:3857">
+            <gml:posList srsDimension="2">-333990.026671 7391549.834242 -333991.547944 7391534.055938 -333994.765675 7391514.751877 -334002.872511 7391470.867780 </gml:posList>
+          </gml:LineString>
+        </ms:msGeometry>
+        <ms:ROA_NUMBER></ms:ROA_NUMBER>
+        <ms:sect_label></ms:sect_label>
+        <ms:area_name></ms:area_name>
+        <ms:descriptor>Townhead</ms:descriptor>
+      </ms:Highways>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Highways gml:id="Highways.">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-333781.433744 7391110.184986</gml:lowerCorner>
+        		<gml:upperCorner>-333762.107835 7391132.666059</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:LineString srsName="EPSG:3857">
+            <gml:posList srsDimension="2">-333781.433744 7391132.666059 -333762.107835 7391110.184986 </gml:posList>
+          </gml:LineString>
+        </ms:msGeometry>
+        <ms:ROA_NUMBER></ms:ROA_NUMBER>
+        <ms:sect_label></ms:sect_label>
+        <ms:area_name></ms:area_name>
+        <ms:descriptor>High Street</ms:descriptor>
+      </ms:Highways>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Highways gml:id="Highways.">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-333975.673860 7391347.547498</gml:lowerCorner>
+        		<gml:upperCorner>-333934.728984 7391401.230680</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:LineString srsName="EPSG:3857">
+            <gml:posList srsDimension="2">-333975.673860 7391401.230680 -333973.852292 7391396.004783 -333934.728984 7391347.547498 </gml:posList>
+          </gml:LineString>
+        </ms:msGeometry>
+        <ms:ROA_NUMBER></ms:ROA_NUMBER>
+        <ms:sect_label></ms:sect_label>
+        <ms:area_name></ms:area_name>
+        <ms:descriptor>High Street</ms:descriptor>
+      </ms:Highways>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Highways gml:id="Highways.">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-334002.872511 7391401.230680</gml:lowerCorner>
+        		<gml:upperCorner>-333975.673860 7391470.867780</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:LineString srsName="EPSG:3857">
+            <gml:posList srsDimension="2">-334002.872511 7391470.867780 -333997.207478 7391441.187286 -333993.564298 7391430.735453 -333988.174628 7391420.308717 -333975.673860 7391401.230680 </gml:posList>
+          </gml:LineString>
+        </ms:msGeometry>
+        <ms:ROA_NUMBER></ms:ROA_NUMBER>
+        <ms:sect_label></ms:sect_label>
+        <ms:area_name></ms:area_name>
+        <ms:descriptor>High Street</ms:descriptor>
+      </ms:Highways>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Highways gml:id="Highways.">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-333824.297808 7391132.666059</gml:lowerCorner>
+        		<gml:upperCorner>-333781.433744 7391198.575501</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:LineString srsName="EPSG:3857">
+            <gml:posList srsDimension="2">-333824.297808 7391198.575501 -333809.951406 7391172.521674 -333799.222896 7391155.169183 -333781.433744 7391132.666059 </gml:posList>
+          </gml:LineString>
+        </ms:msGeometry>
+        <ms:ROA_NUMBER></ms:ROA_NUMBER>
+        <ms:sect_label></ms:sect_label>
+        <ms:area_name></ms:area_name>
+        <ms:descriptor>High Street</ms:descriptor>
+      </ms:Highways>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Highways gml:id="Highways.">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-333335.982273 7390750.685986</gml:lowerCorner>
+        		<gml:upperCorner>-333316.598244 7390762.663055</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:LineString srsName="EPSG:3857">
+            <gml:posList srsDimension="2">-333335.982273 7390762.663055 -333319.769788 7390752.618824 -333316.598244 7390750.685986 </gml:posList>
+          </gml:LineString>
+        </ms:msGeometry>
+        <ms:ROA_NUMBER></ms:ROA_NUMBER>
+        <ms:sect_label></ms:sect_label>
+        <ms:area_name></ms:area_name>
+        <ms:descriptor>A7T From High Street Langolm To B6318</ms:descriptor>
+      </ms:Highways>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Highways gml:id="Highways.">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-333829.537162 7391198.500362</gml:lowerCorner>
+        		<gml:upperCorner>-333824.297808 7391198.575501</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:LineString srsName="EPSG:3857">
+            <gml:posList srsDimension="2">-333829.537162 7391198.500362 -333824.297808 7391198.575501 </gml:posList>
+          </gml:LineString>
+        </ms:msGeometry>
+        <ms:ROA_NUMBER></ms:ROA_NUMBER>
+        <ms:sect_label></ms:sect_label>
+        <ms:area_name></ms:area_name>
+        <ms:descriptor>High Street</ms:descriptor>
+      </ms:Highways>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Highways gml:id="Highways.">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-333723.918160 7390990.871867</gml:lowerCorner>
+        		<gml:upperCorner>-333658.883539 7391065.758962</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:LineString srsName="EPSG:3857">
+            <gml:posList srsDimension="2">-333723.918160 7391065.758962 -333697.928446 7391034.077682 -333664.197611 7390996.047559 -333658.883539 7390990.871867 </gml:posList>
+          </gml:LineString>
+        </ms:msGeometry>
+        <ms:ROA_NUMBER></ms:ROA_NUMBER>
+        <ms:sect_label></ms:sect_label>
+        <ms:area_name></ms:area_name>
+        <ms:descriptor>High Street</ms:descriptor>
+      </ms:Highways>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Highways gml:id="Highways.">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-333870.655529 7391198.575501</gml:lowerCorner>
+        		<gml:upperCorner>-333824.297808 7391264.435146</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:LineString srsName="EPSG:3857">
+            <gml:posList srsDimension="2">-333870.655529 7391264.435146 -333868.884064 7391262.709906 -333838.669299 7391226.379675 -333824.297808 7391198.575501 </gml:posList>
+          </gml:LineString>
+        </ms:msGeometry>
+        <ms:ROA_NUMBER></ms:ROA_NUMBER>
+        <ms:sect_label></ms:sect_label>
+        <ms:area_name></ms:area_name>
+        <ms:descriptor>High Street</ms:descriptor>
+      </ms:Highways>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Highways gml:id="Highways.">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-333531.572205 7390762.663055</gml:lowerCorner>
+        		<gml:upperCorner>-333335.982273 7390882.407077</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:LineString srsName="EPSG:3857">
+            <gml:posList srsDimension="2">-333531.572205 7390882.407077 -333519.222936 7390873.830845 -333468.029945 7390836.050368 -333390.492651 7390788.142795 -333335.982273 7390762.663055 </gml:posList>
+          </gml:LineString>
+        </ms:msGeometry>
+        <ms:ROA_NUMBER></ms:ROA_NUMBER>
+        <ms:sect_label></ms:sect_label>
+        <ms:area_name></ms:area_name>
+        <ms:descriptor>High Street</ms:descriptor>
+      </ms:Highways>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Highways gml:id="Highways.">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-333990.026671 7391549.834242</gml:lowerCorner>
+        		<gml:upperCorner>-333963.958882 7391681.513617</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:LineString srsName="EPSG:3857">
+            <gml:posList srsDimension="2">-333963.958882 7391681.513617 -333970.494678 7391649.906360 -333976.980372 7391614.798476 -333990.026671 7391549.834242 </gml:posList>
+          </gml:LineString>
+        </ms:msGeometry>
+        <ms:ROA_NUMBER></ms:ROA_NUMBER>
+        <ms:sect_label></ms:sect_label>
+        <ms:area_name></ms:area_name>
+        <ms:descriptor>Townhead</ms:descriptor>
+      </ms:Highways>
+    </gml:featureMember>
+</wfs:FeatureCollection>
+

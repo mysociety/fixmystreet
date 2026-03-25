@@ -87,7 +87,13 @@
     [% BLOCK category_row %]
       <tr [% IF cat.state == 'deleted' %]class="is-deleted"[% END %]>
         <td class="contact-category"><a href="[% c.uri_for_action( '/admin/bodies/category', [ body_id ], cat.category_safe ) %]">[% cat.category_display %]</a>
-            <br>[% cat.email.replace('([;,])', '$1 ') %]</td>
+            <br>
+          [% IF cat.is_disabled %]
+            <i>[% loc('Reporting prevented') %]</i>
+          [% ELSE %]
+            [% cat.email.replace('([;,])', '$1 ') %]
+          [% END %]
+        </td>
         <td>
             [% cat.state %]
           [% IF cat.non_public OR (body.can_be_devolved AND cat.send_method) %]

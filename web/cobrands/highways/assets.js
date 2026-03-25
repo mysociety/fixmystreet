@@ -77,6 +77,9 @@ fixmystreet.assets.add(defaults, {
                 fixmystreet.body_overrides.do_not_send(highways_body_name);
             }
             $('.js-reporting-page--highways').remove();
+            if (!$('.js-reporting-page--active').length) {
+                $('.js-reporting-page').first().addClass('js-reporting-page--active');
+            }
         }
     }
 });

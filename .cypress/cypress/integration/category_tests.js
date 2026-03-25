@@ -70,6 +70,7 @@ describe('Basic categories', function() {
 
     it('category search functions as expected', function() {
         cy.visit('/report/new?latitude=51.496194&longitude=-2.603439');
+        cy.wait('@report-ajax');
 
         cy.get('#category-filter').type('Fly');
         cy.get('[value="Abandoned vehicles"]').should('not.be.visible');
