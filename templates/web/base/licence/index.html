@@ -6,6 +6,11 @@
 
   [% PROCESS 'govuk/fields.html' %]
   [% PROCESS errors %]
+
+  [% IF form.current_page.name != 'intro' AND form.step_number %]
+    Step [% form.step_number %] of [% form.num_steps %]
+  [% END %]
+
   [% PROCESS title %]
 
   [%# Templates can be type-specific (scaffold/intro.html) or shared (dates.html) %]

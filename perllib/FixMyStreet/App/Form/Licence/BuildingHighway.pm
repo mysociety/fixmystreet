@@ -14,6 +14,8 @@ sub tandc_link { 'https://content.tfl.gov.uk/building-over-the-highway-guidance-
 
 sub next_after_contractor { 'activity' }
 
+sub num_steps { 14 }
+
 # ==========================================================================
 # Introduction / Before you get started
 # ==========================================================================
@@ -34,6 +36,7 @@ has_field start => (
 # Location (fields from Fields::Location role)
 # ==========================================================================
 has_page location => (
+    step_number => 1,
     fields => ['building_name_number', 'street_name', 'borough', 'postcode', 'continue'],
     title => 'Location of building over the highway',
     intro => 'location.html',
@@ -48,6 +51,7 @@ has_page location => (
 # Building over highway activity
 # ==========================================================================
 has_page activity => (
+    step_number => 5,
     fields => ['activity', 'continue'],
     title => 'Purpose of the building over the highway work',
     next => 'site_pedestrian_space',
@@ -68,6 +72,7 @@ has_field activity => (
 # Split into one question per page sometimes for better UX with long labels
 # ==========================================================================
 has_page site_pedestrian_space => (
+    step_number => 6,
     fields => ['footway_incursion', 'aerial_clearance', 'continue'],
     title => 'Pedestrian space',
     next => 'site_carriageway_distance',
@@ -95,6 +100,7 @@ has_field aerial_clearance => (
 
 # ==========================================================================
 has_page site_carriageway_distance => (
+    step_number => 7,
     fields => ['carriageway_incursion', 'site_within_450mm', 'continue'],
     title => 'Carriageway impact',
     next => 'consent',
@@ -122,6 +128,7 @@ has_field site_within_450mm => (
 
 # ==========================================================================
 has_page consent => (
+    step_number => 8,
     fields => ['planning_consent', 'regulations_consent', 'continue'],
     title => 'Consents',
     next => 'site_infrastructure',
@@ -151,6 +158,7 @@ has_field regulations_consent => (
 
 # ==========================================================================
 has_page site_infrastructure => (
+    step_number => 9,
     fields => ['site_obstruct_infrastructure', 'continue'],
     title => 'Street infrastructure',
     next => 'have_you_considered',
@@ -173,6 +181,7 @@ has_field site_obstruct_infrastructure => (
 # Fields from Fields::TemporaryProhibition role
 # ==========================================================================
 has_page have_you_considered => (
+    step_number => 10,
     fields => [
         'parking_dispensation',
         'parking_bay_suspension',
@@ -188,6 +197,7 @@ has_page have_you_considered => (
 );
 
 has_page terms => (
+    step_number => 11,
     fields => [
         'terms_accepted',
         'continue'
@@ -210,6 +220,7 @@ my $upload_fields = [
     'continue'
 ];
 has_page uploads => (
+    step_number => 12,
     fields => $upload_fields,
     title => 'Upload required documents',
     intro => 'uploads.html',
