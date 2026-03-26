@@ -16,6 +16,8 @@ sub tandc_link { 'https://content.tfl.gov.uk/column-attachments-guidance-notes-a
 
 sub next_after_contractor { 'activity' }
 
+sub num_steps { 14 }
+
 # ==========================================================================
 # Introduction / Before you get started
 # ==========================================================================
@@ -36,6 +38,7 @@ has_field start => (
 # Location (fields from Fields::Location role)
 # ==========================================================================
 has_page location_1 => (
+    step_number => 1,
     fields => ['building_name_number', 'street_name', 'borough', 'postcode', 'add_another', 'continue'],
     title => 'Location of the Column Attachments',
     intro => 'location.html',
@@ -54,6 +57,7 @@ foreach my $page (2..5) {
         push @$fields, 'add_another';
     }
     has_page "location_$page" => (
+        step_number => 1,
         fields => $fields,
         update_field_list => sub {
             my $data = $_[0]->saved_data;
@@ -85,6 +89,7 @@ has_field 'add_another' => (
 # Column Attachments activity
 # ==========================================================================
 has_page activity => (
+    step_number => 5,
     fields => ['activity', 'continue'],
     title => 'Purpose of the column attachments',
     next => 'installation',
@@ -101,6 +106,7 @@ has_field activity => (
 );
 
 has_page installation => (
+    step_number => 6,
     fields => ['installation_method', 'continue'],
     title => 'Installation',
     next => 'site_pedestrian_space',
@@ -121,6 +127,7 @@ has_field installation_method => (
 # Split into one question per page sometimes for better UX with long labels
 # ==========================================================================
 has_page site_pedestrian_space => (
+    step_number => 7,
     fields => ['site_adequate_space', 'footway_incursion', 'footway_headroom', 'continue'],
     title => 'Pedestrian space',
     next => 'site_carriageway_distance',
@@ -161,6 +168,7 @@ has_field footway_headroom => (
 
 # ==========================================================================
 has_page site_carriageway_distance => (
+    step_number => 8,
     fields => ['carriageway_incursion', 'carriageway_headroom', 'continue'],
     title => 'Carriageway impact',
     next => 'site_infrastructure',
@@ -188,6 +196,7 @@ has_field carriageway_headroom => (
 );
 
 has_page 'site_infrastructure' => (
+    step_number => 9,
     fields => ['site_near_junction', 'site_obstruct_infrastructure', 'enough_space', 'power_supply', 'mpan_number', 'electrical_information', 'continue'],
     title => 'Street infrastructure',
     next => 'have_you_considered',
@@ -222,6 +231,7 @@ has_field site_obstruct_infrastructure => (
 # Fields from Fields::TemporaryProhibition role
 # ==========================================================================
 has_page have_you_considered => (
+    step_number => 10,
     fields => [
         'parking_dispensation',
         'parking_bay_suspension',
@@ -237,6 +247,7 @@ has_page have_you_considered => (
 );
 
 has_page terms => (
+    step_number => 11,
     fields => [
         'terms_accepted',
         'continue'
@@ -258,6 +269,7 @@ my $upload_fields = [
     'continue'
 ];
 has_page uploads => (
+    step_number => 12,
     fields => $upload_fields,
     title => 'Upload required documents',
     intro => 'uploads.html',

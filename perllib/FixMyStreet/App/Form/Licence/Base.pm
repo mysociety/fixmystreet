@@ -72,6 +72,7 @@ Includes validation:
 =cut
 
 has_page dates => (
+    step_number => 2,
     fields => ['proposed_start_date', 'proposed_working_times', 'proposed_duration', 'year_warning', 'continue'],
     title => 'Proposed working dates (subject to approval)',
     intro => 'dates.html',
@@ -221,6 +222,11 @@ has_field year_warning => (
 # About You (Applicant) fields from Fields::Applicant role
 # ==========================================================================
 has_page applicant => (
+    build_step_number => sub {
+        my $type = $_[0]->form->type;
+        return 4 if $type eq 'pit-lane' || $type eq 'mobile-apparatus';
+        return 3;
+    },
     fields => [
         'organisation',
         'name',
@@ -263,6 +269,11 @@ has_field contractor_nasc_member => (
 # Fields from Fields::Contractor role
 # ==========================================================================
 has_page contractor => (
+    build_step_number => sub {
+        my $type = $_[0]->form->type;
+        return 5 if $type eq 'pit-lane' || $type eq 'mobile-apparatus';
+        return 4;
+    },
     fields => [
         'contractor_same_as_applicant',
         'contractor_organisation',
@@ -329,6 +340,10 @@ These are shared for all the forms.
 # Payment
 # ==========================================================================
 has_page payment => (
+    build_step_number => sub {
+        my $steps = $_[0]->form->num_steps;
+        return $steps - 1;
+    },
     fields => [
         'payment_transaction_id',
         'payment_amount',

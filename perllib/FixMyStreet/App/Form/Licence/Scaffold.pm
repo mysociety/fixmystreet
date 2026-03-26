@@ -14,6 +14,8 @@ sub tandc_link { 'https://content.tfl.gov.uk/scaffold-guidance-notes-and-terms-c
 
 sub next_after_applicant { 'dimensions' }
 
+sub num_steps { 16 }
+
 # ==========================================================================
 # Introduction / Before you get started
 # ==========================================================================
@@ -34,6 +36,7 @@ has_field start => (
 # Location (fields from Fields::Location role)
 # ==========================================================================
 has_page location => (
+    step_number => 1,
     fields => ['building_name_number', 'street_name', 'borough', 'postcode', 'continue'],
     title => 'Location of the scaffold',
     intro => 'location.html',
@@ -48,6 +51,7 @@ has_page location => (
 # Scaffold dimensions
 # ==========================================================================
 has_page dimensions => (
+    step_number => 4,
     fields => ['scaffold_height', 'scaffold_length', 'scaffold_width', 'continue'],
     title => 'Scaffold dimensions',
     next => 'activity',
@@ -105,6 +109,7 @@ has_field scaffold_width => (
 # Scaffold activity
 # ==========================================================================
 has_page activity => (
+    step_number => 5,
     fields => ['activity', 'continue'],
     title => 'Purpose of the scaffold',
     next => 'site_pedestrian_space',
@@ -125,6 +130,7 @@ has_field activity => (
 # Split into one question per page sometimes for better UX with long labels
 # ==========================================================================
 has_page site_pedestrian_space => (
+    step_number => 6,
     fields => ['site_adequate_space', 'footway_incursion', 'continue'],
     title => 'Pedestrian space',
     next => 'site_carriageway_distance',
@@ -153,6 +159,7 @@ has_field footway_incursion => (
 
 # ==========================================================================
 has_page site_carriageway_distance => (
+    step_number => 7,
     fields => ['carriageway_incursion', 'site_within_450mm', 'continue'],
     title => 'Carriageway impact',
     next => 'site_infrastructure',
@@ -180,6 +187,7 @@ has_field site_within_450mm => (
 
 # ==========================================================================
 has_page site_infrastructure => (
+    step_number => 8,
     fields => ['site_obstruct_infrastructure', 'site_trees_nearby', 'site_tfl_structures', 'continue'],
     title => 'Street infrastructure',
     next => 'site_protection',
@@ -228,6 +236,7 @@ has_field site_tfl_structures => (
 
 # ==========================================================================
 has_page site_protection => (
+    step_number => 9,
     fields => ['site_protection_fan', 'site_foundations_surveyed', 'continue'],
     title => 'Scaffold installation',
     next => 'site_hoarding',
@@ -260,6 +269,7 @@ has_field site_foundations_surveyed => (
 
 # ==========================================================================
 has_page site_hoarding => (
+    step_number => 10,
     fields => ['site_hoarding_attached', 'continue'],
     title => 'Hoarding',
     next => 'type',
@@ -283,6 +293,7 @@ has_field site_hoarding_attached => (
 # Scaffold type
 # ==========================================================================
 has_page type => (
+    step_number => 11,
     fields => ['scaffold_type', 'scaffold_configured', 'continue'],
     title => 'Type of scaffold',
     intro => 'scaffold/type.html',
@@ -334,6 +345,7 @@ has_field scaffold_configured => (
 # Fields from Fields::TemporaryProhibition role
 # ==========================================================================
 has_page have_you_considered => (
+    step_number => 12,
     fields => [
         'parking_dispensation',
         'parking_bay_suspension',
@@ -349,6 +361,7 @@ has_page have_you_considered => (
 );
 
 has_page terms => (
+    step_number => 13,
     fields => [
         'terms_accepted',
         'continue'
@@ -369,6 +382,7 @@ my $upload_fields = [
     'continue'
 ];
 has_page uploads => (
+    step_number => 14,
     fields => $upload_fields,
     title => 'Upload required documents',
     intro => 'uploads.html',

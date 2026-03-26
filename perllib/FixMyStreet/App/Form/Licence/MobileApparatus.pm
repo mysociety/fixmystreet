@@ -16,6 +16,8 @@ sub tandc_link { 'https://content.tfl.gov.uk/mobile-apparatus-guidance-notes-and
 
 sub next_after_contractor { 'details' }
 
+sub num_steps { 17 }
+
 # ==========================================================================
 # Introduction / Before you get started
 # ==========================================================================
@@ -36,6 +38,7 @@ has_field start => (
 # Location (fields from Fields::Location role)
 # ==========================================================================
 has_page location => (
+    step_number => 1,
     fields => ['building_name_number', 'street_name', 'borough', 'postcode', 'continue'],
     title => 'Location of mobile apparatus',
     intro => 'location.html',
@@ -51,6 +54,7 @@ has_page location => (
 # ==========================================================================
 
 has_page date_choice => (
+    step_number => 2,
     fields => ['date_choice', 'continue'],
     title => 'Number of mobile apparatus operations',
     next => sub {
@@ -77,18 +81,21 @@ has_field date_choice => (
 );
 
 has_page dates_pick_1 => (
+    step_number => 3,
     _dates_pick_attributes(1),
     next => sub { $_[0]->{date_choice} eq 'dates_1' ? 'applicant' : 'dates_pick_2' },
     tags => { hide => sub { !$_[0]->form->saved_data->{start_date_1} } },
 );
 
 has_page dates_pick_2 => (
+    step_number => 3,
     _dates_pick_attributes(2),
     next => sub { $_[0]->{date_choice} eq 'dates_2' ? 'applicant' : 'dates_pick_3' },
     tags => { hide => sub { !$_[0]->form->saved_data->{start_date_2} } },
 );
 
 has_page dates_pick_3 => (
+    step_number => 3,
     _dates_pick_attributes(3),
     next => 'applicant',
     tags => { hide => sub { !$_[0]->form->saved_data->{start_date_3} } },
@@ -170,6 +177,7 @@ for my $page (1..3) {
 }
 
 has_page date_range_pick => (
+    step_number => 3,
     fields => ['proposed_start_date', 'calculated_end_date', 'proposed_start_time', 'proposed_end_time', 'continue'],
     title => 'Proposed working dates (subject to approval)',
     next => 'applicant',
@@ -229,6 +237,7 @@ has_field proposed_end_time => ( _time_field_attributes('end') );
 # Crane details
 # ==========================================================================
 has_page details => (
+    step_number => 6,
     fields => ['model', 'weight', 'footprint', 'capacity', 'continue'],
     title => 'Mobile apparatus details',
     next => 'activity',
@@ -274,6 +283,7 @@ has_field capacity => (
 # Activity
 # ==========================================================================
 has_page activity => (
+    step_number => 7,
     fields => ['activity', 'continue'],
     title => 'Purpose of the mobile apparatus',
     next => 'site_pedestrian_space',
@@ -295,6 +305,7 @@ has_field activity => (
 # Split into one question per page sometimes for better UX with long labels
 # ==========================================================================
 has_page site_pedestrian_space => (
+    step_number => 8,
     fields => ['footway_incursion', 'situated_on_footway', 'site_adequate_space', 'continue'],
     title => 'Pedestrian space',
     next => 'site_carriageway_distance',
@@ -334,6 +345,7 @@ has_field situated_on_footway => (
 
 # ==========================================================================
 has_page site_carriageway_distance => (
+    step_number => 9,
     fields => ['carriageway_incursion', 'situated_on_carriageway', 'continue'],
     title => 'Carriageway impact',
     next => 'site_infrastructure',
@@ -362,6 +374,7 @@ has_field situated_on_carriageway => (
 
 # ==========================================================================
 has_page site_infrastructure => (
+    step_number => 10,
     fields => ['site_obstruct_infrastructure', 'load_bearing_assessment', 'continue'],
     title => 'Street infrastructure',
     next => 'pre_application',
@@ -394,6 +407,7 @@ has_field load_bearing_assessment => (
 # ==========================================================================
 # Fields provided by PreApplication role
 has_page pre_application => (
+    step_number => 11,
     fields => ['buses_consulted', 'underground_consulted', 'police_consulted', 'preapp_comments', 'continue'],
     title => 'Pre-application consultation',
     next => 'type',
@@ -412,6 +426,7 @@ has_page pre_application => (
 # Type
 # ==========================================================================
 has_page type => (
+    step_number => 12,
     fields => ['apparatus_type', 'apparatus_type_notice', 'continue'],
     title => 'Mobile apparatus type',
     next => 'have_you_considered',
@@ -454,6 +469,7 @@ has_field apparatus_type_notice => (
 # Fields from Fields::TemporaryProhibition role
 # ==========================================================================
 has_page have_you_considered => (
+    step_number => 13,
     fields => [
         'parking_dispensation',
         'parking_bay_suspension',
@@ -469,6 +485,7 @@ has_page have_you_considered => (
 );
 
 has_page terms => (
+    step_number => 14,
     fields => [
         'terms_accepted',
         'continue'
@@ -490,6 +507,7 @@ my $upload_fields = [
     'continue'
 ];
 has_page uploads => (
+    step_number => 15,
     fields => $upload_fields,
     title => 'Upload required documents',
     intro => 'uploads.html',

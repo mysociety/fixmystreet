@@ -36,6 +36,7 @@ subtest 'Excavation form submission - smoke test' => sub {
         $mech->submit_form_ok({ button => 'start' });
 
         # Location page
+        $mech->content_contains('Step 1 of 13');
         $mech->submit_form_ok({ with_fields => {
             street_name => 'Test Street',
             building_name_number => '123',
@@ -44,6 +45,7 @@ subtest 'Excavation form submission - smoke test' => sub {
         }});
 
         # Dates page (using dynamic dates calculated at test start)
+        $mech->content_contains('Step 2 of 13');
         $mech->submit_form_ok({ with_fields => {
             'proposed_start_date.day' => $start_date->day,
             'proposed_start_date.month' => $start_date->month,
@@ -53,6 +55,7 @@ subtest 'Excavation form submission - smoke test' => sub {
         }});
 
         # Applicant page
+        $mech->content_contains('Step 3 of 13');
         $mech->submit_form_ok({ with_fields => {
             organisation => 'Test Excavation Ltd',
             job_title => 'Excavator',
@@ -64,30 +67,36 @@ subtest 'Excavation form submission - smoke test' => sub {
         }});
 
         # Contractor page - use "same as applicant"
+        $mech->content_contains('Step 4 of 13');
         $mech->submit_form_ok({ with_fields => {
             contractor_same_as_applicant => 1,
         }});
 
         # Activity page
+        $mech->content_contains('Step 5 of 13');
         $mech->submit_form_ok({ with_fields => {
             activity => 'Building repair',
             excavation_position => 'Corner, 1m square',
         }});
 
         # Site specific pages (one question per page)
+        $mech->content_contains('Step 6 of 13');
         $mech->submit_form_ok({ with_fields => {
             footway_incursion => 'No footway incursion',
             site_adequate_space => 'Yes'
         }});
+        $mech->content_contains('Step 7 of 13');
         $mech->submit_form_ok({ with_fields => {
             carriageway_incursion => 'No carriageway incursion',
             site_within_450mm => 'Yes',
         }});
+        $mech->content_contains('Step 8 of 13');
         $mech->submit_form_ok({ with_fields => {
             site_obstruct_infrastructure => 'No',
         }});
 
         # Have you considered page
+        $mech->content_contains('Step 9 of 13');
         $mech->submit_form_ok({ with_fields => {
             parking_dispensation => 'Yes',
             parking_bay_suspension => 'No',
@@ -96,6 +105,7 @@ subtest 'Excavation form submission - smoke test' => sub {
             road_closure_required => 'No',
         }});
 
+        $mech->content_contains('Step 10 of 13');
         $mech->form_with_fields('terms_accepted');
         $mech->current_form->find_input('terms_accepted', undef, 1)->value('Excavation guidance notes and terms & conditions - March 2026');
         $mech->current_form->find_input('terms_accepted', undef, 2)->value('Highway licensing and other consents policy - March 2026');
@@ -103,6 +113,7 @@ subtest 'Excavation form submission - smoke test' => sub {
         $mech->submit_form_ok;
 
         # Uploads page
+        $mech->content_contains('Step 11 of 13');
         $mech->submit_form_ok({ with_fields => {
             upload_insurance => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
             insurance_validity => 'all year',
@@ -111,6 +122,7 @@ subtest 'Excavation form submission - smoke test' => sub {
         }});
 
         # Payment page
+        $mech->content_contains('Step 12 of 13');
         $mech->submit_form_ok({ with_fields => {
             payment_transaction_id => 'TEST-TRANSACTION-12345',
         }});
