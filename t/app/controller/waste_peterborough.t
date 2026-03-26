@@ -137,7 +137,8 @@ FixMyStreet::override_config {
             { Features => { FeatureType => { ID => 6534 } }, EventType => { Description => 'NO ACCESS' }, EventDate => '2021-08-05T10:10:15' },
         ] });
         $mech->get_ok('/waste/PE1%203NA:100090215480');
-        $mech->content_contains('There was a problem with your bin collection, please call');
+        $mech->content_contains('We were unable to collect your bin on your last scheduled collection date');
+        $mech->content_contains('for one or more of the following reasons');
         $mech->content_lacks('BIN NOT OUT');
         $mech->content_lacks('NO ACCESS');
 
@@ -150,14 +151,14 @@ FixMyStreet::override_config {
             { Features => { FeatureType => { ID => 9999 } }, EventType => { Description => 'BIN NOT OUT' }, EventDate => '2021-08-05T10:10:10' },
         ] });
         $mech->get_ok('/waste/PE1%203NA:100090215480');
-        $mech->content_lacks('There was a problem with your bin collection, please call');
-
+        $mech->content_lacks('We were unable to collect your bin on your last scheduled collection date');
+        $mech->content_lacks('for one or more of the following reasons');
         $b->mock('Premises_Events_Get', sub { [
             { Features => { FeatureType => { ID => 6534 } }, EventType => { Description => 'NO ACCESS' }, EventDate => '2021-08-05T10:10:10' },
         ] });
         $mech->get_ok('/waste/PE1%203NA:100090215480');
-        $mech->content_contains('There was a problem with your bin collection, please call');
-        $mech->content_contains('quoting your collection address in the subject line');
+        $mech->content_contains('We were unable to collect your bin on your last scheduled collection date');
+        $mech->content_contains('for one or more of the following reasons');
         $mech->content_contains('mailto:ask&#64;peterborough.gov.uk?subject=1 Pope Way, Peterborough, PE1 3NA - missed bin');
 
         $b->mock('Premises_Events_Get', sub { [] }); # reset
@@ -184,7 +185,7 @@ FixMyStreet::override_config {
             { Workpack => { Name => 'Waste-R1-050821' }, EventType => { Description => 'STREET COMPLETED' }, EventDate => '2021-08-05T10:10:10' },
         ] });
         $mech->get_ok('/waste/PE1%203NA:100090215480');
-        $mech->content_lacks('There was a problem with your bin collection');
+        $mech->content_lacks('We were unable to collect your bin on your last scheduled collection date');
 
         $b->mock('Streets_Events_Get', sub { [] }); # reset
     };
