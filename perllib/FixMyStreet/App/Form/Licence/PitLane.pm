@@ -16,6 +16,8 @@ sub tandc_link { 'https://content.tfl.gov.uk/pit-lane-guidance-notes-and-terms-c
 
 sub next_after_contractor { 'activity' }
 
+sub num_steps { 18 }
+
 # ==========================================================================
 # Introduction / Before you get started
 # ==========================================================================
@@ -36,6 +38,7 @@ has_field start => (
 # Location (fields from Fields::Location role)
 # ==========================================================================
 has_page location => (
+    step_number => 1,
     fields => ['building_name_number', 'street_name', 'borough', 'postcode', 'continue'],
     title => 'Location of Pit Lane',
     intro => 'location.html',
@@ -50,6 +53,7 @@ has_page location => (
 # Times page, specially for pit lanes
 
 has_page times => (
+    step_number => 3,
     fields => ['proposed_start_time', 'proposed_end_time', 'continue'],
     title => 'Proposed working times',
     intro => 'pitlane/times.html',
@@ -72,6 +76,7 @@ has_field proposed_end_time => (
 # Pit lane activity
 # ==========================================================================
 has_page activity => (
+    step_number => 6,
     fields => ['activity', 'pit_lane_directly', 'continue'],
     title => 'Purpose of the pit lane',
     next => 'site_pedestrian_space',
@@ -102,6 +107,7 @@ has_field pit_lane_directly => (
 # Split into one question per page sometimes for better UX with long labels
 # ==========================================================================
 has_page site_pedestrian_space => (
+    step_number => 7,
     fields => ['site_adequate_space', 'footway_incursion', 'continue'],
     title => 'Pedestrian space',
     next => 'site_carriageway_distance',
@@ -130,6 +136,7 @@ has_field footway_incursion => (
 
 # ==========================================================================
 has_page site_carriageway_distance => (
+    step_number => 8,
     fields => ['carriageway_incursion', 'site_within_450mm', 'continue'],
     title => 'Carriageway impact',
     next => 'works',
@@ -157,6 +164,7 @@ has_field site_within_450mm => (
 
 # ==========================================================================
 has_page works => (
+    step_number => 9,
     fields => ['highway_works', 'section_278', 'reference_section_278', 'continue'],
     title => 'Highway works',
     next => 'site_infrastructure',
@@ -193,6 +201,7 @@ has_field reference_section_278 => (
 
 # ==========================================================================
 has_page site_infrastructure => (
+    step_number => 10,
     fields => ['site_obstruct_infrastructure', 'continue'],
     title => 'Street infrastructure',
     next => 'pre_application',
@@ -213,6 +222,7 @@ has_field site_obstruct_infrastructure => (
 # ==========================================================================
 # Fields provided by PreApplication role
 has_page pre_application => (
+    step_number => 11,
     fields => ['buses_consulted', 'underground_consulted', 'police_consulted', 'preapp_comments', 'continue'],
     title => 'Pre-application consultation',
     next => 'type_check',
@@ -220,6 +230,7 @@ has_page pre_application => (
 
 # ==========================================================================
 has_page type_check => (
+    step_number => 12,
     fields => ['sensitive_times', 'traffic_holds', 'significant_impact', 'bus_service_alterations', 'continue'],
     title => 'Pit Lane impact',
     next => 'type',
@@ -284,6 +295,7 @@ has_field bus_service_alterations => (
 
 # ==========================================================================
 has_page type => (
+    step_number => 13,
     fields => ['pit_lane_type', 'continue'],
     title => 'Pit Lane type',
     intro => 'pitlane/type.html',
@@ -319,6 +331,7 @@ sub options_pit_lane_type {
 # Fields from Fields::TemporaryProhibition role
 # ==========================================================================
 has_page have_you_considered => (
+    step_number => 14,
     fields => [
         'parking_dispensation',
         'parking_bay_suspension',
@@ -334,6 +347,7 @@ has_page have_you_considered => (
 );
 
 has_page terms => (
+    step_number => 15,
     fields => [
         'terms_accepted',
         'continue'
@@ -354,6 +368,7 @@ my $upload_fields = [
     'continue'
 ];
 has_page uploads => (
+    step_number => 16,
     fields => $upload_fields,
     title => 'Upload required documents',
     intro => 'uploads.html',

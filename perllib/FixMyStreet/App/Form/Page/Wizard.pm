@@ -46,4 +46,12 @@ sub get_tag {
     return $tag;
 }
 
+# If we want to display manual step numbers
+has step_number => ( is => 'ro', isa => 'Int', lazy => 1, builder => '_build_step_number' );
+
+has build_step_number => ( is => 'ro', isa => 'CodeRef',
+    default => sub { sub { 0 } },
+    traits => ['Code'], handles => { '_build_step_number' => 'execute_method' },
+);
+
 1;

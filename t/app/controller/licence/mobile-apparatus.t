@@ -47,6 +47,7 @@ subtest 'Mobile apparatus form submission - smoke test' => sub {
                 $mech->submit_form_ok({ button => 'start' });
 
                 # Location page
+                $mech->content_contains('Step 1 of 17');
                 $mech->submit_form_ok({ with_fields => {
                     street_name => 'Test Street',
                     building_name_number => '123',
@@ -55,10 +56,12 @@ subtest 'Mobile apparatus form submission - smoke test' => sub {
                 }});
 
                 # Dates pages
+                $mech->content_contains('Step 2 of 17');
                 $mech->submit_form_ok({ with_fields => {
                     date_choice => $_,
                 }});
 
+                $mech->content_contains('Step 3 of 17');
                 if ($_ eq 'week' || $_ eq 'fortnight') {
                     $mech->submit_form_ok({ with_fields => {
                         'proposed_start_date.day' => $start_date->day,
@@ -83,6 +86,7 @@ subtest 'Mobile apparatus form submission - smoke test' => sub {
                         return;
                     }
 
+                    $mech->content_contains('Step 3 of 17');
                     $mech->submit_form_ok({ with_fields => {
                         'start_date_2.day' => $start_date->day,
                         'start_date_2.month' => $start_date->month,
@@ -95,6 +99,7 @@ subtest 'Mobile apparatus form submission - smoke test' => sub {
                     }});
 
                     if ($_ eq 'dates_3') {
+                        $mech->content_contains('Step 3 of 17');
                         $mech->submit_form_ok({ with_fields => {
                             'start_date_3.day' => $start_date->day,
                             'start_date_3.month' => $start_date->month,
@@ -111,6 +116,7 @@ subtest 'Mobile apparatus form submission - smoke test' => sub {
                 }
 
                 # Applicant page
+                $mech->content_contains('Step 4 of 17');
                 $mech->submit_form_ok({ with_fields => {
                     organisation => 'Test Builder Ltd',
                     job_title => 'Builder',
@@ -122,11 +128,13 @@ subtest 'Mobile apparatus form submission - smoke test' => sub {
                 }});
 
                 # Contractor page - use "same as applicant"
+                $mech->content_contains('Step 5 of 17');
                 $mech->submit_form_ok({ with_fields => {
                     contractor_same_as_applicant => 1,
                 }});
 
                 # Details page
+                $mech->content_contains('Step 6 of 17');
                 $mech->submit_form_ok({ with_fields => {
                     model => 'Nokia',
                     weight => 24,
@@ -172,6 +180,7 @@ subtest 'Mobile apparatus form submission - smoke test' => sub {
                 }});
 
                 # Have you considered page
+                $mech->content_contains('Step 13 of 17');
                 $mech->submit_form_ok({ with_fields => {
                     parking_dispensation => 'Yes',
                     parking_bay_suspension => 'No',
@@ -196,6 +205,7 @@ subtest 'Mobile apparatus form submission - smoke test' => sub {
                 }});
 
                 # Payment page
+                $mech->content_contains('Step 16 of 17');
                 $mech->content_contains("$_-link");
                 $mech->submit_form_ok({ with_fields => {
                     payment_transaction_id => 'TEST-TRANSACTION-12345',

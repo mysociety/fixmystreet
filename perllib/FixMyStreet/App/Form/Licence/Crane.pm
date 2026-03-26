@@ -16,6 +16,8 @@ sub tandc_link { 'https://content.tfl.gov.uk/crane-guidance-notes-and-terms-cond
 
 sub next_after_contractor { 'details' }
 
+sub num_steps { 17 }
+
 # ==========================================================================
 # Introduction / Before you get started
 # ==========================================================================
@@ -36,6 +38,7 @@ has_field start => (
 # Location (fields from Fields::Location role)
 # ==========================================================================
 has_page location => (
+    step_number => 1,
     fields => ['building_name_number', 'street_name', 'borough', 'postcode', 'continue'],
     title => 'Location of the crane',
     intro => 'location.html',
@@ -50,6 +53,7 @@ has_page location => (
 # Crane details
 # ==========================================================================
 has_page details => (
+    step_number => 5,
     fields => ['model', 'weight', 'footprint', 'capacity', 'continue'],
     title => 'Crane details',
     next => 'activity',
@@ -95,6 +99,7 @@ has_field capacity => (
 # Crane activity
 # ==========================================================================
 has_page activity => (
+    step_number => 6,
     fields => ['activity', 'load', 'continue'],
     title => 'Purpose of the crane',
     next => 'site_pedestrian_space',
@@ -124,6 +129,7 @@ has_field load => (
 # Split into one question per page sometimes for better UX with long labels
 # ==========================================================================
 has_page site_pedestrian_space => (
+    step_number => 7,
     fields => ['site_adequate_space', 'footway_incursion', 'continue'],
     title => 'Pedestrian space',
     next => 'site_carriageway_distance',
@@ -152,6 +158,7 @@ has_field footway_incursion => (
 
 # ==========================================================================
 has_page site_carriageway_distance => (
+    step_number => 8,
     fields => ['carriageway_incursion', 'foundations', 'continue'],
     title => 'Carriageway impact',
     next => 'site_infrastructure',
@@ -179,6 +186,7 @@ has_field foundations => (
 
 # ==========================================================================
 has_page site_infrastructure => (
+    step_number => 9,
     fields => ['site_obstruct_infrastructure', 'continue'],
     title => 'Street infrastructure',
     next => 'pre_application',
@@ -199,6 +207,7 @@ has_field site_obstruct_infrastructure => (
 # ==========================================================================
 # Fields provided by PreApplication role
 has_page pre_application => (
+    step_number => 10,
     fields => ['buses_consulted', 'underground_consulted', 'police_consulted', 'preapp_comments', 'continue'],
     title => 'Pre-application consultation',
     next => 'lifting',
@@ -206,6 +215,7 @@ has_page pre_application => (
 
 # ==========================================================================
 has_page lifting => (
+    step_number => 11,
     fields => ['lifting', 'continue'],
     title => 'Crane lifting',
     next => 'type',
@@ -238,6 +248,7 @@ has_field lifting => (
 
 # ==========================================================================
 has_page type => (
+    step_number => 12,
     fields => ['crane_type', 'crane_type_explanation', 'continue'],
     title => 'Crane type',
     next => 'have_you_considered',
@@ -276,6 +287,7 @@ has_field crane_type_explanation => (
 # Fields from Fields::TemporaryProhibition role
 # ==========================================================================
 has_page have_you_considered => (
+    step_number => 13,
     fields => [
         'parking_dispensation',
         'parking_bay_suspension',
@@ -291,6 +303,7 @@ has_page have_you_considered => (
 );
 
 has_page terms => (
+    step_number => 14,
     fields => [
         'terms_accepted',
         'continue'
@@ -311,6 +324,7 @@ my $upload_fields = [
     'continue'
 ];
 has_page uploads => (
+    step_number => 15,
     fields => $upload_fields,
     title => 'Upload required documents',
     intro => 'uploads.html',

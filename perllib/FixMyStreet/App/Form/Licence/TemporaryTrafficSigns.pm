@@ -14,6 +14,8 @@ sub tandc_link { 'https://content.tfl.gov.uk/temporary-traffic-signs-guidance-no
 
 sub next_after_applicant { 'activity' }
 
+sub num_steps { 13 }
+
 # ==========================================================================
 # Introduction / Before you get started
 # ==========================================================================
@@ -34,6 +36,7 @@ has_field start => (
 # Location (fields from Fields::Location role)
 # ==========================================================================
 has_page location_1 => (
+    step_number => 1,
     fields => ['building_name_number', 'street_name', 'borough', 'postcode', 'add_another', 'continue'],
     title => 'Location of the temporary traffic signs',
     intro => 'location.html',
@@ -52,6 +55,7 @@ for my $page (2..10) {
         push @$fields, 'add_another';
     }
     has_page "location_$page" => (
+        step_number => 1,
         fields => $fields,
         title => "Location of the temporary traffic signs ($page)",
         intro => 'location.html',
@@ -76,6 +80,7 @@ has_field 'add_another' => (
 # Activity/Sign Contents
 # ==========================================================================
 has_page activity => (
+    step_number => 4,
     fields => ['activity', 'sign_contents', 'site_existing_direction_signs', 'continue'],
     title => 'Purpose of the temporary traffic signs',
     next => 'installation',
@@ -117,6 +122,7 @@ has_field site_existing_direction_signs => (
 # Installation method
 # ==========================================================================
 has_page installation => (
+    step_number => 5,
     fields => ['installation_method', 'site_direct_illumination', 'site_use_tfl_electricity', 'continue'],
     title => 'Installation',
     next => 'site_pedestrian_space',
@@ -161,6 +167,7 @@ has_field site_use_tfl_electricity => (
 # Split into one question per page sometimes for better UX with long labels
 # ==========================================================================
 has_page site_pedestrian_space => (
+    step_number => 6,
     fields => ['site_adequate_space', 'footway_incursion', 'continue'],
     title => 'Pedestrian space',
     next => 'site_carriageway_distance',
@@ -189,6 +196,7 @@ has_field footway_incursion => (
 
 # ==========================================================================
 has_page site_carriageway_distance => (
+    step_number => 7,
     fields => ['carriageway_incursion', 'continue'],
     title => 'Carriageway impact',
     next => 'site_infrastructure',
@@ -206,6 +214,7 @@ has_field carriageway_incursion => (
 
 # ==========================================================================
 has_page site_infrastructure => (
+    step_number => 8,
     fields => ['site_obstruct_infrastructure', 'continue'],
     title => 'Street infrastructure',
     next => 'have_you_considered',
@@ -229,6 +238,7 @@ has_field site_obstruct_infrastructure => (
 # Fields from Fields::TemporaryProhibition role
 # ==========================================================================
 has_page have_you_considered => (
+    step_number => 9,
     fields => [
         'parking_dispensation',
         'parking_bay_suspension',
@@ -244,6 +254,7 @@ has_page have_you_considered => (
 );
 
 has_page terms => (
+    step_number => 10,
     fields => [
         'terms_accepted',
         'continue'
@@ -264,6 +275,7 @@ my $upload_fields = [
     'continue'
 ];
 has_page uploads => (
+    step_number => 11,
     fields => $upload_fields,
     title => 'Upload required documents',
     intro => 'uploads.html',

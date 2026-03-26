@@ -49,6 +49,7 @@ has current_page => ( is => 'ro', lazy => 1,
         intro_template => 'intro',
         title => 'title',
         template => 'template',
+        step_number => 'step_number',
     }
 );
 
