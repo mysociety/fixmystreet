@@ -21,6 +21,8 @@ my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super Us
 my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', { cobrand => 'oxfordshire' });
 my $oxfordshireuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $oxfordshire);
 $oxfordshireuser->user_body_permissions->create({ body => $oxfordshire, permission_type => 'category_edit' });
+my $oxfordshire_user_edit = $mech->create_user_ok('counciluser-user-edit@example.com', name => 'Council User Edit', from_body => $oxfordshire);
+$oxfordshire_user_edit->user_body_permissions->create({ body => $oxfordshire, permission_type => 'user_edit' });
 
 my $dt = DateTime->new(
     year   => 2011,
@@ -176,8 +178,26 @@ subtest "Users with from_body can access their own council's admin" => sub {
     }, sub {
         $mech->get_ok('/admin');
         $mech->content_contains( 'Summary' );
+        $mech->content_lacks( 'Search Reports' );
     };
 };
+
+$mech->log_out_ok;
+$mech->log_in_ok( $oxfordshire_user_edit->email );
+
+subtest "Users with only user_edit can search reports from admin summary" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'oxfordshire' ],
+    }, sub {
+        $mech->get_ok('/admin');
+        $mech->content_contains( 'Summary' );
+        $mech->content_contains( 'Search Reports' );
+        $mech->content_contains( 'Search Users' );
+    };
+};
+
+$mech->log_out_ok;
+$mech->log_in_ok( $oxfordshireuser->email );
 
 
 subtest "Check admin index page redirects" => sub {
