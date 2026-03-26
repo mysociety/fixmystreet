@@ -15,6 +15,8 @@ has category => ( is => 'ro' );
 
 has states => ( is => 'ro', default => sub { [ FixMyStreet::DB::Result::Problem->open_states() ] } );
 
+has send_states => ( is => 'ro' );
+
 has retain_alerts => ( is => 'ro', isa => Bool );
 
 has body => (
@@ -113,6 +115,7 @@ sub close {
         state => $self->states,
         confirmed => $time_param,
         ( category => $self->category ) x !!$self->category,
+        ( send_state => $self->send_states ) x !!$self->send_states,
     });
 
     # Provide some variables to the archiving script
