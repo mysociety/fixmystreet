@@ -133,7 +133,9 @@ sub pay_complete : Path('pay_complete') : Args(0) {
 
     $c->stash->{body} = $body;
     $c->stash->{user} = $user;
-    # $c->send_email();
+
+    my $parish_signup_email = $c->cobrand->feature('parish_signup_email');
+    $c->send_email('parish-signup.txt', { to => $parish_signup_email });
 }
 
 sub admin : Local {

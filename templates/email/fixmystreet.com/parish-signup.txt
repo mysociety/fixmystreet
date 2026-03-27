@@ -1,0 +1,17 @@
+Subject: [Parish signup] [% body.name %]
+
+A new user has signed up to FixMyStreet for Parishes:
+
+User: [% user.name %] <[% user.email %]>
+Parish: [% body.name %]
+
+The parish must be reviewed and activated in the FixMyStreet admin,
+before it will receive any problem reports:
+
+[% c.uri_for_action( 'admin/bodies/edit', [ body.id ] ) %]
+
+Congratulations on gaining a new customer!
+
+All the best,
+
+The FixMyStreet team
