@@ -93,6 +93,7 @@ sub process_parish : Private {
         $c->stash->{body} = $body;
         $c->stash->{user} = $user;
         $c->stash->{override_template} = 'parishes/pay_complete.html';
+        $c->forward('send_signup_emails');
         return 1;
     }
 
@@ -133,7 +134,15 @@ sub pay_complete : Path('pay_complete') : Args(0) {
 
     $c->stash->{body} = $body;
     $c->stash->{user} = $user;
-    # $c->send_email();
+
+    $c->forward('send_signup_emails');
+}
+
+sub send_signup_emails : Private {
+    my ($self, $c) = @_;
+    $c->send_email('parish-confirmation.txt', { to => $c->stash->{user}->email });
+    my $parish_signup_email = $c->cobrand->feature('parish_signup_email');
+    $c->send_email('parish-signup.txt', { to => $parish_signup_email });
 }
 
 sub admin : Local {

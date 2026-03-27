@@ -1,0 +1,18 @@
+Subject: Your FixMyStreet for Parishes subscription
+
+Dear [% user.name %],
+
+Thank you for signing up to FixMyStreet for Parish & Town Councils.
+
+Your subscription is currently awaiting one final check from our team,
+before you start receiving reports for [% body.name %] in the categories
+you selected.
+
+We aim to complete this check within one business day. We’ll send you a
+follow-up email when your subscription has been activated.
+
+If you have any questions in the meantime, please refer to our FAQs:
+
+[% c.uri_for('/about/faq-parishes') %]
+
+[% signature %]

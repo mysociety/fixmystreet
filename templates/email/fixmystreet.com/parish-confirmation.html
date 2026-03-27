@@ -1,0 +1,18 @@
+[%
+email_columns = 1;
+PROCESS '_email_settings.html';
+INCLUDE '_email_top.html';
+%]
+
+<th style="[% td_style %][% only_column_style %]">
+  <h1 style="[% h1_style %]">Your FixMyStreet for Parishes subscription</h1>
+  <p style="[% p_style %]">Dear [% user.name | html %],</p>
+  <p style="[% p_style %]">Thank you for signing up to FixMyStreet for Parish &amp; Town Councils.</p>
+  <h2 style="[% h2_style %]">What's next?</h2>
+  <p style="[% p_style %]">Your subscription is currently awaiting one final check from our team, before you start receiving reports for [% body.name %] in the categories
+  you selected.</p>
+  <p style="[% p_style %]">We aim to complete this check within one business day. We’ll send you a follow-up email when your subscription has been activated.</p>
+  <p style="[% p_style %]">If you have any questions in the meantime, please <a style="[% link_style %]" href="[% c.uri_for('/about/faq-parishes') %]">refer to our FAQs</a>.</p>
+</th>
+
+[% INCLUDE '_email_bottom.html' %]

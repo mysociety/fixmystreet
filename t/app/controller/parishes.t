@@ -21,6 +21,9 @@ FixMyStreet::override_config {
                 price_id => 'price',
             }
         },
+        parish_signup_email => {
+            fixmystreet => 'parishes@example.com'
+        }
     },
     MAPIT_URL => 'http://mapit.uk/',
 }, sub {
@@ -49,8 +52,20 @@ FixMyStreet::override_config {
         is $mech2->res->previous->code, 302, 'payments issues a redirect';
         is $mech2->res->previous->header('Location'), "https://example.org/faq", "redirects to payment gateway";
         $mech->get_ok('/parishes/pay_complete?session=SESSIONID');
+        $mech->email_count_is(2);
+        my @emails = $mech->get_email;
+        my $confirm_text = $mech->get_text_body_from_email($emails[0]);
+        like $confirm_text, qr/Thank you for signing up to FixMyStreet for Parish/, "confirmation email sent to user";
+        like $confirm_text, qr/Abbey Dore/, "confirmation email mentions parish name";
+        my $confirm_html = $mech->get_html_body_from_email($emails[0]);
+        like $confirm_html, qr/Abbey Dore/, "confirmation HTML email mentions parish name";
+        my $admin_text = $mech->get_text_body_from_email($emails[1]);
+        like $admin_text, qr/A new user has signed up to FixMyStreet for Parishes/, "signup admin email sent";
+        like $admin_text, qr/Parish: Abbey Dore/, "signup admin email contains parish name";
+        $mech->clear_emails_ok;
     };
     subtest 'View admin' => sub {
+        $mech->clear_emails_ok;
         $mech->get_ok('/parishes/admin');
         $mech->submit_form_ok({ with_fields => { username => 'test@example.com' }, button => 'sign_in_by_code' });
         my $link = $mech->get_link_from_email;
