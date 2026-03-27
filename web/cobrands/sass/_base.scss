@@ -1019,7 +1019,8 @@ html.mobile.js-nav-open #js-menu-open-modal {
 
 .has-inline-svg,
 .btn.has-inline-svg {
-  display: flex;
+  // Prevent other display properties, like govuk-heading, override the flex property. 
+  display: flex !important;
   flex-direction: row;
   gap: 0.25rem;
   align-items: center;
@@ -3656,6 +3657,7 @@ $site-message-border: 1px solid #525252 !default;
 @import "_search-help";
 @import "_page-with-sticky-content-bar";
 @import "_dvla";
+@import "_form-progress-bar";
 
 @import "govuk-frontend/forms";
 @import "_govuk"; // Adds some overrides to the default GOVUK behaviour

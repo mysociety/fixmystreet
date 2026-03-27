@@ -1104,12 +1104,13 @@ $.extend(fixmystreet.set_up, {
             default_message = translation_strings.upload_default_message_mobile;
         }
         var prevFile;
+        var isParishPage = document.body.classList.contains('parish-page');
         var photodrop = new Dropzone($dropzone[0], {
             url: '/photo/upload',
             paramName: 'photo',
             maxFiles: max_photos,
             addRemoveLinks: true,
-            thumbnailHeight: 150,
+            thumbnailHeight: isParishPage ? null : 150,
             thumbnailWidth: 150,
             resizeWidth: 2048,
             resizeHeight: 2048,
