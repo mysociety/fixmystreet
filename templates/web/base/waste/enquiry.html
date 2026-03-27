@@ -13,6 +13,10 @@
 </dl>
 [% END %]
 
+[% IF intro %]
+  [% INSERT $intro %]
+[% END %]
+
 <form class="waste" method="get" action="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]">
     <div class="govuk-form-group">
     [% PROCESS radio field = {
