@@ -155,6 +155,7 @@ sub redirect_to_id : Private {
     $uri .= '/garden_check' if $type eq 'garden';
     $uri .= '/bulky' if $type eq 'bulky';
     $uri .= '/small_items' if $type eq 'small_items';
+    $uri .= '/sharps' if $type eq 'sharps';
     $c->res->redirect($uri);
     $c->detach;
 }
@@ -866,7 +867,6 @@ sub construct_bin_problem_form {
     my $field_list = [];
 
     foreach (@{$c->stash->{service_data}}) {
-        # next unless ( $_->{last} && $_->{report_allowed} && !$_->{report_open}) || $_->{report_only};
         my $id = $_->{service_id};
         my $name = $_->{service_name};
         push @$field_list, "service-$id" => {

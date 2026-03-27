@@ -112,6 +112,7 @@ my %EVENT_TYPE_IDS = (
     garden_amend => 3163,
     bulky => 3130,
     small_items => 3144,
+    general_enquiry => 3140,
 );
 lock_hash(%EVENT_TYPE_IDS);
 
@@ -123,10 +124,12 @@ my %CONTAINERS = (
     recycling_box => 12,
     recycling_240 => 15,
     recycling_blue_bag => 22,
+    paper_360 => 28,
     paper_240 => 27,
     paper_140 => 26,
     food_indoor_5 => 43,
     food_indoor_7 => 44,
+    food_indoor_10 => 45,
     food_outdoor => 46,
     garden_240 => 39,
     garden_140 => 37,
@@ -153,6 +156,8 @@ sub waste_service_to_containers { () }
 sub garden_subscription_event_id { $EVENT_TYPE_IDS{garden_add} }
 
 sub garden_renewal_reduction_sparks_container_removal { 1 }
+
+sub general_enquiry_event_id { $EVENT_TYPE_IDS{general_enquiry} }
 
 sub waste_show_garden_modify {
     my ($self, $unit) = @_;
@@ -334,13 +339,27 @@ sub waste_service_containers {
                     $request_max->{$CONTAINERS{paper_240}} = 1;
                     # Swap 140 for 240 in container list
                     @$containers = map { $_ == $CONTAINERS{paper_140} ? $CONTAINERS{paper_240} : $_ } @$containers;
+                } elsif ($container == $CONTAINERS{paper_240}) {
+                    push @$containers, $CONTAINERS{paper_360};
+                    $request_max->{$CONTAINERS{paper_360}} = 1;
+                } elsif ($container == $CONTAINERS{paper_360}) {
+                    push @$containers, $CONTAINERS{paper_240};
+                    $request_max->{$CONTAINERS{paper_240}} = 1;
                 }
             }
         }
     }
 
     my $food_indoor_key = $self->moniker eq 'merton' ? 'food_indoor_7' : 'food_indoor_5';
-    if ($service_name =~ /Food/ && !$self->{c}->stash->{quantities}->{$CONTAINERS{$food_indoor_key}}) {
+    my $food_indoor_premium_key = 'food_indoor_10';
+    if ($service_name =~ /Food/ && !(
+            $self->{c}->stash->{quantities}->{$CONTAINERS{$food_indoor_key}}
+            || $self->{c}->stash->{quantities}->{$CONTAINERS{$food_indoor_premium_key}}
+        ) ) {
+        if ($self->moniker eq 'sutton') {
+            $request_max->{$CONTAINERS{$food_indoor_premium_key}} = 1;
+            push @$containers, $CONTAINERS{$food_indoor_premium_key}; # Premium food waste bin (kitchen)
+        }
         # Can always request a food caddy
         push @$containers, $CONTAINERS{$food_indoor_key}; # Food waste bin (kitchen)
         $request_max->{$CONTAINERS{$food_indoor_key}} = 1;
@@ -645,6 +664,11 @@ sub open311_post_send {
             $row->discard_changes;
         }
     });
+
+    if ( $row->category eq 'Report out-of-time missed collection' ) {
+        $row->update( { state => 'no further action' } );
+    }
+
 }
 
 =item * Look for completion photos on updates, and ignore "Not Completed" without a resolution code
@@ -696,23 +720,33 @@ property types allowed to book collections.
 
 sub waste_bulky_missed_blocked_codes {
     return {
-        # Partially completed
-        12399 => {
-            507 => 'Not all items presented',
-            380 => 'Some items too heavy',
-        },
-        # Completed
-        12400 => {
-            606 => 'More items presented than booked',
-        },
         # Not Completed
-        12401 => {
-            460 => 'Nothing out',
-            379 => 'Item not as described',
-            100 => 'No access',
-            212 => 'Too heavy',
-            473 => 'Damage on site',
-            234 => 'Hazardous waste',
+        19185 => {
+            50 => 'Address incorrect',
+            1361 => 'H&S - Aggression / Violence',
+            1359 => 'H&S - Damaged container',
+            1358 => 'H&S - Heavy bin / bag',
+            1378 => 'H&S - Other',
+            1362 => 'H&S - Unsafe equipment',
+            1360 => 'H&S - Unsafe surroundings',
+            1146 => 'H&S - Vermin',
+            913 => 'No access - Changed key',
+            615 => 'No access - Dog out',
+            466 => 'No access - Gate locked',
+            616 => 'No access - Weather',
+            617 => 'No access - Parked vehicle',
+            614 => 'No access - Police incident',
+            613 => 'No access - Road works',
+            66 => 'Not presented',
+            646 => 'Various',
+        },
+        # Partially Completed
+        19186 => {
+            all => 'Partially Completed',
+        },
+        # Cancelled
+        19187 => {
+            all => 'Cancelled',
         },
     };
 }

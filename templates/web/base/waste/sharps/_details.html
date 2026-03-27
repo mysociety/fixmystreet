@@ -1,0 +1,31 @@
+[% IF data.sharps_collecting == 'Yes' %]
+  <div class="summary-section-header">
+    <h3 class="summary-section--heading">Collection details</h3>
+    [% TRY %][% PROCESS change_answers_button goto='collection_quantities' %][% CATCH file %][% END %]
+  </div>
+  <dl>
+    <dt>Number of 1-litre boxes</dt>
+    <dd>[% data.collect_small_quantity %]</dd>
+    <dt>Number of 5-litre boxes</dt>
+    <dd>[% data.collect_large_quantity %]</dd>
+    <dt>Collection location</dt>
+    <dd>[% data.collect_location %]</dd>
+    <dt>Further access details</dt>
+    <dd>[% data.collect_location_other %]</dd>
+  </dl>
+[% END %]
+
+[% IF data.sharps_delivering == 'Yes' %]
+  <div class="summary-section-header">
+    <h3 class="summary-section--heading">Delivery details</h3>
+    [% TRY %][% PROCESS change_answers_button goto='delivery_details' %][% CATCH file %][% END %]
+  </div>
+  <dl>
+    <dt>Glucose monitoring devices</dt>
+    <dd>[% data.deliver_glucose_monitor %]</dd>
+    <dt>Box size</dt>
+    <dd>[% data.deliver_size %]</dd>
+    <dt>Quantity</dt>
+    <dd>[% data.deliver_quantity %]</dd>
+  </dl>
+[% END %]

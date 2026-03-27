@@ -5,6 +5,7 @@ use warnings;
 use DateTime;
 use DateTime::Format::Strptime;
 use List::Util qw(min sum);
+use MIME::Base64;
 use Moo::Role;
 use Path::Tiny;
 use POSIX qw(floor);
@@ -322,8 +323,8 @@ sub bin_services_for_address {
             $self->moniker eq 'brent' ? (timeband => $_->{timeband}) : (),
         };
 
-        if ($self->moniker eq 'sutton') {
-            # Sutton needs to know about events from before the last collection in case
+        if ($self->moniker eq 'sutton' or $self->moniker eq 'kingston') {
+            # Kingston/Sutton need to know about events from before the last collection in case
             # there have been missed container escalations that are still relevant
             $row->{all_events} = $events->filter({ service => $service_id });
         }
@@ -338,7 +339,10 @@ sub bin_services_for_address {
             $row->{events} = $events->combine($events_unit)->filter({ service => $service_id, since => $row->{last}{date} });
             my $recent_events = $row->{events}->filter({ type => 'missed' });
             $row->{report_open} = ($recent_events->list)[0];
+
+            $self->call_hook(waste_allow_non_actionable_report => $row);
         }
+
         push @out, $row;
     }
 
@@ -573,6 +577,16 @@ sub waste_task_resolutions {
             $resolution = $template->text if $template;
         }
 
+        my $data = Integrations::Echo::force_arrayref($_->{Data}, 'ExtensibleDatum');
+        my $media;
+        foreach (@$data) {
+            if ($_->{DatatypeName} eq 'Image') {
+                my $value = decode_base64($_->{Value});
+                my $type = FixMyStreet::PhotoStorage->detect_type($value);
+                $media = "data:image/$type;base64,$_->{Value}";
+            }
+        }
+
         if (($resolution_id || 0) == 237 && $state eq 'Completed') { # Echo returning bad data
             $resolution = '';
         }
@@ -581,6 +595,7 @@ sub waste_task_resolutions {
         $row->{last}{state} = $state unless $state eq 'Completed' || $state eq 'Not Completed' || $state eq 'Outstanding' || $state eq 'Allocated';
         $row->{last}{completed} = $completed;
         $row->{last}{resolution} = $resolution;
+        $row->{last}{image} = $media if $media;
 
         # Special handling if last instance is today e.g. if it's before a
         # particular hour and outstanding, show it as in progress
@@ -590,6 +605,13 @@ sub waste_task_resolutions {
 
         # If the task is ended and could not be done, do not allow reporting
         if ($state eq 'Not Completed' || ($state eq 'Completed' && $orig_resolution =~ /Excess/)) {
+            $row->{report_allowed} = 0;
+            $row->{report_allowed_non_actionable} = 0;
+            $row->{report_locked_out} = 1;
+        }
+
+        # No missed reporting for Kingston if Roadworks
+        if ($self->moniker eq 'kingston' && $orig_resolution =~ /Roadworks/i) {
             $row->{report_allowed} = 0;
             $row->{report_locked_out} = 1;
         }
@@ -614,6 +636,7 @@ sub waste_on_the_day_criteria {
     }
     if (!$completed) {
         $row->{report_allowed} = 0;
+        $row->{report_allowed_non_actionable} = 0;
     }
 }
 
@@ -1030,6 +1053,7 @@ sub booked_check_missed_collection {
                 if ($event->{resolution} eq $_ || $_ eq 'all') {
                     $row->{report_locked_out} = 1;
                     $row->{report_locked_out_reason} = $blocked_codes->{$state_id}{$_};
+                    $row->{report_locked_out_date} = $event->{date};
                 }
             }
         }

@@ -130,7 +130,7 @@ END; END %]
       [% INCLUDE item_fields form=blank_form num=999 %]
   </template>
 
-  [% IF c.cobrand.bulky_pricing_strategy.strategy == 'banded' %]
+  [% IF c.cobrand.bulky_pricing_strategy.strategy == 'banded' || c.cobrand.bulky_pricing_strategy.strategy == 'banded_pop' %]
   <p id="band-pricing-info"></p>
   [% END %]
   <button type="submit" id="add-new-item" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-7" aria-label="Add item" name="goto-same-page" value="1">

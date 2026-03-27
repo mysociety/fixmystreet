@@ -13,6 +13,7 @@ confirm_validation_rules = {
 };
 
 body_validation_rules = {
+    'Aberdeenshire Council': confirm_validation_rules,
     'Bath and North East Somerset Council': confirm_validation_rules,
     'Bromley Council': {
         detail: {
@@ -28,6 +29,7 @@ body_validation_rules = {
         }
     },
     'Cheshire East Council': confirm_validation_rules,
+    'Gloucestershire County Council': confirm_validation_rules,
     'Hackney Council': {
         detail: {
           required: true,
@@ -62,12 +64,12 @@ body_validation_rules = {
           maxlength: 100
         },
     },
-    'Northamptonshire Highways': {
+    'North Northamptonshire Council': $.extend({
         title: {
           required: true,
           maxlength: 120
         }
-    },
+    }, confirm_validation_rules),
     'Oxfordshire County Council': {
         detail: {
           required: true,
@@ -117,5 +119,11 @@ body_validation_rules = {
           required: true,
           notEmail: true
       }
-  }
+    },
+    'West Northamptonshire Council': $.extend({
+        title: {
+          required: true,
+          maxlength: 120
+        }
+    }, confirm_validation_rules)
 };

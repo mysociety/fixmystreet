@@ -818,10 +818,13 @@ FixMyStreet::override_config {
                 show_individual_notes => 0,
                 band1_max => '',
                 band1_price => '',
+                band1_pop_price => undef,
                 daily_slots => 50,
                 free_mode => 0, # not checked
                 food_bags_disabled => '', # not checked
                 base_price => 1234,
+                base_pop_price => undef,
+                pop_costs => 0,
                 per_item_costs => 1,
                 per_item_min_collection_price => '',
                 items_per_collection_max => 7,

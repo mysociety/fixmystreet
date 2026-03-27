@@ -162,7 +162,7 @@ subtest 'check contact updating' => sub {
     $mech->tick( 'confirmed', 'test category' );
     $mech->submit_form_ok({form_number => 1});
 
-    $mech->content_like(qr'test2@example.com</td>[^<]*<td>\s*confirmed's);
+    $mech->content_like(qr'test2@example.com\s*</td>[^<]*<td>\s*confirmed's);
     $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
     $mech->content_like(qr{test2\@example.com[^<]*</td>[^<]*<td><strong>confirmed}s);
 };

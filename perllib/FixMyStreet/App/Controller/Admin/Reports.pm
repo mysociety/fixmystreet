@@ -80,7 +80,7 @@ sub index : Path {
             $query->{'-or'} = [
                 'me.areas' => { like => "%,$1,%" }
             ];
-        } elsif ($search =~ /^ref:(\d+)$/) {
+        } elsif ($search =~ /^\s*ref:\s*(.+?)\s*$/) {
             $query->{'-or'} = [
                 'me.external_id' => { like => "%$1%" }
             ];

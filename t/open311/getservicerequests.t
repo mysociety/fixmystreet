@@ -738,4 +738,23 @@ sub prepare_xml {
     return $xml;
 }
 
+subtest 'skip_existing filters already imported report IDs' => sub {
+    # external_id 638344 was created by 'basic parsing checks' above
+
+    my $fetcher = Open311::GetServiceRequests->new(
+        report_ids => [ '638344', '999999' ],
+        skip_existing => 1,
+        system_user => $user,
+        bodies => [ $body->name ],
+    );
+
+    # Check that filter_existing_ids removes the existing ID
+    my @filtered = $fetcher->filter_existing_ids($body, $fetcher->report_ids);
+    is_deeply \@filtered, ['999999'], 'existing ID filtered out, new ID kept';
+
+    # Check that all-existing returns empty list
+    my @all_exist = $fetcher->filter_existing_ids($body, ['638344']);
+    is scalar @all_exist, 0, 'returns empty list when all IDs exist';
+};
+
 done_testing();

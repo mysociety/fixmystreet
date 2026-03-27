@@ -39,8 +39,12 @@ cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel
   [% END %]
 
   <p style="[% p_style %]">
-    Items to be collected:
-    [% INCLUDE 'waste/_bulky_list.html' %]
+    [% IF report.category == 'Sharps collection' %]
+      [% INCLUDE 'waste/_sharps_list.html' %]
+    [% ELSE %]
+      Items to be collected:
+      [% INCLUDE 'waste/_bulky_list.html' %]
+    [% END %]
   </p>
 
 [% IF payment %]
@@ -63,12 +67,14 @@ cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel
   [% INCLUDE 'waste/_bulky_extra_text.html' %]
 [% END %]
 
-[% IF (cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston') && report.category != 'Small items collection' %]
-  <p style="[% p_style %]">Check you’ve read the <a href="[% cobrand.feature('waste_features').bulky_tandc_link %]">terms and conditions</a>.</p>
-[% ELSIF report.category == 'Small items collection' AND cobrand.feature('waste_features').small_items_tandc_link %]
-  <p style="[% p_style %]">Please check you have read the <a href="[% cobrand.feature('waste_features').small_items_tandc_link %]">terms and conditions</a></p>
-[% ELSIF cobrand.feature('waste_features').bulky_tandc_link AND cobrand.moniker != 'peterborough' %]
-  <p style="[% p_style %]">Please check you have read the <a href="[% cobrand.feature('waste_features').bulky_tandc_link %]">terms and conditions</a></p>
+[% IF report.category != 'Sharps collection' %]
+  [% IF (cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston') && report.category != 'Small items collection' %]
+    <p style="[% p_style %]">Check you’ve read the <a href="[% cobrand.feature('waste_features').bulky_tandc_link %]">terms and conditions</a>.</p>
+  [% ELSIF report.category == 'Small items collection' AND cobrand.feature('waste_features').small_items_tandc_link %]
+    <p style="[% p_style %]">Please check you have read the <a href="[% cobrand.feature('waste_features').small_items_tandc_link %]">terms and conditions</a></p>
+  [% ELSIF cobrand.feature('waste_features').bulky_tandc_link AND cobrand.moniker != 'peterborough' %]
+    <p style="[% p_style %]">Please check you have read the <a href="[% cobrand.feature('waste_features').bulky_tandc_link %]">terms and conditions</a></p>
+  [% END %]
 [% END %]
 
   <p style="[% p_style %]">

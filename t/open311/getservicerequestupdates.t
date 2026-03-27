@@ -43,6 +43,13 @@ my %bodies = (
         comment_user_id => $user->id,
         cobrand => 'aberdeenshire',
     }),
+    2656 => FixMyStreet::DB->resultset("Body")->create({
+        name => 'Dumfries and Galloway',
+        send_method => 'Open311',
+        endpoint => 'endpoint',
+        comment_user_id => $user->id,
+        cobrand => 'dumfries',
+    }),
     2651 => FixMyStreet::DB->resultset("Body")->create({ name => 'Edinburgh' }),
 );
 $bodies{2237}->body_areas->create({ area_id => 2237 });
@@ -512,18 +519,20 @@ subtest 'Check template placeholders' => sub {
     $problem->comments->delete;
 };
 
-subtest 'Check Aberdeenshire template interpolation' => sub {
-    # Set up Config for allowed template vars
-    FixMyStreet::DB->resultset("Config")->find_or_create({
-        key => 'response_template_variables',
-        value => {
-            aberdeenshire => ['featureSPD', 'featureCCAT']
-        }
-    });
+# Set up Config for allowed template vars
+FixMyStreet::DB->resultset("Config")->find_or_create({
+    key => 'response_template_variables',
+    value => {
+        aberdeenshire => ['featureSPD', 'featureCCAT'],
+        dumfries => ['priority'],
+    },
+});
 
+subtest 'Check Aberdeenshire template interpolation' => sub {
     my $tpl = $bodies{2648}->response_templates->create({
         title => "a placeholder in progress template",
         text => "Target date: {{targetDate}}\nCategory: {{featureCCAT}}\nSpeed limit: {{featureSPD}}",
+        email_text => "EMAIL: Target date: {{targetDate}}\nCategory: {{featureCCAT}}\nSpeed limit: {{featureSPD}}",
         auto_response => 1,
         state => "in progress"
     });
@@ -556,6 +565,7 @@ subtest 'Check Aberdeenshire template interpolation' => sub {
     my $c = $aber_problem->comments->first;
     ok $c, 'comment exists';
     is $c->text, "Target date: 31/12/2025\nCategory: 3A\nSpeed limit: 60mph", 'template correctly interpolated';
+    is $c->private_email_text, "EMAIL: Target date: 31/12/2025\nCategory: 3A\nSpeed limit: 60mph", 'email template correctly interpolated';
     $aber_problem->comments->delete;
 
     # Also test jobStartDate interpolation
@@ -586,6 +596,52 @@ subtest 'Check Aberdeenshire template interpolation' => sub {
 
     $aber_problem->comments->delete;
     $aber_problem->delete;
+    $tpl->delete;
+};
+
+subtest 'Check Dumfries template interpolation' => sub {
+    my $dmf = $bodies{2656};
+
+    my $tpl = $dmf->response_templates->create({
+        title => "a priority template",
+        text => "Priority: {{priority}}",
+        email_text => "EMAIL: Priority: {{priority}}",
+        auto_response => 1,
+        state => "in progress"
+    });
+
+    my $dmf_problem = create_problem( $dmf->id );
+    my $local_requests_xml = setup_xml($dmf_problem->external_id, $dmf_problem->id, 'IN_PROGRESS', '',
+        '<priority>1 to 5 days</priority>');
+
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/servicerequestupdates.xml', $local_requests_xml);
+
+    $dmf_problem->lastupdate( DateTime->now()->subtract( days => 1 ) );
+    $dmf_problem->state( 'confirmed' );
+    $dmf_problem->update;
+
+    my $update = Open311::GetServiceRequestUpdates->new(
+        system_user => $user,
+        current_open311 => $o,
+        current_body => $dmf,
+    );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'dumfries',
+    }, sub {
+        $update->process_body;
+    };
+
+    $dmf_problem->discard_changes;
+    is $dmf_problem->comments->count, 1, 'comment count';
+
+    my $c = $dmf_problem->comments->first;
+    ok $c, 'comment exists';
+    is $c->text, 'Priority: 1 to 5 days', 'template correctly interpolated';
+    is $c->private_email_text,'EMAIL: Priority: 1 to 5 days', 'email template correctly interpolated';
+
+    $dmf_problem->comments->delete;
+    $dmf_problem->delete;
     $tpl->delete;
 };
 
@@ -2145,6 +2201,402 @@ subtest 'media_url image has EXIF metadata stripped' => sub {
     $problem->comments->delete;
   };
   } # SKIP
+};
+
+subtest 'media_url image has EXIF orientation applied before stripping' => sub {
+  SKIP: {
+    skip('Image::Magick not available', 6)
+        unless FixMyStreet::ImageMagick::_load_imagemagick();
+
+  my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
+  FixMyStreet::override_config {
+    PHOTO_STORAGE_BACKEND => 'FileSystem',
+    PHOTO_STORAGE_OPTIONS => {
+        UPLOAD_DIR => $UPLOAD_DIR,
+    },
+  }, sub {
+
+    $problem->comments->delete;
+    my $guard = LWP::Protocol::PSGI->register(t::Mock::Static->to_psgi_app, host => 'example.com');
+
+    # Verify the source image has EXIF Orientation=6 and is 100x50
+    my $source_img = Image::Magick->new;
+    my $ua = LWP::UserAgent->new;
+    my $res = $ua->get('http://example.com/image-rotated.jpeg');
+    ok $res->is_success, 'fetched rotated source image';
+    $source_img->BlobToImage($res->decoded_content);
+    is $source_img->Get('EXIF:Orientation'), 6, 'source has orientation=6';
+    is $source_img->Get('width'), 100, 'source pixel width is 100';
+
+    my $local_requests_xml = setup_xml($problem->external_id, 1, "");
+    $local_requests_xml =~ s#</service_request_id>#</service_request_id>
+        <media_url>http://example.com/image-rotated.jpeg</media_url>#;
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/servicerequestupdates.xml', $local_requests_xml);
+
+    $problem->lastupdate( DateTime->now()->subtract( days => 1 ) );
+    $problem->state('confirmed');
+    $problem->update;
+
+    my $update = Open311::GetServiceRequestUpdates->new(
+        system_user => $user,
+        current_open311 => $o,
+        current_body => $bodies{2482},
+    );
+    $update->process_body;
+
+    $problem->discard_changes;
+    is $problem->comments->count, 1, 'comment count';
+    my $c = $problem->comments->first;
+
+    # Read back and verify pixels were rotated (100x50 with orient=6 -> 50x100)
+    my $stored_file = Path::Tiny::path($UPLOAD_DIR, $c->photo);
+    my $img = Image::Magick->new;
+    $img->BlobToImage($stored_file->slurp_raw);
+    is $img->Get('width'), 50, 'stored image width is 50 (auto-rotated)';
+    is $img->Get('height'), 100, 'stored image height is 100 (auto-rotated)';
+
+    $problem->comments->delete;
+  };
+  } # SKIP
+};
+
+subtest 'Dumfries external_status_code wildcard template matching' => sub {
+    my $dmf = $bodies{2656};
+
+    # Create a contact for Dumfries
+    my $dmf_contact = FixMyStreet::DB->resultset('Contact')->find_or_create({
+        state => 'confirmed',
+        editor => 'Test',
+        whenedited => \'current_timestamp',
+        note => 'Created for test',
+        body_id => $dmf->id,
+        category => 'Potholes',
+        email => 'potholes@dumfries.gov.uk',
+    });
+
+    # Create response templates with different wildcard patterns
+    my $tpl_exact = $dmf->response_templates->create({
+        title => "exact match template",
+        text => "Exact match: status1:outcome1:priority1",
+        auto_response => 1,
+        state => '',
+        external_status_code => 'status1:outcome1:priority1',
+    });
+
+    my $tpl_star_two = $dmf->response_templates->create({
+        title => "star wildcard two segments",
+        text => "Star wildcard: status1 with any outcome/priority",
+        auto_response => 1,
+        state => '',
+        external_status_code => 'status1:*:*',
+    });
+
+    my $tpl_plus_two = $dmf->response_templates->create({
+        title => "plus wildcard two segments",
+        text => "Plus wildcard: status2 with non-empty outcome/priority",
+        auto_response => 1,
+        state => '',
+        external_status_code => 'status2:+:+',
+    });
+
+    my $tpl_mixed = $dmf->response_templates->create({
+        title => "mixed wildcard template",
+        text => "Mixed: status4 with any outcome but non-empty priority",
+        auto_response => 1,
+        state => '',
+        external_status_code => 'status4:*:+',
+    });
+
+    my $tpl_star_all = $dmf->response_templates->create({
+        title => "all star wildcard",
+        text => "Catch-all: any status",
+        auto_response => 1,
+        state => '',
+        external_status_code => 'catchall:*:*',
+    });
+
+    sub create_dmf_problem {
+        my $dmf = shift;
+        return FixMyStreet::DB->resultset('Problem')->create({
+            postcode     => 'DG1 1AA',
+            latitude     => 55.0706,
+            longitude    => -3.9568,
+            bodies_str   => $dmf->id,
+            areas        => ',2656,',
+            category     => 'Potholes',
+            title        => 'Test Problem',
+            detail       => 'Test detail',
+            used_map     => 1,
+            name         => 'Test User',
+            anonymous    => 0,
+            state        => 'confirmed',
+            confirmed    => \'current_timestamp',
+            lastupdate   => DateTime->now->subtract(hours => 1),
+            whensent     => \'current_timestamp',
+            user_id      => $user->id,
+            user         => $user,
+            external_id  => int(rand(100000)),
+            cobrand      => 'dumfries',
+        });
+    }
+
+    sub dmf_update_xml {
+        my ($problem_id, $update_id, $ext_code) = @_;
+        return qq{<?xml version="1.0" encoding="utf-8"?>
+<service_requests_updates>
+<request_update>
+<update_id>$update_id</update_id>
+<service_request_id>$problem_id</service_request_id>
+<status>open</status>
+<description></description>
+<updated_datetime>$dt</updated_datetime>
+<external_status_code>$ext_code</external_status_code>
+</request_update>
+</service_requests_updates>
+};
+    }
+
+    subtest 'exact match beats wildcards' => sub {
+        my $dmf_problem = create_dmf_problem($dmf);
+        my $xml = dmf_update_xml($dmf_problem->external_id, 'exact1', 'status1:outcome1:priority1');
+
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+        Open311->_inject_response('/servicerequestupdates.xml', $xml);
+
+        my $update = Open311::GetServiceRequestUpdates->new(
+            system_user => $user,
+            current_open311 => $o,
+            current_body => $dmf,
+        );
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'dumfries',
+        }, sub {
+            $update->process_body;
+        };
+
+        $dmf_problem->discard_changes;
+        is $dmf_problem->comments->count, 1, 'one comment created';
+        is $dmf_problem->comments->first->text, 'Exact match: status1:outcome1:priority1',
+            'Exact match template selected over wildcards';
+
+        $dmf_problem->comments->delete;
+        $dmf_problem->delete;
+    };
+
+    subtest 'star wildcard matches when no exact match' => sub {
+        my $dmf_problem = create_dmf_problem($dmf);
+        # Different priority value, so exact match won't work
+        my $xml = dmf_update_xml($dmf_problem->external_id, 'star1', 'status1:outcome1:differentpriority');
+
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+        Open311->_inject_response('/servicerequestupdates.xml', $xml);
+
+        my $update = Open311::GetServiceRequestUpdates->new(
+            system_user => $user,
+            current_open311 => $o,
+            current_body => $dmf,
+        );
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'dumfries',
+        }, sub {
+            $update->process_body;
+        };
+
+        $dmf_problem->discard_changes;
+        is $dmf_problem->comments->count, 1, 'one comment created';
+        is $dmf_problem->comments->first->text, 'Star wildcard: status1 with any outcome/priority',
+            'Star wildcard template selected';
+
+        $dmf_problem->comments->delete;
+        $dmf_problem->delete;
+    };
+
+    subtest 'star wildcard matches empty segments' => sub {
+        my $dmf_problem = create_dmf_problem($dmf);
+        # Empty outcome and priority - star should match
+        my $xml = dmf_update_xml($dmf_problem->external_id, 'star_empty1', 'status1::');
+
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+        Open311->_inject_response('/servicerequestupdates.xml', $xml);
+
+        my $update = Open311::GetServiceRequestUpdates->new(
+            system_user => $user,
+            current_open311 => $o,
+            current_body => $dmf,
+        );
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'dumfries',
+        }, sub {
+            $update->process_body;
+        };
+
+        $dmf_problem->discard_changes;
+        is $dmf_problem->comments->count, 1, 'one comment created';
+        is $dmf_problem->comments->first->text, 'Star wildcard: status1 with any outcome/priority',
+            'Star wildcard matches empty segments';
+
+        $dmf_problem->comments->delete;
+        $dmf_problem->delete;
+    };
+
+    subtest 'plus wildcard matches non-empty segments' => sub {
+        my $dmf_problem = create_dmf_problem($dmf);
+        my $xml = dmf_update_xml($dmf_problem->external_id, 'plus1', 'status2:someoutcome:somepriority');
+
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+        Open311->_inject_response('/servicerequestupdates.xml', $xml);
+
+        my $update = Open311::GetServiceRequestUpdates->new(
+            system_user => $user,
+            current_open311 => $o,
+            current_body => $dmf,
+        );
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'dumfries',
+        }, sub {
+            $update->process_body;
+        };
+
+        $dmf_problem->discard_changes;
+        is $dmf_problem->comments->count, 1, 'one comment created';
+        is $dmf_problem->comments->first->text, 'Plus wildcard: status2 with non-empty outcome/priority',
+            'Plus wildcard matches non-empty segments';
+
+        $dmf_problem->comments->delete;
+        $dmf_problem->delete;
+    };
+
+    subtest 'plus wildcard does not match empty segments' => sub {
+        my $dmf_problem = create_dmf_problem($dmf);
+        # Empty outcome - plus should NOT match
+        my $xml = dmf_update_xml($dmf_problem->external_id, 'plus_empty1', 'status2::somepriority');
+
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+        Open311->_inject_response('/servicerequestupdates.xml', $xml);
+
+        my $update = Open311::GetServiceRequestUpdates->new(
+            system_user => $user,
+            current_open311 => $o,
+            current_body => $dmf,
+        );
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'dumfries',
+        }, sub {
+            stderr_like { $update->process_body } qr/Couldn't determine update text/,
+                'No template matches - warning displayed';
+        };
+
+        $dmf_problem->discard_changes;
+        is $dmf_problem->comments->count, 1, 'comment created but hidden';
+        is $dmf_problem->comments->first->state, 'hidden', 'comment is hidden due to no template';
+
+        $dmf_problem->comments->delete;
+        $dmf_problem->delete;
+    };
+
+    subtest 'mixed wildcard: star matches empty, plus requires non-empty' => sub {
+        my $dmf_problem = create_dmf_problem($dmf);
+        # Empty outcome (star matches), non-empty priority (plus matches)
+        my $xml = dmf_update_xml($dmf_problem->external_id, 'mixed1', 'status4::somepriority');
+
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+        Open311->_inject_response('/servicerequestupdates.xml', $xml);
+
+        my $update = Open311::GetServiceRequestUpdates->new(
+            system_user => $user,
+            current_open311 => $o,
+            current_body => $dmf,
+        );
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'dumfries',
+        }, sub {
+            $update->process_body;
+        };
+
+        $dmf_problem->discard_changes;
+        is $dmf_problem->comments->count, 1, 'one comment created';
+        is $dmf_problem->comments->first->text, 'Mixed: status4 with any outcome but non-empty priority',
+            'Mixed wildcard template selected';
+
+        $dmf_problem->comments->delete;
+        $dmf_problem->delete;
+    };
+
+    subtest 'mixed wildcard: plus fails on empty priority' => sub {
+        my $dmf_problem = create_dmf_problem($dmf);
+        # Non-empty outcome (star matches), empty priority (plus fails)
+        my $xml = dmf_update_xml($dmf_problem->external_id, 'mixed2', 'status4:someoutcome:');
+
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+        Open311->_inject_response('/servicerequestupdates.xml', $xml);
+
+        my $update = Open311::GetServiceRequestUpdates->new(
+            system_user => $user,
+            current_open311 => $o,
+            current_body => $dmf,
+        );
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'dumfries',
+        }, sub {
+            stderr_like { $update->process_body } qr/Couldn't determine update text/,
+                'No template matches - warning displayed';
+        };
+
+        $dmf_problem->discard_changes;
+        is $dmf_problem->comments->count, 1, 'comment created but hidden';
+        is $dmf_problem->comments->first->state, 'hidden', 'comment is hidden due to no template';
+
+        $dmf_problem->comments->delete;
+        $dmf_problem->delete;
+    };
+
+    subtest 'real-world Alloy IDs work with wildcards' => sub {
+        # Test with realistic Alloy-style IDs
+        my $alloy_tpl = $dmf->response_templates->create({
+            title => "Alloy status template",
+            text => "Status update received from Alloy",
+            auto_response => 1,
+            state => '',
+            external_status_code => '5c8bdfc88ae862230019dc22:*:*',
+        });
+
+        my $dmf_problem = create_dmf_problem($dmf);
+        # Realistic Alloy external status code with empty outcome
+        my $xml = dmf_update_xml($dmf_problem->external_id, 'alloy1',
+            '5c8bdfc88ae862230019dc22::64bfcd75b3053c31b3a5a3d6');
+
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+        Open311->_inject_response('/servicerequestupdates.xml', $xml);
+
+        my $update = Open311::GetServiceRequestUpdates->new(
+            system_user => $user,
+            current_open311 => $o,
+            current_body => $dmf,
+        );
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'dumfries',
+        }, sub {
+            $update->process_body;
+        };
+
+        $dmf_problem->discard_changes;
+        is $dmf_problem->comments->count, 1, 'one comment created';
+        is $dmf_problem->comments->first->text, 'Status update received from Alloy',
+            'Alloy ID with star wildcard matches (including empty middle segment)';
+
+        $dmf_problem->comments->delete;
+        $dmf_problem->delete;
+        $alloy_tpl->delete;
+    };
+
+    # Cleanup
+    $tpl_exact->delete;
+    $tpl_star_two->delete;
+    $tpl_plus_two->delete;
+    $tpl_mixed->delete;
+    $tpl_star_all->delete;
+    $dmf_contact->delete;
 };
 
 done_testing();

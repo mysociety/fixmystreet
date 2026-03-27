@@ -4,9 +4,8 @@ FixMyStreet::App::Form::Page::Waste
 
 =head1 SYNOPSIS
 
-A subclass of the Simple page to provide a title field, that for garden forms
-can also include a cobrand-specific garden service name, and an override
-template.
+A subclass of the Simple page to provide a title field that can be set directly
+or built via build_title_method, and an override template.
 
 =cut
 
@@ -15,15 +14,11 @@ use Moose;
 extends 'FixMyStreet::App::Form::Page::Simple';
 
 # Title to use for this page
-has title => ( is => 'ro', 'isa' => 'Str', lazy => 1, builder => '_build_title' );
-# So we can insert cobrand specific service name
-has title_ggw => ( is => 'ro', isa => 'Str' );
+has title => ( is => 'ro', isa => 'Str', lazy => 1, builder => 'build_title' );
 
-sub _build_title {
-    my $self = shift;
-    my $name = $self->form->{c}->cobrand->garden_service_name;
-    return sprintf($self->title_ggw, $name);
-}
+has build_title_method => ( is => 'rw', isa => 'CodeRef',
+    traits => ['Code'], handles => { 'build_title' => 'execute_method' },
+);
 
 # Special template to use in preference to the default
 has template => ( is => 'ro', isa => 'Str' );

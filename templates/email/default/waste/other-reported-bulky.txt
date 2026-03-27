@@ -1,5 +1,7 @@
 Subject: [%
-IF report.category == 'Small items collection' && cobrand.moniker != 'sutton';
+IF report.category == 'Sharps collection';
+    "Sharps collection service - reference " _ report.id;
+ELSIF report.category == 'Small items collection' && cobrand.moniker != 'sutton';
     " Small items collection service - reference " _ report.id;
 ELSIF cobrand.moniker == 'kingston';
     "Your bulky waste collection - reference RBK-" _ report.id;
@@ -35,8 +37,12 @@ If your collection includes both upholstered and non-upholstered items (such as 
 The second collection may be up to two working days after your chosen date.
 
 [% END ~%]
+[% IF report.category == 'Sharps collection' %]
+[% INCLUDE 'waste/_sharps_list.txt' %]
+[% ELSE %]
 Items to be collected:
 [% INCLUDE 'waste/_bulky_list.txt' %]
+[% END %]
 
 [% IF payment ~%]
 Total cost: £[% pounds(payment / 100) %]
@@ -63,10 +69,12 @@ If you wish to cancel your booking, please visit:
 
 [% END %]
 
+[% IF report.category != 'Sharps collection' %]
 [% IF report.category == 'Small items collection' AND cobrand.feature('waste_features').small_items_tandc_link %]
 Please check you have read the terms and conditions [% cobrand.feature('waste_features').small_items_tandc_link %]
 [% ELSIF cobrand.feature('waste_features').bulky_tandc_link AND cobrand.moniker != 'peterborough' %]
 Please check you have read the terms and conditions [% cobrand.feature('waste_features').bulky_tandc_link %]
+[% END %]
 [% END %]
 
 [% signature %]

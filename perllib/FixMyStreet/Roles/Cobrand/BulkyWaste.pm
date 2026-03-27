@@ -50,9 +50,16 @@ sub small_items_enabled {
     return $cfg->{small_items_enabled};
 }
 
+sub sharps_enabled {
+    my $self = shift;
+    my $cfg = $self->feature('waste_features') || {};
+    return $cfg->{sharps_enabled};
+}
+
 sub bulky_items_master_list { $_[0]->wasteworks_config->{item_list} || [] }
 sub small_items_master_list { $_[0]->wasteworks_config->{small_item_list} || [] }
 sub bulky_per_item_costs { $_[0]->wasteworks_config->{per_item_costs} }
+sub bulky_pop_item_costs { $_[0]->wasteworks_config->{pop_costs} }
 
 sub bulky_nice_item_list {
     my ($self, $report) = @_;
@@ -152,7 +159,18 @@ sub bulky_pricing_strategy {
         $out = { strategy => 'per_item', min => $min_collection_price };
     } elsif (my $band1_price = $self->wasteworks_config->{band1_price}) {
         my $max = $self->{c}->stash->{booking_maximum};
-        $out = { strategy => 'banded', bands => [ { max => $band1_max, price => $band1_price }, { max => $max, price => $base_price } ] };
+        if ($self->wasteworks_config->{pop_costs}) {
+            $out = { strategy => 'banded_pop', bands =>
+                [
+                    { max => $band1_max, pop_price => $self->wasteworks_config->{band1_pop_price}, price => $band1_price },
+                    { max => $max, pop_price => $self->wasteworks_config->{base_pop_price}, price => $base_price }
+                ]
+            };
+        } else {
+            $out = { strategy => 'banded', bands => [ { max => $band1_max, price => $band1_price }, { max => $max, price => $base_price } ] };
+        }
+    } elsif ($self->wasteworks_config->{pop_costs}) {
+        $out = { strategy => 'pop_costs', price => $base_price, pop_price => $self->wasteworks_config->{base_pop_price} };
     } else {
         $out = { strategy => 'single' };
     }
@@ -220,6 +238,7 @@ sub bulky_items_extra {
         $hash{ $item->{name} }{price} = $item->{$price_key} if $item->{$price_key} && $per_item;
         $hash{ $item->{name} }{points} = $item->{points} if $item->{points};
         $hash{ $item->{name} }{max} = $item->{max} if $item->{max};
+        $hash{ $item->{name} }{contains_pops} = 1 if $item->{contains_pops};
         $hash{ $item->{name} }{json} = $json->encode($hash{$item->{name}}) if $hash{$item->{name}};
     }
     return \%hash;
@@ -258,6 +277,11 @@ sub bulky_minimum_cost {
 sub bulky_total_cost {
     my ($self, $data) = @_;
     my $c = $self->{c};
+
+    my %pop_items;
+    if ($self->bulky_pop_item_costs) {
+        %pop_items = map { $_->{name} => 1 } grep { $_->{contains_pops} } @{ $self->bulky_items_master_list };
+    }
 
     if ($self->bulky_free_collection_available) {
         $data->{extra_CHARGEABLE} = 'FREE';
@@ -298,18 +322,26 @@ sub bulky_total_cost {
             }
         } elsif ($cfg->{band1_price}) {
             my $count = 0;
+            my $has_pops = 0;
             my $max = $c->stash->{booking_maximum};
             for (1..$max) {
                 my $item = $data->{"item_$_"} or next;
+                $has_pops = 1 if $pop_items{$item};
                 $count++;
             }
             if ($count <= $cfg->{band1_max}) {
-                $c->stash->{payment} = $cfg->{band1_price};
+                $c->stash->{payment} = $has_pops ? $cfg->{band1_pop_price} : $cfg->{band1_price};
             } else {
-                $c->stash->{payment} = $cfg->{base_price};
+                $c->stash->{payment} = $has_pops ? $cfg->{base_pop_price} : $cfg->{base_price};
             }
         } else {
-            $c->stash->{payment} = $cfg->{base_price};
+            my $has_pops = 0;
+            my $max = $c->stash->{booking_maximum};
+            for (1..$max) {
+                my $item = $data->{"item_$_"} or next;
+                $has_pops = 1 if $pop_items{$item};
+            }
+            $c->stash->{payment} = $has_pops ? $cfg->{base_pop_price} : $cfg->{base_price};
         }
     }
 
@@ -383,14 +415,17 @@ sub find_booked_collections {
     my %pending_states = map { $_ => 1 } FixMyStreet::DB::Result::Problem->open_states;
 
     my @reports = $self->problems->search({
-        category => ['Bulky collection', 'Small items collection'],
+        category => ['Bulky collection', 'Small items collection', 'Sharps collection'],
         uprn => $uprn,
     })->order_by('-id')->all;
 
     my $dt = DateTime->now( time_zone => FixMyStreet->local_time_zone )->truncate( to => 'day' )->subtract ( days => 10 );
     my $out;
     foreach (@reports) {
-        my $key = $_->category eq 'Small items collection' ? 'small_items' : 'bulky';
+        my $key
+            = $_->category eq 'Sharps collection'      ? 'sharps'
+            : $_->category eq 'Small items collection' ? 'small_items'
+            :                                            'bulky';
 
         my $date = $self->collection_date($_);
         next if $recent && $date < $dt;
@@ -661,7 +696,7 @@ sub bulky_reminders {
     # Can't see an easy way to find these apart from loop through them all.
     # Is only daily.
     my $collections = $self->problems->search({
-        category => ['Bulky collection', 'Small items collection'],
+        category => ['Bulky collection', 'Small items collection', 'Sharps collection'],
         state => [ FixMyStreet::DB::Result::Problem->open_states ], # XXX?
     });
 
@@ -671,7 +706,7 @@ sub bulky_reminders {
         $collections = $collections->search({
              -or => [
                 extra => { '\?' => 'payment_reference' },
-                category => 'Small items collection'
+                category => ['Small items collection', 'Sharps collection']
             ]
         });
     }

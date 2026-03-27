@@ -17,7 +17,10 @@ sub with_bins_wanted {
 }
 
 has_page sacks_choice => (
-    title_ggw => 'Subscribe to the %s',
+    build_title_method => sub {
+        my $name = $_[0]->form->c->cobrand->garden_service_name;
+        return "Subscribe to the $name";
+    },
     fields => ['container_choice', 'apply_discount', 'continue'],
     next => sub {
         return 'sacks_details' if $_[0]->{container_choice} eq 'sack';

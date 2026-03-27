@@ -43,8 +43,13 @@ sub details_update_fields {
 
 sub with_sacks_choice { 0 }
 
+sub build_title_ggw {
+    my $name = $_[0]->form->c->cobrand->garden_service_name;
+    return "Subscribe to the $name";
+}
+
 has_page intro => (
-    title_ggw => 'Subscribe to the %s',
+    build_title_method => \&build_title_ggw,
     template => 'waste/garden/subscribe_intro.html',
     fields => ['continue', 'apply_discount'],
     update_field_list => sub {
@@ -67,14 +72,14 @@ has_page intro => (
 );
 
 has_page existing => (
-    title_ggw => 'Subscribe to the %s',
+    build_title_method => \&build_title_ggw,
     template => 'waste/garden/subscribe_existing.html',
     fields => ['existing', 'existing_number', 'continue'],
     next => 'details',
 );
 
 has_page details => (
-    title_ggw => 'Subscribe to the %s',
+    build_title_method => \&build_title_ggw,
     template => 'waste/garden/subscribe_details.html',
     fields => ['current_bins', 'bins_wanted', 'payment_method', 'payment_explanation', 'cheque_reference', 'name', 'email', 'phone', 'password', 'email_renewal_reminders', 'continue_review'],
     field_ignore_list => sub {

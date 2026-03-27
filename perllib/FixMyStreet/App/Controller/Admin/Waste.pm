@@ -76,12 +76,15 @@ sub edit : Chained('body') : PathPart('') : Args(0) {
             $new_cfg = $c->stash->{body}->get_extra_metadata("wasteworks_config", {});
             my %keys = (
                 per_item_costs => 'bool',
+                pop_costs => 'bool',
                 per_item_min_collection_price => 'int',
                 base_price => 'int',
+                base_pop_price => 'int',
                 daily_slots => 'int',
                 items_per_collection_max => 'int',
                 small_items_per_collection_max => 'int',
                 band1_price => 'int',
+                band1_pop_price => 'int',
                 band1_max => 'int',
                 free_mode => 'bool',
                 food_bags_disabled => 'sel',
@@ -144,6 +147,7 @@ sub booked_items : Private {
         $cobrand->call_hook('bulky_per_item_pricing_property_types');
 
     $c->stash->{item_points} = $cobrand->call_hook('bulky_points_per_item_pricing');
+    $c->stash->{pop_costs} = $cobrand->call_hook('bulky_pop_item_costs');
 
     if ($c->req->method eq 'POST') {
         $c->forward('/auth/check_csrf_token');
@@ -166,6 +170,9 @@ sub booked_items : Private {
             };
             if ($c->stash->{item_points}) {
                 $item->{points} = $c->get_param("points[$i]");
+            }
+            if ($c->stash->{pop_costs}) {
+                $item->{contains_pops} = $c->get_param("contains_pops[$i]");
             }
 
             foreach my $property_type (@{$c->{stash}->{per_item_pricing_property_types}}) {
@@ -236,7 +243,7 @@ sub stash_body_config_json : Private {
     } else {
         $c->stash->{body_config_json} = JSON->new->utf8(1)->pretty->canonical->encode($cfg);
     }
-    foreach (qw(free_mode per_item_costs per_item_min_collection_price base_price daily_slots small_items_per_collection_max items_per_collection_max food_bags_disabled show_location_page band1_price band1_max show_individual_notes)) {
+    foreach (qw(free_mode per_item_costs pop_costs per_item_min_collection_price base_price base_pop_price daily_slots small_items_per_collection_max items_per_collection_max food_bags_disabled show_location_page band1_price band1_pop_price band1_max show_individual_notes)) {
         $c->stash->{$_} = $c->get_param($_) || $cfg->{$_};
     }
 }

@@ -14,6 +14,8 @@ has bodies => ( is => 'ro', default => sub { [] } );
 has bodies_exclude => ( is => 'ro', default => sub { [] } );
 has fetch_all => ( is => 'rw', default => 0 );
 has verbose => ( is => 'ro', default => 0 );
+has report_ids => ( is => 'ro', default => sub { [] } );
+has skip_existing => ( is => 'ro', default => 0 );
 has commit => ( is => 'ro', default => 1 );
 has schema => ( is =>'ro', lazy => 1, default => sub { FixMyStreet::DB->schema->connect } );
 has convert_latlong => ( is => 'rw', default => 0 );
@@ -43,6 +45,17 @@ sub fetch {
         $self->system_user( $body->comment_user );
         $self->convert_latlong( $body->convert_latlong );
         $self->fetch_all( $body->get_extra_metadata('fetch_all_problems') );
+
+        if ($self->skip_existing && @{$self->report_ids}) {
+            my @filtered = $self->filter_existing_ids($body, $self->report_ids);
+            unless (@filtered) {
+                warn "All report IDs already exist for " . $body->name . ", skipping\n"
+                    if $self->verbose;
+                next;
+            }
+            @{$self->report_ids} = @filtered;
+        }
+
         my $args = $self->format_args;
         my $requests = $self->get_requests($o, $body, $args);
         $self->create_problems( $o, $body, $args, $requests );
@@ -67,6 +80,11 @@ sub format_args {
 
     my $args = {};
 
+    if (@{$self->report_ids}) {
+        $args->{report_ids} = $self->report_ids;
+        return $args;
+    }
+
     my $dt = DateTime->now();
     if ($self->start_date) {
         $args->{start_date} = DateTime::Format::W3CDTF->format_datetime( $self->start_date );
@@ -81,6 +99,21 @@ sub format_args {
     }
 
     return $args;
+}
+
+sub filter_existing_ids {
+    my ($self, $body, $report_ids) = @_;
+
+    my %existing = map { $_ => 1 }
+        $self->schema->resultset('Problem')->to_body($body)->search(
+            { external_id => { -in => $report_ids } },
+        )->get_column('external_id')->all;
+
+    my @skipped = grep { $existing{$_} } @$report_ids;
+    warn "Skipping already imported IDs for " . $body->name . ": " . join(', ', @skipped) . "\n"
+        if $self->verbose && @skipped;
+
+    return grep { !$existing{$_} } @$report_ids;
 }
 
 sub get_requests {
@@ -116,6 +149,7 @@ sub create_problems {
         my $request_id = $request->{service_request_id};
         my $is_confirm_job = $request_id =~ /^JOB_/;
         my $is_confirm_defect = $request_id =~ /^DEFECT_/;
+        my $skip_date_check = $is_confirm_job || $is_confirm_defect || @{$self->report_ids};
 
         my ($latitude, $longitude) = ( $request->{lat}, $request->{long} );
 
@@ -171,11 +205,10 @@ sub create_problems {
         # Skip if this problem already exists (e.g. it may have originated from FMS and is being mirrored back!)
         next if $self->schema->resultset('Problem')->to_body($body)->search( $criteria )->count;
 
-        # Skip this date check for Confirm jobs/defects, otherwise we are likely to
-        # skip a bunch of valid entries if calling the fetch script using
-        # explicit start and end values
-        if (   !$is_confirm_job
-            && !$is_confirm_defect
+        # Skip this date check for Confirm jobs/defects or explicit report IDs,
+        # otherwise we are likely to skip a bunch of valid entries if calling
+        # the fetch script using explicit start and end values
+        if (   !$skip_date_check
             && $args->{start_date}
             && $args->{end_date}
             && (   $updated lt $args->{start_date}

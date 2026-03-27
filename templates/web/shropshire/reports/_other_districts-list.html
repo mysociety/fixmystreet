@@ -13,9 +13,9 @@
       <li class="govuk-checkboxes__item">
         <input class="[% show_wards_shown_class %] govuk-checkboxes__input" id="[% child.name | lower | replace(' ', '-') %]" type="checkbox" name="ward" value="[% child.name | html %]">
         <label class="[% show_parish_shown_class %] js-ward-multi govuk-label govuk-checkboxes__label" for="[% child.name | lower | replace(' ', '-') %]">
-          [% child.name %]
+          [% child.name %] Parish
         </label>
-        <a class="[% show_parish_hidden_class %]" href="[% child.url %]">[% child.name %]</a>
+        <a class="[% show_parish_hidden_class %]" href="[% child.url %]">[% child.name %] Parish</a>
       </li>
       [% END %]
     [% END %]

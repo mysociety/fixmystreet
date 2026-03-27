@@ -20,6 +20,10 @@
         - Add created flag to inactive processing script. #5386
         - Include report ID in main submit template. #5568
         - Allow per-category timespan for closing inactive reports to updates. #5649
+        - Dashboard: toggle visibility of deleted categories and categories with no reports
+        - Allow search of non-integer external IDs.
+        - List categories that prevent reporting.
+        - Show report search on the admin summary page for staff with `user_edit`. #5903
     - Development improvements
         - More logging when `page_error` is called, to aid troubleshooting. #5279
         - Docker changes needed for systemd to work. #5257
@@ -35,6 +39,7 @@
         - Persist send_method_used immediately during report sending to prevent loss when senders call discard_changes(). #5671
         - Strip EXIF metadata from photos imported via media_url. #5841
         - Photos can be included as base64-encoded data: URIs when fetching updates/reports. #5785
+        - Add --report-ids flag to bin/fetch to import specific Open311 service requests.
     - Performance improvements:
         - Use on-disk cache for front page stats rather than memcache. #5763
         - Add an index on problem(confirmed).

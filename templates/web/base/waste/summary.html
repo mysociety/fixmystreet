@@ -18,11 +18,13 @@
     </dd>
     <dd class="govuk-summary-list__actions">
       [% TRY %][% INCLUDE 'waste/_change_answers_top.html' %][% CATCH file %]
-        <form method="post">
-          <input type="hidden" name="saved_data" value="[% form.fif.saved_data %]">
-          <input type="hidden" name="goto" value="[% step1 %]">
-          <input type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0" value="Change answers">
-        </form>
+        [% IF step1 != 'about_you' %]
+          <form method="post">
+            <input type="hidden" name="saved_data" value="[% form.fif.saved_data %]">
+            <input type="hidden" name="goto" value="[% step1 %]">
+            <input type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0" value="Change answers">
+          </form>
+        [% END %]
       [% END %]
     </dd>
   </div>
@@ -31,7 +33,7 @@
         <dd class="govuk-summary-list__value">[% property.address %]</dd>
     </div>
     [% INCLUDE answers %]
-  
+
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">
       About you
@@ -86,6 +88,21 @@
             For Direct Debit customers - the total cost of an additional bin will be added to your existing Garden Waste Service Direct Debit Mandate and will be debited from your account.
         </h2>
       </legend>
+    </fieldset>
+  </div>
+[% END %]
+
+[% IF c.cobrand.moniker == 'kingston' && non_actionable %]
+  <div class="govuk-form-group">
+    <fieldset class="govuk-fieldset">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+        <h2 class="govuk-fieldset__heading">
+          After you submit
+        </h2>
+      </legend>
+      <p>
+      You will receive an acknowledgement email. Your report will be recorded and used to help improve our service.
+      </p>
     </fieldset>
   </div>
 [% END %]

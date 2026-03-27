@@ -1,5 +1,7 @@
 Subject: [%~ IF report.category == 'Small items collection' ~%]
 [%~ " Small items collection reminder - reference " _ report.id %]
+[%~ ELSIF report.category == 'Sharps collection' ~%]
+[%~ " Sharps collection reminder - reference " _ report.id %]
 [%~ ELSE ~%]
 [%~ " Bulky waste collection reminder - reference " _ report.id %]
 [%~ END %]
@@ -19,8 +21,12 @@ This is a reminder that your collection is in 3 days.
 This is a reminder that your collection is tomorrow.
 [% END %]
 
+[% IF report.category == 'Sharps collection' %]
+[% INCLUDE 'waste/_sharps_list.txt' %]
+[% ELSE %]
 Items to be collected:
 [% INCLUDE 'waste/_bulky_list.txt' %]
+[% END %]
 
 [% INCLUDE '_council_reference.txt' problem=report %]
 

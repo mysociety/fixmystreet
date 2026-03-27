@@ -15,6 +15,7 @@ describe('Basic categories', function() {
         'Graffiti',
         'Offensive graffiti',
         'G|Licensing',
+        'G|Parks',
         'Parks/landscapes',
         'Pavements',
         'Potholes',
@@ -25,6 +26,7 @@ describe('Basic categories', function() {
         'Street cleaning',
         'Street lighting',
         'Street nameplates',
+        'G|Streets',
         'Traffic lights',
         'Trees',
         'Other'
@@ -68,6 +70,7 @@ describe('Basic categories', function() {
 
     it('category search functions as expected', function() {
         cy.visit('/report/new?latitude=51.496194&longitude=-2.603439');
+        cy.wait('@report-ajax');
 
         cy.get('#category-filter').type('Fly');
         cy.get('[value="Abandoned vehicles"]').should('not.be.visible');

@@ -4,6 +4,7 @@
 <form method="get" action="[% c.uri_for_action('/admin/reports/index') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <p><label for="search">[% loc('Search:') %]</label>
         <input class="form-control" type="text" name="search"  size="30" id="search" value="[% searched | html %]">
+        [% loc('e.g. word in report, email, <code>ref:[external id]</code>') %]</p>
 </form>
 
 [% IF problems.size %]

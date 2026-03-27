@@ -31,6 +31,7 @@ certain fields. These roles implement that behaviour.
 
 with 'FixMyStreet::Roles::ConfirmOpen311';
 with 'FixMyStreet::Roles::ConfirmValidation';
+with 'FixMyStreet::Roles::MyGovScotOIDC';
 
 =head2 Defaults
 
@@ -60,51 +61,6 @@ sub admin_user_domain { 'aberdeenshire.gov.uk' }
 =cut
 
 sub privacy_policy_url { 'https://publications.aberdeenshire.gov.uk/acblobstorage/168aac73-5139-4622-a980-7a9436c3e0a3/cusersspellascdocumentsroads-pn.pdf' }
-
-=item * Single sign on is enabled from the cobrand feature 'oidc_login'
-
-=cut
-
-sub social_auth_enabled {
-    my $self = shift;
-
-    return $self->feature('oidc_login') ? 1 : 0;
-}
-
-=item * Extract the user's details from the OIDC token
-
-=cut
-
-sub user_from_oidc {
-    my ($self, $payload, $access_token) = @_;
-
-    my $name = '';
-    my $email = '';
-
-    # Payload doesn't include user's name so fetch it from
-    # the OIDC userinfo endpoint.
-    my $cfg = $self->feature('oidc_login');
-    if ($access_token && $cfg->{userinfo_uri}) {
-        my $ua = LWP::UserAgent->new;
-        my $response = $ua->get(
-            $cfg->{userinfo_uri},
-            Authorization => 'Bearer ' . $access_token,
-        );
-        my $user = decode_json($response->decoded_content);
-        if ($user->{fname} && $user->{lname}) {
-            $name = join(" ", $user->{fname}, $user->{lname});
-        }
-        if ($user->{emailaddress}) {
-            $email = $user->{emailaddress};
-        }
-    }
-
-    # In case we didn't get email from the claims above, default to value
-    # present in payload. NB name is not available in this manner.
-    $email ||= $payload->{sub} ? lc($payload->{sub}) : '';
-
-    return ($name, $email);
-}
 
 sub abuse_reports_only { 1 }
 
@@ -178,13 +134,32 @@ sub open311_get_update_munging {
     my ($self, $comment, $state, $request) = @_;
 
     my $text = $comment->text;
+    $text = _parse_template_dates($text, $request);
+    $text = $self->open311_get_update_munging_template_variables($text, $request);
+    $comment->text($text);
 
-    # Handle targetDate and jobStartDate with date parsing
+    if ( $text = $comment->private_email_text) {
+        $text = _parse_template_dates( $text, $request );
+        $text = $self->open311_get_update_munging_template_variables(
+            $text, $request );
+        $comment->private_email_text($text);
+    }
+
+    my $supersedes = $request->{extras}{supersedes};
+    return unless $supersedes && $supersedes =~ /^DEFECT_/;
+
+    $self->_supersede_report($comment->problem, $supersedes);
+}
+
+# Handle targetDate and jobStartDate with date parsing
+sub _parse_template_dates {
+    my ( $text, $request ) = @_;
+
+    my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );
     for my $date_field (qw(targetDate jobStartDate)) {
         if ($text =~ /\{\{$date_field}}/) {
-            my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );
             my $date_value = 'TBC';
-            if ($request->{extras} && $request->{extras}->{$date_field}) {
+            if ($request->{extras}->{$date_field}) {
                 try {
                     my $date = $parser->parse_datetime($request->{extras}->{$date_field});
                     $date_value = $date->strftime("%d/%m/%Y");
@@ -194,28 +169,7 @@ sub open311_get_update_munging {
         }
     }
 
-    # Get a list of plain text variables from DB
-    my $vars = FixMyStreet::DB->resultset("Config")->get('response_template_variables');
-    my @fields = ();
-    if ($vars && $vars->{$self->moniker}) {
-        @fields = @{ $vars->{$self->moniker} };
-    }
-    for my $field (@fields) {
-        if ($text =~ /\{\{$field}}/) {
-            my $value = '';
-            if ($request->{extras} && $request->{extras}->{$field}) {
-                $value = $request->{extras}->{$field};
-            }
-            $text =~ s/\{\{$field}}/$value/;
-        }
-    }
-
-    $comment->text($text);
-
-    my $supersedes = $request->{extras}{supersedes};
-    return unless $supersedes && $supersedes =~ /^DEFECT_/;
-
-    $self->_supersede_report($comment->problem, $supersedes);
+    return $text;
 }
 
 =head2 open311_report_fetched
@@ -436,5 +390,10 @@ sub skip_alert_state_changed_to { 1 }
 
 sub default_map_zoom { 5 }
 
+=item * Use Scotland bank holidays for out of hours messages
+
+=cut
+
+sub is_scotland { 1 }
 
 1;

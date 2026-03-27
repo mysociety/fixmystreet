@@ -75,6 +75,7 @@ my %CONTAINERS = (
     paper_1100 => 32,
     paper_bag => 34,
     food_indoor => 43,
+    food_indoor_premium => 45,
     food_outdoor => 46,
     food_240 => 51,
     garden_240 => 39,
@@ -82,6 +83,20 @@ my %CONTAINERS = (
     garden_sack => 36,
 );
 lock_hash(%CONTAINERS);
+
+=head2 CONTAINER_SWAPS_FROM
+
+This is a map for special case pricing when changing to the container size in the key from
+the container sizes in the value. If one of these swaps is detected then the change price
+of `request_change_cost_${value}_${key}` will be used instead of the usual `change_cost_$key`.
+
+=cut
+
+my %CONTAINER_SWAPS_FROM = (
+    refuse_140 => ['refuse_240'],
+    refuse_240 => ['refuse_360'],
+    paper_240 => ['paper_360'],
+);
 
 =head2 skip_alert_state_changed_to
 
@@ -217,143 +232,58 @@ sub waste_munge_bin_services_open_requests {
     }
 }
 
-=head2 Escalations
+sub _check_date_within_dispute_window {
+    my ($self, $date) = @_;
 
-Sutton has custom behaviour to allow escalation of unresolved missed collections
-or container requests.
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    # And two working days (from 6pm) have passed
+    my $wd = FixMyStreet::WorkingDays->new();
+    my $start = $wd->add_days($date, 0)->set_hour(18);
+    my $end = $wd->add_days($start, 3)->set_hour(0);
+
+    if ($now >= $start && $now < $end) {
+        return 1;
+    }
+
+    return 0;
+}
+
+=head2 waste_check_can_raise_dispute
+
+Checks if disputes can be raised for the service and resolution text.
 
 =cut
 
-around booked_check_missed_collection => sub {
-    my ($orig, $self, $type, $events, $blocked_codes) = @_;
+sub waste_check_can_raise_dispute {
+    my ($self, $service_id, $resolution) = @_;
 
-    $self->$orig($type, $events, $blocked_codes);
+    # currently we allow disputes on all resolution codes
+    return 1;
+}
 
-    # Now check for any old open missed collections that can be escalated
+=head2 Disputes
 
-    my $cfg = $self->feature('echo');
-    my $service_id = $cfg->{$type . '_service_id'} or return;
+=cut
 
-    my $escalations = $events->filter({ event_type => 3134, service => $service_id });
-    my $missed = $self->{c}->stash->{booked_missed};
-    foreach my $guid (keys %$missed) {
-        my $missed_event = $missed->{$guid}{report_open};
-        next unless $missed_event;
+sub _setup_container_request_disputes_for_service {
+    my ($self, $row) = @_;
+    my $events = $row->{events};
 
-        my $open_escalation = 0;
-        foreach ($escalations->list) {
-            next unless $_->{report};
-            my $missed_guid = $_->{report}->get_extra_field_value('missed_guid');
-            next unless $missed_guid;
-            if ($missed_guid eq $missed_event->{guid}) {
-                $missed->{$guid}{escalations}{missed_open} = $_;
-                $open_escalation = 1;
-            }
-        }
-
-        if (
-            # Report is still open
-            !$missed_event->{closed}
-            # And no existing escalation since last collection
-            && !$open_escalation
-        ) {
-            my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-            # And two working days (from 6pm) have passed
-            my $wd = FixMyStreet::WorkingDays->new();
-            my $start = $wd->add_days($missed_event->{date}, 2)->set_hour(18);
-            my $end = $wd->add_days($start, 2);
-            if ($now >= $start && $now < $end) {
-                $missed->{$guid}{escalations}{missed} = $missed_event;
+    my $dispute_event;
+    if ($events) {
+        $dispute_event = ($events->filter({ event_type => 3143 })->list)[0];
+    }
+    # check if a dispute is allowed on reports that have been marked as unable to be collected
+    if ($row->{last}->{completed} && $row->{report_locked_out} && !$dispute_event) {
+        # and then check if we can open a dispute for this resolution
+        if ( $self->waste_check_can_raise_dispute($row->{service_id}, $row->{last}->{resolution}) ) {
+            if ( $self->_check_date_within_dispute_window($row->{last}->{completed}) ) {
+                $row->{dispute_allowed} = 1;
             }
         }
     }
-};
-
-sub munge_bin_services_for_address {
-    my ($self, $rows) = @_;
-
-    # Escalations
-    foreach (@$rows) {
-        $self->_setup_missed_collection_escalations_for_service($_);
-        $self->_setup_container_request_escalations_for_service($_);
-    }
-}
-
-sub _setup_missed_collection_escalations_for_service {
-    my ($self, $row) = @_;
-    my $events = $row->{events} or return;
-
-    my $c = $self->{c};
-    my $property = $c->stash->{property};
-
-    my $missed_event = ($events->filter({ type => 'missed' })->list)[0];
-    my $escalation_event = ($events->filter({ event_type => 3134 })->list)[0];
-    if (
-        # If there's a missed bin report
-        $missed_event
-        # And report is still open
-        && !$missed_event->{closed}
-        # And the event source is the same as the current property (for communal)
-        && ($missed_event->{source} || 0) == $property->{id}
-        # And no existing escalation since last collection
-        && !$escalation_event
-    ) {
-        my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-        # And two working days (from 6pm) have passed
-        my $wd = FixMyStreet::WorkingDays->new();
-        my $start = $wd->add_days($missed_event->{date}, 2)->set_hour(18);
-        # And window is one day (weekly) two WDs (fortnightly)
-        my $window = $row->{schedule} =~ /every other/i ? 2 : 1;
-        my $end = $wd->add_days($start, $window);
-        if ($now >= $start && $now < $end) {
-            $row->{escalations}{missed} = $missed_event;
-        }
-    } elsif ($escalation_event) {
-        $row->{escalations}{missed_open} = $escalation_event;
-    }
-}
-
-sub _setup_container_request_escalations_for_service {
-    my ($self, $row) = @_;
-    my $open_requests = $row->{requests_open};
-
-    # If there are no open container requests, there's nothing for us to do
-    return unless scalar keys %$open_requests;
-
-    # We're only expecting one open container request per service
-    my $open_request_event = (values %$open_requests)[0];
-    my $escalation_events = $row->{all_events}->filter({ event_type => 3141 });
-    my $wd = FixMyStreet::WorkingDays->new();
-
-    foreach my $escalation_event ($escalation_events->list) {
-        my $escalation_event_report = $escalation_event->{report};
-        next unless $escalation_event_report;
-
-        if ($escalation_event_report->get_extra_field_value('container_request_guid') eq $open_request_event->{guid}) {
-            $row->{escalations}{container_open} = $escalation_event;
-            # We've marked that there is already an escalation event for the container
-            # request, so there's nothing left to do
-            return;
-        }
-    }
-
-    # There's an open container request with no matching escalation so
-    # we check now to see if it's within the window for an escalation to be raised
-    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-
-    my $start_days = 21; # Window starts on the 21st working day after the request was made
-    my $window_days = 10; # Window ends a further 10 working days after the start date
-    if (FixMyStreet->config('STAGING_SITE') && !FixMyStreet->test_mode) {
-        # For staging site testing (but not automated testing) use quicker/smaller windows
-        $start_days = 1;
-        $window_days = 2;
-    }
-
-    my $start = $wd->add_days($open_request_event->{date}, $start_days)->set_hour(0);
-    my $end = $wd->add_days($start, $window_days + 1); # Before this
-
-    if ($now >= $start && $now < $end) {
-        $row->{escalations}{container} = $open_request_event;
+    if ($dispute_event) {
+        $row->{dispute_open} = 1;
     }
 }
 
@@ -393,6 +323,7 @@ sub image_for_unit {
         $CONTAINERS{paper_bag} => $bag_clear,
         $CONTAINERS{refuse_bag} => $bag_red_stripe,
         $CONTAINERS{food_outdoor} => "$base/caddy-brown-large",
+        $CONTAINERS{food_indoor_premium} => "$base/caddy-brown-premium",
 
         # Fallback to the service if no container match
         $SERVICE_IDS{domestic_refuse} => svg_container_bin('Brown wheelie bin', 'wheelie', '#8B5E3D'),
@@ -427,16 +358,17 @@ sub waste_containers {
         $CONTAINERS{food_240} => 'Communal Food bin (240L)',
         $CONTAINERS{recycling_240} => 'Recycling bin (240L)',
         $CONTAINERS{recycling_360} => 'Recycling bin (360L)',
-        $CONTAINERS{paper_360} => 'Paper recycling bin (360L)',
         $CONTAINERS{paper_1100} => 'Communal Paper bin (1100L)',
         $CONTAINERS{refuse_140} => 'Standard Brown General Waste Wheelie Bin (140L)',
         $CONTAINERS{refuse_240} => 'Larger Brown General Waste Wheelie Bin (240L)',
         $CONTAINERS{refuse_360} => 'Extra Large Brown General Waste Wheelie Bin (360L)',
         $CONTAINERS{refuse_180} => 'Rubbish bin (180L)',
         $CONTAINERS{recycling_box} => 'Mixed Recycling Green Box (55L)',
+        $CONTAINERS{paper_360} => 'Paper and Cardboard Green Wheelie Bin (360L)',
         $CONTAINERS{paper_240} => 'Paper and Cardboard Green Wheelie Bin (240L)',
         $CONTAINERS{paper_140} => 'Paper and Cardboard Green Wheelie Bin (140L)',
         $CONTAINERS{food_indoor} => 'Small Kitchen Food Waste Caddy (7L)',
+        $CONTAINERS{food_indoor_premium} => 'Premium Kitchen Food Waste Caddy (10L)',
         $CONTAINERS{food_outdoor} => 'Large Outdoor Food Waste Caddy (23L)',
         $CONTAINERS{garden_240} => 'Garden Waste Wheelie Bin (240L)',
         $CONTAINERS{garden_140} => 'Garden Waste Wheelie Bin (140L)',
@@ -495,13 +427,11 @@ sub waste_munge_request_form_fields {
     my @radio_options;
     my @replace_options;
     my $costs = WasteWorks::Costs->new({ cobrand => $self });
-    my $change_cost = $costs->get_cost('request_change_cost');
     for (my $i=0; $i<@$field_list; $i+=2) {
         my ($key, $value) = ($field_list->[$i], $field_list->[$i+1]);
         next unless $key =~ /^container-(\d+)/;
         my $id = $1;
-
-        my ($cost, $hint) = $self->request_cost($id, $c->stash->{quantities});
+        my ($cost, $hint, $type) = $self->request_cost($id, $c->stash->{quantities});
 
         my $data = {
             value => $id,
@@ -509,7 +439,7 @@ sub waste_munge_request_form_fields {
             disabled => $value->{disabled},
             hint => $value->{option_hint} || $hint, # In progress overrides
         };
-        if ($cost && $change_cost && $cost == $change_cost) {
+        if ($type && $type eq 'change') {
             push @replace_options, $data;
         } else {
             push @radio_options, $data;
@@ -548,7 +478,7 @@ sub waste_request_form_first_next {
         my $data = shift;
         my $choice = $data->{"container-choice"};
         return 'about_you' if $choice == $CONTAINERS{recycling_blue_bag} || $choice == $CONTAINERS{paper_bag};
-        foreach ($CONTAINERS{refuse_140}, $CONTAINERS{refuse_240}, $CONTAINERS{paper_240}) {
+        foreach ($CONTAINERS{refuse_140}, $CONTAINERS{refuse_240}, $CONTAINERS{paper_240}, $CONTAINERS{paper_360}) {
             if ($choice == $_ && !$containers->{$_}) {
                 $data->{request_reason} = 'change_capacity';
                 return 'about_you';
@@ -629,8 +559,16 @@ sub waste_munge_request_data {
                 $id_to_remove = $CONTAINERS{refuse_140};
             }
         } elsif ($id == $CONTAINERS{paper_240}) {
+            if ($c->stash->{quantities}{$CONTAINERS{paper_360}}) {
+                $reason_id = '10::10'; # Reduce Capacity
+                $id_to_remove = $CONTAINERS{paper_360};
+            } else {
+                $reason_id = '9::9'; # Increase Capacity
+                $id_to_remove = $CONTAINERS{paper_140};
+            }
+        } elsif ($id == $CONTAINERS{paper_360}) {
             $reason_id = '9::9'; # Increase Capacity
-            $id_to_remove = $CONTAINERS{paper_140};
+            $id_to_remove = $CONTAINERS{paper_240};
         }
     } else {
         # No reason, must be a bag
@@ -711,156 +649,76 @@ Calculate how much, if anything, a request for a container should be.
 sub request_cost {
     my ($self, $id, $containers) = @_;
     my $costs = WasteWorks::Costs->new({ cobrand => $self });
-    if (my $cost = $costs->get_cost('request_change_cost')) {
-        foreach ($CONTAINERS{refuse_140}, $CONTAINERS{refuse_240}, $CONTAINERS{paper_240}) {
-            if ($id == $_ && !$containers->{$_}) {
-                my $price = sprintf("£%.2f", $cost / 100);
-                $price =~ s/\.00$//;
-                my $hint = "There is a $price administration/delivery charge to change the size of your container";
-                return ($cost, $hint);
-            }
+    my %id_to_name = reverse %CONTAINERS;
+    my $cost_id = $id_to_name{$id};
+    # increasing container size does not cost the same as decreasing so put in a mechanism
+    # to allow specific prices for moving from one container size to another with a fallback
+    # to the generic change price for a container size
+    if (my $froms = $CONTAINER_SWAPS_FROM{$cost_id}) {
+        for my $from_container (@$froms) {
+            $cost_id = $from_container . '_' . $cost_id if $containers->{$CONTAINERS{$from_container}};
         }
     }
-    if (my $cost = $costs->get_cost('request_replace_cost')) {
-        foreach ($CONTAINERS{refuse_140}, $CONTAINERS{refuse_240}, $CONTAINERS{refuse_360}, $CONTAINERS{paper_240}) {
-            if ($id == $_ && $containers->{$_}) {
-                my $price = sprintf("£%.2f", $cost / 100);
-                $price =~ s/\.00$//;
-                my $hint = "There is a $price administration/delivery charge to replace your container";
-                return ($cost, $hint);
-            }
+    if (my $cost = $costs->get_cost('request_change_cost_' . $cost_id)) {
+        if (!$containers->{$id}) {
+            my $price = sprintf("£%.2f", $cost / 100);
+            $price =~ s/\.00$//;
+            my $hint = "There is a $price administration/delivery charge to change the size of your container";
+            return ($cost, $hint, 'change');
+        }
+    }
+    if (my $cost = $costs->get_cost('request_replace_cost_' . $id_to_name{$id})) {
+        # we always include premium food container as an option because it's
+        # not included in $containers
+        if ($id == $CONTAINERS{food_indoor_premium} || $containers->{$id}) {
+            my $price = sprintf("£%.2f", $cost / 100);
+            $price =~ s/\.00$//;
+            my $hint = "There is a $price administration/delivery charge to replace your container";
+            return ($cost, $hint, 'replace');
         }
     }
 }
 
-=head2 waste_munge_enquiry_form_pages
+=head2 waste_target_days
 
-The Bin not returned flow has some more complex setup depending on whether
-the property has an assisted collection or not, with an extra question,
-and showing/hiding different notices.
+Configure the number of days a waste event is expected to be resolved in.
 
 =cut
 
-sub waste_munge_enquiry_form_pages {
-    my ($self, $pages, $fields) = @_;
-    my $c = $self->{c};
-    my $category = $c->get_param('category');
-
-    # Add the service to the main fields form page
-    $pages->[1]{intro} = 'enquiry-intro.html';
-    $pages->[1]{title} = _enquiry_nice_title($category);
-
-    return unless $category eq 'Bin not returned';;
-
-    my $assisted = $c->stash->{assisted_collection};
-    if ($assisted) {
-        # Add extra first page with extra question
-        $c->stash->{first_page} = 'now_returned';
-        unshift @$pages, now_returned => {
-            fields => [ 'now_returned', 'continue' ],
-            intro => 'enquiry-intro.html',
-            title => _enquiry_nice_title($category),
-            next => 'enquiry',
-        };
-        push @$fields, now_returned => {
-            type => 'Select',
-            widget => 'RadioGroup',
-            required => 1,
-            label => 'Has the container now been returned to the property?',
-            options => [
-                { label => 'Yes', value => 'Yes' },
-                { label => 'No', value => 'No' },
-            ],
-        };
-
-        # Remove any non-assisted extra notices
-        my @new;
-        for (my $i=0; $i<@$fields; $i+=2) {
-            if ($fields->[$i] !~ /^extra_NotAssisted/) {
-                push @new, $fields->[$i], $fields->[$i+1];
-            }
-        }
-        @$fields = @new;
-        $pages->[3]{fields} = [ grep { !/^extra_NotAssisted/ } @{$pages->[3]{fields}} ];
-        $pages->[3]{update_field_list} = sub {
-            my $form = shift;
-            my $c = $form->c;
-            my $data = $form->saved_data;
-            my $returned = $data->{now_returned} || '';
-            my $key = $returned eq 'No' ? 'extra_AssistedReturned' : 'extra_AssistedNotReturned';
-            return {
-                category => { default => $c->get_param('category') },
-                service_id => { default => $c->get_param('service_id') },
-                $key => { widget => 'Hidden' },
-            }
-        };
-    } else {
-        # Remove any assisted extra notices
-        my @new;
-        for (my $i=0; $i<@$fields; $i+=2) {
-            if ($fields->[$i] !~ /^extra_Assisted/) {
-                push @new, $fields->[$i], $fields->[$i+1];
-            }
-        }
-        @$fields = @new;
-        $pages->[1]{fields} = [ grep { !/^extra_Assisted/ } @{$pages->[1]{fields}} ];
+sub waste_target_days {
+    {
+        container_escalation => 5,
+        missed => 2,
+        missed_escalation => 1,
+        missed_bulky => 2,
+        missed_bulky_escalation => 2,
     }
 }
 
-sub _enquiry_nice_title {
-    my $category = shift;
-    if ($category eq 'Bin not returned') {
-        $category = 'Wheelie bin, box or caddy not returned correctly after collection';
-    } elsif ($category eq 'Waste spillage') {
-        $category = 'Spillage during collection';
-    } elsif ($category eq 'Complaint against time') {
-        $category = 'Issue with collection';
-    } elsif ($category eq 'Failure to Deliver Bags/Containers') {
-        $category = 'Issue with delivery';
-    }
-    return $category;
-}
+=head2 waste_day_end_hour
 
-=head2 waste_munge_enquiry_data
-
-Get the right data in place for the bin not returned / waste spillage / escalation categories.
+Time that the day ends for the purposes of calculating things like escalation windows
 
 =cut
 
-sub waste_munge_enquiry_data {
-    my ($self, $data) = @_;
-    my $c = $self->{c};
+sub waste_day_end_hour { 18 }
 
-    my $address = $c->stash->{property}->{address};
+=head2 waste_escalation_window
 
-    $data->{title} = _enquiry_nice_title($data->{category});
+Configure when the escalation window for waste complaints starts/ends.
 
-    my $detail = "";
-    if ($data->{category} eq 'Bin not returned') {
-        my $assisted = $c->stash->{assisted_collection};
-        my $returned = $data->{now_returned} || '';
-        if ($assisted && $returned eq 'No') {
-           $data->{extra_Notes} = '*** Property is on assisted list ***';
-        }
-    } elsif ($data->{category} eq 'Waste spillage') {
-        $detail = "$data->{extra_Notes}\n\n";
-    } elsif ($data->{category} eq 'Complaint against time') {
-        my $event_id = $c->get_param('event_id');
-        my ($echo, $ww) = split /:/, $event_id;
-        $data->{extra_Notes} = "Originally Echo Event #$echo";
-        $data->{extra_original_ref} = $ww;
-        $data->{extra_missed_guid} = $c->get_param('event_guid');
-    } elsif ($data->{category} eq 'Failure to Deliver Bags/Containers') {
-        my $event_id = $c->get_param('event_id');
-        my ($echo, $guid, $ww) = split /:/, $event_id;
-        $data->{extra_Notes} = "Originally Echo Event #$echo";
-        $data->{extra_original_ref} = $ww;
-        $data->{extra_container_request_guid} = $guid;
+=cut
+
+sub waste_escalation_window {
+    {
+        missed_start => 2,
+        missed_length_weekly => 1,
+        missed_length_fortnightly => 2,
+        container_start => 21,
+        container_length => 10,
+        bulky_start => 2,
+        bulky_length => 2,
     }
-    $detail .= $self->service_name_override({ ServiceId => $data->{service_id} }) . "\n\n";
-    $detail .= $address;
-
-    $data->{detail} = $detail;
 }
 
 =head2 Bulky waste collection
@@ -926,6 +784,27 @@ sub bulky_show_individual_notes {
     my $self = shift;
     return $self->{c}->stash->{small_items} ? 0 : 1;
 }
+
+=head2 waste_bulky_resolution_photo_update
+
+Given a report id get the update with the resolution photo for a bulky waste collection
+
+=cut
+
+sub waste_bulky_resolution_photo_update {
+    my ($self, $report_id) = @_;
+
+    if ($report_id) {
+        my $update = FixMyStreet::DB->resultset('Comment')->search({
+            problem_id => $report_id,
+            problem_state => 'unable to fix',
+            photo => { '!=' => undef },
+        })->first();
+        return $update if $update;
+    }
+}
+
+
 
 =head2 filter_booking_dates
 

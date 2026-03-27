@@ -60,14 +60,22 @@
         SET max_items = cfg.items_per_collection_max;
         SET base_price = cfg.base_price / 100;
         SET band1_price = cfg.band1_price / 100;
+        SET base_pop_price = (cfg.base_pop_price OR 0) / 100;
+        SET band1_pop_price = (cfg.band1_pop_price OR 0) / 100;
     %]
     <li>The price depends on how many items you would like collected:
         <ul class="bulky-intro-pricing">
             <li class="bulky-intro-pricing">
                 1 to [% band1_items %] items cost £[% pounds(band1_price) %]
+                [% IF cfg.pop_costs %]
+                    (£[% pounds(band1_pop_price) %] if any item contains POPs)
+                [% END %]
             </li>
             <li class="bulky-intro-pricing">
                 [% band1_items+1 %] to [% max_items %] items cost £[% pounds(base_price) %]
+                [% IF cfg.pop_costs %]
+                    (£[% pounds(base_pop_price) %] if any item contains POPs)
+                [% END %]
             </li>
         </ul>
     </li>
