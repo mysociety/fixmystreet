@@ -21,6 +21,9 @@ FixMyStreet::override_config {
                 price_id => 'price',
             }
         },
+        parish_signup_email => {
+            fixmystreet => 'parishes@example.com'
+        }
     },
     MAPIT_URL => 'http://mapit.uk/',
 }, sub {
@@ -49,8 +52,12 @@ FixMyStreet::override_config {
         is $mech2->res->previous->code, 302, 'payments issues a redirect';
         is $mech2->res->previous->header('Location'), "https://example.org/faq", "redirects to payment gateway";
         $mech->get_ok('/parishes/pay_complete?session=SESSIONID');
+        my $text = $mech->get_text_body_from_email;
+        like $text, qr/A new user has signed up to FixMyStreet for Parishes/, "signup admin email sent";
+        like $text, qr/Parish: Abbey Dore/, "signup admin email contains parish name";
     };
     subtest 'View admin' => sub {
+        $mech->clear_emails_ok;
         $mech->get_ok('/parishes/admin');
         $mech->submit_form_ok({ with_fields => { username => 'test@example.com' }, button => 'sign_in_by_code' });
         my $link = $mech->get_link_from_email;
