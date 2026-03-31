@@ -126,7 +126,13 @@ my $parks_contact2 = $mech->create_contact_ok(body_id => $brent->id, category =>
     email => 'ATAK-LEAF_CLEARANCE', group => 'Parks and open spaces');
 my $parks_contact3 = $mech->create_contact_ok(body_id => $brent->id, category => 'Ponds',
     email => 'ponds@example.org', group => 'Parks and open spaces');
-my $user1 = $mech->create_user_ok('user1@example.org', email_verified => 1, name => 'User 1');
+my $user1 = $mech->create_user_ok(
+    'user1@example.org',
+    email_verified => 1,
+    name           => 'User 1',
+    phone          => '44 07 999 999 999',
+    phone_verified => 1,
+);
 my $role = FixMyStreet::DB->resultset("Role")->create({
     body => $brent,
     name => 'Role',
@@ -1389,6 +1395,7 @@ FixMyStreet::override_config {
             {
                 should_be_referred => '1',
                 test_send => 1,
+                user_email => 'new_user_1@example.com',
                 reason => 'extra',
                 property_people => '6 or more',
                 property_nappies => 'None',
@@ -1521,6 +1528,7 @@ FixMyStreet::override_config {
         )) {
             my $should_be_referred = $_->{should_be_referred};
             my $test_send = $_->{test_send};
+            my $user_email = $_->{user_email} || $user1->email;
             my $reason = $_->{reason};
             my $people = $_->{property_people};
             my $nappies = $_->{property_nappies};
@@ -1563,7 +1571,7 @@ FixMyStreet::override_config {
                     # Exit early to prevent clutter.
                     $mech->content_contains('About you', "'about you' section shown - report will be referred") or return;
                     # We onlt collect personal details if the request won't be rejected.
-                    $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user1->email } });
+                    $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user_email, phone => '44 07 111 111 111' } });
                 } else {
                     # Exit early to prevent clutter.
                     $mech->content_lacks('About you', "'about you' section not shown - report will be rejected") or return;
@@ -1600,6 +1608,15 @@ FixMyStreet::override_config {
                     # Test we have the phone number provided in the form
                     my $plain = $mech->get_text_body_from_email($to_client);
                     my $html = $mech->get_html_body_from_email($to_client);
+
+                    if ( $user_email eq $user1->email ) {
+                        # Pre-existing user; use pretty original phone
+                        like $plain, qr/\+44 7999 999999/, 'plain email contains phone';
+                        like $html, qr/\+44 7999 999999/, 'html email contains phone';
+                    } else {
+                        like $plain, qr/44 07 111 111 111/, 'plain email contains phone';
+                        like $html, qr/44 07 111 111 111/, 'html email contains phone';
+                    }
 
                     like $plain, qr/request_property_people: $people/;
                     like $plain, qr/request_property_nappies: $nappies/;

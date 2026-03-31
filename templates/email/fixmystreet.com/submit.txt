@@ -22,7 +22,8 @@ Name: [% report.name %]
 
 Email: [% report.user.email OR 'None provided' %]
 
-Phone: [% report.user.phone OR 'None provided' %]
+[% SET phone = report.cobrand_data == 'waste' ? report.phone_waste : report.user.phone %]
+Phone: [% phone OR 'None provided' %]
 
 Category: [% report.category_display %]
 
