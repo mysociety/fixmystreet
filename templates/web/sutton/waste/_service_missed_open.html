@@ -11,4 +11,8 @@ We aim to resolve missed collection reports within 2 working days (Monday to Fri
     <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Complaint+against+time&amp;service_id=[% unit.service_id %]&amp;event_id=[% unit.escalations.missed.id %]:[% unit.escalations.missed.ref %][%
     '&amp;event_guid=' _ unit.escalations.missed.guid IF unit.escalations.missed.guid %]"
             class="waste-service-link">please report the problem here</a>
+[% ELSIF unit.dispute_allowed %]
+    <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Missed+collection+dispute&amp;service_id=[% unit.service_id %][% '&amp;event_id=' _ unit.event_id IF unit.event_id %]" class="waste-service-link waste-service-descriptor">Report a problem with this missed collection</a>
+[% ELSIF unit.dispute_open %]
+    We are investigating the problem with this collection.
 [% END %]

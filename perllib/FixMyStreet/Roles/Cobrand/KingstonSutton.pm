@@ -267,6 +267,7 @@ sub munge_bin_services_for_address {
     foreach (@$rows) {
         $self->_setup_missed_collection_escalations_for_service($_);
         $self->_setup_container_request_escalations_for_service($_);
+        $self->_setup_missed_collection_disputes_for_service($_);
         $self->_setup_container_request_disputes_for_service($_);
     }
 }
@@ -304,6 +305,8 @@ sub _setup_missed_collection_escalations_for_service {
         $row->{escalations}{missed_open} = $escalation_event;
     }
 }
+
+sub _setup_missed_collection_disputes_for_service {}
 
 sub _setup_container_request_escalations_for_service {
     my ($self, $row) = @_;
@@ -513,6 +516,9 @@ sub waste_munge_enquiry_data {
         if (my $booking_id = $c->get_param('booking_id')) {
             my $report = $c->cobrand->problems->find($booking_id);
             $data->{extra_original_guid} = $report->external_id;
+        } elsif (my $event_id = $c->get_param('event_id')) {
+            my ($echo, $guid, $ww) = split /:/, $event_id;
+            $data->{extra_Notes} = "Originally Echo Event #$event_id\n\n" . ($data->{extra_Notes} || '');
         }
     }
     $detail .= $self->service_name_override({ ServiceId => $data->{service_id} }) . "\n\n";
