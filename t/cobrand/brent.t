@@ -1609,16 +1609,18 @@ FixMyStreet::override_config {
                 }
 
                 # Check what happens if we try and raise another request.
-                $mech->get_ok('/waste/12345');
-                $mech->follow_link_ok({url => 'http://brent.fixmystreet.com/waste/12345/request'});
-                $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } }, "Choose refuse bin");
-                $mech->submit_form_ok({ with_fields => { 'request_reason' => 'extra' } }, "Request extra container");
-                if ($should_be_referred) {
-                    # Displays wording to indicate a recent non-refused report has already been made.
-                    $mech->content_contains('We are unable to complete your request because our records show a similar container');
-                } else {
-                    # Displays wording for instant refusal of the request since there is already a recent refusal.
-                    $mech->content_contains('Your property meets current general waste bin capacity requirements');
+                for my $new_reason ( qw/extra damaged missing/ ) {
+                    $mech->get_ok('/waste/12345');
+                    $mech->follow_link_ok({url => 'http://brent.fixmystreet.com/waste/12345/request'});
+                    $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } }, "Choose refuse bin");
+                    $mech->submit_form_ok({ with_fields => { 'request_reason' => $new_reason } }, "Request container with reason $new_reason");
+                    if ($should_be_referred) {
+                        # Displays wording to indicate a recent non-refused report has already been made.
+                        $mech->content_contains('We are unable to complete your request because our records show a similar container');
+                    } else {
+                        # Displays wording for instant refusal of the request since there is already a recent refusal.
+                        $mech->content_contains('Your property meets current general waste bin capacity requirements');
+                    }
                 }
             };
 
