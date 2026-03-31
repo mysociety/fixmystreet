@@ -37,10 +37,11 @@ of a local problem that they believe might require your attention.</p>
         [%~ END ~%]
       </td>
     </tr>
-    [%~ IF report.user.phone %]
+    [% SET phone = report.cobrand_data == 'waste' ? report.phone_waste : report.user.phone %]
+    [%~ IF phone %]
       <tr>
         <th style="[% contact_th_style %]">Phone</th>
-        <td style="[% contact_td_style %]"><a href="tel:[% report.user.phone | html %]">[% report.user.phone | html %]</a></td>
+        <td style="[% contact_td_style %]"><a href="tel:[% phone | html %]">[% phone | html %]</a></td>
       </tr>
     [%~ END %]
   </table>
