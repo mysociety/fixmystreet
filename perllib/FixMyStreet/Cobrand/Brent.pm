@@ -1347,7 +1347,7 @@ sub waste_munge_request_data {
     $data->{detail} = "Quantity: 1\n\n$address";
     $data->{detail} .= "\n\nReason: $nice_reason" if $nice_reason;
 
-    if ($id == $CONTAINER_IDS{rubbish_grey_bin} && $reason eq 'extra') {
+    if ($id == $CONTAINER_IDS{rubbish_grey_bin}) {
         if ($referral) {
             $data->{detail} = "Request forwarded to Brent Council by email\n\n$data->{detail}";
         } else {
