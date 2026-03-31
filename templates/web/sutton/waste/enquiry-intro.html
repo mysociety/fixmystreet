@@ -3,10 +3,11 @@ SET service_id = c.req.params.service_id;
 SET category = c.req.params.category;
 SET booking_id = c.req.params.original_booking_id;
 
+# For ordinary services & their missed collection reports
 IF services.$service_id;
     SET service = services.$service_id;
     SET service_name = service.service_name;
-    SET resolution = service.last.resolution;
+    SET resolution = service.last.resolution || service.report_open.resolution_reason;
     SET image = service.last.image;
 END;
 
