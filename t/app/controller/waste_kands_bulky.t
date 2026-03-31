@@ -1529,7 +1529,7 @@ FixMyStreet::override_config {
             } ] });
 
             $mech->get_ok($problem_url);
-            $mech->content_lacks($dispute_label, 'cannot report if existing dispute');
+            $mech->content_like(qr/Missed collection dispute.*disabled/s, 'cannot report if existing dispute');
         };
     };
 

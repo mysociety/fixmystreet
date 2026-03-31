@@ -273,6 +273,7 @@ sub munge_bin_services_for_address {
     foreach (@$rows) {
         $self->_setup_missed_collection_escalations_for_service($_);
         $self->_setup_container_request_escalations_for_service($_);
+        $self->_setup_missed_collection_disputes_for_service($_);
         $self->_setup_scheduled_collection_disputes_for_service($_);
     }
 }
@@ -321,6 +322,8 @@ sub _setup_missed_collection_escalations_for_service {
 }
 
 sub waste_target_days { {} }
+
+sub _setup_missed_collection_disputes_for_service {}
 
 sub _setup_container_request_escalations_for_service {
     my ($self, $row) = @_;
@@ -580,8 +583,17 @@ sub waste_munge_enquiry_data {
     } elsif ($data->{category} eq 'Report out-of-time not returned') {
         $data->{extra_Notes} = "Non-actionable not returned container\n\n" . $data->{extra_Notes};
     } elsif ($data->{category} eq 'Missed collection dispute') {
+        my $service;
         if (my $report = $c->stash->{original_booking_report}) {
+            my $booking_guid = $c->stash->{original_booking_report}->external_id;
+            $service = $c->stash->{booked_missed}{$booking_guid};
             $data->{extra_original_guid} = $report->external_id;
+        } else {
+            $service = $c->stash->{services}{$data->{service_id}};
+        }
+        if (my $original = $service->{dispute_missed_event}) {
+            my $event_id = $original->{id};
+            $data->{extra_Notes} = "Originally Echo Event #$event_id\n\n" . ($data->{extra_Notes} || '');
         }
     }
 

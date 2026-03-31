@@ -774,6 +774,27 @@ sub waste_bulky_missed_blocked_codes {
             66 => 'Not presented',
             646 => 'Various',
         },
+        # missed colection not completed
+        19242 => {
+            50 => 'Address incorrect',
+            1135 => 'Contaminated builder waste',
+            1361 => 'H&S - Aggression / Violence',
+            1359 => 'H&S - Damaged container',
+            1358 => 'H&S - Heavy bin / bag',
+            1378 => 'H&S - Other',
+            1362 => 'H&S - Unsafe equipment',
+            1360 => 'H&S - Unsafe surroundings',
+            1146 => 'H&S - Vermin',
+            913 => 'No access - Changed key',
+            615 => 'No access - Dog out',
+            466 => 'No access - Gate locked',
+            616 => 'No access - Weather',
+            617 => 'No access - Parked vehicle',
+            614 => 'No access - Police incident',
+            613 => 'No access - Road works',
+            66 => 'Not presented',
+            646 => 'Various',
+        },
         # Partially Completed
         19186 => {
             all => 'Partially Completed',
