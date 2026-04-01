@@ -1445,6 +1445,7 @@ FixMyStreet::override_config {
             # Some replacement (damaged) container referral scenarios
             {
                 should_be_referred => 1,
+                test_send => 1,
                 reason => 'damaged',
                 property_people => 'Up to 5',
                 property_nappies => 'None',
@@ -1503,6 +1504,7 @@ FixMyStreet::override_config {
             # Some missing container referral scenarios
             {
                 should_be_referred => 1,
+                test_send => 1,
                 reason => 'missing',
                 property_people => 'Up to 5',
                 property_nappies => 'None',
@@ -1565,6 +1567,9 @@ FixMyStreet::override_config {
                 $mech->submit_form_ok({ with_fields => { 'property_general_waste_bins' => $bins } }, "Answer household detail questions");
                 if ($bins ne 'None') {
                     $mech->submit_form_ok({ with_fields => { 'property_largest_general_waste_bin' => $largest_bin_size } }, "Answer household detail questions");
+                } else {
+                    # For email test below
+                    $largest_bin_size = 'none';
                 }
 
                 if ($should_be_referred) {
@@ -1618,9 +1623,34 @@ FixMyStreet::override_config {
                         like $html, qr/44 07 111 111 111/, 'html email contains phone';
                     }
 
-                    like $plain, qr/request_property_people: $people/;
-                    like $plain, qr/request_property_nappies: $nappies/;
-                    like $plain, qr/request_property_general_waste_bins: $bins/;
+                    my $action = $reason eq 'damaged' ? 'Collect\+Deliver' : 'Deliver';
+                    my $reason_display = {
+                        damaged => 'Damaged',
+                        missing => 'Missing',
+                        extra => 'Increase capacity',
+                    }->{$reason};
+
+                    like $plain, qr/Which container do you need\?: General rubbish bin \(grey bin\)/;
+                    like $plain, qr/Collect or deliver\?: $action/;
+                    like $plain, qr/Why do you need a replacement container\?: $reason_display/;
+
+                    like $plain, qr/How many people \(including children\) live at your property\?: $people/;
+                    like $plain, qr/How many children in nappies live at your property\?: $nappies/;
+                    like $plain, qr/How many general waste bins do you currently have.*: $bins/;
+                    like $plain, qr/What size is the largest general waste bin\?: $largest_bin_size/;
+                    like $plain, qr/Property type: Shared flat/;
+                    like $plain, qr/Referral\?: Yes/;
+
+                    like $html, qr/Which container do you need\?:.*General rubbish bin \(grey bin\)/;
+                    like $html, qr/Collect or deliver\?:.*$action/;
+                    like $html, qr/Why do you need a replacement container\?:.*$reason_display/;
+
+                    like $html, qr/How many people \(including children\) live at your property\?:.*$people/;
+                    like $html, qr/How many children in nappies live at your property\?:.*$nappies/;
+                    like $html, qr/How many general waste bins do you currently have.*$bins/;
+                    like $html, qr/What size is the largest general waste bin\?:.*$largest_bin_size/;
+                    like $html, qr/Property type:.*Shared flat/;
+                    like $html, qr/Referral\?:.*Yes/;
 
                     $mech->clear_emails_ok;
                 }

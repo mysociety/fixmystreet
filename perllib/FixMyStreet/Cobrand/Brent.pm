@@ -441,6 +441,33 @@ sub report_age {
     };
 }
 
+sub extra_fields_email_labels {
+    return {
+        Container_Request_Action => 'Collect or deliver?',
+        Container_Request_Container_Type => 'Which container do you need?',
+        Container_Request_Quantity => 'Container quantity to collect/deliver',
+        Container_Request_Reason => 'Why do you need a replacement container?',
+
+        request_property_general_waste_bins => 'How many general waste bins do you currently have?',
+        request_property_largest_general_waste_bin => 'What size is the largest general waste bin?',
+        request_property_nappies => 'How many children in nappies live at your property?',
+        request_property_people => 'How many people (including children) live at your property?',
+        request_property_type => 'Property type',
+        request_referral => 'Referral?',
+    };
+}
+
+sub echo_ids_to_strings {
+    return {
+        action => { 1 => 'Deliver', '2::1' => 'Collect+Deliver' },
+        reason => { 9 => 'Increase capacity', 6 => 'New property', 1 => 'Missing', '4::4' => 'Damaged' },
+        type => {
+            %$BRENT_CONTAINERS,
+            map { $_ . '::' . $_ => $BRENT_CONTAINERS->{$_} } keys %$BRENT_CONTAINERS,
+        },
+    };
+}
+
 =head2 dashboard_export_problems_add_columns
 
 Brent have various additional columns for extra report data.
@@ -502,14 +529,7 @@ sub dashboard_export_problems_add_columns {
         return $values->{$field}{$v} || '';
     };
 
-    my $request_lookups = {
-        action => { 1 => 'Deliver', '2::1' => 'Collect+Deliver' },
-        reason => { 9 => 'Increase capacity', 6 => 'New property', 1 => 'Missing', '4::4' => 'Damaged' },
-        type => {
-            %$BRENT_CONTAINERS,
-            map { $_ . '::' . $_ => $BRENT_CONTAINERS->{$_} } keys %$BRENT_CONTAINERS,
-        },
-    };
+    my $request_lookups = echo_ids_to_strings();
 
     $csv->csv_extra_data(sub {
         my $report = shift;

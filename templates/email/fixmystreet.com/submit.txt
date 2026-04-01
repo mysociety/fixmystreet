@@ -32,7 +32,10 @@ Subject: [% report.title %]
 Details: [% report.detail %]
 
 [% FOR field IN report.get_extra_fields %][% IF field.value_label OR field.value.length ~%]
-[% field.description OR field.name %]: [% field.value_label OR field.value %]
+[% SET name = field.description OR field.name %]
+[% SET val = field.value_label OR field.value %]
+[% TRY %][% PROCESS '_extra_fields.txt' %][% CATCH file %][% END %]
+[% name %]: [% val %]
 
 [% END %][% END ~%]
 
