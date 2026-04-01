@@ -3647,6 +3647,57 @@ $site-message-border: 1px solid #525252 !default;
   vertical-align: middle;
 }
 
+// Mygovscot account button
+// Styled based on similar services that use mygovscot:
+// https://parentsportal.scot/pportal/
+// https://tellmescotland.gov.uk/home/
+// https://getyournec.scot/nec/
+.btn--mygovscot {
+  border: 2px solid #3491CA;
+  padding: 1px;
+  padding-bottom: 2.625rem;
+  background: #fff url("/cobrands/fixmystreet/images/mygovscot-myaccount-logo.svg") no-repeat center calc(100% - 0.5rem) / auto 26px;
+  transition: border 0.3s ease-in;
+
+  // The original style for hover and focus is just text-decoration, but for accessibility purposes adding another property like background-color is helpful.
+
+  // Repeating background property, otherwise it gets overridden by the .btn class
+  &:hover {
+    border: 2px solid #095888;
+    background: #fff url("/cobrands/fixmystreet/images/mygovscot-myaccount-logo.svg") no-repeat center calc(100% - 0.5rem) / auto 26px;
+
+    span {
+      text-decoration: underline;
+      background-color: #095888;
+    }
+  }
+
+  &:focus {
+    border: 2px solid #002c48;
+    background: #fff url("/cobrands/fixmystreet/images/mygovscot-myaccount-logo.svg") no-repeat center calc(100% - 0.5rem) / auto 26px;
+
+    span {
+      text-decoration: underline;
+      background-color: #002c48;
+    }
+  }
+
+  span {
+    background-color: #3491CA;
+    display: block;
+    color: #fff;
+    padding: 1rem;
+    border-radius: 2px;
+    transition: background-color 0.3s ease-in, text-decoration 0.3s ease-in;
+  }
+}
+
+body.authpage {
+  .form-box:has(.btn--mygovscot) {
+    background: transparent;
+  }
+}
+
 @import "_admin";
 @import "_dropzone";
 @import "_multiselect";

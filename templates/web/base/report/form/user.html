@@ -20,8 +20,8 @@
     </button>
   [% END %]
   [% IF c.cobrand.feature('oidc_login') %]
-    <button name="social_sign_in" id="oidc_sign_in" value="oidc" class="btn btn--block btn--social btn--oidc">
-        [% tprintf(loc('Sign in with %s'), c.cobrand.feature('oidc_login').display_name) %]
+    <button name="social_sign_in" id="oidc_sign_in" value="oidc" class="btn btn--block btn--social btn--oidc [% IF cobrand.moniker == 'dumfries' %]btn--mygovscot[% END %]">
+      <span>[% tprintf(loc('Sign in with %s'), c.cobrand.feature('oidc_login').display_name) %]</span>
     </button>
   [% END %]
   [% IF c.config.TWITTER_KEY %]
