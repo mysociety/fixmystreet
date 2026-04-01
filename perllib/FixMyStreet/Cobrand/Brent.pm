@@ -441,6 +441,17 @@ sub report_age {
     };
 }
 
+sub echo_ids_to_strings {
+    return {
+        action => { 1 => 'Deliver', '2::1' => 'Collect+Deliver' },
+        reason => { 9 => 'Increase capacity', 6 => 'New property', 1 => 'Missing', '4::4' => 'Damaged' },
+        type => {
+            %$BRENT_CONTAINERS,
+            map { $_ . '::' . $_ => $BRENT_CONTAINERS->{$_} } keys %$BRENT_CONTAINERS,
+        },
+    };
+}
+
 =head2 dashboard_export_problems_add_columns
 
 Brent have various additional columns for extra report data.
@@ -502,14 +513,7 @@ sub dashboard_export_problems_add_columns {
         return $values->{$field}{$v} || '';
     };
 
-    my $request_lookups = {
-        action => { 1 => 'Deliver', '2::1' => 'Collect+Deliver' },
-        reason => { 9 => 'Increase capacity', 6 => 'New property', 1 => 'Missing', '4::4' => 'Damaged' },
-        type => {
-            %$BRENT_CONTAINERS,
-            map { $_ . '::' . $_ => $BRENT_CONTAINERS->{$_} } keys %$BRENT_CONTAINERS,
-        },
-    };
+    my $request_lookups = echo_ids_to_strings();
 
     $csv->csv_extra_data(sub {
         my $report = shift;
@@ -1347,7 +1351,7 @@ sub waste_munge_request_data {
     $data->{detail} = "Quantity: 1\n\n$address";
     $data->{detail} .= "\n\nReason: $nice_reason" if $nice_reason;
 
-    if ($id == $CONTAINER_IDS{rubbish_grey_bin} && $reason eq 'extra') {
+    if ($id == $CONTAINER_IDS{rubbish_grey_bin}) {
         if ($referral) {
             $data->{detail} = "Request forwarded to Brent Council by email\n\n$data->{detail}";
         } else {
@@ -1393,19 +1397,19 @@ sub request_referral {
 
         if ($data->{request_reason} eq 'extra') {
             return 0 if $largest_bin_size ne '140L';
-            return 0 if $bins >= 2;
-            return 0 if $people == 1 && $nappies == 0;
+            return 0 if $bins eq '2 or more';
+            return 0 if $people eq 'Up to 5' && $nappies eq 'None';
             return 1;
         } elsif ($data->{request_reason} eq 'damaged') {
-            return 0 if $people == 1 && $nappies == 0 && $bins >= 2;
-            return 0 if $largest_bin_size ne '140L' && $bins >= 2 && ($people <= 5 || $nappies == 0);
+            return 0 if $people eq 'Up to 5' && $nappies eq 'None' && $bins eq '2 or more';
+            return 0 if $largest_bin_size ne '140L' && $bins eq '2 or more' && ($people eq 'Up to 5' || $nappies eq 'None');
             return 1;
         } elsif ($data->{request_reason} eq 'missing') {
-            return 1 if $bins == 0;
-            return 0 if $bins >= 2;
+            return 1 if $bins eq 'None';
+            return 0 if $bins eq '2 or more';
             # Only single bin scenarios left.
-            return 0 if $people == 1 && $nappies == 0;
-            return 0 if $largest_bin_size ne '140L' && ($people <= 5 || $nappies == 0);
+            return 0 if $people eq 'Up to 5' && $nappies eq 'None';
+            return 0 if $largest_bin_size ne '140L' && ($people eq 'Up to 5' || $nappies eq 'None');
             return 1;
         }
     }

@@ -67,7 +67,7 @@ has_page replacement => (
         my $reason = $data->{request_reason};
 
         if ($choice == $CONTAINER_GREY_BIN) {
-            return 'request_extra_refusal' if $reason eq 'extra' && $data->{refuse_outcome};
+            return 'request_extra_refusal' if $data->{refuse_outcome};
             return 'request_refuse_container';
         }
         return 'about_you' if $choice == $CONTAINER_CLEAR_SACK;
@@ -210,8 +210,8 @@ has_field property_people =>(
     widget => 'RadioGroup',
     label => 'How many people live at your property?',
     options => [
-        { value => '1', label => 'Up to 5' },
-        { value => '6', label => '6 or more' }
+        { value => 'Up to 5', label => 'Up to 5' },
+        { value => '6 or more', label => '6 or more' }
     ],
 );
 
@@ -230,8 +230,8 @@ has_field property_nappies =>(
     widget => 'RadioGroup',
     label => 'How many children in nappies live at your property?',
     options => [
-        { value => '0', label => 'None' },
-        { value => '1', label => '1 or more' }
+        { value => 'None', label => 'None' },
+        { value => '1 or more', label => '1 or more' }
     ],
 );
 
@@ -261,7 +261,7 @@ has_page request_refuse_property_general_waste_bins => (
         my $data = shift;
         my $reason = $data->{request_reason};
         my $bins = $data->{property_general_waste_bins};
-        if ($reason eq 'missing' && $bins == 0) {
+        if ($reason eq 'missing' && $bins eq 'None') {
             $data->{property_largest_general_waste_bin} = 'none';
             return need_about_you_page($data);
         }
@@ -282,10 +282,10 @@ sub options_property_general_waste_bins {
     my $choice = $data->{'request_reason'};
     my @options;
     if ($choice eq 'missing') {
-        push @options, { value => '0', label => 'None' };
+        push @options, { value => 'None', label => 'None' };
     }
     push @options, { value => '1', label => '1' };
-    push @options, { value => '2', label => '2 or more' };
+    push @options, { value => '2 or more', label => '2 or more' };
     return @options;
 }
 
