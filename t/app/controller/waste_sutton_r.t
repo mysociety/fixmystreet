@@ -74,6 +74,7 @@ create_contact({ category => 'Complaint against time', email => '3134' }, 'Waste
     { code => 'Notes', required => 1, automated => 'hidden_field' },
     { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
+    { code => 'property_id', required => 1, automated => 'hidden_field' },
     { code => 'original_ref', required => 1, automated => 'hidden_field' },
 );
 create_contact({ category => 'Failure to Deliver Bags/Containers', email => '3141' }, 'Waste',
@@ -887,6 +888,8 @@ FixMyStreet::override_config {
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
 
+    my $missed_report;
+
     subtest 'Escalations of missed collections' => sub {
         subtest 'No missed collection' => sub {
             for my $date ('2022-09-10T19:00:00Z', '2022-09-13T19:00:00Z', '2022-09-15T17:00:00Z', '2022-09-15T19:00:00Z') {
@@ -947,6 +950,8 @@ FixMyStreet::override_config {
                 $mech->content_contains('Return to property details');
                 $mech->content_contains('/waste/12345"');
                 my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+                # save this for later
+                $missed_report = $report;
                 is $report->category, 'Complaint against time', "Correct category";
                 is $report->title, 'Issue with collection';
                 is $report->detail, "Non-Recyclable Refuse\n\n2 Example Street, Sutton, SM1 1AA", "Details of report contain information about problem";
@@ -1116,6 +1121,55 @@ FixMyStreet::override_config {
             set_fixed_time('2022-09-15T19:00:00Z');
             $mech->get_ok($problem_url);
             $mech->content_lacks($dispute_label);
+        };
+
+        my $comment = FixMyStreet::DB->resultset('Comment')->create(
+            {
+                user          => $body_user,
+                problem_id    => $missed_report->id,
+                text          => 'Contaminated builder waste',
+                confirmed     => DateTime->now - DateTime::Duration->new( minutes => 15 ),
+                problem_state => 'unable to fix',
+                anonymous     => 0,
+                mark_open     => 0,
+                mark_fixed    => 0,
+                state         => 'confirmed',
+                photo         => $sample_file->slurp,
+            }
+        );
+
+        restore_time();
+        $comment->confirmed( DateTime->now ); # - DateTime::Duration->new( minutes => 15 ) );
+        $comment->update;
+
+        my $email;
+        set_fixed_time('2022-09-11T18:01:00Z');
+        subtest 'Open collection dispute from email' => sub {
+            $mech->clear_emails_ok;
+            FixMyStreet::Script::Alerts::send_updates();
+            $mech->email_count_is(1);
+            $email = $mech->get_email;
+            my $email_text = $mech->get_text_body_from_email($email);
+            my $email_html = $mech->get_html_body_from_email($email);
+            like $email_text, qr/Contaminated builder waste/, 'Reason pulled from comment';
+            like $email_text, qr/report a problem with this missed collection/, 'Report a problem text in text email';
+            like $email_html, qr/Contaminated builder waste/, 'Reason pulled from comment';
+            like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
+            like $email_html, qr{waste/12345/enquiry}, 'HTML alert contains report link';
+
+            # we only want the HTML link as the text version does not contain the link
+            my @links = $email_html =~ m{https?://[^"]+}g;
+            my @enq_links = grep( /enquiry/, @links );
+            # need to strip the host otherwise we're not logged in
+            my $l = URI->new($enq_links[0]);
+            $mech->get_ok($l->path_query);
+            $mech->content_contains('Contaminated builder waste', 'details of missed bin collection displayed');
+
+            # XXX Email link uses 'original_booking_id' param here to denote
+            # missed collection report ID, but 'original_booking_id' should
+            # really only refer to bulky/small item reports. Also, photo
+            # does not appear when form accessed from web below.
+            $mech->content_contains('This photo provides the evidence', 'Has resolution photo text');
         };
 
         subtest 'Create dispute for non complete missed bin report' => sub {
