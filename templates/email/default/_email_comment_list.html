@@ -21,6 +21,11 @@
         [% '(' _ cobrand.prettify_dt(update.confirmed) _ ') ' IF cobrand.include_time_in_update_alerts -%]
       </p>
       [% END %]
+      [% IF cobrand.moniker == 'sutton' AND report.category == 'Complaint against time' AND (update.item_problem_state == 'closed' OR update.item_problem_state == 'unable to fix') %]
+      <p>
+      <a href="[% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') %]/enquiry?category=Missed+collection+dispute&service_id=[% report.get_extra_field_value('service_id') %]&booking_id=[% report.id %]">Report a problem with this missed collection</a>
+      </p>
+      [% END %]
     [% END %]
     </div>
 [% END %]
