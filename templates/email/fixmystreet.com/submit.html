@@ -57,10 +57,25 @@ of a local problem that they believe might require your attention.</p>
     [% report.detail | html_para_email(secondary_p_style) %]
   [% IF report.get_extra_fields %]
     <p style="[% secondary_p_style %]">
-      [%~ FOR field IN report.get_extra_fields %][% IF field.value_label OR field.value.length %]
-        <strong>[% field.description OR field.name %]:</strong> [% field.value_label OR field.value %]
-        [% IF NOT loop.last %]<br>[% END %]
-      [%~ END %][% END %]
+      [%~ FOR field IN report.get_extra_fields %]
+        [% IF field.value_label OR field.value.length %]
+          [% SET name = field.description OR field.name %]
+          [% SET val = field.value_label OR field.value %]
+
+          [% IF cobrand.moniker == 'brent' %]
+            [% IF name == 'Container_Request_Action' %]
+              [% val = cobrand.echo_ids_to_strings.action.$val %]
+            [% ELSIF name == 'Container_Request_Reason' %]
+              [% val = cobrand.echo_ids_to_strings.reason.$val %]
+            [% ELSIF name == 'Container_Request_Container_Type' %]
+              [% val = cobrand.echo_ids_to_strings.type.$val %]
+            [% END %]
+          [% END %]
+
+          <strong>[% name %]:</strong> [% val %]
+          [% IF NOT loop.last %]<br>[% END %]
+        [%~ END %]
+      [% END %]
     </p>
   [% END %]
     <p style="[% secondary_p_style %]">

@@ -1445,6 +1445,7 @@ FixMyStreet::override_config {
             # Some replacement (damaged) container referral scenarios
             {
                 should_be_referred => 1,
+                test_send => 1,
                 reason => 'damaged',
                 property_people => 'Up to 5',
                 property_nappies => 'None',
@@ -1503,6 +1504,7 @@ FixMyStreet::override_config {
             # Some missing container referral scenarios
             {
                 should_be_referred => 1,
+                test_send => 1,
                 reason => 'missing',
                 property_people => 'Up to 5',
                 property_nappies => 'None',
@@ -1618,9 +1620,28 @@ FixMyStreet::override_config {
                         like $html, qr/44 07 111 111 111/, 'html email contains phone';
                     }
 
+                    my $action = $reason eq 'damaged' ? 'Collect\+Deliver' : 'Deliver';
+                    my $reason_display = {
+                        damaged => 'Damaged',
+                        missing => 'Missing',
+                        extra => 'Increase capacity',
+                    }->{$reason};
+
+                    like $plain, qr/Container_Request_Container_Type: General rubbish bin \(grey bin\)/;
+                    like $plain, qr/Container_Request_Action: $action/;
+                    like $plain, qr/Container_Request_Reason: $reason_display/;
+
                     like $plain, qr/request_property_people: $people/;
                     like $plain, qr/request_property_nappies: $nappies/;
                     like $plain, qr/request_property_general_waste_bins: $bins/;
+
+                    like $html, qr/Container_Request_Container_Type:.*General rubbish bin \(grey bin\)/;
+                    like $html, qr/Container_Request_Action:.*$action/;
+                    like $html, qr/Container_Request_Reason:.*$reason_display/;
+
+                    like $html, qr/request_property_people:.*$people/;
+                    like $html, qr/request_property_nappies:.*$nappies/;
+                    like $html, qr/request_property_general_waste_bins:.*$bins/;
 
                     $mech->clear_emails_ok;
                 }

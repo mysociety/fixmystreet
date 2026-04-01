@@ -441,6 +441,17 @@ sub report_age {
     };
 }
 
+sub echo_ids_to_strings {
+    return {
+        action => { 1 => 'Deliver', '2::1' => 'Collect+Deliver' },
+        reason => { 9 => 'Increase capacity', 6 => 'New property', 1 => 'Missing', '4::4' => 'Damaged' },
+        type => {
+            %$BRENT_CONTAINERS,
+            map { $_ . '::' . $_ => $BRENT_CONTAINERS->{$_} } keys %$BRENT_CONTAINERS,
+        },
+    };
+}
+
 =head2 dashboard_export_problems_add_columns
 
 Brent have various additional columns for extra report data.
@@ -502,14 +513,7 @@ sub dashboard_export_problems_add_columns {
         return $values->{$field}{$v} || '';
     };
 
-    my $request_lookups = {
-        action => { 1 => 'Deliver', '2::1' => 'Collect+Deliver' },
-        reason => { 9 => 'Increase capacity', 6 => 'New property', 1 => 'Missing', '4::4' => 'Damaged' },
-        type => {
-            %$BRENT_CONTAINERS,
-            map { $_ . '::' . $_ => $BRENT_CONTAINERS->{$_} } keys %$BRENT_CONTAINERS,
-        },
-    };
+    my $request_lookups = echo_ids_to_strings();
 
     $csv->csv_extra_data(sub {
         my $report = shift;
