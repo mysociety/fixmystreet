@@ -208,6 +208,10 @@ sub open311_update_missing_data {
 sub open311_extra_data_include {
     my ($self, $row, $h, $contact) = @_;
 
+    if (my $id = $row->get_extra_field_value('UnitID')) {
+        $row->detail($row->detail . "\n\nUnit ID: $id");
+    }
+
     my $open311_only = [
         { name => 'title',
           value => $row->title },
