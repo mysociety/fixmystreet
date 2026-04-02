@@ -285,4 +285,12 @@ a,
   }
 }
 
+.olMapViewport {
+    background-color: #fff;
+}
+
+.olLayerGrid, .olBackBuffer {
+    opacity: 0.3;
+}
+
 @import "../fixmystreet-uk-councils/societyworks-footer";
