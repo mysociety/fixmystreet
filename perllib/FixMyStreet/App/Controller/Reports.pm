@@ -555,6 +555,7 @@ sub check_canonical_url : Private {
     my $body_short = $c->cobrand->short_name( $c->stash->{body} );
     my $url_short = URI::Escape::uri_escape_utf8($q_body);
     $url_short =~ s/%2B/+/g;
+    $url_short =~ s/%26/&/g;
     $c->detach( 'redirect_body' ) unless $body_short eq $url_short;
 }
 
