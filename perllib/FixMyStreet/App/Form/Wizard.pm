@@ -538,9 +538,7 @@ sub format_for_display {
     } elsif ( $field->{type} eq 'Checkbox' ) {
         return $value ? 'Yes' : 'No';
     } elsif ( $field->{type} eq 'Multiple' ) {
-        return FixMyStreet::Template::SafeString->new(
-            join('<br>',
-                map { FixMyStreet::Template::html_filter($_) } @$value));
+        return join("\n", @$value);
     } elsif ( $field->{type} eq 'FileIdUpload' ) {
         if ( ref $value eq 'HASH' && $value->{filenames} ) {
             return join( ', ', @{ $value->{filenames} } );

@@ -67,10 +67,11 @@ sub process_licence : Private {
             $section .= "[$stage->{title}]\n" if $stage->{title};
             for my $field (@visible_fields) {
                 my $pretty = $field->{pretty};
-                $pretty =~ s/<br>/\n/g;
                 my $desc = $field->{desc};
                 $desc .= ':' unless !$desc || $desc =~ /[?:.]$/;
-                $section .= "$desc $pretty\n";
+                $desc .= $field->{name} eq 'terms_accepted' ? "\n" : ' ';
+
+                $section .= "$desc$pretty\n";
             }
             push @sections, $section;
         }
