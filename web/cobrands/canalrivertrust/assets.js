@@ -30,7 +30,7 @@ fixmystreet.assets.add(defaults, {
     // clicking in the middle of them being undetected
     nearest_radius: 20,
     asset_type: 'canal',
-    no_asset_message: 'Pick a canal',
+    no_asset_message: '<strong>Not maintained by us</strong> <p>The selected location is not maintained by us. Please follow this link to <a class="js-update-coordinates" href="https://www.fixmystreet.com/">FixMyStreet</a> to continue reporting your issue.',
     actions: {
         found: fixmystreet.message_controller.road_found,
         not_found: fixmystreet.message_controller.road_not_found

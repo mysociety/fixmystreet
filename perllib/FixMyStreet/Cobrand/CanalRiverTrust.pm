@@ -77,7 +77,7 @@ sub munge_report_new_bodies {
 sub munge_report_new_contacts {
     my ($self, $contacts) = @_;
 
-    $code = 'CRT';
+    my $code = 'CRT';
     foreach my $c (@$contacts) {
         my $clean_name = $c->category_display;
         if ($clean_name =~ s/ \($code\)//) {
