@@ -687,7 +687,7 @@ subtest 'Update with media_url includes image in update' => sub {
 
     my $local_requests_xml = setup_xml($problem->external_id, 1, "");
     $local_requests_xml =~ s#</service_request_id>#</service_request_id>
-        <media_url>http://example.com/image.jpeg</media_url>#;
+        <media_url><media_url>http://example.com/image.jpeg</media_url><media_url>http://example.com/image-exif.jpeg</media_url></media_url>#;
     my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
     Open311->_inject_response('/servicerequestupdates.xml', $local_requests_xml);
 
@@ -705,7 +705,7 @@ subtest 'Update with media_url includes image in update' => sub {
     is $problem->comments->count, 1, 'comment count';
     my $c = $problem->comments->first;
     is $c->external_id, 638344;
-    is $c->photo, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg', 'photo exists';
+    is $c->photo, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg,1c3cc1573f90150e6968c7bac0041526d22593e0.jpeg', 'photos exist';
     $problem->comments->delete;
   };
 };
