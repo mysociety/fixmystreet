@@ -49,6 +49,7 @@ has current_page => ( is => 'ro', lazy => 1,
         intro_template => 'intro',
         title => 'title',
         template => 'template',
+        step_number => 'step_number',
     }
 );
 
@@ -440,9 +441,12 @@ sub fields_for_display {
 
     my $things = [];
     for my $page ( @{ $form->pages } ) {
+        my $title = $page->{title};
+        $title = 'Applicant declaration' if $form =~ /::Licence::/ && $title eq 'Application Summary';
+
         my $x = {
             stage => $page->{name},
-            title => $page->{title},
+            title => $title,
             ( $page->tag_exists('hide') ? ( hide => $page->get_tag('hide') ) : () ),
             fields => []
         };
@@ -451,14 +455,35 @@ sub fields_for_display {
             my $field = $form->field($f);
             next if $field->type eq 'Submit' || $field->type eq 'Notice';
             my $value = $form->saved_data->{$field->{name}} // '';
+            my $desc = $field->label || $field->option_label;
+            my $pretty = $form->format_for_display( $field->{name}, $value );
+
+            if ($form =~ /::Licence::/ && $field->{name} eq 'confirmation') {
+                $pretty = $desc;
+                $desc = '';
+            }
+
             push @{$x->{fields}}, {
                 name => $field->{name},
-                desc => $field->{label} || $field->{option_label},
+                desc => $desc,
                 type => $field->type,
-                pretty => $form->format_for_display( $field->{name}, $value ),
+                pretty => $pretty,
                 value => $value,
                 ( $field->tag_exists('hide') ? ( hide => $field->get_tag('hide') ) : () ),
             };
+
+            # Special TfL Licence things
+            if ($form =~ /::Licence::/ && ($field->{name} eq 'proposed_duration' || ($field->{name} eq 'proposed_start_date' && $form->type eq 'mobile-apparatus'))) {
+                my $name = 'proposed_end_date';
+                my $value = $form->saved_data->{$name};
+                push @{$x->{fields}}, {
+                    name => $name,
+                    desc => 'Proposed end date',
+                    type => 'DateTime',
+                    pretty => "$value->{day}/$value->{month}/$value->{year}",
+                    value => $value,
+                } if $value;
+            }
         }
 
         push @$things, $x;
@@ -513,12 +538,14 @@ sub format_for_display {
     } elsif ( $field->{type} eq 'Checkbox' ) {
         return $value ? 'Yes' : 'No';
     } elsif ( $field->{type} eq 'Multiple' ) {
-        return join(', ', @$value);
+        return FixMyStreet::Template::SafeString->new(
+            join('<br>',
+                map { FixMyStreet::Template::html_filter($_) } @$value));
     } elsif ( $field->{type} eq 'FileIdUpload' ) {
         if ( ref $value eq 'HASH' && $value->{filenames} ) {
             return join( ', ', @{ $value->{filenames} } );
         }
-        return "";
+        return "Not attached";
     } elsif ( $field->{type} eq 'Photo' ) {
         my $num = split /,/, $value;
         return sprintf(mySociety::Locale::nget("%d photo", "%d photos", $num), $num);

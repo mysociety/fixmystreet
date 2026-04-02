@@ -1102,7 +1102,10 @@ sub waste_extra_service_info {
         $_->{timeband} = _timeband_for_schedule($schedules->{next});
 
         # Check calendar allocation
-        if (($_->{ServiceId} == $SERVICE_IDS{domestic_refuse} || $_->{ServiceId} == $SERVICE_IDS{garden} || $_->{ServiceId} == $SERVICE_IDS{domestic_paper}) && ($schedules->{description} =~ /every other/i || $schedules->{description} =~ /every \d+ week/i) && $schedules->{next}{schedule}) {
+        if (
+            ($_->{ServiceId} == $SERVICE_IDS{domestic_refuse} || $_->{ServiceId} == $SERVICE_IDS{garden} || $_->{ServiceId} == $SERVICE_IDS{domestic_paper})
+            && $schedules->{next}{schedule}
+        ) {
             my $allocation = $schedules->{next}{schedule}{Allocation};
             my $day = lc $allocation->{RoundName};
             $day =~ s/\s+//g;
@@ -1120,9 +1123,11 @@ sub waste_extra_service_info {
                     $self->{c}->stash->{calendar_link} = $links->{$id};
                 }
             } elsif ($_->{ServiceId} == $SERVICE_IDS{garden}) {
-                my $id = sprintf("%s-%s", $day, $week);
-                my $links = $self->{c}->cobrand->feature('ggw_calendar_links');
-                $self->{c}->stash->{ggw_calendar_link} = $links->{$id};
+                if ($week) {
+                    my $id = sprintf("%s-%s", $day, $week);
+                    my $links = $self->{c}->cobrand->feature('ggw_calendar_links');
+                    $self->{c}->stash->{ggw_calendar_link} = $links->{$id};
+                }
             }
         }
     }
