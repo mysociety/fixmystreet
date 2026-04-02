@@ -1,0 +1,10 @@
+[%
+IF bodyclass.match('mappage');
+    scripts.push( version('/cobrands/fixmystreet/assets.js') );
+    scripts.push( version('/cobrands/canalrivertrust/assets.js') );
+    scripts.push( version('/js/asset_layers.js') );
+    scripts.push(
+        version('/vendor/OpenLayers.Projection.OrdnanceSurvey.js'),
+    );
+END;
+%]
