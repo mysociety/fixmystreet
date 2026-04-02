@@ -247,7 +247,7 @@ sub get_body_sender {
                     $x,
                     $y,
                 );
-                if (!$road_features) {
+                if (!$road_features || !(scalar @$road_features)) {
                      $road_features = $self->_fetch_features(
                         {
                             buffer => 1, # metres
