@@ -124,6 +124,7 @@ sub short_name {
     # Special case Durham as it's the only place with two councils of the same name
     return 'Durham+County' if $name eq 'Durham County Council';
     return 'Durham+City' if $name eq 'Durham City Council';
+    return 'Canal+&+River+Trust' if $name eq 'Canal & River Trust'; # Keep ampersand
 
     $name =~ s/^(Royal|London) Borough of //;
     $name =~ s/ (Borough|City|District|County|Parish|Town) Council$//;
