@@ -1766,7 +1766,7 @@ fixmystreet.assets.peterborough.pcc_found = function(layer) {
 fixmystreet.assets.peterborough.pcc_not_found = function(layer) {
     for ( var i = 0; i < fixmystreet.assets.layers.length; i++ ) {
         var l = fixmystreet.assets.layers[i];
-        if ( l.fixmystreet.name == 'Adopted Highways' && l.selected_feature ) {
+        if ( (l.fixmystreet.name == 'Adopted Highways' || l.fixmystreet.name == 'Pboro National Highways') && l.selected_feature ) {
             pboro_correct_messaging_off(layer);
             return;
         }

@@ -236,7 +236,7 @@ sub get_body_sender {
             $features = [] if $leased_features && scalar @$leased_features;
 
             # if it's not council, or leased out land check if it's on an
-            # adopted road
+            # adopted road or NH road
             unless ( $leased_features && scalar @$leased_features ) {
                 my $road_features = $self->_fetch_features(
                     {
@@ -247,6 +247,17 @@ sub get_body_sender {
                     $x,
                     $y,
                 );
+                if (!$road_features) {
+                     $road_features = $self->_fetch_features(
+                        {
+                            buffer => 1, # metres
+                            type => 'arcgis',
+                            url => 'https://peterborough.assets/8/query?',
+                        },
+                        $x,
+                        $y,
+                    );
+                }
 
                 $features = $road_features if $road_features && scalar @$road_features;
             }
