@@ -1381,6 +1381,105 @@ FixMyStreet::override_config {
         };
     };
 
+    # this is disputing an attempt to collect after a missed collection report
+    subtest 'Dispute of missed collections' => sub {
+        my $missed = FixMyStreet::DB->resultset("Problem")->search({ category => 'Report missed collection' })->order_by('-id')->first;
+        $missed->update( { external_id => 'missed-guid' });
+
+        my $dispute;
+        subtest 'Open missed collection' => sub {
+            $echo->mock('GetEventsForObject', sub { [ {
+                Id => '8004',
+                ClientReference => 'LBS-123',
+                Guid => 'booking-guid',
+                ServiceId => 960, # Bulky
+                EventTypeId => 3130, # Bulky collection
+                EventStateId => 19184, # Completed
+                EventDate => { DateTime => '2025-04-01T00:00:00Z' },
+                ResolvedDate => { DateTime => '2025-04-08T00:00:00Z' },
+                ResolutionCodeId => 232, # Completed on Scheduled Day (dunno if used, doesn't matter)
+            }, {
+                Id => '315530',
+                ClientReference => 'LBS-456',
+                Guid => 'missed-guid',
+                ServiceId => 960, # Bulky
+                EventTypeId => 3145, # Missed collection
+                EventStateId => 19242, # Not Completed
+                ResolvedDate => { DateTime => "2025-04-08T17:00:00Z" },
+                EventDate => { DateTime => "2025-04-08T17:00:00Z" },
+                ResolutionCodeId => 100,
+            } ] });
+
+            set_fixed_time('2025-04-08T17:30:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with this missed collection', "no link before window opens");
+
+            set_fixed_time('2025-04-12T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with this missed collection', "no link after window closes");
+
+            set_fixed_time('2025-04-10T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
+
+            subtest 'actually make the report' => sub {
+                $mech->submit_form_ok( { with_fields => { 'extra_Notes' => 'There was no problem with the bin' } }, 'submitted reasons');
+                $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
+                $mech->submit_form_ok( { with_fields => { submit => '1' } });
+                $mech->content_contains('Your enquiry has been submitted');
+                $mech->content_contains('Return to property details');
+                $mech->content_contains('/waste/12345"');
+                $dispute = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+                is $dispute->category, 'Missed collection dispute', "Correct category";
+                is $dispute->detail, "2/3 Example Street, Sutton, SM2 5HF", "Details of report contain information about problem";
+                is $dispute->user->email, 'schmoe@example.org', 'User details added to report';
+                is $dispute->name, 'Joe Schmoe', 'User details added to report';
+                like $dispute->get_extra_field_value('Notes'), qr"There was no problem with the bin";
+                like $dispute->get_extra_field_value('Notes'), qr"Originally Echo Event #315530";
+                is $dispute->get_extra_field_value('original_guid'), "missed-guid";
+            };
+        };
+
+        $dispute->update({ external_id => 'second-dispute-guid' });
+
+        subtest 'Existing dispute event' => sub {
+            # Now mock there is an existing escalation
+            $echo->mock('GetEventsForObject', sub { [ {
+                Id => '8004',
+                Guid => 'booking-guid',
+                ServiceId => 960, # Bulky
+                EventTypeId => 3130, # Bulky collection
+                EventStateId => 19184, # Completed
+                EventDate => { DateTime => '2025-04-01T00:00:00Z' },
+                ResolvedDate => { DateTime => '2025-04-08T00:00:00Z' },
+                ResolutionCodeId => 232, # Completed on Scheduled Day (dunno if used, doesn't matter)
+            }, {
+                Id => '315530',
+                Guid => 'missed-guid',
+                ServiceId => 960, # Bulky
+                EventTypeId => 3145, # Missed collection
+                EventStateId => 19242, # Not Completed
+                ResolvedDate => { DateTime => "2025-04-08T17:00:00Z" },
+                EventDate => { DateTime => "2025-04-08T17:00:00Z" },
+            }, {
+                Id => '112112321',
+                Guid => 'second-dispute-guid',
+                EventTypeId => 3143, # Missed collection dispute
+                EventStateId => 0,
+                ServiceId => 960, # Bulky
+                EventDate => { DateTime => "2025-04-11T19:00:00Z" },
+            } ] });
+
+            set_fixed_time('2025-04-12T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('We are investigating the problem with this collection');
+            $mech->content_lacks('Report a problem with this missed collection');
+        };
+
+        $echo->mock('GetEventsForObject', sub { [] }); # reset
+    };
+
+
 };
 
 
