@@ -31,7 +31,7 @@ sub council_url { return 'dumfries'; }
 =cut
 
 sub enter_postcode_text {
-    'Enter a Dumfries and Galloway post code or street name and area, or a reference number of a problem previously reported'
+    'Enter a postcode, a street name and area, or a reference number from an existing report'
 }
 
 =item * Dumfries use their own privacy policy

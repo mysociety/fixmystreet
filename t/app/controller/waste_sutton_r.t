@@ -24,7 +24,11 @@ my $address_data = {
     Description => '2 Example Street, Sutton, SM1 1AA',
 };
 my $bin_data = decode_json(path(__FILE__)->sibling('waste_sutton_4443082.json')->slurp_utf8);
+my $bin_refuse_240_data = decode_json(path(__FILE__)->sibling('waste_sutton_4443082_refuse_240.json')->slurp_utf8);
+my $bin_refuse_360_data = decode_json(path(__FILE__)->sibling('waste_sutton_4443082_refuse_360.json')->slurp_utf8);
 my $bin_140_data = decode_json(path(__FILE__)->sibling('waste_sutton_4443082_140.json')->slurp_utf8);
+my $bin_240_data = decode_json(path(__FILE__)->sibling('waste_sutton_4443082_paper_240.json')->slurp_utf8);
+my $bin_360_data = decode_json(path(__FILE__)->sibling('waste_sutton_4443082_paper_360.json')->slurp_utf8);
 my $kerbside_bag_data = decode_json(path(__FILE__)->sibling('waste_sutton_4471550.json')->slurp_utf8);
 my $above_shop_data = decode_json(path(__FILE__)->sibling('waste_sutton_4499005.json')->slurp_utf8);
 
@@ -117,8 +121,19 @@ FixMyStreet::override_config {
         echo => { sutton => { bulky_service_id => 960 }},
         payment_gateway => { sutton => {
             cc_url => 'http://example.com',
-            request_replace_cost => 500,
-            request_change_cost => 1500,
+            request_change_cost_refuse_140 => 2500,
+            request_change_cost_refuse_240 => 4500,
+            request_change_cost_refuse_360 => 2000,
+            request_change_cost_refuse_360_refuse_240 => 3000,
+            request_change_cost_refuse_240_refuse_140 => 4000,
+            request_change_cost_paper_360_paper_240 => 1500,
+            request_change_cost_paper_240 => 1500,
+            request_change_cost_paper_360 => 3000,
+            request_replace_cost_refuse_140 => 500,
+            request_replace_cost_refuse_240 => 500,
+            request_replace_cost_refuse_360 => 500,
+            request_replace_cost_paper_240 => 500,
+            request_replace_cost_paper_360 => 1500,
         } },
     },
     STAGING_FLAGS => {
@@ -199,7 +214,7 @@ FixMyStreet::override_config {
         like $email, qr/A refund will not be issued/, 'include no refund text for paid request';
         like $email, qr/waste\/12345\/request\/cancel\//, 'include cancel link';
     };
-    subtest 'Request a larger bin than current' => sub {
+    subtest 'Request a larger bin than current (120L -> 240L)' => sub {
         $mech->get_ok('/waste/12345/request');
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 3 }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
@@ -208,7 +223,7 @@ FixMyStreet::override_config {
         $mech->content_like(qr/Larger Brown General Waste Wheelie Bin \(240L\)<\/dt>\s*<dd class="govuk-summary-list__value">1x to deliver<\/dd>/);
 
         $mech->waste_submit_check({ with_fields => { process => 'summary' } });
-        is $sent_params->{items}[0]{amount}, 1500;
+        is $sent_params->{items}[0]{amount}, 4500;
 
         my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
@@ -217,11 +232,35 @@ FixMyStreet::override_config {
 
         is $report->uprn, 1000000002;
         is $report->title, 'Request exchange for Larger Brown General Waste Wheelie Bin (240L)';
-        is $report->get_extra_field_value('payment'), 1500, 'correct payment';
+        is $report->get_extra_field_value('payment'), 4500, 'correct payment';
         is $report->get_extra_field_value('Container_Type'), '1::3', 'correct bin type';
         is $report->get_extra_field_value('Action'), '2::1', 'correct container request action';
         is $report->get_extra_field_value('Reason'), '9::9', 'correct container request reason';
         is $report->get_extra_field_value('service_id'), 940;
+    };
+    subtest 'Request a smaller bin than current (240L -> 140L)' => sub {
+        $e->mock('GetServiceUnitsForObject', sub { $bin_refuse_240_data });
+        $mech->get_ok('/waste/12345/request');
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 1 }});
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->content_contains('Continue to payment');
+        $mech->content_like(qr/Larger Brown General Waste Wheelie Bin \(240L\)<\/dt>\s*<dd class="govuk-summary-list__value">1x to collect<\/dd>/);
+        $mech->content_like(qr/Standard Brown General Waste Wheelie Bin \(140L\)<\/dt>\s*<dd class="govuk-summary-list__value">1x to deliver<\/dd>/);
+
+        $mech->waste_submit_check({ with_fields => { process => 'summary' } });
+        is $sent_params->{items}[0]{amount}, 4000;
+    };
+    subtest 'Request a smaller bin than current (360L -> 240L)' => sub {
+        $e->mock('GetServiceUnitsForObject', sub { $bin_refuse_360_data });
+        $mech->get_ok('/waste/12345/request');
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 3 }}, 'select smaller bin');
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }}, 'fill user details');
+        $mech->content_contains('Continue to payment', 'go to payment page');
+        $mech->content_like(qr/Extra Large Brown General Waste Wheelie Bin \(360L\)<\/dt>\s*<dd class="govuk-summary-list__value">1x to collect<\/dd>/, 'page contains old bin text');
+        $mech->content_like(qr/Larger Brown General Waste Wheelie Bin \(240L\)<\/dt>\s*<dd class="govuk-summary-list__value">1x to deliver<\/dd>/, 'page contains new bin text');
+
+        $mech->waste_submit_check({ with_fields => { process => 'summary' } });
+        is $sent_params->{items}[0]{amount}, 3000, 'price correct';
     };
     subtest 'Request a paper bin when having a 140L' => sub {
         $e->mock('GetServiceUnitsForObject', sub { $bin_140_data });
@@ -246,6 +285,60 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('Container_Type'), '26::27', 'correct bin type';
         is $report->get_extra_field_value('Action'), '2::1', 'correct container request action';
         is $report->get_extra_field_value('Reason'), '9::9', 'correct container request reason';
+        is $report->get_extra_field_value('service_id'), 948;
+        $e->mock('GetServiceUnitsForObject', sub { $bin_data });
+    };
+    subtest 'Request a paper bin when having a 240L' => sub {
+        $e->mock('GetServiceUnitsForObject', sub { $bin_240_data });
+        $mech->get_ok('/waste/12345/request');
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 28 }});
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->content_contains('Continue to payment');
+        $mech->content_like(qr/Paper and Cardboard Green Wheelie Bin \(240L\)<\/dt>\s*<dd class="govuk-summary-list__value">1x to collect<\/dd>/);
+        $mech->content_like(qr/Paper and Cardboard Green Wheelie Bin \(360L\)<\/dt>\s*<dd class="govuk-summary-list__value">1x to deliver<\/dd>/);
+
+        $mech->waste_submit_check({ with_fields => { process => 'summary' } });
+        is $sent_params->{items}[0]{amount}, 3000;
+
+        my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+        $mech->content_contains('request has been sent');
+        $mech->content_contains('Containers typically arrive within 20 working days');
+
+        is $report->uprn, 1000000002;
+        is $report->title, 'Request exchange for Paper and Cardboard Green Wheelie Bin (360L)';
+        is $report->get_extra_field_value('payment'), 3000, 'correct payment';
+        is $report->get_extra_field_value('Container_Type'), '27::28', 'correct bin type';
+        is $report->get_extra_field_value('Action'), '2::1', 'correct container request action';
+        is $report->get_extra_field_value('Reason'), '9::9', 'correct container request reason';
+        is $report->get_extra_field_value('service_id'), 948;
+        $e->mock('GetServiceUnitsForObject', sub { $bin_data });
+    };
+    subtest 'Request a smaller paper bin when having a 360L' => sub {
+        $e->mock('GetServiceUnitsForObject', sub { $bin_360_data });
+        $mech->get_ok('/waste/12345/request');
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 27 }});
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->content_contains('Continue to payment');
+        # use open ':std', ':encoding(UTF-8)';
+        # print $mech->content;
+        $mech->content_like(qr/Paper and Cardboard Green Wheelie Bin \(360L\)<\/dt>\s*<dd class="govuk-summary-list__value">1x to collect<\/dd>/);
+        $mech->content_like(qr/Paper and Cardboard Green Wheelie Bin \(240L\)<\/dt>\s*<dd class="govuk-summary-list__value">1x to deliver<\/dd>/);
+
+        $mech->waste_submit_check({ with_fields => { process => 'summary' } });
+        is $sent_params->{items}[0]{amount}, 1500;
+
+        my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+        $mech->content_contains('request has been sent');
+        $mech->content_contains('Containers typically arrive within 20 working days');
+
+        is $report->uprn, 1000000002;
+        is $report->title, 'Request exchange for Paper and Cardboard Green Wheelie Bin (240L)';
+        is $report->get_extra_field_value('payment'), 1500, 'correct payment';
+        is $report->get_extra_field_value('Container_Type'), '28::27', 'correct bin type';
+        is $report->get_extra_field_value('Action'), '2::1', 'correct container request action';
+        is $report->get_extra_field_value('Reason'), '10::10', 'correct container request reason';
         is $report->get_extra_field_value('service_id'), 948;
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };

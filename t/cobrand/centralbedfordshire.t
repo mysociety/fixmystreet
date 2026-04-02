@@ -80,6 +80,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'Correct NSGRef parameters for Open311' => sub {
+        $report->set_extra_fields({ name => 'UnitID', value => 'Asset 123' });
         $report->update;
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
@@ -88,6 +89,9 @@ FixMyStreet::override_config {
         is $c->param('attribute[NSGRef]'), 'Road ID';
         is $c->param('attribute[title]'),  $report->title;
         (my $c_description = $c->param('attribute[description]')) =~ s/\r\n/\n/g;
+        is $c_description, $report->detail . "\n\nUnit ID: Asset 123";
+        is $c->param('attribute[report_url]'),  "http://centralbedfordshire.example.org/report/" . $report->id;
+        like $c->param('description'), qr/Unit ID: Asset 123/, 'But is included in description';
 
         $mech->email_count_is(1);
         $report->discard_changes;

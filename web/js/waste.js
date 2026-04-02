@@ -154,6 +154,26 @@ $(function() {
                 }
             }
             totalId.text((total / 100).toFixed(2));
+        } else if (pricing.strategy === 'banded_pop') {
+            var contains_pops = false;
+            $('.govuk-select[name^="item_"] option:selected').each(function(i, e) {
+                var extra = $(this).data('extra');
+                if ( extra && extra.contains_pops && extra.contains_pops == 1 ) {
+                    contains_pops = true;
+                }
+            });
+            count = numberOfItems();
+            for (var j=0; j<pricing.bands.length; j++) {
+                if (count <= pricing.bands[j].max) {
+                    if (contains_pops) {
+                        total = pricing.bands[j].pop_price;
+                    } else {
+                        total = pricing.bands[j].price;
+                    }
+                    break;
+                }
+            }
+            totalId.text((total / 100).toFixed(2));
 
         } else if (pricing.strategy === 'points') {
             $('.govuk-select[name^="item_"] option:selected').each(function(i, e) {
@@ -184,6 +204,15 @@ $(function() {
             }
             totalDetailId.show();
 
+        } else if (pricing.strategy === 'pop_costs') {
+            total = pricing.price;
+            $('.govuk-select[name^="item_"] option:selected').each(function(i, e) {
+                var extra = $(this).data('extra');
+                if ( extra && extra.contains_pops && extra.contains_pops == 1 ) {
+                    total = pricing.pop_price;
+                }
+            });
+            totalId.text((total / 100).toFixed(2));
         }
     }
     updateTotal();

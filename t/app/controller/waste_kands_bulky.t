@@ -1175,6 +1175,88 @@ FixMyStreet::override_config {
         $echo->mock('GetEventsForObject', sub { [] }); # reset
     };
 
+    subtest 'Bulky goods collection booking with POP items' => sub {
+        set_fixed_time('2023-07-06T10:00:00Z');
+        my $cfg = $sutton->get_extra_metadata('wasteworks_config');
+        $cfg->{base_pop_price} = 6500;
+        $cfg->{band1_pop_price} = 4500;
+        $cfg->{pop_costs} = 1;
+        push @{$cfg->{item_list}}, { bartec_id => 90, name => 'Sofa', contains_pops => 1 };
+        $sutton->set_extra_metadata(wasteworks_config => $cfg);
+        $sutton->update;
+
+        $mech->get_ok('/waste/12345/bulky');
+
+        subtest 'Intro page' => sub {
+            $mech->content_contains('1 to 4 items cost £40.00');
+            $mech->content_contains('(£45.00 if any item contains POPs)');
+            $mech->content_contains('5 to 8 items cost £61.00');
+            $mech->content_contains('(£65.00 if any item contains POPs)');
+            $mech->content_contains('Bookings are final and non refundable');
+            $mech->submit_form_ok;
+        };
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
+        $mech->submit_form_ok(
+            { with_fields => { chosen_date => '2023-07-01T00:00:00;reserve1==::reserve4==;2023-06-25T10:10:00' } }
+        );
+        $mech->content_contains('Select the items to be collected using the');
+
+        subtest 'higher band try' => sub {
+            $mech->submit_form_ok(
+                {
+                    form_number => 1,
+                    fields => {
+                        'item_1' => 'BBQ',
+                        'item_notes_1' => 'BBQ note',
+                        'item_photo_1' => [ $sample_file, undef, Content_Type => 'image/jpeg' ],
+                        'item_2' => 'Bicycle',
+                        'item_notes_2' => 'Bicycle note',
+                        'item_3' => 'Bath',
+                        'item_notes_3' => 'Bath note',
+                        'item_4' => 'Sofa',
+                        'item_notes_4' => 'Sofa note',
+                        'item_5' => 'Sofa',
+                        'item_notes_5' => 'Second Sofa note',
+                    },
+                },
+            );
+            $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
+            $mech->content_contains('5 items requested for collection');
+            $mech->content_contains('£65.00');
+            $mech->back;
+            $mech->back;
+        };
+
+        $mech->content_contains('Describe the item to help our crew pick up the right thing');
+        $mech->submit_form_ok(
+            {
+                form_number => 1,
+                fields => {
+                    'item_1' => 'BBQ',
+                    'item_notes_1' => 'BBQ note',
+                    'item_photo_1' => [ $sample_file, undef, Content_Type => 'image/jpeg' ],
+                    'item_2' => 'Bicycle',
+                    'item_notes_2' => 'Bicycle note',
+                    'item_3' => 'Sofa',
+                    'item_notes_3' => 'Sofa note',
+                },
+            },
+        );
+        $mech->content_contains('Items must be out for collection by 6am on the collection day.');
+        $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
+
+        subtest "Test Summary" => sub {
+            $mech->content_contains('Booking Summary');
+            $mech->content_contains('£45.00');
+            $mech->content_contains("<dd>Saturday 01 July 2023</dd>");
+            $mech->content_contains("on or before Saturday 01 July 2023");
+            $mech->content_contains('Bookings are not refundable');
+            $mech->content_contains('Bob Marge', 'name shown');
+            $mech->content_contains('44 07 111 111 111', 'phone shown');
+        };
+        add_extra_metadata($sutton);
+    };
+
 };
 
 

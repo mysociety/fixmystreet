@@ -271,6 +271,7 @@ my $upload_fields = [
     'insurance_validity',
     'upload_rams',
     'upload_map',
+    'upload_structural_testing',
     'upload_additional',
     'continue'
 ];
@@ -306,6 +307,14 @@ has_field upload_map => (
     },
     messages => {
         upload_file_not_found => 'Please upload a map',
+    },
+);
+
+has_field upload_structural_testing => (
+    type => 'FileIdUpload',
+    label => 'Structural testing',
+    messages => {
+        upload_file_not_found => 'Please upload a structural testing document',
     },
 );
 

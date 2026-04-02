@@ -27,6 +27,12 @@ INCLUDE 'admin/header.html' bodyclass="bulky-items";
             <input type="hidden" value="[% item.price %]" name="price[[% i %]]" />
         [% END %]
         </td>
+        [% IF pop_costs %]
+        <td>
+            [% IF item.errors.contains_pops %]<label for="[[% i %]]">[% item.errors.contains_pops %]</label>[% END %]
+            <input type="checkbox" value="1"[% ' checked' IF item.contains_pops %] name="contains_pops[[% i %]]" style="max-width: 4em;" />
+        </td>
+        [% END %]
         [% IF item_points %]
         <td>
             [% IF item.errors.points %]<label for="[[% i %]]">[% item.errors.points %]</label>[% END %]
@@ -64,6 +70,9 @@ INCLUDE 'admin/header.html' bodyclass="bulky-items";
                     <th>Points</th>
                 [% ELSIF per_item_costs %]
                     <th>Price (pence)</th>
+                [% END %]
+                [% IF pop_costs %]
+                    <th>May contain POPs</th>
                 [% END %]
                 [% FOR property_type IN per_item_pricing_property_types %]
                     <th>[% property_type %] Price (pence)</th>
