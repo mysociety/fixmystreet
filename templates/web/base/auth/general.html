@@ -31,7 +31,10 @@
     [% END %]
     [% oidc_config = c.cobrand.call_hook('oidc_config') OR c.cobrand.feature('oidc_login') %]
     [% IF oidc_config %]
-      <div class="form-box">
+      <div class="form-box [% IF cobrand.moniker == 'dumfries' %]mygovscot-form[% END %]">
+        [% IF cobrand.moniker == 'dumfries' %]
+          <img class="mygovscot-img" src="/cobrands/fixmystreet/images/mygovscot-myaccount-logo.svg" alt="" aria-hidden="true" role="decoration" width="120">
+        [% END %]
         <button name="social_sign_in" value="oidc" class="btn btn--block btn--social btn--oidc">
             [% tprintf(loc('Sign in with %s'), oidc_config.display_name) %]
         </button>
