@@ -1649,11 +1649,11 @@ FixMyStreet::override_config {
                 ResolutionCodeId => 617, # No access - Parked vehicle
             } ] });
 
-            set_fixed_time('2025-04-08T17:30:00Z');
+            set_fixed_time('2025-04-08T16:59:00Z');
             $mech->get_ok($problem_url);
             $mech->content_lacks($dispute_label, "no link before window opens");
 
-            set_fixed_time('2025-04-12T19:00:00Z');
+            set_fixed_time('2025-04-12T17:01:00Z');
             $mech->get_ok($problem_url);
             $mech->content_lacks($dispute_label, "no link after window closes");
 
