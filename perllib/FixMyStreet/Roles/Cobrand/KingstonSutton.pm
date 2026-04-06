@@ -480,9 +480,9 @@ sub waste_munge_enquiry_form_pages {
         # so it might be clicked outside the window so re-check if
         # disputes are allowed
         if ($guid) {
-            my $dispute_allowed = $self->_check_date_within_dispute_window(
-                $c->stash->{booked_missed}{$guid}{report_locked_out_date}
-            );
+            my $date = $c->stash->{booked_missed}{$guid}{report_locked_out_date}
+                       || $c->stash->{missed_events}{$guid}{date};
+            my $dispute_allowed = $self->_check_date_within_dispute_window( $date );
             unless ($dispute_allowed) {
                 $c->stash->{first_page} = 'window_expired';
                 @$pages = (window_expired => {
