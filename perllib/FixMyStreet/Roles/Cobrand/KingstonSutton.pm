@@ -193,6 +193,7 @@ around booked_check_missed_collection => sub {
 
     my $escalations = $events->filter({ event_type => 3134, service => $service_id });
     my $disputes = $events->filter({ event_type => 3143, service => $service_id });
+    my $missed_events = $events->filter({ type => 'missed', service => $service_id });
     my $missed = $self->{c}->stash->{booked_missed};
     foreach my $guid (keys %$missed) {
         my $missed_event = $missed->{$guid}{report_open};
@@ -270,6 +271,15 @@ around booked_check_missed_collection => sub {
             }
         }
     }
+
+    # store all the missed events which we need for checking details
+    # of incomplete missed collection re-attempts when clicking through
+    # from a link in an alert email
+    my %missed;
+    foreach my $event ($missed_events->list) {
+        $missed{$event->{guid}} = $event;
+    }
+    $self->{c}->stash->{missed_events} = \%missed;
 };
 
 sub _check_for_open_disputes {
