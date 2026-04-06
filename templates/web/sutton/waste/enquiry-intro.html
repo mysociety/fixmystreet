@@ -11,7 +11,12 @@ IF services.$service_id;
     SET image = service.last.image;
 END;
 
-IF booked_missed.$guid;
+IF missed_events.$guid;
+    SET missed = missed_events.$guid;
+    SET service_name = missed.service_name;
+    SET resolution = missed.resolution_reason;
+ELSIF booked_missed.$guid;
+    SET booked = 1;
     SET missed = booked_missed.$guid;
     SET service_name = missed.service_name;
     SET resolution = missed.report_locked_out_reason;
@@ -25,8 +30,12 @@ END -%]
 [% END -%]
 
 [%- IF category == 'Missed collection dispute' %]
-    [%- IF service_name AND resolution %]
+    [%- IF service_name %]
     <p>Our crews reported that your [% service_name %] collection was not made:</p>
+    [% ELSE %]
+    <p>Our crews reported that your collection was not made:</p>
+    [% END %]
+    [% IF resolution %]
     [% resolution | staff_html_markup({ is_body_user => 1 }) %]
     [% END -%]
     [% IF image %]
