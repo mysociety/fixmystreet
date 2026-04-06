@@ -662,7 +662,7 @@ FixMyStreet::override_config {
             EventTypeId => 3144, # small items collection
             EventStateId => 19185, # Not Completed
             EventDate => { DateTime => '2025-04-01T00:00:00Z' },
-            ResolvedDate => { DateTime => '2025-04-08T00:00:00Z' },
+            ResolvedDate => { DateTime => '2025-04-08T16:30:00Z' },
             ResolutionCodeId => 466, # No access - Gate locked
         } ] });
 
@@ -680,7 +680,7 @@ FixMyStreet::override_config {
             $mech->get_ok($problem_url);
             $mech->content_lacks($dispute_label, 'cannot report after window closed');
 
-            set_fixed_time('2025-04-08T17:59:00Z');
+            set_fixed_time('2025-04-08T16:29:00Z');
             $mech->get_ok($problem_url);
             $mech->content_lacks($dispute_label, 'cannot report just before window opens');
 
@@ -692,7 +692,7 @@ FixMyStreet::override_config {
             $mech->get_ok($problem_url);
             $mech->content_contains($dispute_label, 'can report just before window closes');
 
-            set_fixed_time('2025-04-08T18:01:00Z');
+            set_fixed_time('2025-04-08T16:31:00Z');
             $mech->get_ok($problem_url);
             $mech->content_contains($dispute_label, 'can report just after window opens');
         };

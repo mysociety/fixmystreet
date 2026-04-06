@@ -811,7 +811,7 @@ FixMyStreet::override_config {
         } ] });
 
         subtest 'Raising a dispute only available within window' => sub {
-            set_fixed_time('2022-09-09T17:30:00Z');
+            set_fixed_time('2022-09-09T15:30:00Z');
             $mech->get_ok($problem_url);
             $mech->content_lacks($dispute_label, 'not allowed before window opens');
 
@@ -827,7 +827,7 @@ FixMyStreet::override_config {
             $mech->get_ok($problem_url);
             $mech->content_contains($dispute_label, 'allowed just before window closes');
 
-            set_fixed_time('2022-09-09T18:01:00Z');
+            set_fixed_time('2022-09-09T16:01:00Z');
             $mech->get_ok($problem_url);
             $mech->content_contains($dispute_label, 'allowed just after window opens');
 

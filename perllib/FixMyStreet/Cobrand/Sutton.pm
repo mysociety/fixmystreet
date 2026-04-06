@@ -214,8 +214,8 @@ sub _check_date_within_dispute_window {
     my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
     # And two working days (from 6pm) have passed
     my $wd = FixMyStreet::WorkingDays->new();
-    my $start = $wd->add_days($date, 0)->set_hour(18);
-    my $end = $wd->add_days($start, 3)->set_hour(0);
+    my $start = $date;
+    my $end = $wd->add_days($start, 3)->set_hour(0)->set_minute(0)->set_second(0);
 
     if ($now >= $start && $now < $end) {
         return 1;
