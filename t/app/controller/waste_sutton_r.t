@@ -808,7 +808,7 @@ FixMyStreet::override_config {
         } ] });
 
         subtest 'Raising a dispute only available within window' => sub {
-            set_fixed_time('2022-09-09T17:30:00Z');
+            set_fixed_time('2022-09-09T15:30:00Z');
             $mech->get_ok('/waste/12345');
             $mech->content_lacks('Report a problem with this missed collection', 'not allowed before window opens');
 
@@ -824,7 +824,7 @@ FixMyStreet::override_config {
             $mech->get_ok('/waste/12345');
             $mech->content_contains('Report a problem with this missed collection', 'allowed just before window closes');
 
-            set_fixed_time('2022-09-09T18:01:00Z');
+            set_fixed_time('2022-09-09T16:01:00Z');
             $mech->get_ok('/waste/12345');
             $mech->content_contains('Report a problem with this missed collection', 'allowed just after window opens');
 

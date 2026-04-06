@@ -114,13 +114,15 @@ sub skip_alert_state_changed_to {
 
 If it's before 6pm on the day of collection, treat an Outstanding/Allocated
 task as if it's the next collection and in progress, do not allow missed
-collection reporting, and do not show the collected time.
+collection reporting, and do not show the collected time. Do allow disputes.
 
 =cut
 
 sub waste_on_the_day_criteria {
     my ($self, $completed, $state, $now, $row) = @_;
 
+    # allowed to dispute incomplete as soon as it has happened
+    return if ($state eq 'Not Completed');
     return unless $now->hour < 18;
     if ($state eq 'Outstanding' || $state eq 'Allocated') {
         $row->{next} = $row->{last};
@@ -238,8 +240,8 @@ sub _check_date_within_dispute_window {
     my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
     # And two working days (from 6pm) have passed
     my $wd = FixMyStreet::WorkingDays->new();
-    my $start = $wd->add_days($date, 0)->set_hour(18);
-    my $end = $wd->add_days($start, 3)->set_hour(0);
+    my $start = $date;
+    my $end = $wd->add_days($start, 3)->set_hour(0)->set_minute(0)->set_second(0);
 
     if ($now >= $start && $now < $end) {
         return 1;
@@ -275,7 +277,7 @@ sub _setup_container_request_disputes_for_service {
         $dispute_event = ($events->filter({ event_type => 3143 })->list)[0];
     }
     if (!$dispute_event) {
-        if ($row->{last}->{completed} && $row->{report_locked_out}) {
+           if ($row->{last}->{completed} && $row->{report_locked_out}) {
             # and then check if we can open a dispute for this resolution
             if ( $self->waste_check_can_raise_dispute($row->{service_id}, $row->{last}->{resolution}) ) {
                 if ( $self->_check_date_within_dispute_window($row->{last}->{completed}) ) {
