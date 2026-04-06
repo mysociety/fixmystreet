@@ -316,6 +316,24 @@ sub _setup_missed_collection_disputes_for_service {
     }
 }
 
+sub parse_event_missed {
+    my ($self, $orig_event, $event, $events) = @_;
+
+    $event->{resolution} = $orig_event->{ResolutionCodeId};
+    my $missed_codes = $self->waste_bulky_missed_blocked_codes;
+    if ($missed_codes
+        && $event->{resolution}
+        && $missed_codes->{$orig_event->{EventStateId}}
+        && $missed_codes->{$orig_event->{EventStateId}}->{$event->{resolution}}
+    ) {
+        $event->{resolution_reason} = $missed_codes->{$orig_event->{EventStateId}}->{$event->{resolution}};
+    }
+    if ($event->{closed}) {
+        $event->{date} = Integrations::Echo::Events::construct_bin_date($orig_event->{ResolvedDate});
+        $event->{state} = $orig_event->{EventStateId};
+    }
+}
+
 =head2 image_for_unit
 
 Working out which image to use for which container or service.
