@@ -1618,7 +1618,7 @@ FixMyStreet::override_config {
     # this is disputing an attempt to collect after a missed collection report
     subtest 'Dispute of missed collections' => sub {
         my $missed = FixMyStreet::DB->resultset("Problem")->search({ category => 'Report missed collection' })->order_by('-id')->first;
-        $missed->update( { external_id => 'missed-guid' });
+        $missed->update({ external_id => 'missed-guid', cobrand => 'sutton', bodies_str => $sutton->id });
 
         my $problem_url
             = '/waste/12345/enquiry?template=problem&service_id=960&original_booking_id='
@@ -1646,7 +1646,7 @@ FixMyStreet::override_config {
                 EventStateId => 19242, # Not Completed
                 ResolvedDate => { DateTime => "2025-04-08T17:00:00Z" },
                 EventDate => { DateTime => "2025-04-08T17:00:00Z" },
-                ResolutionCodeId => 100,
+                ResolutionCodeId => 617, # No access - Parked vehicle
             } ] });
 
             set_fixed_time('2025-04-08T16:59:00Z');
@@ -1656,6 +1656,72 @@ FixMyStreet::override_config {
             set_fixed_time('2025-04-12T17:01:00Z');
             $mech->get_ok($problem_url);
             $mech->content_lacks($dispute_label, "no link after window closes");
+
+            my $comment = FixMyStreet::DB->resultset('Comment')->create(
+                {
+                    user          => $sutton_user,
+                    problem_id    => $missed->id,
+                    text          => 'No access - Parked vehicle',
+                    confirmed     => DateTime->now - DateTime::Duration->new( minutes => 15 ),
+                    problem_state => 'unable to fix',
+                    anonymous     => 0,
+                    mark_open     => 0,
+                    mark_fixed    => 0,
+                    state         => 'confirmed',
+                    photo         => $sample_file->slurp,
+                }
+            );
+
+            my $alert = FixMyStreet::DB->resultset('Alert')->find({parameter => $missed->id});
+            $alert->update({cobrand => 'sutton'});
+
+            restore_time();
+            $comment->confirmed( DateTime->now ); # - DateTime::Duration->new( minutes => 15 ) );
+            $comment->update;
+
+            my $email;
+            set_fixed_time('2025-04-10T19:00:00Z');
+            subtest 'Open collection dispute from email' => sub {
+                $mech->clear_emails_ok;
+                FixMyStreet::Script::Alerts::send_updates();
+                $mech->email_count_is(1);
+                $email = $mech->get_email;
+                my $email_text = $mech->get_text_body_from_email($email);
+                my $email_html = $mech->get_html_body_from_email($email);
+                like $email_text, qr/No access - Parked vehicle/, 'Reason pulled from comment';
+                like $email_text, qr/report a problem with this missed collection/, 'Report a problem text in text email';
+                like $email_html, qr/No access - Parked vehicle/, 'Reason pulled from comment';
+                like $email_html, qr/Our crews reported your collection was not made/, 'extra collection text included';
+                like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
+                like $email_html, qr{waste/12345/enquiry}, 'HTML alert contains report link';
+
+                my $link_part = "booking_id=" . $missed->id;
+                # we only want the HTML link as the text version does not contain the link
+                my @links = $email_html =~ m{https?://[^"]+}g;
+                my @enq_links = grep( /enquiry/, @links );
+                # need to strip the host otherwise we're not logged in
+                my $l = URI->new($enq_links[0]);
+                like $l->path_query, qr/$link_part/, 'link has correct booking_id';
+                $mech->get_ok($l->path_query);
+                $mech->content_contains('No access due to parked vehicle', 'details of missed bin collection displayed');
+                $mech->content_contains('This photo provides the evidence', 'Has resolution photo text');
+            };
+
+            set_fixed_time('2025-04-11T19:00:00Z');
+            subtest 'Cannot open collection dispute from email outside window' => sub {
+                my $email_html = $mech->get_html_body_from_email($email);
+                like $email_html, qr/No access - Parked vehicle/, 'Got correct update in html email';
+                like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
+                like $email_html, qr{waste/12345/enquiry}, 'HTML alert contains report link';
+
+                # we only want the HTML link as the text version does not contain the link
+                my @links = $email_html =~ m{https?://[^"]+}g;
+                my @enq_links = grep( /enquiry/, @links );
+                my $l = URI->new($enq_links[0]);
+                $mech->get_ok($l->path_query);
+                $mech->content_lacks('Our crews reported that your collection was not made', 'details of missed bin collection displayed');
+                $mech->content_contains('Missed collections can only be disputed');
+            };
 
             set_fixed_time('2025-04-10T19:00:00Z');
             $mech->get_ok('/waste/12345');
