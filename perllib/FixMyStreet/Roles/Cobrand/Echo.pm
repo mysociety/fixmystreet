@@ -194,6 +194,15 @@ sub bin_services_for_address {
         $self->{c}->stash->{open_garden_event} = 1;
     }
 
+    # store all the missed events which we need for checking details
+    # of incomplete missed collection re-attempts when clicking through
+    # from a link in an alert email
+    my %missed;
+    foreach my $event ( $events->filter({ type => 'missed' })->list ) {
+        $missed{$event->{guid}} = $event if $event->{guid};
+    }
+    $self->{c}->stash->{missed_events_by_guid} = \%missed;
+
     # Bulky/small items collection event
     my $waste_cfg = $self->{c}->stash->{waste_features};
     if ($waste_cfg && $waste_cfg->{bulky_missed}) {
