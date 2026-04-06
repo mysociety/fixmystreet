@@ -516,7 +516,8 @@ sub waste_munge_enquiry_form_pages {
         # disputes are allowed
         if ($guid) {
             my $date = $c->stash->{booked_missed}{$guid}{report_locked_out_date} # Bulky etc. collection that was not collected
-                    || $c->stash->{booked_missed}{$guid}{report_open}{date}; # Missed collection report made against a bulky etc. collection
+                    || $c->stash->{booked_missed}{$guid}{report_open}{date} # Missed collection report made against a bulky etc. collection
+                    || $c->stash->{missed_events_by_guid}{$guid}{date};
             my $dispute_allowed = $self->_check_date_within_dispute_window( $date );
             unless ($dispute_allowed) {
                 $c->stash->{first_page} = 'window_expired';
