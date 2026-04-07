@@ -410,6 +410,9 @@ sub post_service_request_update {
 sub add_media {
     my ($self, $url, $object) = @_;
 
+    if (ref $url eq 'HASH') {
+        $url = $url->{media_url};
+    };
     $url = [ $url ] unless ref $url;
 
     my @photos;

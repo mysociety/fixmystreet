@@ -16,8 +16,6 @@ my $contact = $mech->create_contact_ok(
 );
 $contact->set_extra_metadata(
     group => 'Street Furniture',
-    group_hint => '<span>This is for things like lights and bins</span>',
-    category_hint => '<span>For problems with street lighting</span>',
 );
 $contact->update;
 
@@ -28,8 +26,6 @@ my $contact2 = $mech->create_contact_ok(
 );
 $contact2->set_extra_metadata(
     group => 'Street Furniture',
-    group_hint => '<span>This is for things like lights and bins</span>',
-    category_hint => '<span>For problems with overflowing bins etc</span>',
 );
 $contact2->update;
 
@@ -117,23 +113,6 @@ subtest 'testing special Open311 behaviour for Confirm', sub {
     is $c->param('jurisdiction_id'), 'FMS', 'Request had correct jurisdiction';
 };
 
-subtest "shows category and group hints when creating a new report", sub {
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ 'rutland' ],
-        MAPIT_URL => 'http://mapit.uk/',
-    }, sub {
-        $mech->get_ok('/around');
-        $mech->submit_form_ok( { with_fields => { pc => 'LE15 0GJ', } },
-            "submit location" );
-        # click through to the report page
-        $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
-            "follow 'skip this step' link" );
-        $mech->content_contains('This is for things like lights and bins') or diag $mech->content;
-        $mech->content_contains('For problems with overflowing bins etc') or diag $mech->content;
-        $mech->content_contains('For problems with street lighting') or diag $mech->content;
-    };
-};
-
 subtest 'check open311_contact_meta_override' => sub {
     my $processor = Open311::PopulateServiceList->new();
 
@@ -143,20 +122,10 @@ subtest 'check open311_contact_meta_override' => sub {
     <attributes>
         <attribute>
             <automated>server_set</automated>
-            <code>hint</code>
+            <code>notice</code>
             <datatype>string</datatype>
             <datatype_description></datatype_description>
-            <description>&lt;span&gt;Text for Traffic Lights will go here&lt;/span&gt;</description>
-            <order>1</order>
-            <required>false</required>
-            <variable>false</variable>
-        </attribute>
-        <attribute>
-            <automated>server_set</automated>
-            <code>group_hint</code>
-            <datatype>string</datatype>
-            <datatype_description></datatype_description>
-            <description>&lt;span&gt;Text for Lights, Signals and Sign will go here&lt;/span&gt;</description>
+            <description>&lt;p&gt;&lt;span&gt;This is the group HTML hint&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span&gt;This is the category HTML hint&lt;/span&gt;&lt;/p&gt;</description>
             <order>2</order>
             <required>false</required>
             <variable>false</variable>
@@ -190,12 +159,9 @@ subtest 'check open311_contact_meta_override' => sub {
     $processor->_current_service( { service_code => 100, service_name => 'Traffic Lights' } );
     $processor->_add_meta_to_contact( $contact );
 
-    my $expected_hint = '<span>Text for Traffic Lights will go here</span>';
-    my $expected_group_hint = '<span>Text for Lights, Signals and Sign will go here</span>';
-
-    is scalar(@{ $contact->get_extra_fields }), 0, "hints aren't included in extra fields";
-    is $contact->get_extra_metadata('category_hint'), $expected_hint, 'hint set correctly on contact';
-    is $contact->get_extra_metadata('group_hint'), $expected_group_hint, 'group_hint set correctly on contact';
+    is scalar(@{ $contact->get_extra_fields }), 1, "One notice added to extra fields";
+    my $notice = ${$contact->get_extra_fields}[0];
+    is $notice->{description}, '<p><span>This is the group HTML hint</span></p><p><span>This is the category HTML hint</span></p>', 'Salesforce data added as notice';
 };
 
 FixMyStreet::override_config {

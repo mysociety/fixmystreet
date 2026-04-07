@@ -108,24 +108,6 @@ sub open311_get_update_munging {
     }
 }
 
-=item * It provides extra hints to be shown alongside category/group options in the reporting interface.
-
-=cut
-
-sub open311_contact_meta_override {
-    my ($self, $service, $contact, $meta) = @_;
-
-    my ($hint) = grep { $_->{code} eq 'hint' } @$meta;
-    my ($group_hint) = grep { $_->{code} eq 'group_hint' } @$meta;
-    @$meta = grep { $_->{code} ne 'hint' && $_->{code} ne 'group_hint' } @$meta;
-
-    # Rutland provide HTML that we want to store for display on the frontend.
-    $contact->set_extra_metadata(
-        category_hint => $hint->{description},
-        group_hint => $group_hint->{description},
-    );
-}
-
 =item * We try and restrict geocoding to the bounding box of Rutland.
 
 =cut
