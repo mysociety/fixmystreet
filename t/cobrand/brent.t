@@ -1598,11 +1598,11 @@ FixMyStreet::override_config {
                 # Check post submit page text.
                 if ($should_be_referred) {
                     $mech->content_contains('Your container request has been sent');
-                    $mech->content_contains('contact you to let you know if your request has been approved');
+                    $mech->content_contains('let you know if your request has been approved');
                 } else {
                     $mech->content_lacks('Your container request');
-                    $mech->content_lacks('contact you to let you know if your request has been approved');
-                    $mech->content_contains('Your property meets current general waste bin capacity requirements');
+                    $mech->content_lacks('let you know if your request has been approved');
+                    $mech->content_contains('Your property meets current general waste capacity requirements');
                 }
 
                 if ($test_send) {
@@ -1666,7 +1666,7 @@ FixMyStreet::override_config {
                         $mech->content_contains('We are unable to complete your request because our records show a similar container');
                     } else {
                         # Displays wording for instant refusal of the request since there is already a recent refusal.
-                        $mech->content_contains('Your property meets current general waste bin capacity requirements');
+                        $mech->content_contains('Your property meets current general waste capacity requirements');
                     }
                 }
             };
