@@ -5,13 +5,15 @@
 
 <h1 class="govuk-heading-xl">Request new container</h1>
 
-<p class="govuk-body">
+<div class="govuk-panel govuk-panel--warning">
 [% IF form.saved_data.refuse_outcome AND form.saved_data.refuse_outcome == 'capacity' %]
-    Your property meets current general waste bin capacity requirements.
+    Your property meets current general waste capacity requirements. A copy of our policy can be viewed by clicking <a href="https://www.brent.gov.uk/-/media/files/resident-documents/planning-and-bc-documents/waste-planning-guidance-revised-2015.pdf?rev=5da7180c3fdb4c27a733d69a7bb41860" target="_blank">here</a>.
 [% ELSE %]
     We are unable to complete your request because our records show a similar container was recently ordered to this address.
     If you require further assistance, please email [% c.cobrand.feature('open311_email').item("Request new container") %].
 [% END %]
-</p>
+</div>
+
+[% INCLUDE 'waste/_button_show_upcoming.html' %]
 
 [% INCLUDE footer.html %]
