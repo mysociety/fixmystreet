@@ -1595,10 +1595,10 @@ FixMyStreet::override_config {
                 # Check post submit page text.
                 if ($should_be_referred) {
                     $mech->content_contains('Your container request has been sent');
-                    $mech->content_contains('contact you to let you know if your request has been approved');
+                    $mech->content_contains('let you know if your request has been approved');
                 } else {
                     $mech->content_lacks('Your container request');
-                    $mech->content_lacks('contact you to let you know if your request has been approved');
+                    $mech->content_lacks('let you know if your request has been approved');
                     $mech->content_contains('Your property meets current general waste capacity requirements');
                 }
 
