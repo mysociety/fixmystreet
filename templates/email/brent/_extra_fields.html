@@ -1,0 +1,15 @@
+[% # TODO We could do similar munging for other bin types %]
+[% IF report.title.match('General rubbish bin \(grey bin\)') %]
+
+  [% IF name == 'Container_Request_Action' %]
+    [% val = cobrand.echo_ids_to_strings.action.$val %]
+  [% ELSIF name == 'Container_Request_Reason' %]
+    [% val = cobrand.echo_ids_to_strings.reason.$val %]
+  [% ELSIF name == 'Container_Request_Container_Type' %]
+    [% val = cobrand.echo_ids_to_strings.type.$val %]
+  [% ELSIF name == 'request_referral' %]
+    [% val = val ? 'Yes' : 'No' %]
+  [% END %]
+
+  [% name = cobrand.extra_fields_email_labels.$name || name %]
+[% END %]
