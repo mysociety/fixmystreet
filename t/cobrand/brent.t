@@ -1567,6 +1567,9 @@ FixMyStreet::override_config {
                 $mech->submit_form_ok({ with_fields => { 'property_general_waste_bins' => $bins } }, "Answer household detail questions");
                 if ($bins ne 'None') {
                     $mech->submit_form_ok({ with_fields => { 'property_largest_general_waste_bin' => $largest_bin_size } }, "Answer household detail questions");
+                } else {
+                    # For email test below
+                    $largest_bin_size = 'none';
                 }
 
                 if ($should_be_referred) {
@@ -1595,11 +1598,11 @@ FixMyStreet::override_config {
                 # Check post submit page text.
                 if ($should_be_referred) {
                     $mech->content_contains('Your container request has been sent');
-                    $mech->content_contains('contact you to let you know if your request has been approved');
+                    $mech->content_contains('let you know if your request has been approved');
                 } else {
                     $mech->content_lacks('Your container request');
-                    $mech->content_lacks('contact you to let you know if your request has been approved');
-                    $mech->content_contains('Your property meets current general waste bin capacity requirements');
+                    $mech->content_lacks('let you know if your request has been approved');
+                    $mech->content_contains('Your property meets current general waste capacity requirements');
                 }
 
                 if ($test_send) {
@@ -1627,21 +1630,27 @@ FixMyStreet::override_config {
                         extra => 'Increase capacity',
                     }->{$reason};
 
-                    like $plain, qr/Container_Request_Container_Type: General rubbish bin \(grey bin\)/;
-                    like $plain, qr/Container_Request_Action: $action/;
-                    like $plain, qr/Container_Request_Reason: $reason_display/;
+                    like $plain, qr/Which container do you need\?: General rubbish bin \(grey bin\)/;
+                    like $plain, qr/Collect or deliver\?: $action/;
+                    like $plain, qr/Why do you need a replacement container\?: $reason_display/;
 
-                    like $plain, qr/request_property_people: $people/;
-                    like $plain, qr/request_property_nappies: $nappies/;
-                    like $plain, qr/request_property_general_waste_bins: $bins/;
+                    like $plain, qr/How many people \(including children\) live at your property\?: $people/;
+                    like $plain, qr/How many children in nappies live at your property\?: $nappies/;
+                    like $plain, qr/How many general waste bins do you currently have.*: $bins/;
+                    like $plain, qr/What size is the largest general waste bin\?: $largest_bin_size/;
+                    like $plain, qr/Property type: Shared flat/;
+                    like $plain, qr/Referral\?: Yes/;
 
-                    like $html, qr/Container_Request_Container_Type:.*General rubbish bin \(grey bin\)/;
-                    like $html, qr/Container_Request_Action:.*$action/;
-                    like $html, qr/Container_Request_Reason:.*$reason_display/;
+                    like $html, qr/Which container do you need\?:.*General rubbish bin \(grey bin\)/;
+                    like $html, qr/Collect or deliver\?:.*$action/;
+                    like $html, qr/Why do you need a replacement container\?:.*$reason_display/;
 
-                    like $html, qr/request_property_people:.*$people/;
-                    like $html, qr/request_property_nappies:.*$nappies/;
-                    like $html, qr/request_property_general_waste_bins:.*$bins/;
+                    like $html, qr/How many people \(including children\) live at your property\?:.*$people/;
+                    like $html, qr/How many children in nappies live at your property\?:.*$nappies/;
+                    like $html, qr/How many general waste bins do you currently have.*$bins/;
+                    like $html, qr/What size is the largest general waste bin\?:.*$largest_bin_size/;
+                    like $html, qr/Property type:.*Shared flat/;
+                    like $html, qr/Referral\?:.*Yes/;
 
                     $mech->clear_emails_ok;
                 }
@@ -1657,7 +1666,7 @@ FixMyStreet::override_config {
                         $mech->content_contains('We are unable to complete your request because our records show a similar container');
                     } else {
                         # Displays wording for instant refusal of the request since there is already a recent refusal.
-                        $mech->content_contains('Your property meets current general waste bin capacity requirements');
+                        $mech->content_contains('Your property meets current general waste capacity requirements');
                     }
                 }
             };

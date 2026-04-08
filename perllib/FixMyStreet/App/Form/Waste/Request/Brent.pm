@@ -208,7 +208,7 @@ has_field property_people =>(
     required => 1,
     type => 'Select',
     widget => 'RadioGroup',
-    label => 'How many people live at your property?',
+    label => 'How many people (including children) live at your property?',
     options => [
         { value => 'Up to 5', label => 'Up to 5' },
         { value => '6 or more', label => '6 or more' }
@@ -273,7 +273,7 @@ has_field property_general_waste_bins =>(
     required => 1,
     type => 'Select',
     widget => 'RadioGroup',
-    label => 'How many general waste bins do you currently have?',
+    label => 'How many general waste bins do you currently have (including missing or damaged)?',
 );
 
 sub options_property_general_waste_bins {

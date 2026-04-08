@@ -28,14 +28,15 @@ END ~%]
     </h1>
     <div class="govuk-panel__body">
         [% IF report.category == 'Request new container' AND c.cobrand.moniker == 'brent' AND report.get_extra_field_value('request_referral') %]
-            <p class="govuk-body">Your application has been sent to Brent Council who will
-            contact you to let you know if your request has been approved. If it has, they will need
-            to take payment before any bins can be delivered.
+            <p class="govuk-body">Your application has been sent to Brent Council who <strong>will
+            contact you</strong> to let you know if your request has been approved.
+            <strong>Please allow up to 3 workings days</strong> for your application to be reviewed.
+            If approved, the Council will need to take payment before any bins can be delivered.
                 [% INCLUDE 'waste/_report_ids.html' %]
             </p>
         [% ELSIF report.category == 'Request new container' AND c.cobrand.moniker == 'brent' AND brent_request_automatic %]
             <p class="govuk-body">
-                Your property meets current general waste bin capacity requirements.
+                Your property meets current general waste capacity requirements. A copy of our policy can be viewed by clicking <a href="https://www.brent.gov.uk/-/media/files/resident-documents/planning-and-bc-documents/waste-planning-guidance-revised-2015.pdf?rev=5da7180c3fdb4c27a733d69a7bb41860" target="_blank">here</a>.
             </p>
         [% ELSE %]
         <p>
