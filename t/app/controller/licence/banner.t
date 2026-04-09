@@ -13,10 +13,10 @@ my $mech = FixMyStreet::TestMech->new;
 # Create TfL body (using 2482 like other TfL tests)
 my $body = $mech->create_body_ok(2482, 'TfL', { cobrand => 'tfl' });
 
-# Create the category for banner licences
+# Create the category for banners licences
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
-    category => 'Banner licence',
+    category => 'Banners licence',
     email => 'licence@tfl.gov.uk.example.org'
 );
 
@@ -27,11 +27,11 @@ subtest 'Banner form submission - smoke test' => sub {
         PHONE_COUNTRY => 'GB',
         COBRAND_FEATURES => {
             licencing_forms => { tfl => 1 },
-            licencing_payment_links => { tfl => { banner => 'LINK' } },
+            licencing_payment_links => { tfl => { banners => 'LINK' } },
         },
         PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     }, sub {
-        $mech->get_ok('/licence/banner');
+        $mech->get_ok('/licence/banners');
 
         # Intro page
         $mech->submit_form_ok({ button => 'start' });
@@ -105,7 +105,7 @@ subtest 'Banner form submission - smoke test' => sub {
         }});
 
         $mech->form_with_fields('terms_accepted');
-        $mech->current_form->find_input('terms_accepted', undef, 1)->value('Banner guidance notes and terms & conditions - March 2026');
+        $mech->current_form->find_input('terms_accepted', undef, 1)->value('Banners guidance notes and terms & conditions - March 2026');
         $mech->current_form->find_input('terms_accepted', undef, 2)->value('Highway licensing and other consents policy - March 2026');
         $mech->current_form->find_input('terms_accepted', undef, 3)->value('Standard conditions for highway consents - March 2026');
         $mech->submit_form_ok;
@@ -141,7 +141,7 @@ subtest 'Banner form submission - smoke test' => sub {
 
         # Verify problem was created
         my $problem = FixMyStreet::DB->resultset('Problem')
-            ->search({ category => 'Banner licence' })
+            ->search({ category => 'Banners licence' })
             ->order_by({ -desc => 'id' })->first;
         ok $problem, 'Problem record created';
         is $problem->cobrand_data, 'licence', 'cobrand_data is licence';
@@ -152,14 +152,14 @@ subtest 'Banner form submission - smoke test' => sub {
         # Detail string should group fields by section with headers and blank lines,
         # making it easier to distinguish e.g. applicant vs contractor answers
         my $detail = $problem->detail;
-        like $detail, qr/\[Location of the banner\/s\]/, 'Detail contains Location section header';
+        like $detail, qr/\[Location of the banners\]/, 'Detail contains Location section header';
         like $detail, qr/\[Applicant details\]/, 'Detail contains Applicant section header';
         like $detail, qr/\n\n/, 'Detail has blank lines between sections';
         unlike $detail, qr/Contact name:/, 'Contractor contact name hidden when same as applicant';
 
         # Verify uploads went to the licence_files directory
         my $cfg = FixMyStreet->config('PHOTO_STORAGE_OPTIONS');
-        my $upload_dir = path($UPLOAD_DIR, "tfl-licence-banner")->absolute(FixMyStreet->path_to());
+        my $upload_dir = path($UPLOAD_DIR, "tfl-licence-banners")->absolute(FixMyStreet->path_to());
 
         ok -d $upload_dir, 'licence_files directory exists';
 
@@ -176,6 +176,19 @@ subtest 'Banner form submission - smoke test' => sub {
             my $file_path = $upload_dir->child($extra->{$field}->{files});
             ok -f $file_path, "Uploaded file exists at $file_path";
         }
+    };
+};
+
+subtest 'Old /licence/banner URL redirects to /licence/banners' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'tfl',
+        COBRAND_FEATURES => { licencing_forms => { tfl => 1 } },
+    }, sub {
+        $mech->max_redirect(0);
+        $mech->get('/licence/banner');
+        is $mech->res->code, 301, 'redirect is 301';
+        like $mech->res->header('Location'), qr{/licence/banners$}, 'redirects to /licence/banners';
+        $mech->max_redirect(7);
     };
 };
 
