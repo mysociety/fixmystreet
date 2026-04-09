@@ -4,8 +4,8 @@ use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Licence::Base';
 use utf8;
 
-# Type identifier used in URL: /licence/banner
-sub type { 'banner' }
+# Type identifier used in URL: /licence/banners
+sub type { 'banners' }
 
 # Human-readable name for display
 sub name { 'Banner' }
@@ -38,7 +38,7 @@ has_field start => (
 has_page location_1 => (
     step_number => 1,
     fields => ['building_name_number', 'street_name', 'borough', 'postcode', 'add_another', 'continue'],
-    title => 'Location of the banner/s',
+    title => 'Location of the banners',
     intro => 'location.html',
     next => sub { $_[1]->{add_another} ? 'location_2' : 'dates' },
     post_process => sub {
@@ -57,7 +57,7 @@ for my $page (2..5) {
     has_page "location_$page" => (
         step_number => 1,
         fields => $fields,
-        title => "Location of the Column Attachments ($page)",
+        title => "Location of the banners ($page)",
         intro => 'location.html',
         next => $next,
         tags => { hide => sub { !$_[0]->form->saved_data->{"building_name_number_$page"} } },
@@ -93,7 +93,7 @@ has_page type => (
 has_field banner_type => (
     type => 'Text',
     widget => 'Textarea',
-    label => 'What type of banner will be put up?',
+    label => 'What type of banners will be put up?',
     required => 1,
     tags => {
         hint =>
@@ -105,7 +105,7 @@ has_field banner_content => (
     type => 'Text',
     widget => 'Textarea',
     label =>
-        'What will be shown on the banner/s? We also require an example of the proposed graphic as part of the application',
+        'What will be shown on the banners? We also require an example of the proposed graphic as part of the application',
     required => 1,
     tags => {
         hint =>
@@ -124,7 +124,7 @@ has_page installation => (
 has_field banner_installation => (
     type => 'Text',
     widget => 'Textarea',
-    label => 'How will the banner/s be installed?',
+    label => 'How will the banners be installed?',
     required => 1,
     tags => {
         hint =>
@@ -219,7 +219,7 @@ has_page site_infrastructure => (
 has_field site_ad_compliance => (
     type => 'Select',
     widget => 'RadioGroup',
-    label => 'Does the banner/s comply with TfL’s advertising policy?',
+    label => 'Do the banners comply with TfL’s advertising policy?',
     tags => {
         hint => FixMyStreet::Template::SafeString->new(
             'As found on <a href="https://tfl.gov.uk/corporate/publications-and-reports/commercial-media#on-this-page-3">TfL’s website</a>. If no, a site meeting between the applicant and TfL may be required.'

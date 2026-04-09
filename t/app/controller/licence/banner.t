@@ -27,11 +27,11 @@ subtest 'Banner form submission - smoke test' => sub {
         PHONE_COUNTRY => 'GB',
         COBRAND_FEATURES => {
             licencing_forms => { tfl => 1 },
-            licencing_payment_links => { tfl => { banner => 'LINK' } },
+            licencing_payment_links => { tfl => { banners => 'LINK' } },
         },
         PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     }, sub {
-        $mech->get_ok('/licence/banner');
+        $mech->get_ok('/licence/banners');
 
         # Intro page
         $mech->submit_form_ok({ button => 'start' });
@@ -152,14 +152,14 @@ subtest 'Banner form submission - smoke test' => sub {
         # Detail string should group fields by section with headers and blank lines,
         # making it easier to distinguish e.g. applicant vs contractor answers
         my $detail = $problem->detail;
-        like $detail, qr/\[Location of the banner\/s\]/, 'Detail contains Location section header';
+        like $detail, qr/\[Location of the banners\]/, 'Detail contains Location section header';
         like $detail, qr/\[Applicant details\]/, 'Detail contains Applicant section header';
         like $detail, qr/\n\n/, 'Detail has blank lines between sections';
         unlike $detail, qr/Contact name:/, 'Contractor contact name hidden when same as applicant';
 
         # Verify uploads went to the licence_files directory
         my $cfg = FixMyStreet->config('PHOTO_STORAGE_OPTIONS');
-        my $upload_dir = path($UPLOAD_DIR, "tfl-licence-banner")->absolute(FixMyStreet->path_to());
+        my $upload_dir = path($UPLOAD_DIR, "tfl-licence-banners")->absolute(FixMyStreet->path_to());
 
         ok -d $upload_dir, 'licence_files directory exists';
 
