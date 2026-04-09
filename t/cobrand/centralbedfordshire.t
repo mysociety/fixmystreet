@@ -46,6 +46,7 @@ $mech->create_contact_ok(body_id => $body->id, category => 'Bridges', email => "
 $mech->create_contact_ok(body_id => $body->id, category => 'Cleaning Contract Reports', email => "CLEANING");
 $mech->create_contact_ok(body_id => $body->id, category => 'Potholes', email => "POTHOLES");
 $mech->create_contact_ok(body_id => $body->id, category => 'Jadu', email => "Jadu");
+$mech->create_contact_ok(body_id => $body->id, category => 'Fly Tipping', email => 'Jadu-fly-tipping');
 
 my $normal_user = $mech->create_user_ok('test@example.net', name => 'Normal User');
 my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',
@@ -137,6 +138,30 @@ FixMyStreet::override_config {
 
         like $mech->get_text_body_from_email($emails[1]), qr/reference number is @{[$report2->external_id]}/;
 
+    };
+
+    subtest 'Jadu fly tipping report is closed automatically' => sub {
+        my ($report_flytipping) = $mech->create_problems_for_body(
+            1,
+            $body->id,
+            'Jadu Fly Tipping',
+            {   category  => 'Fly Tipping',
+                cobrand   => 'centralbedfordshire',
+                latitude  => 52.030695,
+                longitude => -0.357033,
+                areas     =>
+                    ',117960,11804,135257,148868,21070,37488,44682,59795,65718,83582,',
+            }
+        );
+
+        FixMyStreet::Script::Reports::send();
+
+        $report_flytipping->discard_changes;
+        is $report_flytipping->state, 'closed';
+
+        my $comments = $report_flytipping->comments;
+        is $comments->count, 1;
+        like $comments->first->text, qr/this report will now be automatically closed on FixMyStreet/;
     };
 };
 

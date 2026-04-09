@@ -258,6 +258,25 @@ sub open311_post_send {
     $sender->send($row, $h);
 }
 
+=head2 post_report_sent
+
+Central Beds auto-closes its (Jadu) Fly Tipping reports,
+with an update with explanatory text added.
+
+=cut
+
+sub post_report_sent {
+    my ($self, $problem) = @_;
+
+    if (   $problem->external_id
+        && $problem->category eq 'Fly Tipping' )
+    {
+        $self->_post_report_sent_close( $problem,
+            'report/new/close_fly_tipping.html' );
+    }
+
+}
+
 =head2 open311_get_update_munging
 
 We only want to receive the second CS_CHANGE_QUEUE update. Whenever we receive
