@@ -219,7 +219,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/request');
         $mech->content_contains('The Council has continued to provide waste and recycling containers free for as long as possible', 'Intro text included');
         $mech->content_contains('You can request a larger container if you meet the following criteria', 'Divider intro text included for container sizes');
-        $mech->submit_form_ok({ with_fields => { 'container-choice' => 45 }});
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 1981 }});
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'missing' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->content_contains('Continue to payment');

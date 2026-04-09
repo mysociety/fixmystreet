@@ -129,6 +129,7 @@ my %CONTAINERS = (
     food_indoor_5 => 43,
     food_indoor_7 => 44,
     food_indoor_10 => 45,
+    food_indoor_premium => 1981,
     food_outdoor => 46,
     garden_240 => 39,
     garden_140 => 37,
@@ -348,7 +349,7 @@ sub waste_service_containers {
     }
 
     my $food_indoor_key = $self->moniker eq 'merton' ? 'food_indoor_7' : 'food_indoor_5';
-    my $food_indoor_premium_key = 'food_indoor_10';
+    my $food_indoor_premium_key = 'food_indoor_premium';
     if ($service_name =~ /Food/ && !(
             $self->{c}->stash->{quantities}->{$CONTAINERS{$food_indoor_key}}
             || $self->{c}->stash->{quantities}->{$CONTAINERS{$food_indoor_premium_key}}
