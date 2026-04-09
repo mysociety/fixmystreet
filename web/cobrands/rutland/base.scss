@@ -16,4 +16,19 @@
     margin-top: 2em;
 }
 
+.btn--primary {
+    border-radius: 5rem;
+}
+
+a#geolocate_link, #report-cta {
+    @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
+    border-radius: 5rem;
+}
+
+.segmented-control--radio input:checked+label {
+    background-color: $golden;
+    border: $golden;
+}
+
+
 @import "../fixmystreet-uk-councils/societyworks-footer";
