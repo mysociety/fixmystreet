@@ -30,15 +30,41 @@
           Please leave the bin out for collection.
         [% END %]
       [%~ ELSE %]
-        There was a problem with your bin collection
-    [%~ IF c.user.from_body OR c.user.is_superuser %]
+      <p>
+      <strong>We were unable to collect your bin on your last scheduled collection date.</strong>
+      [%~ IF c.user.from_body OR c.user.is_superuser %]
         ([% unit.report_locked_out.join(', ') %])
-    [%~ END %], please call 01733 74 74 74 or email us at
-        <a href="mailto:ask&#64;peterborough.gov.uk?subject=[% property.address %] - missed bin">ask&#64;peterborough.gov.uk</a>, quoting your collection address in the subject line.<br />
-        <small>Please note: we will not return to collect bins that have been recorded
-        by the crew as overweight, contaminated or bin not presented. For more
-        information please visit
-        <a href="https://www.peterborough.gov.uk/bins-waste-and-recycling">https://www.peterborough.gov.uk/bins-waste-and-recycling</a></small>
+      [%~ END %]
+      </p>
+      <p>
+        <strong>Our crews record bins as <em>not collected</em> for one or more of the following reasons:</strong>
+        <ul>
+          <li>Overweight – The bin was too heavy for safe lifting.</li>
+          <li>Contaminated – The bin contained items that should not be placed in that bin.</li>
+          <li>Not presented – The bin was not out when the crew arrived.</li>
+          <li>No access – The crew could not safely reach your property due to an obstruction, such as parked cars, road works, or other barriers preventing vehicle access.</li>
+        </ul>
+      </p>
+      <p>
+        <strong>Bins recorded for any of these reasons will not be collected untill your next scheduled collection day.</strong>
+        <strong>Please ensure that:</strong>
+        <ul>
+          <li>Any incorrect items are removed.</li>
+          <li>Overweight bins are made lighter.</li>
+          <li>Your bin is placed out by 6:45am on your next collection day.</li>
+          <li>The bin lid is fully closed.</li>
+        </ul>
+      </p>
+      <p>
+        <strong>For more information about what you can and can’t put into your bins, please visit <a href="https://www.peterborough.gov.uk/bins-waste-and-recycling">Waste and Recycling | Peterborough City Council</a></strong>.
+      </p>
+      <p>
+        <strong><a href="https://www.peterborough.gov.uk/bins-waste-and-recycling/waste-policy-and-operations">Waste policy and operations | Peterborough City Council</a></strong>
+      </p>
+      <p>
+        <strong>To find out which reason applies to your bin, please email <a href="mailto:ask&#64;peterborough.gov.uk?subject=[% property.address %] - missed bin">ask&#64;peterborough.gov.uk</a>, including your address in the subject line.</strong>
+        <strong>If your enquiry is urgent, please call 01733 74 74 74 Monday to Friday 09:00am to 17:00pm.</strong>
+      </p>
       [%~ END ~%]
     </span>
   [% ELSIF unit.report_allowed %]

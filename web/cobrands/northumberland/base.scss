@@ -55,7 +55,7 @@ a#geolocate_link {
 }
 
 #report-cta {
-    padding: 0.75em;
+    padding: 0.5em;
 }
 
 .btn--primary {
@@ -74,7 +74,11 @@ a#geolocate_link {
 
 #site-logo {
     background-image: url("/cobrands/northumberland/images/northumberland-logo.svg");
-    background-size: contain;
+    background-size: 85%;
+}
+
+#nav-link {
+    color: $primary_b;
 }
 
 #main-nav-btn:checked ~ #main-nav {

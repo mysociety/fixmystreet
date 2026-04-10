@@ -1307,7 +1307,7 @@ $.extend(fixmystreet.set_up, {
 
     var modal = document.getElementById('js-menu-open-modal'),
         nav = document.getElementById('main-nav'),
-        nav_checkbox = document.getElementById('main-nav-btn');
+        nav_checkbox = document.getElementById('main-nav-btn'),
         nav_link = document.querySelector('label[for="main-nav-btn"]');
 
     var toggle_menu = function(e) {
@@ -1325,6 +1325,18 @@ $.extend(fixmystreet.set_up, {
       }
       nav_checkbox.setAttribute('aria-expanded', opened);
       nav_checkbox.checked = opened;
+
+      nav_link.setAttribute('aria-label', opened ? 
+        translation_strings.nav_menu.aria_label_nav_close
+        : translation_strings.nav_menu.aria_label_nav_open
+      );
+
+      // trim for cobrands that don't have visible text
+      if (nav_link.textContent.trim()) {
+        nav_link.textContent = opened ? 
+          translation_strings.nav_menu.text_nav_close
+          : translation_strings.nav_menu.text_nav_open;
+      }
     };
 
     nav_checkbox.addEventListener('focus', function() {

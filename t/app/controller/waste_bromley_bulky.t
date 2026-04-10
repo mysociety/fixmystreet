@@ -38,6 +38,7 @@ $body->update;
 
 my $staff_user = $mech->create_user_ok('bromley@example.org', name => 'Council User', from_body => $body);
 $staff_user->user_body_permissions->create({ body => $body, permission_type => 'can_pay_with_csc' });
+$staff_user->user_body_permissions->create({ body => $body, permission_type => 'wasteworks_config' });
 $body->update( { comment_user_id => $staff_user->id } );
 
 my $echo = Test::MockModule->new('Integrations::Echo');
@@ -115,6 +116,7 @@ FixMyStreet::override_config {
                 bulky_quantity_1_code => 2,
                 bulky_cancel_no_payment_minutes => 30,
                 bulky_missed => 1,
+                admin_config_enabled => 1,
             },
         },
         echo => {
@@ -782,6 +784,11 @@ FixMyStreet::override_config {
         $report->delete;
     };
 
+    subtest 'admin setting of minimum pricing' => sub {
+        $mech->get_ok('/admin/waste');
+        $mech->submit_form_ok({ with_fields => { per_item_min_collection_price => '123,456' } });
+        $mech->content_lacks('Not an integer');
+    };
 };
 
 done_testing;

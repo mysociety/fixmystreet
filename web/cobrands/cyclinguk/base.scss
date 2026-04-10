@@ -39,10 +39,6 @@ $site-logo-height: 76px;
     align-items: center;
 }
 
-#nav-link {
-    right: 1rem;
-}
-
 #report-cta {
     right: 4rem;
     height: 36px;
@@ -81,11 +77,15 @@ $site-logo-height: 76px;
 }
 
 #nav-link {
+    right: 1rem;
     background-color: $primary;
     border-radius: 50%;
     padding-top: 36px;
-    width: 36px;
     background-size: 18px;
+    padding: 0 0 0 36px;
+    min-height: 36px;
+    height: 36px;
+    background-position: center;
 }
 
 //  BUTTONS
