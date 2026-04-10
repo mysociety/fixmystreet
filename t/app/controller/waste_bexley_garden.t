@@ -949,6 +949,8 @@ FixMyStreet::override_config {
                 '"Renew today" notification box shown';
             like $mech->content, qr/14 March 2024, soon due for renewal/,
                 '"Due soon" message shown';
+            unlike $mech->content, qr/\(Do not contact us to cancel. Your subscription will automatically cancel unless you renew\)/,
+                'Additional overdue messaging  not shown';
             like $mech->content,
                 qr/Renew your brown wheelie bin subscription/,
                 'Renewal link available';
@@ -1007,6 +1009,8 @@ FixMyStreet::override_config {
                     '"Renew today" notification box not shown';
                 unlike $mech->content, qr/14 March 2024, soon due for renewal/,
                     '"Due soon" message not shown';
+                unlike $mech->content, qr/\(Do not contact us to cancel. Your subscription will automatically cancel unless you renew\)/,
+                    'Additional overdue messaging not shown';
                 unlike $mech->content,
                     qr/Renew your brown wheelie bin subscription/,
                     'Renewal link not available';
@@ -1318,7 +1322,7 @@ FixMyStreet::override_config {
                         'cannot cancel';
                     unlike $mech->content, qr/Renew subscription today/,
                         '"Renew today" notification box not shown';
-                    like $mech->content, qr/18 January 2024, subscription overdue/,
+                    like $mech->content, qr/18 January 2024, subscription overdue. \(Do not contact us to cancel. Your subscription will automatically cancel unless you renew\)/,
                         '"Overdue" message shown';
                     like $mech->content,
                         qr/Renew your brown wheelie bin subscription/,
@@ -1490,7 +1494,7 @@ FixMyStreet::override_config {
                         'cannot cancel';
                     unlike $mech->content, qr/Renew subscription today/,
                         '"Renew today" notification box not shown';
-                    like $mech->content, qr/1 November 2023, subscription overdue/,
+                    like $mech->content, qr/1 November 2023, subscription overdue. \(Do not contact us to cancel. Your subscription will automatically cancel unless you renew\)/,
                         '"Overdue" message shown';
                     like $mech->content,
                         qr/Renew your brown wheelie bin subscription/,
@@ -3185,7 +3189,7 @@ FixMyStreet::override_config {
                     qr/Your subscription is soon due for renewal/,
                     'renewal warning not shown';
                 like $mech->content,
-                    qr/subscription overdue/,
+                    qr/subscription overdue. \(Do not contact us to cancel. Your subscription will automatically cancel unless you renew\)/,
                     'overdue message shown';
                 like $mech->content,
                     qr/Renew your brown wheelie bin subscription/,
@@ -3320,6 +3324,7 @@ FixMyStreet::override_config {
 
                 $mech->get_ok('/waste/10001');
                 $mech->content_lacks('Your subscription is soon due for renewal');
+                $mech->content_lacks('Do not contact us to cancel. Your subscription will automatically cancel unless you renew');
                 $mech->content_contains('This property has an existing direct debit subscription which will renew automatically');
                 $mech->content_lacks('value="Renew subscription today"');
                 $mech->content_lacks('Renew your brown wheelie bin subscription');
@@ -3338,6 +3343,9 @@ FixMyStreet::override_config {
                 unlike $mech->text,
                     qr/Your subscription is soon due for renewal/,
                     'renewal warning not shown';
+                unlike $mech->text,
+                    qr/\(Do not contact us to cancel. Your subscription will automatically cancel unless you renew\)/,
+                    'additional message not shown';
                 unlike $mech->content,
                     qr/subscription overdue/,
                     'overdue message not shown';
