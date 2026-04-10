@@ -1,0 +1,95 @@
+#!/usr/bin/env perl
+
+use v5.14;
+use warnings;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use DateTime;
+use Getopt::Long::Descriptive;
+use FixMyStreet;
+use FixMyStreet::Cobrand;
+
+my ($opts, $usage) = describe_options(
+    '%c %o',
+    ['days=i', 'only show failures with last_failed_at within this many days', { default => 10 }],
+    ['all',   'show all failures regardless of age'],
+    ['help|h', 'print usage message and exit'],
+);
+$usage->die if $opts->help;
+
+my $cutoff;
+unless ($opts->all) {
+    $cutoff = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)
+        ->subtract(days => $opts->days)->iso8601;
+}
+
+my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('bexley')->new;
+
+my @kinds = (
+    {
+        op => 'cancellation', label => 'Cancellation errors', verb => 'cancellation',
+        retry => sub {
+            my ($p, $info) = @_;
+            (my $ext_id = $p->external_id) =~ s/^Agile-//;
+            my $uprn = $p->uprn;
+            return qq{bin/bexley/cancel-garden-waste-from-agile --uprn $uprn --reference $ext_id --verbose};
+        },
+    },
+    {
+        op => 'amend', label => 'Amend errors', verb => 'amend',
+        retry => sub {
+            my ($p, $info) = @_;
+            my $amount = $info->{context}{amount} or return;
+            my $id = $p->id;
+            return qq{bin/cron-wrapper perl -MFixMyStreet::DB -MFixMyStreet::Cobrand -e 'my \$r = FixMyStreet::DB->resultset("Problem")->find($id); my \$i = FixMyStreet::Cobrand->get_class_for_moniker("bexley")->new->get_dd_integration; \$i->amend_plan({ orig_sub => \$r, amount => "$amount" });'};
+        },
+    },
+    {
+        op => 'one_off', label => 'One-off payment errors', verb => 'one-off payment',
+        retry => sub {
+            my ($p, $info) = @_;
+            my $amount = $info->{context}{amount} or return;
+            my $date   = $info->{context}{date}   or return;
+            my $id = $p->id;
+            return qq{bin/cron-wrapper perl -MDateTime::Format::ISO8601 -MFixMyStreet::DB -MFixMyStreet::Cobrand -e 'my \$r = FixMyStreet::DB->resultset("Problem")->find($id); my \$i = FixMyStreet::Cobrand->get_class_for_moniker("bexley")->new->get_dd_integration; \$i->one_off_payment({ orig_sub => \$r, amount => "$amount", date => DateTime::Format::ISO8601->parse_datetime("$date") });'};
+        },
+    },
+);
+
+my $reports = $cobrand->problems->search({
+    category => 'Garden Subscription',
+    title => ['Garden Subscription - New', 'Garden Subscription - Renew'],
+    state => { '!=' => 'hidden' },
+    -bool => \"extra->'direct_debit_errors' IS NOT NULL",
+});
+
+my %by_op;
+while (my $p = $reports->next) {
+    my $errors = $p->get_extra_metadata('direct_debit_errors') || {};
+    for my $op (keys %$errors) {
+        my $info = $errors->{$op};
+        next if $cutoff && ($info->{last_failed_at} // '') lt $cutoff;
+        push @{ $by_op{$op} }, [ $p, $info ];
+    }
+}
+
+for my $k (@kinds) {
+    my $entries = $by_op{ $k->{op} } or next;
+    say "# $k->{label}";
+    for my $entry (@$entries) {
+        my ($p, $info) = @$entry;
+        say "Failed DD $k->{verb}: Report " . $p->id
+            . ", UPRN=" . $p->uprn
+            . ", failures=" . ($info->{failures} // '')
+            . ", last-failed=" . ($info->{last_failed_at} // '')
+            . ", error=" . ($info->{error} // 'Unknown error');
+        my $retry = $k->{retry}->($p, $info);
+        say "  Retry with: $retry" if $retry;
+    }
+}

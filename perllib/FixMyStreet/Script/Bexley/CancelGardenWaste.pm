@@ -49,7 +49,7 @@ sub cancel_contract {
     my ( $self, $contract ) = @_;
 
     my $uprn = $contract->{UPRN};
-    my $id = $contract->{Id};
+    my $id = $contract->{Id} // "";
     my $reference = $contract->{Reference};
     my $reason = $contract->{Reason};
 
@@ -108,21 +108,8 @@ sub _cancel_direct_debit {
     my $resp = $i->cancel_plan({ report => $original_report });
 
     if ( ref $resp eq 'HASH' && $resp->{error} ) {
-        my $failures = $original_report->get_extra_metadata('direct_debit_cancellation_failures') // 0;
-        $failures++;
-        $original_report->set_extra_metadata(
-            direct_debit_cancellation_failures       => $failures,
-            direct_debit_cancellation_error          => $resp->{error},
-            direct_debit_cancellation_last_failed_at => DateTime->now->set_time_zone( FixMyStreet->local_time_zone )->iso8601,
-        );
-        $original_report->update;
         print "  Failed to send cancellation request to Direct Debit provider for Agile reference $reference: $resp->{error}\n";
     } else {
-        $original_report->set_extra_metadata(
-            direct_debit_cancellation_date => DateTime->now->set_time_zone( FixMyStreet->local_time_zone )->iso8601,
-            direct_debit_cancellation_note => 'Cancellation received from Agile LastCancelled API',
-        );
-        $original_report->update;
         $self->_vprint(
             "  Successfully sent cancellation request to Direct Debit provider."
         );
@@ -144,7 +131,7 @@ sub _cancel_legacy_direct_debit {
     my $resp = $i->cancel_plan({ contract_ids => $legacy_contract_ids });
 
     if ( ref $resp eq 'HASH' && $resp->{error} ) {
-        print "  Failed to send cancellation request to Direct Debit provider for Agile reference $reference: $resp->{error}\n";
+        print "  Failed to send legacy cancellation request to Direct Debit provider for Agile reference $reference: $resp->{error}\n";
     } else {
         $self->_vprint(
             "  Successfully sent cancellation request to Direct Debit provider."
