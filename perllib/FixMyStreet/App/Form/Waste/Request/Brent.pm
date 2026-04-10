@@ -273,7 +273,7 @@ has_field property_general_waste_bins =>(
     required => 1,
     type => 'Select',
     widget => 'RadioGroup',
-    label => 'How many general waste bins do you currently have (including missing or damaged)?',
+    label => 'How many general waste bins do you currently have?',
 );
 
 sub options_property_general_waste_bins {
