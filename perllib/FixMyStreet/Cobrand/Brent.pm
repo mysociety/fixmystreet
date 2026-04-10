@@ -448,7 +448,7 @@ sub extra_fields_email_labels {
         Container_Request_Quantity => 'Container quantity to collect/deliver',
         Container_Request_Reason => 'Why do you need a replacement container?',
 
-        request_property_general_waste_bins => 'How many general waste bins do you currently have (including missing or damaged)?',
+        request_property_general_waste_bins => 'How many general waste bins do you currently have?',
         request_property_largest_general_waste_bin => 'What size is the largest general waste bin?',
         request_property_nappies => 'How many children in nappies live at your property?',
         request_property_people => 'How many people (including children) live at your property?',
