@@ -54,7 +54,7 @@ sub validate {
 
     # Bypass check for clinical form, because the user may not have a clinical
     # service, and if they do, it is guaranteed to be set as a hidden field
-    unless ( $self->isa('FixMyStreet::App::Form::Waste::Report::Clinical') ) {
+    unless ( $self->{c}->stash->{clinical} ) {
         foreach ($self->all_fields) {
             $any = 1 if $_->name =~ /^service-/ && ($_->value || $self->saved_data->{$_->name});
         }

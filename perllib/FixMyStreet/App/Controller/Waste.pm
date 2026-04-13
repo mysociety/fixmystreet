@@ -12,7 +12,7 @@ use FixMyStreet::App::Form::Field::JSON;
 use FixMyStreet::App::Form::Waste::UPRN;
 use FixMyStreet::App::Form::Waste::AboutYou;
 use FixMyStreet::App::Form::Waste::Report;
-use FixMyStreet::App::Form::Waste::Report::Clinical;
+use FixMyStreet::App::Form::Waste::Report::Clinical::Bexley;
 use FixMyStreet::App::Form::Waste::Problem;
 use FixMyStreet::App::Form::Waste::Enquiry;
 use FixMyStreet::App::Form::Waste::Assisted;
@@ -1086,13 +1086,12 @@ sub clinical_report : PathPart('clinical') : Chained('property') : Args(0) {
 
     my $field_list = [];
 
-    # TODO Do we need e.g. the bin location field?
-
     $c->cobrand->call_hook( 'waste_munge_clinical_report_form_fields',
         $field_list );
 
     $c->stash->{clinical} = 1;
-    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Report::Clinical';
+    $c->stash->{form_class}
+        = 'FixMyStreet::App::Form::Waste::Report::Clinical::Bexley';
     $c->stash->{field_list} = $field_list;
     $c->stash->{first_page} = 'intro';
     $c->forward('form');
