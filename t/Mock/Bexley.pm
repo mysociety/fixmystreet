@@ -402,6 +402,8 @@ sub _site_collections {
 
                 RoundSchedule => 'RND-6 Wed Wk 2',
             },
+
+            { ServiceItemName => 'CW-SACK' },
         ],
         10003 => [
             {   SiteServiceID          => 1000,
