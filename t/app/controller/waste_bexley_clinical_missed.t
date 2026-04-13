@@ -107,6 +107,9 @@ FixMyStreet::override_config {
             { with_fields => { issue => 'Missed collection' } }
         );
         $mech->submit_form_ok(
+            { with_fields => { bin_location => 'Rear of property' } }
+        );
+        $mech->submit_form_ok(
             {   with_fields => {
                     name  => 'Trevor Trouble',
                     email => 'trevor@trouble.com',
@@ -117,6 +120,19 @@ FixMyStreet::override_config {
         $mech->text_contains(
             'Submit missed clinical collection',
             'On summary page',
+        );
+        $mech->submit_form_ok(
+            { button => 'change_bin_location' }
+        );
+        $mech->submit_form_ok(
+            { with_fields => { bin_location => 'Top of the driveway' } }
+        );
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    name  => 'Trevor Trouble',
+                    email => 'trevor@trouble.com',
+                }
+            }
         );
 
         $mech->submit_form_ok(
@@ -134,7 +150,8 @@ FixMyStreet::override_config {
         is $report->title, 'Clinical Waste';
         is $report->get_extra_field_value('service_item_name'), 'CW-SACK';
         is $report->get_extra_field_value('assisted_yn'), 'Yes';
-        is $report->get_extra_field_value('location_of_containers'), '';
+        is $report->get_extra_field_value('location_of_containers'),
+            'Top of the driveway';
     };
 
     subtest 'Property without clinical waste' => sub {

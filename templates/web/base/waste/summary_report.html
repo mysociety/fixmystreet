@@ -33,6 +33,23 @@ step1 = clinical ? '' : 'report';
       [% END %]
     </div>
   [% END %]
+  [% IF cobrand.moniker == 'bexley' && clinical %]
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">
+        Location of containers
+      </dt>
+      <dd class="govuk-summary-list__value">
+        [% data.bin_location %]
+      </dd>
+      <dd class="govuk-summary-list__actions">
+        <form method="post">
+          <input type="hidden" name="saved_data" value="[% form.fif.saved_data %]">
+          <input type="hidden" name="goto" value="container_location">
+          <input type="submit" name="change_bin_location" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0" value="Change answers">
+        </form>
+      </dd>
+    </div>
+  [% END %]
 [% END %]
 
 [% PROCESS waste/summary.html %]
