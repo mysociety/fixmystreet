@@ -1075,6 +1075,25 @@ sub report : Chained('property') : Args(0) {
     $c->forward('form');
 }
 
+sub clinical_report : PathPart('clinical') : Chained('property') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    my $cfg = $c->cobrand->feature('waste_features');
+    if ( !$cfg->{clinical_enabled} ) {
+        $c->detach('/waste/property_redirect');
+    }
+
+    my $field_list = [];
+
+    $c->cobrand->call_hook( 'waste_setup_clinical_report_form',
+        $field_list );
+
+    $c->stash->{clinical} = 1;
+    $c->stash->{field_list} = $field_list;
+    $c->stash->{first_page} = 'intro';
+    $c->forward('form');
+}
+
 sub process_report_data : Private {
     my ($self, $c, $form) = @_;
     my $data = $form->saved_data;

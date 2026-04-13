@@ -24,6 +24,9 @@
   [% END %]
 
   <li><a [% external_new_tab | safe %] href="https://www.bexley.gov.uk/services/rubbish-and-recycling/clinical-waste-collections/get-clinical-waste-collected">Get clinical waste collected</a></li>
+  [% IF cobrand.feature('waste_features').clinical_enabled %]
+    <li><a href="[% c.uri_for_action('waste/clinical_report', [ property.id ]) %]">Report an issue with my clinical waste collection</a></li>
+  [% END %]
   <li><a [% external_new_tab | safe %] href="https://www.bexley.gov.uk/services/rubbish-and-recycling/recycling/which-bin-should-i-use">Which bin should I use?</a></li>
   [% IF property.show_bulky_waste %]
     <li><a href="[% c.uri_for_action('waste/bulky/index', [ property.id ]) %]">Arrange a bulky waste collection</a></li>
@@ -42,6 +45,15 @@
         <li><a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Assisted+collection+remove">Remove assisted collection</a></li>
       [% ELSE  %]
         <li>This property is not set up for assisted collections.</li>
+      [% END %]
+    </ul>
+
+    <h3>Clinical waste collection</h3>
+    <ul>
+      [% IF property.clinical_service %]
+        <li>This property is set up for clinical waste collections.</li>
+      [% ELSE  %]
+        <li>This property is not set up for clinical waste collections.</li>
       [% END %]
     </ul>
 [% ELSIF property.has_assisted AND user_requested_assisted %]

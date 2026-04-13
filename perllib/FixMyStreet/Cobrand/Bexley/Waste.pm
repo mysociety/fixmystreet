@@ -19,6 +19,7 @@ use BexleyAddresses;
 use DateTime;
 use DateTime::Format::W3CDTF;
 use FixMyStreet;
+use FixMyStreet::App::Form::Waste::Report::Clinical::Bexley;
 use FixMyStreet::App::Form::Waste::Request::Bexley;
 use FixMyStreet::Template;
 use JSON::MaybeXS;
@@ -310,6 +311,20 @@ sub bin_services_for_address {
     my $containers = $self->_containers($property);
     my $now_dt = DateTime->now->set_time_zone( FixMyStreet->local_time_zone );
 
+    # Clinical waste is a special case - we don't want to display info on
+    # bin days page, but we do need to know if a clinical waste collection
+    # exists
+    my ($clinical_service)
+        = grep { $_->{ServiceItemName} eq 'CW-SACK' } @$site_services;
+    if ($clinical_service) {
+        my $container = $containers->{ $clinical_service->{ServiceItemName} };
+        $property->{clinical_service} = {
+            service_id   => $clinical_service->{ServiceItemName},
+            service_name => $container->{name},
+            uprn         => $uprn,
+        };
+    }
+
     # Filter out out-of-date rows first, or those without a container.
     #
     # Whitespace returns a standard bin service alongside an assisted
@@ -318,6 +333,8 @@ sub bin_services_for_address {
     my @site_services_filtered;
     my %assisted;
     for my $service (@$site_services) {
+        next if $service->{ServiceItemName} eq 'CW-SACK'; # Clinical
+
         next if !$service->{NextCollectionDate};
 
         my $container = $containers->{ $service->{ServiceItemName} };
@@ -1180,6 +1197,11 @@ HTML
             name        => 'Black Sacks',
             description => 'Non-recyclable waste',
         },
+
+        'CW-SACK' => {
+            name => 'Clinical Waste',
+            description => 'Clinical Waste Sack',
+        },
     };
 }
 
@@ -1204,9 +1226,18 @@ sub waste_munge_report_data {
 
     my $property = $c->stash->{property};
     my $address = $property->{address};
-    my $service_id = $c->stash->{services}{$id}{service_id};
-    my $service_name = $c->stash->{services}{$id}{service_name};
-    my $uprn = $c->stash->{services}{$id}{uprn};
+
+    # Clinical service is not in normal services list, so do a separate check
+    my $service;
+    if ( $property->{clinical_service} && $property->{clinical_service}{service_id} eq $id ) {
+        $service = $property->{clinical_service};
+    } else {
+        $service = $c->stash->{services}{$id};
+    }
+
+    my $service_id = $service->{service_id};
+    my $service_name = $service->{service_name};
+    my $uprn = $service->{uprn};
     my $containers = $self->_containers($property);
     my $service_description = $containers->{$service_id}->{description};
     $service_description = 'Various' if $service_description =~ /<li>/;
@@ -1215,6 +1246,7 @@ sub waste_munge_report_data {
     $data->{uprn} = $uprn; # Needed to override for some parent properties
     $c->set_param('service_id', $id);
     $c->set_param('location_of_containers', $data->{bin_location}) if $data->{bin_location};
+    $c->set_param('quantity', $data->{bin_quantity}) if $data->{bin_quantity};
     $c->set_param('service_item_name', $service_id);
     $c->set_param('assisted_yn', $property->{has_assisted} ? 'Yes' : 'No');
 }
@@ -1223,6 +1255,24 @@ sub waste_munge_report_form_fields {
     my ($self, $field_list) = @_;
 
     push @$field_list, $self->_bin_location_field;
+}
+
+sub waste_setup_clinical_report_form {
+    my ( $self, $field_list ) = @_;
+
+    $self->{c}->stash->{form_class}
+        = 'FixMyStreet::App::Form::Waste::Report::Clinical::Bexley';
+
+    my $service = $self->{c}->stash->{property}{clinical_service};
+
+    if ($service) {
+        push @$field_list, (
+            'service-' . $service->{service_id} => {
+                type    => 'Hidden',
+                default => 1,
+            }
+        );
+    }
 }
 
 sub waste_munge_enquiry_data {
