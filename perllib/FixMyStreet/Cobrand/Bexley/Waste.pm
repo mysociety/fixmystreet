@@ -333,6 +333,8 @@ sub bin_services_for_address {
     my @site_services_filtered;
     my %assisted;
     for my $service (@$site_services) {
+        next if $service->{ServiceItemName} eq 'CW-SACK'; # Clinical
+
         next if !$service->{NextCollectionDate};
 
         my $container = $containers->{ $service->{ServiceItemName} };
@@ -1198,6 +1200,7 @@ HTML
 
         'CW-SACK' => {
             name => 'Clinical Waste',
+            description => 'Clinical Waste Sack',
         },
     };
 }
@@ -1236,8 +1239,9 @@ sub waste_munge_report_data {
     my $service_name = $service->{service_name};
     my $uprn = $service->{uprn};
     my $containers = $self->_containers($property);
-    my $service_description = $containers->{$service_id}->{description} // '';
+    my $service_description = $containers->{$service_id}->{description};
     $service_description = 'Various' if $service_description =~ /<li>/;
+    $data->{title} = "$service_name ($service_description)";
     $data->{title} = "$service_name";
     $data->{title} .= " ($service_description)" if $service_description;
     $data->{detail} = "$data->{title}\n\n$address";

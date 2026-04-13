@@ -382,14 +382,6 @@ sub _site_collections {
 
                 RoundSchedule => 'RND-8-9 Mon, RND-8-9 Wed',
             },
-            # CW-SACK (Clinical waste) is not in container list so won't be shown
-            {
-                SiteServiceID          => 99,
-                ServiceItemDescription => 'Clinical Waste Sack',
-                ServiceItemName        => 'CW-SACK',
-
-                NextCollectionDate   => '2024-04-01T00:00:00',
-            },
 
             # Has same dates and schedule as RES-CHAM above
             {   SiteServiceID          => 10,
@@ -403,7 +395,17 @@ sub _site_collections {
                 RoundSchedule => 'RND-6 Wed Wk 2',
             },
 
-            { ServiceItemName => 'CW-SACK' },
+            # CW-SACK (Clinical waste) not shown in bin days list but we allow
+            # missed collection report
+            {
+                SiteServiceID          => 99,
+                ServiceItemDescription => 'Clinical Waste Sack',
+                ServiceItemName        => 'CW-SACK',
+
+                NextCollectionDate   => '2024-04-01T00:00:00',
+                SiteServiceValidFrom => '2020-10-16T00:00:00',
+                SiteServiceValidTo   => '0001-01-01T00:00:00',
+            },
         ],
         10003 => [
             {   SiteServiceID          => 1000,
@@ -427,6 +429,15 @@ sub _site_collections {
                 SiteServiceValidTo   => '2024-03-31T03:00:00',
 
                 RoundSchedule => 'RND-1 Tue Wk 2',
+            },
+            {
+                SiteServiceID          => 99,
+                ServiceItemDescription => 'Clinical Waste Sack',
+                ServiceItemName        => 'CW-SACK',
+
+                NextCollectionDate   => '2024-04-01T00:00:00',
+                SiteServiceValidFrom => '2020-10-16T00:00:00',
+                SiteServiceValidTo   => '0001-01-01T00:00:00',
             },
         ],
         10005 => [
