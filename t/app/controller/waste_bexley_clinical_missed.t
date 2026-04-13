@@ -65,7 +65,7 @@ FixMyStreet::override_config {
     },
 }, sub {
     subtest 'Property with clinical waste' => sub {
-        $mech->get_ok('/waste/10001');
+        $mech->get_ok('/waste/10004');
 
         $mech->text_contains(
             'Report an issue with my clinical waste collection',
@@ -76,6 +76,9 @@ FixMyStreet::override_config {
             'This property is set up for clinical waste',
             'Staff message not visible',
         );
+
+        $mech->content_unlike( qr/Clinical Waste Sack/,
+            'No clinical waste shown in list of services' );
 
         $mech->follow_link_ok(
             { text_regex => qr/issue with my clinical waste/ } );
@@ -147,9 +150,9 @@ FixMyStreet::override_config {
         my $report = FixMyStreet::DB->resultset('Problem')->first;
 
         is $report->category, 'Report missed collection';
-        is $report->title, 'Clinical Waste';
+        is $report->title, 'Clinical Waste (Clinical Waste Sack)';
         is $report->get_extra_field_value('service_item_name'), 'CW-SACK';
-        is $report->get_extra_field_value('assisted_yn'), 'Yes';
+        is $report->get_extra_field_value('assisted_yn'), 'No';
         is $report->get_extra_field_value('location_of_containers'),
             'Top of the driveway';
     };
@@ -183,7 +186,7 @@ FixMyStreet::override_config {
     subtest 'Logged in as staff' => sub {
         $mech->log_in_ok( $staff_user->email );
 
-        $mech->get_ok('/waste/10001');
+        $mech->get_ok('/waste/10004');
 
         $mech->text_contains(
             'This property is set up for clinical waste',
