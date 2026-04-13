@@ -279,6 +279,60 @@ sub get_body_sender {
     return $self->SUPER::get_body_sender($body, $problem);
 }
 
+sub _report_is_in_cctv_zone {
+    my ($self, $problem) = @_;
+    my ($x, $y) = Utils::convert_latlon_to_en(
+        $problem->latitude,
+        $problem->longitude,
+        'G'
+    );
+
+    my $features = $self->_fetch_features(
+        {
+            type => 'arcgis',
+            url => 'https://peterborough.assets/9/query?',
+            # The CCTV asset layer already stores the camera coverage area, so
+            # that geometry defines the buffer.
+            buffer => 0,
+        },
+        $x,
+        $y,
+    );
+
+    return $features && scalar @$features;
+}
+
+sub _send_extra_flytipping_email {
+    my ($self, $row, $h, %args) = @_;
+
+    my @sent_to_before_send = @{ $row->get_extra_metadata('sent_to') || [] };
+    my $extra_fields = $args{extra_fields};
+    my %send_h = (
+        %$h,
+        %{ $args{send_context} || {} },
+    );
+
+    $row->push_extra_fields(@$extra_fields) if $extra_fields;
+
+    my $sender = FixMyStreet::SendReport::Email->new( to => [ $args{dest} ] );
+    $sender->send($row, \%send_h);
+
+    if ($sender->success && @sent_to_before_send) {
+        my @sent_to_after_send = @{ $row->get_extra_metadata('sent_to') || [] };
+        my %already_included = map { $_ => 1 } @sent_to_after_send;
+
+        for my $recipient (@sent_to_before_send) {
+            next if $already_included{$recipient};
+            push @sent_to_after_send, $recipient;
+            $already_included{$recipient} = 1;
+        }
+
+        $row->update_extra_metadata(sent_to => \@sent_to_after_send);
+    }
+
+    return $sender;
+}
+
 sub _witnessed_general_flytipping {
     my ($self, $row) = @_;
     my $witness = $self->{cache_pcc_witness} || '';
@@ -315,20 +369,40 @@ sub open311_post_send {
     my $send_email = $row->external_id;
     return unless $send_email;
 
-    my $emails = $self->feature('open311_email');
+    my $emails = $self->feature('open311_email') || {};
     my %flytipping_cats = map { $_ => 1 } @{ $self->_flytipping_categories };
     if ( $emails->{flytipping} && $flytipping_cats{$row->category} ) {
         my $dest = [ $emails->{flytipping}, "Environmental Services" ];
-        $h->{flytipping_extra} = 1;
-        my $sender = FixMyStreet::SendReport::Email->new( to => [ $dest ] );
-        $sender->send($row, $h);
+        $self->_send_extra_flytipping_email(
+            $row,
+            $h,
+            dest => $dest,
+            send_context => { flytipping_extra => 1 },
+        );
         if ($emails->{flytipping_witnessed} && $self->_witnessed_general_flytipping($row)) {
             my $dest2 = [ $emails->{flytipping_witnessed}, "Environmental Enforcement" ];
-            $h->{flytipping_extra_witnessed} = 1;
-            $sender = FixMyStreet::SendReport::Email->new( to => [ $dest2 ] );
-            $sender->send($row, $h);
-            push @{$row->get_extra_metadata('sent_to')}, $dest->[0];
-            $row->update_extra_metadata(sent_to => $row->get_extra_metadata('sent_to'));
+            $self->_send_extra_flytipping_email(
+                $row,
+                $h,
+                dest => $dest2,
+                send_context => { flytipping_extra_witnessed => 1 },
+            );
+        }
+        if ($emails->{flytipping_cctv} && $self->_report_is_in_cctv_zone($row)) {
+            my $dest3 = [ $emails->{flytipping_cctv}, 'Environmental Enforcement' ];
+            $self->_send_extra_flytipping_email(
+                $row,
+                $h,
+                dest => $dest3,
+                send_context => { flytipping_extra_cctv => 1 },
+                extra_fields => [
+                    {
+                        name => 'cctv_camera_zone',
+                        description => 'CCTV camera zone',
+                        value => 'This fly-tip was reported within a CCTV camera zone.',
+                    },
+                ],
+            );
         }
     }
 

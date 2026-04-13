@@ -1,5 +1,6 @@
 Subject: [%
 IF flytipping_extra_witnessed; '[URGENT - Evidence available] ';
+ELSIF flytipping_extra_cctv; '[Priority Evidence Available (Fixed CCTV)] ';
 ELSIF flytipping_extra; '[Censorship checking only] ';
 END;
 ~%]

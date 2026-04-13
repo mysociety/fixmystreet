@@ -15,6 +15,10 @@ $mock->mock('_fetch_features', sub {
         # council land
         if ( ($x == 552617 || $x == 519240) && $args->{url} =~ m{4/query} ) {
             return [ { geometry => { type => 'Point' } } ];
+        } elsif ( $x == 552684 && $args->{url} =~ m{4/query} ) {
+            return [ { geometry => { type => 'Point' } } ];
+        } elsif ( $x == 552684 && $args->{url} =~ m{9/query} ) {
+            return [ { geometry => { type => 'Polygon' } } ];
         # leased out council land
         } elsif ( $x == 552651 && $args->{url} =~ m{3/query} ) {
             return [ { geometry => { type => 'Point' } } ];
@@ -457,6 +461,133 @@ subtest "flytipping/graffiti on non PCC land is not sent anywhere" => sub {
         ok !Open311->test_req_used, 'no open311 sent';
 
         $mech->email_count_is(0);
+    };
+};
+
+subtest "flytipping in a CCTV camera zone sends the enforcement email" => sub {
+    FixMyStreet::override_config {
+        STAGING_FLAGS => { send_reports => 1 },
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'peterborough',
+        COBRAND_FEATURES => { open311_email => { peterborough => {
+            flytipping => 'flytipping@example.org',
+            flytipping_cctv => 'cctv@example.org',
+        } } },
+    }, sub {
+        $mech->clear_emails_ok;
+
+        my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', {
+            category => 'General fly tipping',
+            latitude => 52.5708,
+            longitude => 0.2515,
+            cobrand => 'peterborough',
+            geocode => {
+                display_name => '12 A Street, XX1 1SZ',
+                address => {
+                    house_number => '12',
+                    road => 'A Street',
+                    postcode => 'XX1 1SZ'
+                }
+            },
+        } );
+
+        FixMyStreet::Script::Reports::send();
+        $p->discard_changes;
+        is $p->send_state, 'sent', 'Report marked as sent';
+        my $cgi = CGI::Simple->new(Open311->test_req_used->content);
+        is $cgi->param('service_code'), 'FLY', 'service code is correct';
+
+        my @email = $mech->get_email;
+        $mech->email_count_is(2);
+
+        is $email[0]->header('To'), '"Environmental Services" <flytipping@example.org>', 'standard flytipping email sent';
+        like $email[0]->header('Subject'), qr/\[Censorship checking only\] Problem Report: /, 'standard flytipping email keeps the censorship subject';
+        is $email[1]->header('To'), '"Environmental Enforcement" <cctv@example.org>', 'CCTV enforcement email sent';
+        like $email[1]->header('Subject'), qr/\[Priority Evidence Available \(Fixed CCTV\)\] Problem Report: /, 'CCTV email uses the CCTV subject prefix';
+        like $mech->get_text_body_from_email($email[1]), qr/within a CCTV camera zone/i, 'CCTV email explains why it was sent';
+    };
+};
+
+subtest "flytipping not in a CCTV camera zone does not send the enforcement email" => sub {
+    FixMyStreet::override_config {
+        STAGING_FLAGS => { send_reports => 1 },
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'peterborough',
+        COBRAND_FEATURES => { open311_email => { peterborough => {
+            flytipping => 'flytipping@example.org',
+            flytipping_cctv => 'cctv@example.org',
+        } } },
+    }, sub {
+        $mech->clear_emails_ok;
+
+        my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', {
+            category => 'General fly tipping',
+            latitude => 52.57146,
+            longitude => -0.24201,
+            areas => ',2566,',
+            cobrand => 'peterborough',
+            geocode => {
+                display_name => '12 A Street, XX1 1SZ',
+                address => {
+                    house_number => '12',
+                    road => 'A Street',
+                    postcode => 'XX1 1SZ'
+                }
+            },
+        });
+
+        FixMyStreet::Script::Reports::send();
+        $p->discard_changes;
+        is $p->send_state, 'sent', 'Report marked as sent';
+        $mech->email_count_is(1);
+        my $email = $mech->get_email;
+        is $email->header('To'), '"Environmental Services" <flytipping@example.org>', 'only standard flytipping email sent, not CCTV enforcement';
+    };
+};
+
+subtest "flytipping witnessed in a CCTV camera zone sends three emails" => sub {
+    FixMyStreet::override_config {
+        STAGING_FLAGS => { send_reports => 1 },
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'peterborough',
+        COBRAND_FEATURES => { open311_email => { peterborough => {
+            flytipping => 'flytipping@example.org',
+            flytipping_witnessed => 'witnessed@example.org',
+            flytipping_cctv => 'cctv@example.org',
+        } } },
+    }, sub {
+        $mech->clear_emails_ok;
+
+        my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', {
+            category => 'General fly tipping',
+            latitude => 52.5708,
+            longitude => 0.2515,
+            cobrand => 'peterborough',
+            geocode => {
+                display_name => '12 A Street, XX1 1SZ',
+                address => {
+                    house_number => '12',
+                    road => 'A Street',
+                    postcode => 'XX1 1SZ'
+                }
+            },
+            extra => {
+                _fields => [
+                    { name => 'pcc-witness', value => 'yes', },
+                ],
+            },
+        });
+
+        FixMyStreet::Script::Reports::send();
+        $p->discard_changes;
+        is $p->send_state, 'sent', 'Report marked as sent';
+
+        my @email = $mech->get_email;
+        $mech->email_count_is(3);
+        is $email[0]->header('To'), '"Environmental Services" <flytipping@example.org>', 'standard flytipping email sent';
+        is $email[1]->header('To'), '"Environmental Enforcement" <witnessed@example.org>', 'witnessed enforcement email sent';
+        is $email[2]->header('To'), '"Environmental Enforcement" <cctv@example.org>', 'CCTV enforcement email sent';
+        like $email[2]->header('Subject'), qr/\[Priority Evidence Available \(Fixed CCTV\)\] Problem Report: /, 'CCTV email uses the CCTV subject prefix';
     };
 };
 
