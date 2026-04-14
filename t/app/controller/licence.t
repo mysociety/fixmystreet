@@ -13,7 +13,16 @@ my $body = $mech->create_body_ok(2482, 'TfL', { cobrand => 'tfl' });
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
     category => 'Scaffold licence',
-    email => 'licence@tfl.gov.uk.example.org'
+    email => 'licence@tfl.gov.uk.example.org',
+    extra => {
+        type => 'form',
+    },
+);
+
+my $graffiti = $mech->create_contact_ok(
+    body_id => $body->id,
+    category => 'Graffiti',
+    email => 'graffiti@tfl.gov.uk.example.org',
 );
 
 subtest 'Feature flag disabled returns 404' => sub {
@@ -140,6 +149,20 @@ subtest 'Index page returns 404' => sub {
     }, sub {
         $mech->get('/licence');
         is $mech->res->code, 404, '/licence without type returns 404';
+    };
+};
+
+subtest 'Reporting does not include category' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'tfl',
+        MAPIT_URL => 'http://mapit.uk/',
+        COBRAND_FEATURES => {
+            licencing_forms => { tfl => 0 },
+        },
+    }, sub {
+        $mech->get_ok('/report/new?latitude=51.4039&longitude=0.018697');
+        $mech->content_contains('Graffiti');
+        $mech->content_lacks('Scaffold licence');
     };
 };
 
