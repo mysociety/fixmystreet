@@ -71,7 +71,7 @@ sub get_service_meta_info {
 
 sub ignore_failure {
     my $problem = shift;
-    return unless $problem->cobrand =~ /fixmystreet|bristol|westminster/;
+    return unless $problem->cobrand =~ /fixmystreet|bristol/;
     my $bodies = $problem->bodies;
     return unless %$bodies;
     my $body = (values %$bodies)[0];

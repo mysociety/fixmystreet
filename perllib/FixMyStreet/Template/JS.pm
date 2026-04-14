@@ -25,7 +25,7 @@ sub pick_asset_layers {
     } elsif ($cobrand eq 'greenwich' || $cobrand eq 'bexley') {
         # Special case for Thamesmead crossing the border
         %cobrands = map { $_ => $cobrands->{$_} } ($cobrand, 'tfl', 'thamesmead');
-    } elsif ($cobrand eq 'brent' || $cobrand eq 'bromley' || $cobrand eq 'camden' || $cobrand eq 'hackney' || $cobrand eq 'hounslow' || $cobrand eq 'merton' || $cobrand eq 'southwark' || $cobrand eq 'westminster') {
+    } elsif ($cobrand eq 'brent' || $cobrand eq 'bromley' || $cobrand eq 'camden' || $cobrand eq 'hackney' || $cobrand eq 'hounslow' || $cobrand eq 'merton' || $cobrand eq 'southwark') {
         # All London cobrands also need the TfL assets
         %cobrands = map { $_ => $cobrands->{$_} } ($cobrand, 'tfl');
     } elsif ($cobrand eq 'southkesteven') {
