@@ -52,14 +52,17 @@ sub validate {
     my $self = shift;
     my $any = 0;
 
-    foreach ($self->all_fields) {
-        $any = 1 if $_->name =~ /^service-/ && ($_->value || $self->saved_data->{$_->name});
+    # Bypass check for clinical form, because the user may not have a clinical
+    # service, and if they do, it is guaranteed to be set as a hidden field
+    unless ( $self->{c}->stash->{clinical} ) {
+        foreach ($self->all_fields) {
+            $any = 1 if $_->name =~ /^service-/ && ($_->value || $self->saved_data->{$_->name});
+        }
+        $self->add_form_error('Please specify what was missed')
+            unless $any;
     }
-    $self->add_form_error('Please specify what was missed')
-        unless $any;
 
     $self->next::method();
 }
 
 1;
-

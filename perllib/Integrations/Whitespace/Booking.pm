@@ -1,6 +1,6 @@
 =head1 NAME
 
-Integrations::Whitespace::Booking - Echo specific code for booking slots
+Integrations::Whitespace::Booking - Whitespace specific code for booking slots
 
 =head1 SYNOPSIS
 
