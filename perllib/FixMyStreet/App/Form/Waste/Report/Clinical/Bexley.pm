@@ -64,7 +64,7 @@ has_field bin_location => (
     type => 'Select',
     widget => 'RadioGroup',
     required => 1,
-    label => 'Where are containers located?',
+    label => 'Where are the containers located?',
     options_method => sub {
         my $options
             = FixMyStreet::Cobrand::Bexley::Waste->_bin_location_options()

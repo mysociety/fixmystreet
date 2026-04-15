@@ -1242,8 +1242,6 @@ sub waste_munge_report_data {
     my $service_description = $containers->{$service_id}->{description};
     $service_description = 'Various' if $service_description =~ /<li>/;
     $data->{title} = "$service_name ($service_description)";
-    $data->{title} = "$service_name";
-    $data->{title} .= " ($service_description)" if $service_description;
     $data->{detail} = "$data->{title}\n\n$address";
     $data->{uprn} = $uprn; # Needed to override for some parent properties
     $c->set_param('service_id', $id);
