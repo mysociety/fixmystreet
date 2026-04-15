@@ -1089,9 +1089,10 @@ sub clinical_report : PathPart('clinical') : Chained('property') : Args(0) {
     $c->cobrand->call_hook( 'waste_munge_clinical_report_form_fields',
         $field_list );
 
-    $c->stash->{clinical} = 1;
+    my $cls = ucfirst $c->cobrand->council_url;
     $c->stash->{form_class}
-        = 'FixMyStreet::App::Form::Waste::Report::Clinical::Bexley';
+        = "FixMyStreet::App::Form::Waste::Report::Clinical::$cls";
+    $c->stash->{clinical} = 1;
     $c->stash->{field_list} = $field_list;
     $c->stash->{first_page} = 'intro';
     $c->forward('form');
