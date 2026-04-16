@@ -1407,7 +1407,7 @@ subtest 'check Buckinghamshire extra code' => sub {
     my $contact = FixMyStreet::DB->resultset('Contact')->find_or_create({
         body_id => $body->id,
         email => '001',
-        category => 'Flytipping',
+        category => 'Flytipping on Public land',
         state => 'confirmed',
         editor => $0,
         whenedited => \'current_timestamp',
@@ -1425,7 +1425,7 @@ subtest 'check Buckinghamshire extra code' => sub {
     }, sub {
         $processor->_current_body( $bucks );
     };
-    $processor->_current_service( { service_code => 100, service_name => 'Flytipping' } );
+    $processor->_current_service( { service_code => 100, service_name => 'Flytipping on Public land' } );
     Open311->_inject_response('/services/100.xml', $meta_xml);
     $processor->_add_meta_to_contact( $contact );
 

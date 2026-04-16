@@ -39,7 +39,7 @@ $counciluser->user_body_permissions->create({ body => $body, permission_type => 
 $counciluser->user_body_permissions->create({ body => $body, permission_type => 'view_dashboard' });
 my $publicuser = $mech->create_user_ok('fmsuser@example.org', name => 'Simon Neil');
 
-my $contact = $mech->create_contact_ok(body_id => $body->id, category => 'Flytipping', email => "FLY");
+my $contact = $mech->create_contact_ok(body_id => $body->id, category => 'Flytipping on Public land', email => "FLY");
 $contact->set_extra_fields({
     code => 'road-placement',
     datatype => 'singlevaluelist',
@@ -117,7 +117,7 @@ FixMyStreet::override_config {
     COBRAND_FEATURES => {
         open311_email => {
             buckinghamshire => {
-                Flytipping => [ 'flytipping@example.com', 'TfB' ],
+                'Flytipping on Public land' => [ 'flytipping@example.com', 'TfB' ],
                 'Blocked drain' => [ 'floods@example.org', 'Flood Management' ],
             }
         },
@@ -144,7 +144,7 @@ subtest 'cobrand displays correct categories' => sub {
     my $json = $mech->get_ok_json('/report/new/ajax?latitude=51.615559&longitude=-0.556903');
     is @{$json->{bodies}}, 2, 'Bucks and parish returned';
     like $json->{category}, qr/Car Parks/, 'Car Parks displayed';
-    like $json->{category}, qr/Flytipping/, 'Flytipping displayed';
+    like $json->{category}, qr/Flytipping/, 'Flytipping category displayed';
     like $json->{category}, qr/Blocked drain/, 'Blocked drain displayed';
     like $json->{category}, qr/Graffiti/, 'Graffiti displayed';
     like $json->{category}, qr/Grass cutting/, 'Grass cutting displayed';
@@ -170,7 +170,7 @@ subtest 'privacy page contains link to Bucks privacy policy' => sub {
 };
 
 my ($report) = $mech->create_problems_for_body(1, $body->id, 'On Road', {
-    category => 'Flytipping', cobrand => 'fixmystreet',
+    category => 'Flytipping on Public land', cobrand => 'fixmystreet',
     latitude => 51.812244, longitude => -0.827363,
     dt => DateTime->now()->subtract(minutes => 10),
 });
@@ -186,7 +186,7 @@ subtest 'flytipping on road sent to extra email' => sub {
 };
 
     ($report) = $mech->create_problems_for_body(1, $body->id, 'On Road', {
-    category => 'Flytipping', cobrand => 'fixmystreet',
+    category => 'Flytipping on Public land', cobrand => 'fixmystreet',
     latitude => 51.812244, longitude => -0.827363,
     extra => {
         contributed_as => 'anonymous_user',
@@ -228,12 +228,12 @@ subtest 'pothole on road not sent to extra email, only Open311 sent' => sub {
 # report made in Flytipping category off road should get moved to other category
 subtest 'Flytipping not on a road gets recategorised' => sub {
     $mech->log_in_ok($publicuser->email);
-    $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Flytipping');
+    $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Flytipping+on+Public+land');
     $mech->submit_form_ok({
         with_fields => {
             title => "Test Report",
             detail => 'Test report details.',
-            category => 'Flytipping',
+            category => 'Flytipping on Public land',
             'road-placement' => 'off-road',
         }
     }, "submit details");
@@ -245,12 +245,12 @@ subtest 'Flytipping not on a road gets recategorised' => sub {
 
 subtest 'Flytipping not on a road on .com gets recategorised' => sub {
     ok $mech->host("www.fixmystreet.com"), "change host to www";
-    $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Flytipping');
+    $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Flytipping+on+Public+land');
     $mech->submit_form_ok({
         with_fields => {
             title => "Test Report",
             detail => 'Test report details.',
-            category => 'Flytipping',
+            category => 'Flytipping on Public land',
             'road-placement' => 'off-road',
         }
     }, "submit details");
@@ -272,20 +272,20 @@ subtest 'Can triage an on-road flytipping to off-road' => sub {
 };
 
 subtest 'Flytipping not on a road going to HE does not get recategorised' => sub {
-    $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Flytipping');
+    $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Flytipping+on+Public+land');
     $mech->submit_form_ok({
         with_fields => {
             single_body_only => 'National Highways',
             title => "Test Report",
             detail => 'Test report details.',
-            category => 'Flytipping',
+            category => 'Flytipping on Public land',
             'road-placement' => 'off-road',
         }
     }, "submit details");
     $mech->content_contains('From the information you have given, we have passed this report on to:');
     my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     ok $report, "Found the report";
-    is $report->category, "Flytipping", 'Report was not recategorised';
+    is $report->category, "Flytipping on Public land", 'Report was not recategorised';
 
     $mech->log_out_ok;
 };
