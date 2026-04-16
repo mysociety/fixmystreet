@@ -9,6 +9,9 @@
 [% END -%]
 [% '(' _ cobrand.prettify_dt(row.confirmed) _ ') ' IF cobrand.include_time_in_update_alerts -%]
 [% email_sanitize_text(row, private_email ? "item_private_email_text" : undef) -%]
+[% IF cobrand.moniker == 'sutton' AND (report.category == 'Report missed collection' OR report.category == 'Complaint against time') AND (row.item_problem_state == 'closed' OR row.item_problem_state == 'unable to fix') -%]
+To report a problem with this missed collection visit your bin page
+[% END -%]
 [% END %]
 
 ------
