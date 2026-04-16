@@ -204,6 +204,8 @@ in Camden, or Camden in Brent), return the name of the area.
 sub check_report_is_on_cobrand_asset {
     my $self = shift;
 
+    return 'Brent' if $self->{c}->get_param('UnitID');
+
     my $lat = $self->{c}->stash->{latitude};
     my $lon = $self->{c}->stash->{longitude};
     my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
@@ -273,10 +275,16 @@ sub munge_overlapping_asset_bodies {
                 } values %$bodies;
         } else {
             # If it's for Brent shared with Camden, make wholly Brent's responsibility
+
             if (grep { $_->get_column('name') eq 'Camden Borough Council' } values %$bodies) {
                 %$bodies = map { $_->id => $_ } grep {
                     $_->get_column('name') eq 'Brent Council' || $_->get_column('name') eq 'TfL' || $_->get_column('name') eq 'National Highways'
                 } values %$bodies;
+            # If it's for Brent, but H&F or K&C covering the area (for light asset in neighbours area) we need to add Brent and remove the other Council
+            } elsif (grep { $_->get_column('name') eq 'Hammersmith and Fulham Borough Council' || $_->get_column('name') eq 'Kensington and Chelsea Borough Council' } values %$bodies) {
+                my $body = $self->body;
+                %$bodies = map { $_->id => $_ } grep { $_->get_column('name') ne 'Hammersmith and Fulham Borough Council' && $_->get_column('name') ne 'Kensington and Chelsea Borough Council' } values %$bodies;
+                $$bodies{$body->id} = $body;
             }
         }
     }
@@ -307,6 +315,10 @@ sub munge_cobrand_asset_categories {
 
     my $brent_body = $self->body->id;
     if (!$in_area && $cobrand eq 'Brent') {
+        # In H&F or K&C but Brent's responsibility (lights assets), we're not mixing any categories
+        if (grep {$_->{name} eq 'Hammersmith and Fulham Borough Council' || $_->{name} eq 'Kensington and Chelsea Borough Council'} values %{$self->{c}->stash->{all_areas}}){
+            return;
+        }
         # Outside the area of Brent, but Brent's responsibility
         my $area;
         # Camden do not mix categories with Brent
