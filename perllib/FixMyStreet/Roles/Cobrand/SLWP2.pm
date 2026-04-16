@@ -128,6 +128,7 @@ my %CONTAINERS = (
     paper_140 => 26,
     food_indoor_5 => 43,
     food_indoor_7 => 44,
+    food_indoor_premium => 85,
     food_outdoor => 46,
     garden_240 => 39,
     garden_140 => 37,
@@ -138,8 +139,11 @@ lock_hash(%CONTAINERS);
 my %GARDEN_CONTAINER_IDS = (
     bin240 => 1915,
     bin140 => 1914,
-    sack => 1928,
-    bag => 1910, # Also used in Merton Echo
+    sack => {
+        kingston => 1928,
+        sutton => 1928,
+        merton => 1910,
+    },
 );
 lock_hash(%GARDEN_CONTAINER_IDS);
 
@@ -347,7 +351,15 @@ sub waste_service_containers {
     }
 
     my $food_indoor_key = $self->moniker eq 'merton' ? 'food_indoor_7' : 'food_indoor_5';
-    if ($service_name =~ /Food/ && !$self->{c}->stash->{quantities}->{$CONTAINERS{$food_indoor_key}}) {
+    my $food_indoor_premium_key = 'food_indoor_premium';
+    if ($service_name =~ /Food/ && !(
+            $self->{c}->stash->{quantities}->{$CONTAINERS{$food_indoor_key}}
+            || $self->{c}->stash->{quantities}->{$CONTAINERS{$food_indoor_premium_key}}
+        ) ) {
+        if ($self->moniker eq 'sutton') {
+            $request_max->{$CONTAINERS{$food_indoor_premium_key}} = 1;
+            push @$containers, $CONTAINERS{$food_indoor_premium_key}; # Premium food waste bin (kitchen)
+        }
         # Can always request a food caddy
         push @$containers, $CONTAINERS{$food_indoor_key}; # Food waste bin (kitchen)
         $request_max->{$CONTAINERS{$food_indoor_key}} = 1;
@@ -440,7 +452,8 @@ sub garden_container_data_extract {
         next if $end_date lt $today;
         $container_end_date = $end_date if $end_date lt $schedules->{end_date};
         my $asset_id = $_->{AssetTypeId};
-        if ($asset_id == $GARDEN_CONTAINER_IDS{sack} || $asset_id == $GARDEN_CONTAINER_IDS{bag}) {
+        # Either sack ID should count here
+        if ($asset_id == $GARDEN_CONTAINER_IDS{sack}{sutton} || $asset_id == $GARDEN_CONTAINER_IDS{sack}{merton}) {
             $garden_sacks = 1;
             $garden_bins = undef;
             $garden_cost += $costs->sacks_renewal(1, $schedules->{end_date}) / 100;
@@ -502,8 +515,13 @@ sub waste_garden_sub_params {
     }
     $container ||= $GARDEN_CONTAINER_IDS{bin240};
 
+    if (ref $container) { # By cobrand
+        $container = $container->{$self->moniker};
+    }
+    my $sack_id = $GARDEN_CONTAINER_IDS{sack}{$self->moniker};
+
     $c->set_param('Paid_Container_Type', $container);
-    if ($container == $GARDEN_CONTAINER_IDS{sack}) {
+    if ($container == $sack_id) {
         $c->set_param('Paid_Container_Quantity', $GARDEN_QUANTITIES{sack});
     } elsif ($data->{bins_wanted}) {
         $c->set_param('Paid_Container_Quantity', $data->{bins_wanted});
@@ -511,7 +529,7 @@ sub waste_garden_sub_params {
 
     if ( $data->{new_bins} && $data->{new_bins} > 0) {
         $c->set_param('Container_Type', $container);
-        if ($container == $GARDEN_CONTAINER_IDS{sack}) {
+        if ($container == $sack_id) {
             $c->set_param('Quantity', $GARDEN_QUANTITIES{sack});
         } else {
             my $num = abs($data->{new_bins});

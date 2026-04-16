@@ -3656,6 +3656,25 @@ $site-message-border: 1px solid #525252 !default;
   vertical-align: middle;
 }
 
+// Mygovscot styling
+body.authpage {
+  .content:has(.mygovscot-form) {
+    text-align: center;
+  }
+
+  .mygovscot-form {
+    background: transparent;
+  }
+}
+
+.mygovscot-img {
+  margin-bottom: 0.5rem;
+}
+
+.form-section-preview--next:has(.mygovscot-img) {
+  text-align: center;
+}
+
 @import "_admin";
 @import "_dropzone";
 @import "_multiselect";

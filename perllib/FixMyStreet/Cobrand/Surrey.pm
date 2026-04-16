@@ -106,12 +106,6 @@ sub privacy_policy_url {
 
 sub reopening_disallowed { 1 }
 
-=item * Allows anonymous reporting
-
-=cut
-
-sub allow_anonymous_reports { 'button' }
-
 =item * Do not allow email addresses in title or detail, with detail maximum length
 
 =cut

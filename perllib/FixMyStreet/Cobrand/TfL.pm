@@ -620,7 +620,15 @@ sub munge_reports_area_list {
     @$areas = grep { $london_hash{$_} } @$areas;
 }
 
-sub munge_report_new_contacts { }
+sub munge_report_new_contacts {
+    my ($self, $contacts) = @_;
+
+    if ($self->{c}->stash->{categories_for_point}) {
+        # Have come from an admin tool
+    } else {
+        @$contacts = grep { !$_->get_extra_metadata('type') } @$contacts;
+    }
+}
 
 sub disable_login_for_email {
     my ($self, $email) = @_;
