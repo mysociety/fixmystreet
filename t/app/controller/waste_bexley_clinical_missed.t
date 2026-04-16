@@ -109,6 +109,9 @@ FixMyStreet::override_config {
         $mech->submit_form_ok(
             { with_fields => { issue => 'Missed collection' } }
         );
+        $mech->content_contains( 'Use this service to',
+            'Missed collection intro page' );
+        $mech->submit_form_ok();
         $mech->submit_form_ok(
             { with_fields => { bin_location => 'Rear of property' } }
         );
