@@ -1261,6 +1261,13 @@ subtest 'Recording of response templates' => sub {
     $mech->content_contains('<option value="' . $template->id . '" data-text="Text" data-problem-state="" selected> Title </option>');
     $report->discard_changes;
     is $report->get_extra_metadata('template_used'), $template->id;
+    # Export CSV
+    $mech->get_ok( '/admin/stats?export=1' );
+    is $mech->res->code, 200, 'csv retrieved ok';
+    my @rows = $mech->content_as_csv;
+    shift @rows; # Get rid of header
+    my @row = grep { $_->[0] == $report->id } @rows;
+    is $row[0][-1], 'Title';
 };
 
 };

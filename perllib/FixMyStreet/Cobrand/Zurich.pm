@@ -1279,6 +1279,10 @@ sub admin_stats {
 sub export_as_csv {
     my ($self, $c, $params) = @_;
 
+    my %templates = map { $_->id => $_->title } FixMyStreet::DB->resultset("ResponseTemplate")->search(
+        undef, { columns => ['id', 'title'] },
+    )->all;
+
     my $reporting = FixMyStreet::Reporting->new(
         objects_rs => $c->model('DB::Problem')->search_rs(
             $params,
@@ -1308,7 +1312,7 @@ sub export_as_csv {
             'External Body', 'Time Spent', 'Title', 'Detail',
             'Media URL', 'Interface Used', 'Council Response',
             'Strasse', 'Mast-Nr.', 'Haus-Nr.', 'Hydranten-Nr.',
-            'Interne meldung',
+            'Interne meldung', 'Template',
         ],
         csv_columns => [
             'id', 'created', 'whensent', 'lastupdate', 'local_coords_x',
@@ -1317,7 +1321,7 @@ sub export_as_csv {
             'body_name', 'sum_time_spent', 'title', 'detail',
             'media_url', 'service', 'public_response',
             'strasse', 'mast_nr',' haus_nr', 'hydranten_nr',
-            'interne_meldung',
+            'interne_meldung', 'template',
         ],
         csv_extra_data => sub {
             my $report = shift;
@@ -1345,6 +1349,9 @@ sub export_as_csv {
                 ? $c->cobrand->base_url . $report->photos->[$photo_to_display-1]->{url}
                 : '';
 
+            my $template = $report->get_extra_metadata('template_used') || '';
+            $template = $templates{$template} if $template;
+
             return {
                 whensent => $report->whensent,
                 lastupdate => $report->lastupdate,
@@ -1364,6 +1371,7 @@ sub export_as_csv {
                 haus_nr => $extras{'haus_nr'} || '',
                 hydranten_nr => $extras{'hydranten_nr'} || '',
                 interne_meldung => $report->non_public,
+                template => $template,
             };
         },
         filename => 'stats',
