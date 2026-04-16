@@ -101,8 +101,8 @@ FixMyStreet::override_config {
         );
 
         $mech->text_contains(
-            'Contact customer services',
-            'Message to contact customer services',
+            'Make an enquiry',
+            'Message to make an enquiry',
         );
 
         $mech->back;
