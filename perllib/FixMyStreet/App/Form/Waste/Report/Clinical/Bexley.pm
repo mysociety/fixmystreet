@@ -38,7 +38,7 @@ has_page select_issue => (
     fields => [ 'issue', 'continue' ],
     next => sub {
         return $_[0]->{issue} eq 'Missed collection'
-            ? 'container_location'
+            ? 'missed_collection_intro'
             : 'contact_customer_services';
     },
 );
@@ -52,6 +52,13 @@ has_field issue => (
         { label => 'Missed collection', value => 'Missed collection' },
         { label => 'Other', value => 'Other' },
     ],
+);
+
+has_page missed_collection_intro => (
+    title => 'Report a missed clinical waste collection',
+    intro => 'clinical/missed_intro.html',
+    fields => ['continue'],
+    next => 'container_location',
 );
 
 has_page container_location => (
