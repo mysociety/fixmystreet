@@ -3358,6 +3358,33 @@ FixMyStreet::override_config {
 
                 $access_mock->unmock_all;
             };
+
+            # Change sub to credit card so renewal is possible in next test
+            $agile_mock->mock( 'CustomerSearch', sub { {
+                Customers => [ {
+                    CustomerExternalReference => 'CUSTOMER_123',
+                    CustomerReference => 'GWIT-456',
+                    CustomertStatus => 'ACTIVATED',
+                    ServiceContracts => [ {
+                        EndDate => '01/02/2025 00:00',
+                        Reference => 'CONTRACT_123',
+                        WasteContainerQuantity => 1,
+                        ServiceContractStatus => 'ACTIVE',
+                        UPRN => '10001',
+                        Payments => [{ PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' }],
+                    } ],
+                } ],
+            } } );
+
+            subtest 'Active sub, abandoned DD set up, can still renew again' => sub {
+                set_fixed_time('2025-01-01T00:00:00Z'); # Renewal time
+                # Change DD report to be unconfirmed (not completed renewal/setup)
+                $dd_report->update({ state => 'unconfirmed' });
+                $mech->get_ok('/waste/10001');
+                $mech->content_contains('Renew your brown wheelie bin subscription', 'Renewal link present');
+                $mech->get_ok('/waste/10001/garden_renew');
+                $mech->content_contains('Please enter your customer reference number', 'Form shown');
+            };
         };
     };
 

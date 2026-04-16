@@ -1226,11 +1226,16 @@ sub get_current_payment_method : Private {
 sub get_original_sub : Private {
     my ($self, $c, $type) = @_;
 
+    my $states = { '!=' => 'hidden' };
+    if ($c->cobrand->moniker eq 'bexley') {
+        # For Bexley, we handle DD confirmation so can ignore unconfirmed reports
+        $states = [ FixMyStreet::DB::Result::Problem->visible_states() ];
+    }
     my $p = $c->model('DB::Problem')->search({
         uprn => $c->stash->{property}{uprn},
         category => 'Garden Subscription',
         title => ['Garden Subscription - New', 'Garden Subscription - Renew', 'Garden Subscription - Transfer'],
-        state => { '!=' => 'hidden' },
+        state => $states,
     })->order_by('-id')->to_body($c->cobrand->body);
 
     if ($type eq 'user' && !$c->stash->{is_staff}) {
