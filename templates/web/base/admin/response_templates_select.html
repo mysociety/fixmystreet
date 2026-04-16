@@ -1,8 +1,10 @@
 [% IF problem.response_templates %]
-    <select id="templates_for_[% for %]" class="form-control js-template-name" data-for="[% for %]" name="response_template">
+    <select id="templates_for_[% for %]" class="form-control js-template-name" data-for="[% for %]" name="response_template_[% for %]">
         <option value="">[% loc('--Choose a template--') %]</option>
       [% FOR t IN problem.response_templates %]
-        <option value="[% t.id %]" data-text="[% t.text %]" data-problem-state="[% t.state %]"> [% t.title %] </option>
+        <option value="[% t.id %]" data-text="[% t.text %]" data-problem-state="[% t.state %]"
+            [%~ ' selected' IF t.id == response_template_used_id ~%]
+            > [% t.title %] </option>
       [% END %]
     </select>
 [% END %]

@@ -690,6 +690,11 @@ sub admin_report_edit {
         # update the public update from DM
         if (my $update = $c->get_param('status_update')) {
             $problem->set_extra_metadata(public_response => $update);
+            if (my $template_id = $c->get_param('response_template_status_update')) {
+                $problem->set_extra_metadata(template_used => $template_id);
+            } else {
+                $problem->unset_extra_metadata('template_used');
+            }
         }
 
         if (
@@ -1065,6 +1070,7 @@ sub stash_states {
     $c->stash->{states} = \@states;
 
     # stash details about the public response
+    $c->stash->{response_template_used_id} = $problem->get_extra_metadata('template_used');
     $c->stash->{default_public_response} = "\nFreundliche Grüsse\n\nIhre Stadt Zürich\n";
     $c->stash->{show_publish_response} =
         ($problem->state eq 'feedback pending');

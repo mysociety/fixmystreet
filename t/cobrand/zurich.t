@@ -1257,6 +1257,10 @@ subtest 'Recording of response templates' => sub {
     $mech->content_contains('<option value="">Vorlage wählen</option>');
     $mech->content_contains('<option value="' . $template->id . '" data-text="Text" data-problem-state=""> Title </option>');
     $mech->content_lacks('Inactive title');
+    $mech->submit_form_ok({ with_fields => { response_template_status_update => $template->id, status_update => 'Text' } });
+    $mech->content_contains('<option value="' . $template->id . '" data-text="Text" data-problem-state="" selected> Title </option>');
+    $report->discard_changes;
+    is $report->get_extra_metadata('template_used'), $template->id;
 };
 
 };
