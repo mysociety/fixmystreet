@@ -38,7 +38,7 @@ has_page select_issue => (
     fields => [ 'issue', 'continue' ],
     next => sub {
         return $_[0]->{issue} eq 'Missed collection'
-            ? 'container_location'
+            ? 'missed_collection_intro'
             : 'contact_customer_services';
     },
 );
@@ -54,6 +54,13 @@ has_field issue => (
     ],
 );
 
+has_page missed_collection_intro => (
+    title => 'Report a missed clinical waste collection',
+    intro => 'clinical/missed_intro.html',
+    fields => ['continue'],
+    next => 'container_location',
+);
+
 has_page container_location => (
     title => 'Location of containers',
     fields => [ 'bin_location', 'continue' ],
@@ -64,7 +71,7 @@ has_field bin_location => (
     type => 'Select',
     widget => 'RadioGroup',
     required => 1,
-    label => 'Where are containers located?',
+    label => 'Where are the containers located?',
     options_method => sub {
         my $options
             = FixMyStreet::Cobrand::Bexley::Waste->_bin_location_options()
