@@ -23,8 +23,10 @@ subtest 'by_categories returns all response templates grouped by category' => su
     is scalar @$potholes, 2, 'Potholes have 2 templates';
     is scalar @$graffiti, 2, 'Graffiti has 2 templates';
     is $graffiti->[0]->{state}, 'investigating', 'Graffiti first template has right state';
-    is $potholes->[0]->{id}, 'Text 1 ⛄', 'Pothole first template has right text';
-    is $graffiti->[1]->{id}, $potholes->[1]->{id},
+    is $potholes->[0]->{id}, $t1->id, 'Pothole first template has right text';
+    is $potholes->[0]->{text}, 'Text 1 ⛄', 'Pothole first template has right text';
+    is $graffiti->[1]->{id}, $potholes->[1]->{id};
+    is $graffiti->[1]->{text}, $potholes->[1]->{text},
         '3rd template applies to both graffiti and potholes';
     # is $graffiti->[1]->external_status_code, '060',
     #     'Whitespace trimmed from external_status_code';

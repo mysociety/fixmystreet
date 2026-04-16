@@ -1242,6 +1242,19 @@ subtest 'Anonymise reports that are over two years old' => sub {
     };
 };
 
+subtest 'Recording of response templates' => sub {
+    # Create some templates
+    $mech->log_in_ok( 'dm1@example.org' );
+    $mech->get_ok('/admin/templates');
+    $mech->follow_link_ok({ text => 'Neue Vorlage' });
+    $mech->submit_form_ok({ with_fields => { title => 'Title', text => 'Text' } });
+    $report->update({ state => 'feedback pending' });
+    # Try them out
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->content_contains('<option value="">Vorlage wählen</option>');
+    $mech->content_contains('<option value="1" data-text="Text" data-problem-state=""> Title </option>');
+};
+
 };
 
 done_testing();

@@ -29,8 +29,9 @@ $(function() {
     // Response templates
 
     $('.js-template-name').on('change', function() {
-        var $this = $(this);
-        $('#' + $this.data('for')).val($this.val());
+        var opt = this.selectedOptions[0];
+        var input = document.getElementById(this.dataset.for);
+        input.value = opt.dataset.text || '';
     });
 
     // Report editing

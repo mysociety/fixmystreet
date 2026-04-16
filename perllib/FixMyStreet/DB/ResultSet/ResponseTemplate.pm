@@ -16,7 +16,7 @@ sub name_column {
 sub map_extras {
     my ($rs, $params, @ts) = @_;
     return map {
-        my $out = { id => $_->text, name => $_->title };
+        my $out = { id => $_->id, text => $_->text, name => $_->title };
         $out->{state} = $_->state if $_->state;
         $out;
     } @ts;
