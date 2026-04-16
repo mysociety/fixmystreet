@@ -917,6 +917,7 @@ sub response_templates {
         {
             'me.body_id' => $self->bodies_str_ids,
             'contact.category' => [ $self->category, undef ],
+            'me.deleted' => 0,
         },
         {
             order_by => 'title',

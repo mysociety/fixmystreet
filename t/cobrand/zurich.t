@@ -1248,11 +1248,15 @@ subtest 'Recording of response templates' => sub {
     $mech->get_ok('/admin/templates');
     $mech->follow_link_ok({ text => 'Neue Vorlage' });
     $mech->submit_form_ok({ with_fields => { title => 'Title', text => 'Text' } });
+    my $template = FixMyStreet::DB->resultset('ResponseTemplate')->order_by('-id')->search(undef, { rows => 1 })->single;
+    $mech->follow_link_ok({ text => 'Neue Vorlage' });
+    $mech->submit_form_ok({ with_fields => { title => 'Inactive title', text => 'Inactive text', deleted => 'on' } });
     $report->update({ state => 'feedback pending' });
     # Try them out
     $mech->get_ok( '/admin/report_edit/' . $report->id );
     $mech->content_contains('<option value="">Vorlage wählen</option>');
-    $mech->content_contains('<option value="1" data-text="Text" data-problem-state=""> Title </option>');
+    $mech->content_contains('<option value="' . $template->id . '" data-text="Text" data-problem-state=""> Title </option>');
+    $mech->content_lacks('Inactive title');
 };
 
 };

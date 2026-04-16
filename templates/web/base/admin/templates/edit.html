@@ -80,12 +80,24 @@
       </label>
     </p>
 
+    <div class="admin-hint">
+      <p>
+        [% loc('If ticked, this template will not be used for incoming Open311 updates, nor available for selection by staff when adding updates manually.') %]
+      </p>
+    </div>
+    <p>
+      <label>
+        <strong>[% loc('Inactive') %]</strong>
+        <input type="checkbox" name="deleted" [% 'checked' IF rt.deleted %] />
+      </label>
+    </p>
+
     <p>
       <input type="hidden" name="token" value="[% csrf_token %]" >
       <input type="submit" class="btn" name="Edit templates" value="[% rt.id ? loc('Save changes') : loc('Create template') %]" >
     </p>
     [% IF rt.id %]
-        <p>
+        <p class="danger-zone">
             <input class="delete btn btn--danger" type="submit" name="delete_template" value="[% loc('Delete template') %]" data-confirm="[% loc('Are you sure?') %]">
         </p>
     [% END %]

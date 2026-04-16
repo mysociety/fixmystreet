@@ -212,6 +212,7 @@ sub check_for_status_code {
     my $templates = FixMyStreet::DB->resultset("ResponseTemplate")->search({
         'me.body_id' => $body->id,
         'contact.category' => $categories,
+        'me.deleted' => 0,
     }, {
         order_by => 'contact.category', # So nulls are last
         join => { 'contact_response_templates' => 'contact' },

@@ -13,7 +13,7 @@
     </thead>
     <tbody>
 [% FOR t IN response_templates %]
-    <tr>
+    <tr[% ' class="is-deleted"' IF t.deleted %]>
         <td>  [% t.title %] </td>
         <td> [% t.text %] </td>
         <td> [% t.created %] </td>

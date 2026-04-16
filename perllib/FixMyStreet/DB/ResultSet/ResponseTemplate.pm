@@ -19,7 +19,7 @@ sub map_extras {
         my $out = { id => $_->id, text => $_->text, name => $_->title };
         $out->{state} = $_->state if $_->state;
         $out;
-    } @ts;
+    } grep { !$_->deleted } @ts;
 }
 
 1;
