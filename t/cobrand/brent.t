@@ -116,8 +116,14 @@ FixMyStreet::DB->resultset('BodyArea')->find_or_create({
     area_id => 2488,
     body_id => $harrow->id,
 });
-
-my $contact = $mech->create_contact_ok(body_id => $brent->id, category => 'Graffiti', email => 'graffiti@example.org');
+my $hammersmith = $mech->create_body_ok(2502, 'Hammersmith and Fulham Borough Council');
+my $kensington = $mech->create_body_ok(2503, 'Kensington and Chelsea Borough Council');
+my $contact = $mech->create_contact_ok(body_id => $brent->id, category => 'Graffiti', email => 'graffiti@example.org', extra => {
+    _fields => [{
+        code => 'UnitID',
+        automated => 'hidden_field',
+    }]
+});
 my $gully = $mech->create_contact_ok(body_id => $brent->id, category => 'Gully grid missing',
     email => 'Symology-gully', group => ['Drains and gullies']);
 my $parks_contact = $mech->create_contact_ok(body_id => $brent->id, category => 'Overgrown grass',
@@ -713,6 +719,60 @@ FixMyStreet::override_config {
     };
 
     $mech->host("brent.fixmystreet.com");
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'brent', 'tfl', 'fixmystreet' ],
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+    for my $host (
+                  {
+                   host => 'fixmystreet',
+                   outside_text => 'We do not yet have details for the council that covers this location',
+                   end_text => 'Thank you for reporting this issue'
+                  },
+                  {
+                   host => 'brent',
+                   outside_text => 'That location is not covered by Brent Council',
+                   end_text => 'Your issue is on its way to the council'
+                  }) {
+        for my $test (
+                      {
+                       name => 'Hammersmith',
+                       lon => '-0.228924',
+                       lat => '51.530133',
+                       title => 'Graffiti issue in Hammersmith from Brent',
+                      },
+                      {
+                       name => 'Kensington',
+                       lon => '-0.228293',
+                       lat => '51.530115',
+                       title => 'Graffiti issue in Kensington from Brent',
+                      }
+         ) {
+            subtest "report on H&F Council and K&C Council only when on light asset" => sub {
+                $mech->host($host->{host} . ".fixmystreet.com");
+                $mech->get_ok('/report/new?longitude=' . $test->{lon} . '&latitude=' . $test->{lat});
+                $mech->content_contains($host->{outside_text});
+                $mech->log_in_ok($comment_user->email);
+                $mech->get_ok("/report/new?longitude=-0.28168&latitude=51.55904&category=Graffiti", "Start report in Brent");
+                $mech->submit_form_ok(
+                                      { with_fields => {
+                                                     name => 'Test User',
+                                                     title => $test->{title},
+                                                     detail => 'Graffiti issue',
+                                                     longitude => $test->{lon},
+                                                     latitude => $test->{lat},
+                                                     UnitID => '12345',
+                                                       }}, 'Location in ' . $test->{name} . ' ok as clicked from Brent location onto Brent asset');
+                $mech->content_contains($host->{end_text});
+                my $problem = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
+                is $problem->title, $test->{title}, 'Report has been made';
+                is $problem->body, 'Brent Council', 'Problem on correct body';
+                $problem->delete;
+            };
+        };
+    };
 };
 
 package SOAP::Result;
