@@ -453,7 +453,7 @@ sub waste_containers {
         $CONTAINERS{paper_240} => 'Paper and Cardboard Green Wheelie Bin (240L)',
         $CONTAINERS{paper_140} => 'Paper and Cardboard Green Wheelie Bin (140L)',
         $CONTAINERS{food_indoor} => 'Small Kitchen Food Waste Caddy (7L)',
-        $CONTAINERS{food_indoor_premium} => 'Premium Kitchen Food Waste Caddy (23L)',
+        $CONTAINERS{food_indoor_premium} => 'Premium Outdoor Food Waste Caddy (23L)',
         $CONTAINERS{food_outdoor} => 'Large Outdoor Food Waste Caddy (23L)',
         $CONTAINERS{garden_240} => 'Garden Waste Wheelie Bin (240L)',
         $CONTAINERS{garden_140} => 'Garden Waste Wheelie Bin (140L)',
