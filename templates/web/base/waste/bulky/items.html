@@ -6,6 +6,15 @@
 [% PROCESS back %]
 [% PROCESS errors %]
 [% PROCESS title %]
+
+[% IF c.cobrand.moniker == 'merton' %]
+<p class="govuk-body">
+Please add each item individually.
+e.g. if you have 2 Armchairs and a sofa to be collected, add each Armchair and then add the sofa.
+<strong>Do not</strong> add just one armchair and state 2 in the description. Only one will be collected.
+</p>
+[% END %]
+
 [% IF property AND NOT (c.cobrand.moniker == 'sutton' || c.cobrand.moniker == 'kingston') %]
   [% INCLUDE 'waste/_address_display.html' %]
 [% END %]
