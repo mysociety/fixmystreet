@@ -2915,6 +2915,7 @@ FixMyStreet::override_config {
 
         my ($token, $report, $report_id) = get_report_from_redirect($sent_params->{returnUrl});
 
+        is $sent_params->{email}, '', 'Blank email when staff make report';
         is $sent_params->{narrative}, "Garden Waste Service Payment - Reference: " . $report_id . " Contract: 10001",
             'Custom narrative was used for paye.net payment';
     };
