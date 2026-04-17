@@ -655,4 +655,10 @@ sub _bulky_collection_overdue {
     return $today > $collection_due_date;
 }
 
+sub bulky_location_text_prompt {
+  "Please provide the exact location where the items will be left ".
+  "(e.g., On the driveway; To the left of the front door; By the front hedge, etc.). ".
+  "Do not give any personal information or access codes."
+}
+
 1;
