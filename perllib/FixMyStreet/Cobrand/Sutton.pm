@@ -403,12 +403,13 @@ sub image_for_unit {
     my $bag_blue_stripe = svg_container_sack('Blue striped sack', 'stripe', '#4f4cf0');
     my $bag_red_stripe = svg_container_sack('Red striped sack', 'stripe', '#E83651');
     my $bag_clear = svg_container_sack('Clear sack', 'normal', '#d8d8d8');
+    my $premium_food = svg_container_bin('Brown premium food caddy', 'caddy-brown-premium', '#8B5E3D');
     my $images = {
         $CONTAINERS{recycling_blue_bag} => $bag_blue_stripe,
         $CONTAINERS{paper_bag} => $bag_clear,
         $CONTAINERS{refuse_bag} => $bag_red_stripe,
         $CONTAINERS{food_outdoor} => "$base/caddy-brown-large",
-        $CONTAINERS{food_indoor_premium} => "$base/caddy-brown-premium",
+        $CONTAINERS{food_indoor_premium} => $premium_food,
 
         # Fallback to the service if no container match
         $SERVICE_IDS{domestic_refuse} => svg_container_bin('Brown wheelie bin', 'wheelie', '#8B5E3D'),
@@ -453,7 +454,7 @@ sub waste_containers {
         $CONTAINERS{paper_240} => 'Paper and Cardboard Green Wheelie Bin (240L)',
         $CONTAINERS{paper_140} => 'Paper and Cardboard Green Wheelie Bin (140L)',
         $CONTAINERS{food_indoor} => 'Small Kitchen Food Waste Caddy (7L)',
-        $CONTAINERS{food_indoor_premium} => 'Premium Kitchen Food Waste Caddy (23L)',
+        $CONTAINERS{food_indoor_premium} => 'Premium Outdoor Food Waste Caddy (23L)',
         $CONTAINERS{food_outdoor} => 'Large Outdoor Food Waste Caddy (23L)',
         $CONTAINERS{garden_240} => 'Garden Waste Wheelie Bin (240L)',
         $CONTAINERS{garden_140} => 'Garden Waste Wheelie Bin (140L)',

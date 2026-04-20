@@ -8,7 +8,7 @@ use utf8;
 sub type { 'banners' }
 
 # Human-readable name for display
-sub name { 'Banner' }
+sub name { 'Banners' }
 
 sub tandc_link { 'https://content.tfl.gov.uk/banners-guidance-notes-and-terms-conditions.pdf' }
 
@@ -21,7 +21,7 @@ sub num_steps { 14 }
 # ==========================================================================
 has_page intro => (
     fields => ['start'],
-    title => 'Banner licence application',
+    title => 'Banners licence application',
     intro => 'banner/intro.html',
     next => 'location_1',
 );

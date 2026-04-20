@@ -109,6 +109,8 @@ sub waste_check_staff_payment_permissions {
 
 =item * Garden subscriptions are 5 bins maximum
 
+=item * 4 days before a new garden subscription starts if already have a container
+
 =back
 
 =cut
@@ -118,6 +120,12 @@ sub waste_payment_ref_council_code { "RBK" }
 sub garden_collection_time { '6:30am' }
 
 sub waste_garden_maximum { 5 }
+
+sub garden_subscription_start_days {
+    my ($self, $data) = @_;
+    return $data->{current_bins} ? 4 : 10;
+}
+
 
 sub waste_munge_bin_services_open_requests {
     my ($self, $open_requests) = @_;

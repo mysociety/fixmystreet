@@ -13,10 +13,10 @@ my $mech = FixMyStreet::TestMech->new;
 # Create TfL body (using 2482 like other TfL tests)
 my $body = $mech->create_body_ok(2482, 'TfL', { cobrand => 'tfl' });
 
-# Create the category for banner licences
+# Create the category for banners licences
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
-    category => 'Banner licence',
+    category => 'Banners licence',
     email => 'licence@tfl.gov.uk.example.org'
 );
 
@@ -105,7 +105,7 @@ subtest 'Banner form submission - smoke test' => sub {
         }});
 
         $mech->form_with_fields('terms_accepted');
-        $mech->current_form->find_input('terms_accepted', undef, 1)->value('Banner guidance notes and terms & conditions - March 2026');
+        $mech->current_form->find_input('terms_accepted', undef, 1)->value('Banners guidance notes and terms & conditions - March 2026');
         $mech->current_form->find_input('terms_accepted', undef, 2)->value('Highway licensing and other consents policy - March 2026');
         $mech->current_form->find_input('terms_accepted', undef, 3)->value('Standard conditions for highway consents - March 2026');
         $mech->submit_form_ok;
@@ -141,7 +141,7 @@ subtest 'Banner form submission - smoke test' => sub {
 
         # Verify problem was created
         my $problem = FixMyStreet::DB->resultset('Problem')
-            ->search({ category => 'Banner licence' })
+            ->search({ category => 'Banners licence' })
             ->order_by({ -desc => 'id' })->first;
         ok $problem, 'Problem record created';
         is $problem->cobrand_data, 'licence', 'cobrand_data is licence';
