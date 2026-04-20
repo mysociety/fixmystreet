@@ -67,10 +67,11 @@ sub cancel_contract {
     # Always check for legacy contracts regardless of whether we found a report.
     my $legacy_contract_ids = $self->cobrand->waste_get_legacy_contract_ids($uprn);
     if ($legacy_contract_ids) {
-        $self->_cancel_legacy_direct_debit($legacy_contract_ids);
+        $self->_cancel_legacy_direct_debit($legacy_contract_ids, $reference);
     }
 
     unless ($report) {
+        # Expected as we might have handled a legacy cancellation above.
         $self->_vprint("  No active garden subscription found with external_id $external_id");
         return;
     }
@@ -98,7 +99,7 @@ sub cancel_contract {
 
     my $payment_method = $report->get_extra_field_value('payment_method') || 'credit_card';
     if ($payment_method eq 'direct_debit') {
-        $self->_cancel_direct_debit($report);
+        $self->_cancel_direct_debit($report, $reference);
     } else {
         # Nothing to do for credit card
     }
@@ -173,17 +174,16 @@ sub create_cancellation_report {
 }
 
 sub _cancel_direct_debit {
-    my ($self, $original_report) = @_;
+    my ($self, $original_report, $reference) = @_;
 
     my $i = $self->cobrand->get_dd_integration;
     unless ($i) {
-        $self->_vprint("  WARNING: Could not get Direct Debit integration object. Unable to cancel at source.");
-        return;
+        die("Could not get Direct Debit integration object (while processing Agile reference $reference)");
     }
 
     my $contract_id = $original_report->get_extra_metadata('direct_debit_contract_id');
     unless ($contract_id) {
-        $self->_vprint("  WARNING: No contract ID in metadata");
+        print "  WARNING: No contract ID in metadata for Agile reference $reference (report " . $original_report->id . ")\n";
         return;
     }
 
@@ -192,9 +192,7 @@ sub _cancel_direct_debit {
     my $resp = $i->cancel_plan({ report => $original_report });
 
     if ( ref $resp eq 'HASH' && $resp->{error} ) {
-        $self->_vprint(
-            "  Failed to send cancellation request to Direct Debit provider: $resp->{error}"
-        );
+        print "  Failed to send cancellation request to Direct Debit provider for Agile reference $reference: $resp->{error}\n";
     } else {
         $self->_vprint(
             "  Successfully sent cancellation request to Direct Debit provider."
@@ -203,7 +201,7 @@ sub _cancel_direct_debit {
 }
 
 sub _cancel_legacy_direct_debit {
-    my ($self, $legacy_contract_ids) = @_;
+    my ($self, $legacy_contract_ids, $reference) = @_;
 
     my $i = $self->cobrand->get_dd_integration;
     unless ($i) {
@@ -217,9 +215,7 @@ sub _cancel_legacy_direct_debit {
     my $resp = $i->cancel_plan({ contract_ids => $legacy_contract_ids });
 
     if ( ref $resp eq 'HASH' && $resp->{error} ) {
-        $self->_vprint(
-            "  Failed to send cancellation request to Direct Debit provider: $resp->{error}"
-        );
+        print "  Failed to send cancellation request to Direct Debit provider for Agile reference $reference: $resp->{error}\n";
     } else {
         $self->_vprint(
             "  Successfully sent cancellation request to Direct Debit provider."

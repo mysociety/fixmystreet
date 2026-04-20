@@ -265,7 +265,7 @@ FixMyStreet::override_config {
             _create_report( uprn => $uprn, external_id => $external_id );
 
             stdout_like { $canceller->cancel_contract($contract) }
-                qr/Attempting to cancel contract $reference.*Found active report.*Cancelling Direct Debit.*Failed to send cancellation request to Direct Debit provider: Archive failed/s,
+                qr/Attempting to cancel contract $reference.*Found active report.*Cancelling Direct Debit.*Failed to send cancellation request to Direct Debit provider for Agile reference $reference: Archive failed/s,
                 "Reports failure when archive_contract fails for single contract";
         };
 
