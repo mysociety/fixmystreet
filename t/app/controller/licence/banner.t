@@ -179,4 +179,17 @@ subtest 'Banner form submission - smoke test' => sub {
     };
 };
 
+subtest 'Old /licence/banner URL redirects to /licence/banners' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'tfl',
+        COBRAND_FEATURES => { licencing_forms => { tfl => 1 } },
+    }, sub {
+        $mech->max_redirect(0);
+        $mech->get('/licence/banner');
+        is $mech->res->code, 301, 'redirect is 301';
+        like $mech->res->header('Location'), qr{/licence/banners$}, 'redirects to /licence/banners';
+        $mech->max_redirect(7);
+    };
+};
+
 done_testing;
