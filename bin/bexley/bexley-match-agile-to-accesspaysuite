@@ -1,0 +1,83 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+use FixMyStreet::Cobrand::Bexley;
+
+use Text::CSV;
+
+# Export a CSV from Postgres using this SQL:
+#
+# select uprn, extra->>'direct_debit_customer_id' as dd_customer_id
+# from problem
+# where uprn in (
+#   select uprn from problem
+#   where bodies_str='2494' and category='Cancel Garden Subscription' and external_id is null and state='confirmed' and user_id=557571 and extra->>'direct_debit_contract_id' is not null order by id
+# )
+# and category like '%Garden Subscription' and extra->>'direct_debit_customer_id' is not null;
+
+my $input_path = 'bexley-final-with-customer-id.csv';
+
+my $csv = Text::CSV->new({ binary => 1, auto_diag => 1 });
+
+open my $in, '<:encoding(utf8)', $input_path or die "Can't open $input_path: $!";
+
+my $out = \*STDOUT;
+binmode $out, ':encoding(utf8)';
+
+my $headers = $csv->getline($in);
+$csv->column_names($headers);
+
+$csv->eol("\n");
+$csv->print($out, [qw(uprn agile_status agile_end_date dd_status)]);
+
+my $b = FixMyStreet::Cobrand::Bexley->new;
+my $agile = $b->agile;
+my $ap = $b->get_dd_integration;
+
+my %uprn_to_customer_ids;
+my @uprn_order;
+
+while (my $row = $csv->getline_hr($in)) {
+    my $uprn = $row->{uprn};
+    push @uprn_order, $uprn unless exists $uprn_to_customer_ids{$uprn};
+    $uprn_to_customer_ids{$uprn} //= [];
+    if ($row->{dd_customer_id}) {
+        push @{ $uprn_to_customer_ids{$uprn} }, $row->{dd_customer_id};
+    }
+}
+
+close $in;
+
+for my $uprn (@uprn_order) {
+    my $customer_ids = $uprn_to_customer_ids{$uprn};
+    next unless @$customer_ids;
+
+    my $res = $agile->CustomerSearch($uprn);
+    use Data::Dumper;
+    warn Dumper($res);
+    my $agile_status;
+    my $agile_end_date = '';
+    if ($res->{IsFree} eq 'True') {
+        $agile_status = 'inactive';
+    } else {
+        $agile_status = 'active';
+        $agile_end_date = $res->{EndDate};
+    }
+
+    my @dd_statuses;
+    my $has_active_dd = 0;
+    for my $customer_id (@$customer_ids) {
+        my $contracts = $ap->get_contracts($customer_id);
+        for my $contract (@$contracts) {
+            push @dd_statuses, "$contract->{Id}=$contract->{Status}";
+            $has_active_dd = 1 if $contract->{Status} eq 'Active';
+        }
+    }
+    my $flagged = ($agile_status eq 'active' && !$has_active_dd)
+        || ($agile_status eq 'inactive' && $has_active_dd);
+    next unless $flagged;
+
+    my $dd_status = join("\n", @dd_statuses);
+    $csv->print($out, [$uprn, $agile_status, $agile_end_date, $dd_status]);
+}
