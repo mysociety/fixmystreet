@@ -58,7 +58,21 @@ has_page missed_collection_intro => (
     title => 'Report a missed clinical waste collection',
     intro => 'clinical/missed_intro.html',
     fields => ['continue'],
+    next => 'container_quantity',
+);
+
+has_page container_quantity => (
+    title => 'Number of containers',
+    fields => [ 'bin_quantity', 'continue' ],
     next => 'container_location',
+);
+
+has_field bin_quantity => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    required => 1,
+    label => 'How many clinical waste bags need to be collected?',
+    options => [ map { $_, $_ } 1..5 ],
 );
 
 has_page container_location => (

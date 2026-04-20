@@ -1246,6 +1246,7 @@ sub waste_munge_report_data {
     $data->{uprn} = $uprn; # Needed to override for some parent properties
     $c->set_param('service_id', $id);
     $c->set_param('location_of_containers', $data->{bin_location}) if $data->{bin_location};
+    $c->set_param('quantity', $data->{bin_quantity}) if $data->{bin_quantity};
     $c->set_param('service_item_name', $service_id);
     $c->set_param('assisted_yn', $property->{has_assisted} ? 'Yes' : 'No');
 }
