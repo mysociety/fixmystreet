@@ -47,6 +47,12 @@ $contact->set_extra_fields(
         required => "false",
         automated => "hidden_field",
         description => "Location of containers",
+    },
+    {
+        code => "quantity",
+        required => "false",
+        automated => "hidden_field",
+        description => "Number of containers",
     }
 );
 $contact->update;
@@ -113,6 +119,9 @@ FixMyStreet::override_config {
             'Missed collection intro page' );
         $mech->submit_form_ok();
         $mech->submit_form_ok(
+            { with_fields => { bin_quantity => 3 } }
+        );
+        $mech->submit_form_ok(
             { with_fields => { bin_location => 'Rear of property' } }
         );
         $mech->submit_form_ok(
@@ -128,7 +137,10 @@ FixMyStreet::override_config {
             'On summary page',
         );
         $mech->submit_form_ok(
-            { button => 'change_bin_location' }
+            { button => 'change_bin_quantity' }
+        );
+        $mech->submit_form_ok(
+            { with_fields => { bin_quantity => 4 } }
         );
         $mech->submit_form_ok(
             { with_fields => { bin_location => 'Top of the driveway' } }
@@ -158,6 +170,7 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('assisted_yn'), 'No';
         is $report->get_extra_field_value('location_of_containers'),
             'Top of the driveway';
+        is $report->get_extra_field_value('quantity'), 4;
     };
 
     subtest 'Property without clinical waste' => sub {
