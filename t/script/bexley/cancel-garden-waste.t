@@ -89,8 +89,8 @@ FixMyStreet::override_config {
 
         subtest 'processes cancellations' => sub {
             $agile_response = [
-                { UPRN => '123456789' },
-                { UPRN => '987654321' },
+                { Reference => 'GW-SERV-001-12345' },
+                { Reference => 'GW-SERV-001-54321' },
             ];
 
             my $cancel_calls = [];
@@ -99,39 +99,47 @@ FixMyStreet::override_config {
                 verbose => 1,
             );
 
-            # Mock cancel_by_uprn to track calls
+            # Mock cancel_contract to track calls
             my $cancel_mock = Test::MockModule->new('FixMyStreet::Script::Bexley::CancelGardenWaste');
-            $cancel_mock->mock('cancel_by_uprn', sub {
-                my ($self, $uprn) = @_;
-                push @$cancel_calls, $uprn;
+            $cancel_mock->mock('cancel_contract', sub {
+                my ($self, $contract) = @_;
+                push @$cancel_calls, $contract->{Reference};
             });
 
             stdout_is { $canceller_test->cancel_from_api(7) }
                 "Found 2 cancellations\n",
                 "Correct number of cancellations found";
 
-            is_deeply $cancel_calls, ['123456789', '987654321'],
-                "cancel_by_uprn called for each UPRN";
+            is_deeply $cancel_calls, ['GW-SERV-001-12345', 'GW-SERV-001-54321'],
+                "cancel_contract called for each Reference";
         };
     };
 
-    subtest 'cancel_by_uprn tests' => sub {
+    subtest 'cancel_contract tests' => sub {
         my $canceller = FixMyStreet::Script::Bexley::CancelGardenWaste->new(
             cobrand => $cobrand,
             verbose => 1,
         );
 
         my $uprn = '123456789';
+        my $reference = 'GW-SERV-001-12345';
+        my $external_id = "Agile-$reference";
+
+        my $contract = {
+            UPRN => $uprn,
+            Reference => $reference,
+            Reason => 'Moved house',
+        };
 
         subtest 'no active subscription found' => sub {
-            stdout_is { $canceller->cancel_by_uprn($uprn) }
-                "Attempting to cancel subscription for UPRN $uprn\n" .
-                "  No active garden subscription found for UPRN $uprn\n",
-                "Handles no active subscription correctly";
+            stdout_is { $canceller->cancel_contract($contract) }
+                "Attempting to cancel contract $reference (UPRN: $uprn)\n" .
+                "  No active garden subscription found with external_id $external_id\n",
+                "Handles no active subscription correctly (UPRN with no legacy contracts)";
         };
 
         subtest 'handles direct debit cancellation' => sub {
-            my $garden_report = _create_report( uprn => $uprn );
+            my $garden_report = _create_report( uprn => $uprn, external_id => $external_id );
 
             $access_mock->mock('cancel_plan', sub {
                 my ($self, $args) = @_;
@@ -139,8 +147,8 @@ FixMyStreet::override_config {
                 return 1;
             });
 
-            stdout_like { $canceller->cancel_by_uprn($uprn, 'Moved house') }
-                qr/Attempting to cancel subscription for UPRN $uprn.*Found active report.*Cancelling Direct Debit.*Successfully sent cancellation request/s,
+            stdout_like { $canceller->cancel_contract($contract) }
+                qr/Attempting to cancel contract $reference.*Found active report.*Cancelling Direct Debit.*Successfully sent cancellation request/s,
                 "Successfully handles direct debit cancellation";
 
             my $cancel_report = _last_cancel_report();
@@ -158,6 +166,8 @@ FixMyStreet::override_config {
             cmp_deeply $cancel_report->get_extra_metadata, {
                 property_address => '123 Bexley St',
                 direct_debit_contract_id => 'PAYER123',
+                direct_debit_customer_id => 'CUST123',
+                original_report_id => $garden_report->id,
             }, 'correct metadata set on cancellation report';
 
             cmp_deeply $cancel_report->get_extra_fields, [
@@ -173,10 +183,10 @@ FixMyStreet::override_config {
         subtest 'handles legacy UPRN-based direct debit cancellation' => sub {
             $mech->delete_problems_for_body( $body->id );
 
-            my $uprn = '20001';  # UPRN that has legacy contracts in mock
+            my $legacy_uprn = '20001';  # UPRN that has legacy contracts in mock
+            my $legacy_contract = { %$contract, UPRN => $legacy_uprn };
 
-            # Create report WITHOUT direct_debit_contract_id metadata
-            my $garden_report = _create_report( uprn => $uprn, skip_contract_id => 1 );
+            # No FMS report exists with the Agile external_id (legacy sub never had one)
 
             my $cancel_plan_called = 0;
             my $passed_contract_ids;
@@ -184,19 +194,21 @@ FixMyStreet::override_config {
             $access_mock->mock('cancel_plan', sub {
                 my ($self, $args) = @_;
                 $cancel_plan_called = 1;
-                is $args->{report}->id, $garden_report->id, 'Correct report passed';
+                ok !$args->{report}, 'No report passed for legacy-only cancellation';
                 ok $args->{contract_ids}, 'contract_ids parameter provided for legacy subscription';
                 $passed_contract_ids = $args->{contract_ids};
                 return 1;  # Success
             });
 
-            stdout_like { $canceller->cancel_by_uprn($uprn, 'Moved house') }
-                qr/Found 1 legacy contract.*Successfully sent cancellation request/s,
-                "Successfully handles legacy direct debit cancellation";
+            stdout_like { $canceller->cancel_contract($legacy_contract) }
+                qr/Found 1 legacy contract.*Successfully sent cancellation request.*No active garden subscription/s,
+                "Cancels legacy contracts even when no matching FMS report exists";
 
             ok $cancel_plan_called, 'cancel_plan was called';
             is_deeply $passed_contract_ids, ['TEST-CONTRACT-20001'],
                 'Correct legacy contract ID passed from BexleyContracts lookup';
+
+            is _last_cancel_report(), undef, 'No cancellation report created without a matching FMS report';
         };
 
         subtest 'Cancellation report exists' => sub {
@@ -206,9 +218,9 @@ FixMyStreet::override_config {
 
             # Create old and new subscriptions
             my $created = '2024-07-28 12:00:00';
-            _create_report( uprn => $uprn, created => $created );
+            _create_report( uprn => $uprn, external_id => $external_id, created => $created );
             $created = '2025-07-28 12:00:00';
-            _create_report( uprn => $uprn, created => $created );
+            _create_report( uprn => $uprn, external_id => $external_id, created => $created );
 
             subtest 'For a previous subscription' => sub {
                 $created = '2025-07-28 00:00:00';
@@ -219,7 +231,7 @@ FixMyStreet::override_config {
                 );
 
                 my $last_cancel_id = _last_cancel_report()->id;
-                stdout_unlike { $canceller->cancel_by_uprn($uprn) }
+                stdout_unlike { $canceller->cancel_contract($contract) }
                     qr/Active cancellation report.*already exists/;
                 my $new_cancel_id = _last_cancel_report()->id;
                 ok $last_cancel_id != $new_cancel_id,
@@ -230,7 +242,7 @@ FixMyStreet::override_config {
                 # Newer cancellation report should have been set up in
                 # previous test
                 my $last_cancel_id = _last_cancel_report()->id;
-                stdout_like { $canceller->cancel_by_uprn($uprn) }
+                stdout_like { $canceller->cancel_contract($contract) }
                     qr/Active cancellation report.*already exists/;
                 my $new_cancel_id = _last_cancel_report()->id;
                 ok $last_cancel_id == $new_cancel_id,
@@ -250,10 +262,10 @@ FixMyStreet::override_config {
                 }
             );
 
-            _create_report( uprn => $uprn);
+            _create_report( uprn => $uprn, external_id => $external_id );
 
-            stdout_like { $canceller->cancel_by_uprn($uprn) }
-                qr/Attempting to cancel subscription for UPRN $uprn.*Found active report.*Cancelling Direct Debit.*Failed to send cancellation request to Direct Debit provider: Archive failed/s,
+            stdout_like { $canceller->cancel_contract($contract) }
+                qr/Attempting to cancel contract $reference.*Found active report.*Cancelling Direct Debit.*Failed to send cancellation request to Direct Debit provider: Archive failed/s,
                 "Reports failure when archive_contract fails for single contract";
         };
 
@@ -261,6 +273,7 @@ FixMyStreet::override_config {
             $mech->delete_problems_for_body( $body->id );
 
             my $legacy_uprn = '20001';  # UPRN that has legacy contracts in mock
+            my $legacy_contract = { %$contract, UPRN => $legacy_uprn };
 
             $access_mock->mock(
                 'archive_contract',
@@ -269,12 +282,10 @@ FixMyStreet::override_config {
                 }
             );
 
-            # Create report WITHOUT direct_debit_contract_id to trigger legacy path
-            _create_report( uprn => $legacy_uprn, skip_contract_id => 1 );
-
-            stdout_like { $canceller->cancel_by_uprn($legacy_uprn) }
-                qr/Attempting to cancel subscription for UPRN $legacy_uprn.*Found active report.*Found 1 legacy contract.*Cancelling Direct Debit.*Successfully sent cancellation request/s,
-                "Continues with cancellation even when archive_contract fails for legacy contracts";
+            # No FMS report — legacy contracts are cancelled regardless
+            stdout_like { $canceller->cancel_contract($legacy_contract) }
+                qr/Attempting to cancel contract $reference.*Found 1 legacy contract.*Cancelling Direct Debit.*Successfully sent cancellation request.*No active garden subscription/s,
+                "Cancels legacy contracts even when archive_contract errors are ignored";
         };
     };
 };
@@ -294,6 +305,7 @@ sub _create_report {
             : 'Garden Subscription',
             title => ( $is_cancel ? 'Garden Subscription - Cancel' : 'Garden Subscription - New' ),
             created => $args{created} || \'current_timestamp',
+            external_id => $args{external_id},
             uprn => $args{uprn},
         },
 
@@ -308,6 +320,7 @@ sub _create_report {
     $garden_report->set_extra_metadata('property_address', '123 Bexley St');
     unless ($skip_contract_id) {
         $garden_report->set_extra_metadata('direct_debit_contract_id', 'PAYER123');
+        $garden_report->set_extra_metadata('direct_debit_customer_id', 'CUST123');
     }
     $garden_report->set_extra_metadata('not_used', 'IGNORE');
     $garden_report->update;
