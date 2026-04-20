@@ -10,8 +10,14 @@
     padding-bottom: 0.75em;
 }
 
-.map-fullscreen .central-beds-header {
-    display: none;
+.map-fullscreen body.mappage {
+    .central-beds-header {
+        display: none;
+    }
+
+    #site-logo {
+        display: block;
+    }
 }
 
 .central-beds-header__logo,
@@ -63,14 +69,20 @@ a {
     font-weight: bold;
 }
 
+#site-header {
+    min-height: 4rem;
+}
+
 #site-logo {
-    display: inline-block;
-    background: transparent;
-    font-size: 1.5em;
-    line-height: 60px;
-    width: auto;
-    color: $central-beds-purple;
-    text-indent: 0;
+    display: none;
+}
+
+body.mappage #site-logo {
+    background-image: url(/cobrands/centralbedfordshire/images/central-beds-logo.svg), none;
+    height: 4rem;
+    width: 4rem;
+    background-position: top 4px center;
+    background-size: 80%;
 }
 
 #report-cta,
