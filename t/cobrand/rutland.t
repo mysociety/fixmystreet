@@ -254,4 +254,14 @@ FixMyStreet::override_config {
     };
 };
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'rutland' ],
+    COBRAND_FEATURES => { alerts_population => { rutland => 40000 } },
+    MAPIT_URL        => 'http://mapit.uk/',
+}, sub {
+    $mech->log_in_ok($user->email);
+    $mech->get('/alert/list?longitude=-0.727877&latitude=52.670447');
+    $mech->content_contains('covers roughly 40,000', "Alerts page show smaller population number");
+};
+
 done_testing();

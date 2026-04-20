@@ -479,7 +479,10 @@ sub determine_location : Private {
         $c->go('index');
     }
 
-    my $dist = FixMyStreet::Gaze::get_radius_containing_population($c->stash->{latitude}, $c->stash->{longitude});
+    my $population = $c->cobrand->feature('alerts_population');
+
+    my $dist = FixMyStreet::Gaze::get_radius_containing_population($c->stash->{latitude}, $c->stash->{longitude}, $population);
+    $c->stash->{population_count} = $c->cobrand->feature('alerts_population');
     $c->stash->{population_radius} = $dist;
 
     return 1;
