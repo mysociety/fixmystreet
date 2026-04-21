@@ -508,14 +508,6 @@ sub problem_state_processed {
     return $state;
 }
 
-sub suppress_reporter_alerts {
-    my ($self, $problem) = @_;
-    if ($problem->to_body_named('Westminster')) {
-        return 1;
-    }
-    return 0;
-}
-
 sub must_have_2fa {
     my ($self, $user) = @_;
     return 1 if $user->is_superuser && !FixMyStreet->staging_flag('skip_must_have_2fa');

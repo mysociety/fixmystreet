@@ -17,7 +17,6 @@
         <label for="[% cat_prefix %]form_[% meta_name %]">[% (meta.description OR meta.code) | safe %]</label>
       [% END %]
 
-      [% TRY %][% INCLUDE 'report/new/_category_extra_field_notice.html' %][% CATCH file %][% END %]
       [% IF field_errors.$x_meta_name %]
       <p class='form-error'>[% field_errors.$x_meta_name %]</p>
       [% END -%]

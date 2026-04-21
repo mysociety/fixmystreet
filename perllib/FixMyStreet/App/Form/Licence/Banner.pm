@@ -86,7 +86,7 @@ has_field 'add_another' => (
 has_page type => (
     step_number => 5,
     fields => ['banner_type', 'banner_content', 'continue'],
-    title => 'Banner details',
+    title => 'Banners details',
     next => 'installation',
 );
 
@@ -117,7 +117,7 @@ has_field banner_content => (
 has_page installation => (
     step_number => 6,
     fields => ['banner_installation', 'continue'],
-    title => 'Banner installation',
+    title => 'Banners installation',
     next => 'site_pedestrian_space',
 );
 

@@ -381,7 +381,7 @@ underway’ and ‘This issue is now closed’.
 
 #### Status updates
 
-<span class="admin-task__permissions">Permissions required: User must be marked as staff</span>
+<span class="admin-task__permissions">Permissions required: User must be marked as staff and ‘Markup problem details’ must be ticked</span>
 
 <img loading="lazy" alt="Use a template to make public updates faster" src="/assets/img/pro-user-guide/report-public-update.png" class="admin-screenshot" />
 
@@ -394,8 +394,7 @@ their own comments or edit the preformatted responses to reflect the precise cir
 report. Alternatively they may write an entirely new status update.
 
 In some cases, template responses are automatically attached to a report state — for example,
-setting the report state as closed may automatically select the template ‘Issue closed’. See
-‘creating a template’.
+setting the report state as closed may automatically select the template ‘Issue closed’. See ‘[Creating response templates](#creating-editing-response-templates)’
 
 If ‘Create reports/updates as the council’ is ticked in the staff user’s account permissions, their
 updates will be labeled as from the council rather than the staff member’s name. For the sake of
@@ -405,6 +404,8 @@ Staff with appropriate permissions can also attach an image to the update, which
 displayed publicly alongside the text update.
 
 This option is also available via the general 'Update' box under the main report.
+
+<strong>Please note:</strong> depending on how your authority's cobrand version of FixMyStreet Pro has been configured, the 'Provide an update' button as shown in the below screenshot may not appear for you.
 
 <img loading="lazy" alt="Updating the user via the report itself" src="/assets/img/pro-user-guide/Provide an update on a report.jpeg" class="admin-screenshot" />
 
