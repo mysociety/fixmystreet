@@ -262,7 +262,7 @@ sub set_local_alert_options : Private {
     {
         $type = 'local_problems';
         push @params, $2, $1; # Note alert parameters are lon,lat
-        my $distance = $c->forward('get_distance');
+        my $distance = $c->forward('get_distance', [$1, $2]);
         push @params, $distance if $distance;
     }
     return unless $type;
@@ -548,11 +548,17 @@ sub setup_request : Private {
 }
 
 sub get_distance : Private {
-    my ($self, $c) = @_;
+    my ($self, $c, $lat, $long) = @_;
 
     my $distance = $c->get_param('distance') || 0;
     $distance = 0 unless $distance =~ /^\d*([,.]\d+)?$/;
     $distance = 150 if $distance > 150; # Match Gaze maximum
+    if (($lat and $long) and not $distance) {
+        $distance = FixMyStreet::Gaze::get_radius_containing_population(
+            $lat,
+            $long,
+            $c->cobrand->feature('alerts_population') );
+    }
     return $distance + 0;
 }
 
