@@ -43,6 +43,7 @@ foreach my $test (
         uri => '/alert/subscribe?type=local&rznvy=' . $user->email . '&feed=local:10.2:20.1',
         param1 => 20.1,
         param2 => 10.2,
+        param3 => 10.0,
     },
     {
         email => $user->email,
@@ -65,6 +66,7 @@ foreach my $test (
         uri => '/alert/subscribe?type=local&rznvy=' . $user->email . '&feed=local:10.2:20.1',
         param1 => 20.1,
         param2 => 10.2,
+        param3 => 10.0,
     },
   )
 {
