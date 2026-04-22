@@ -3649,6 +3649,83 @@ $site-message-border: 1px solid #525252 !default;
   display: none;
 }
 
+.pin-legend {
+  box-sizing: border-box;
+
+  &--desktop { 
+    display: none;
+  }
+
+  &--mobile {
+    .pin-legend__panel {
+      margin-top: 1rem;
+    }
+  }
+
+  .only-map & {
+    .js-pin-legend-toggle {
+      display: none !important; //overrides .has-inline-svg
+    }
+  }
+
+  .pin-legend__list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    column-gap: 1.25rem;
+    row-gap: 0.75rem;
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.25rem;
+
+    img {
+      max-width: 1.6em;
+    }
+  }
+
+  &__heading {
+    margin: 0 0 0.75rem;
+    font-size: 1.25rem;
+  }
+
+  &__list {
+    margin: 0;
+
+    li {
+      margin: 0;
+      list-style: none;
+    }
+  }
+}
+
+html.only-map {
+  .report-list-filters-wrapper .js-pin-legend-toggle {
+    display: none !important; //overrides .has-inline-svg
+  }
+
+  .js-pin-legend-toggle {
+    border: none;
+  }
+
+  .pin-legend__panel {
+    position: absolute;
+    right: 0;
+    bottom: 4rem;
+    z-index: 5;
+    background: transparentize($color: #000, $amount: 0.05);
+    color: #fff;
+    padding: 1rem;
+    max-width: 80%;
+    border-radius: 8px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+}
+
 .badge {
   padding: 0.25em 0.35em;
   margin-right: 0.25em;
