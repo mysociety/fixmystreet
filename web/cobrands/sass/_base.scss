@@ -74,6 +74,9 @@ $footer-main-nav-color: #fff !default;
 // Invisble when there is not enough space
 $is-mobile-menu-visible: true !default;
 
+// Some cobrands might need adjustment in the future, if their pin list increases.
+$pin-legend-panel-top-position: 6rem !default;
+
 @import "_mixins";
 @import "_report_list";
 
@@ -3652,6 +3655,93 @@ $site-message-border: 1px solid #525252 !default;
 
 .keyboard-instructions-wrapper, .keyboard-pin {
   display: none;
+}
+
+.pin-legend {
+  box-sizing: border-box;
+
+  &--desktop { 
+    display: none;
+  }
+
+  &--mobile {
+    .pin-legend__panel {
+      margin-top: 1rem;
+    }
+  }
+
+  .only-map & {
+    .js-pin-legend-toggle {
+      display: none !important; //overrides .has-inline-svg
+    }
+  }
+
+  .pin-legend__list {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    column-gap: 1.25rem;
+    row-gap: 0.75rem;
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.25rem;
+    line-height: 1.5;
+
+    p {
+      margin: 0;
+      font-size: 0.85rem;
+    }
+
+    img {
+      max-width: 1lh;
+      height: 1lh;
+    }
+  }
+
+  &__heading {
+    margin: 0 0 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  &__list {
+    margin: 0;
+
+    li {
+      margin: 0;
+      list-style: none;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid $form-control-border-color;
+    }
+  }
+}
+
+html.only-map {
+  .report-list-filters-wrapper .js-pin-legend-toggle {
+    display: none !important; //overrides .has-inline-svg
+  }
+
+  .js-pin-legend-toggle {
+    border: none;
+  }
+
+  .pin-legend__panel {
+    position: absolute;
+    left: 0;
+    top: $pin-legend-panel-top-position;
+    z-index: 5;
+    background: transparentize($color: #000, $amount: 0.05);
+    color: #fff;
+    padding: 1rem;
+    border-radius: 8px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    max-width: 70dvw; // Prevents overlaps with the controls on the right
+  }
 }
 
 .badge {
