@@ -69,4 +69,11 @@ body.mappage {
     .nav-wrapper {
         background-color: $central-beds-cream;
     }
+
+    #site-logo {
+        display: block;
+        height: $mappage-header-height;
+        width: $mappage-header-height;
+        background-position: top 6px center;
+    }
 }

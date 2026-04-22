@@ -30,6 +30,13 @@ sub customer_reference {
                         = $current_subscription->{customer_first_name} . ' '
                         . $current_subscription->{customer_last_name};
 
+                    foreach (qw(customer_first_name customer_last_name)) {
+                        return 'about_you' if !$current_subscription->{$_};
+                    }
+                    if (!$current_subscription->{customer_email} && !$current_subscription->{customer_phone}) {
+                        return 'about_you';
+                    }
+
                     $form->saved_data->{email}
                         = $current_subscription->{customer_email};
                     $form->saved_data->{phone}
@@ -93,10 +100,16 @@ sub about_you {
             my $current_subscription
                 = $form->c->cobrand->garden_current_subscription;
 
+            # Check if already verified
+            my $ref = uc $form->saved_data->{customer_reference};
+            if ( $ref eq $current_subscription->{customer_ref} ) {
+                $form->saved_data->{name} = $first_name . ' ' . $last_name;
+                return $args{next_page};
+            }
+
             my $name_verified
                 = uc($first_name) eq uc( $current_subscription->{customer_first_name} )
                 && uc($last_name) eq uc( $current_subscription->{customer_last_name} );
-
 
             if ($name_verified) {
                 $form->saved_data->{name} = $first_name . ' ' . $last_name;
