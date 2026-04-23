@@ -176,6 +176,10 @@ if ($opt->test_fixtures) {
                 { group => 'Roads & Pavements', category => 'Parks' },
                 { group => 'Roads & Pavements', category => 'Snow and ice problem/winter salting' },
             ], name => 'Buckinghamshire Council', cobrand => 'buckinghamshire' },
+        { area_id => 2561, categories => [
+                { group => 'Abandoned vehicle', category => 'A vehicle left on public road for over two months' },
+                { group => 'Abandoned vehicle', category => 'A vehicle burnt out on the road' },
+            ], name => 'Bristol Council', cobrand => 'bristol' },
         { area_id => 53822, categories => [
                 { group => 'Grass, hedges and weeds', category => 'Grass cutting' },
                 { group => 'Grass, hedges and weeds', category => 'Hedge problem' },
@@ -320,6 +324,19 @@ if ($opt->test_fixtures) {
         );
         $child_cat->update;
     }
+
+    $child_cat = FixMyStreet::DB->resultset("Contact")->find({
+        body => $bodies->{2561},
+        category => 'A vehicle left on public road for over two months',
+    });
+    $child_cat->set_extra_fields(
+        {"code" => "NE02", "datatype" => "string", "required" => "true", "variable" => "true", "protected" => "false", "description" => "Vehicle registration number"},
+        {"code" => "NE01", "values" => [{"key" => "Y", "name" => "Yes"}, {"key" => "N", "name" => "No"}], "datatype" => "singlevaluelist", "required" => "true", "variable" => "true", "protected" => "false", "description" => "Is the vehicle taxed?"},
+        {"code" => "NE03", "values" => [{"key" => "C", "name" => "Car"}, {"key" => "MM", "name" => "Motorcyle or Moped"}, {"key" => "O", "name" => "Other"}, {"key" => "V", "name" => "Van"}], "datatype" => "singlevaluelist", "required" => "false", "variable" => "true", "protected" => "false", "description" => "Please select the type of vehicle"},
+        {"code" => "NE04", "datatype" => "string", "required" => "false", "variable" => "true", "protected" => "false", "description" => "Make of the vehicle (if not known, please note not known)"},
+        {"code" => "NE07", "datatype" => "string", "required" => "false", "variable" => "true", "protected" => "false", "description" => "Colour of the vehicle (if not known, please note not known)"},
+    );
+    $child_cat->update;
 
     $child_cat = FixMyStreet::DB->resultset("Contact")->find({
         body => $bodies->{53822},

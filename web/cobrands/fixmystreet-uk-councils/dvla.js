@@ -5,11 +5,66 @@
 
 const FIELDS = {
     'buckinghamshire': {
+        'block': false,
         'group': 'Abandoned vehicle',
         'reg': 'VEHICLE_REGISTRATION',
         'taxed': 'ABANDONED_VEHICLE_TAXED',
         'type': 'ABANDONED_SELECT_TYPE',
-        'colour': 'COLOUR_OF_THE'
+        'make_and_colour': 'MAKE_/_COLOUR_OF_THE_VEHI',
+        'tax': {
+            'yes': 'Yes',
+            'no': 'No'
+        }
+    },
+    'bristol': {
+        'block': true,
+        'categories': [
+            'A vehicle left on public road for over two months',
+            'A vehicle being repaired on road or pavement',
+            'A vehicle abandoned on your property',
+            'A badly damaged or burnt out vehicle on a public road',
+        ],
+        'reg': 'NE02',
+        'taxed': 'NE01',
+        'type': 'NE03',
+        'make': 'NE04',
+        'colour': 'NE07',
+        'tax': {
+            'yes': 'Y',
+            'no': 'N'
+        }
+    }
+};
+
+const TYPES = {
+    'buckinghamshire': {
+        'Motorbike': 'Motorbike',
+        'Van': 'Van',
+        'Car': 'Car',
+        'Other': 'Other',
+    },
+    'bristol': {
+        'Motorbike': 'MM',
+        'Van': 'V',
+        'Car': 'C',
+        'Other': 'O',
+    }
+};
+
+const REASONS = {
+    'buckinghamshire': {
+        'fn': function(data) {
+            const reasons = [];
+            if (data.taxStatus == 'Taxed') {
+                reasons.push('are taxed');
+            } else if (data.taxStatus == 'SORN') {
+                reasons.push('have SORN status');
+            }
+            if (data.motStatus == 'Valid') {
+                reasons.push('have a valid MOT');
+            }
+            return reasons.join(' or ');
+        },
     }
 };
 
@@ -68,35 +123,54 @@ function dvla_lookup(e) {
             return;
         }
 
-        const reasons = [];
-        if (data.taxStatus == 'Taxed') {
-            reasons.push('are taxed');
-        } else if (data.taxStatus == 'SORN') {
-            reasons.push('have SORN status');
-        }
-        if (data.motStatus == 'Valid') {
-            reasons.push('have a valid MOT');
+        const council_reasons = REASONS[fixmystreet.cobrand] || {};
+        let reason = '';
+        let add_dvla_contact = true;
+        if (council_reasons.fn) {
+            reason = council_reasons.fn(data);
+        } else {
+            if (data.taxStatus == 'SORN') {
+                reason = 'We cannot accept reports on vehicles that have been declared SORN but are left on a public road, contact DVLA: <a href="https://www.gov.uk/sorn-statutory-off-road-notification">SORN guidance</a> · <a href="https://www.gov.uk/make-a-sorn">Make a SORN</a>';
+                add_dvla_contact = false;
+            } else {
+                const reason_msgs = [];
+                if (data.taxStatus == 'Taxed') {
+                    reason_msgs.push('are taxed');
+                }
+                if (data.motStatus == 'Valid') {
+                    reason_msgs.push('have a valid MOT');
+                }
+                if (reason_msgs.length) {
+                    reason = 'We cannot accept reports on vehicles that ' + reason_msgs.join(' or ') + '.';
+                }
+            }
         }
 
+        data.reg = reg;
         data.make = title_case(data.make || '');
         data.colour = title_case(data.colour || '');
         data.fuelType = title_case(data.fuelType || '');
+        const make_and_colour = [];
+        if (data.make) make_and_colour.push(data.make);
+        if (data.colour) make_and_colour.push(data.colour);
+        data.make_and_colour = make_and_colour.join(' / ');
 
         const type = data.typeApproval || '';
         const wheelplan = data.wheelplan || '';
+        let types = TYPES[fixmystreet.cobrand];
         let vehicle_type = '';
         if (type.match(/L[1-7]|motorcycle/i) || wheelplan.match(/motorcycle|moped|2 wheel/i)) {
-            vehicle_type = 'Motorbike';
+            vehicle_type = types.Motorbike;
         } else if (type.match(/N1|commercial/i) || wheelplan.match(/van|commercial/i)) {
-            vehicle_type = 'Van';
+            vehicle_type = types.Van;
         } else if (type.match(/M1/i)) {
-            vehicle_type = 'Car';
+            vehicle_type = types.Car;
         } else if (type.match(/M[23]|N[23]/i) || wheelplan.match(/& artic|3 axle rigid|multi-axle rigid/i)) {
-            vehicle_type = 'Other';
+            vehicle_type = types.Other;
         }
 
-/* Do not do anything if it matches at present
-        if (reasons.length) {
+        const config = FIELDS[fixmystreet.cobrand] || {};
+        if (config.block && reason != '') {
             document.querySelectorAll('.js-reporting-page--next').forEach(b => b.disabled = true);
             const stopperId = 'js-dvla-stopper';
             const id = document.getElementById(stopperId);
@@ -104,8 +178,7 @@ function dvla_lookup(e) {
             let vehicle_desc = [data.colour, data.make, vehicle_type=='Other'?'':vehicle_type.toLowerCase()].filter(Boolean).join(' ');
             if (data.fuelType) vehicle_desc += ', ' + data.fuelType;
             if (data.yearOfManufacture) vehicle_desc += ', ' + data.yearOfManufacture;
-            const reason = 'We cannot accept reports on vehicles that ' + reasons.join(' or ');
-            const msg = esc`<div id="${stopperId}" class="js-stopper-notice box-warning" role="alert" aria-live="assertive"><strong>${vehicle_desc}</strong><br>${reason}. You may be able to <a href="https://contact.dvla.gov.uk/report-untaxed-vehicle">contact the DVLA</a>.</div>`;
+            const msg = esc`<div id="${stopperId}" class="js-stopper-notice box-warning" role="alert" aria-live="assertive"><strong>${vehicle_desc}</strong><br>` + reason + ( add_dvla_contact ? 'You may be able to <a href="https://contact.dvla.gov.uk/report-untaxed-vehicle">contact the DVLA</a>.' : '' ) + '</div>';
             const wrapper = document.querySelector('.js-reporting-page--active .pre-button-messaging');
             if (id) {
                 id.outerHTML = msg;
@@ -115,34 +188,29 @@ function dvla_lookup(e) {
             const height = wrapper.getBoundingClientRect().height;
             document.querySelector('.js-reporting-page--active').style.paddingBottom = height;
         } else {
-*/
-            let field = document.querySelector('input[name*="' + fields.colour + '"]');
-            if (field) {
-                const a = [];
-                if (data.make) a.push(data.make);
-                if (data.colour) a.push(data.colour);
-                field.value = a.join(' / ');
-            }
-            field = document.querySelector('select[name*="' + fields.type + '"]');
+            ['make', 'colour', 'reg', 'make_and_colour'].forEach(name => {
+                if (fields[name] && data[name]) {
+                    let field = document.querySelector('input[name*="' + fields[name] + '"]');
+                    if (field) {
+                        field.value = data[name];
+                    }
+                }
+            });
+
+            let field = document.querySelector('select[name*="' + fields.type + '"]');
             if (field && vehicle_type) {
                 field.value = vehicle_type;
             }
             field = document.querySelector('select[name*="' + fields.taxed + '"]');
             if (field) {
                 if (data.taxStatus == 'Taxed') {
-                    field.value = 'Yes';
+                    field.value = config.tax.yes;
                 } else if (data.taxStatus == 'Untaxed') {
-                    field.value = 'No';
+                    field.value = config.tax.no;
                 }
             }
-            field = document.querySelector('input[name*="' + fields.reg + '"]');
-            if (field) {
-                field.value = reg;
-            }
             fixmystreet.pageController.toPage('next');
-/*
         }
-*/
     };
     request.send(`registration=${encodeURIComponent(reg)}`);
 }
@@ -150,7 +218,7 @@ function dvla_lookup(e) {
 function dvla_setup() {
     const fields = FIELDS[fixmystreet.cobrand];
     const selected = fixmystreet.reporting.selectedCategory();
-    if (selected.group == fields.group) {
+    if (selected.group == fields.group || (fields.categories && fields.categories.indexOf(selected.category) > -1) ) {
         const msg = `<div class="js-dvla-message">
 
 <div class="govuk-form-group">

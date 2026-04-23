@@ -29,6 +29,11 @@ IF bodyclass.match('mappage') AND NOT bodyclass.match('formflow') AND NOT bodycl
             version('/cobrands/highways/assets.js'),
         );
     END;
+    IF dvla;
+        scripts.push(
+            version('/cobrands/fixmystreet-uk-councils/dvla.js'),
+        );
+    END;
     IF roadworks;
 %]
 <div id="roadworks-categories" data-roadworks-categories="[% c.cobrand.roadworks_categories %]"></div>
