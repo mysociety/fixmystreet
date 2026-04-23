@@ -27,7 +27,7 @@ sub service_worker : Path("/service-worker.js") {
         $c->res->body('');
         return;
     }
-    $c->res->headers->header('Cache-Control' => 'max-age=0');
+    $c->res->headers->header('Cache-Control' => 'no-store, max-age=0');
     $c->res->content_type('application/javascript');
 }
 

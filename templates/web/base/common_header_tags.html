@@ -47,7 +47,18 @@ return a}}();k.mq=p;d.Modernizr=g})(window,document);
 <script nonce="[% csp_nonce %]">
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
-        navigator.serviceWorker.register('/service-worker.js');
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            registrations.forEach(function(registration) {
+                registration.unregister();
+            });
+        });
+        if ('caches' in window) {
+            caches.keys().then(function(keys) {
+                keys.forEach(function(key) {
+                    caches.delete(key);
+                });
+            });
+        }
     });
 }
 </script>
@@ -88,3 +99,5 @@ if ('serviceWorker' in navigator) {
 
 [% INCLUDE 'header_opengraph.html' %]
 [% TRY %][% PROCESS 'header_extra.html' %][% CATCH file %][% END %]
+<link rel="icon" type="image/png" href="/i/New-SCC-logo-WHITE.png">
+<link rel="apple-touch-icon" href="/i/New-SCC-logo-WHITE.png">

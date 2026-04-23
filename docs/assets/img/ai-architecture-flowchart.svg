@@ -1,0 +1,218 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1220" viewBox="0 0 1800 1220">
+  <defs>
+    <style>
+      .title { font: 700 30px Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 16px Arial, sans-serif; fill: #334155; }
+      .label { font: 700 18px Arial, sans-serif; fill: #0f172a; }
+      .text { font: 400 15px Arial, sans-serif; fill: #0f172a; }
+      .small { font: 400 13px Arial, sans-serif; fill: #334155; }
+      .box { fill: #ffffff; stroke: #334155; stroke-width: 2; rx: 10; ry: 10; }
+      .group { fill: #f8fafc; stroke: #0f172a; stroke-width: 2.5; rx: 18; ry: 18; }
+      .fork-boundary { fill: #fefefe; stroke: #1e293b; stroke-width: 3; stroke-dasharray: 10 8; rx: 24; ry: 24; }
+      .ai-box { fill: #ecfeff; stroke: #0f766e; stroke-width: 2.5; rx: 10; ry: 10; }
+      .data-box { fill: #eff6ff; stroke: #1d4ed8; stroke-width: 2.5; rx: 10; ry: 10; }
+      .ops-box { fill: #fef3c7; stroke: #b45309; stroke-width: 2.5; rx: 10; ry: 10; }
+      .arrow { stroke: #475569; stroke-width: 2.5; fill: none; marker-end: url(#arrowhead); }
+      .ai-arrow { stroke: #0f766e; stroke-width: 2.5; fill: none; marker-end: url(#arrowhead-ai); }
+      .data-arrow { stroke: #1d4ed8; stroke-width: 2.5; fill: none; marker-end: url(#arrowhead-data); }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#475569"/>
+    </marker>
+    <marker id="arrowhead-ai" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#0f766e"/>
+    </marker>
+    <marker id="arrowhead-data" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#1d4ed8"/>
+    </marker>
+  </defs>
+
+  <text x="40" y="48" class="title">FixMyStreet Fork Architecture With AI Extensions</text>
+  <text x="40" y="78" class="subtitle">The dashed boundary marks the existing fork. AI components sit outside it and connect at the relevant integration points.</text>
+
+  <rect x="40" y="110" width="1180" height="1040" class="fork-boundary"/>
+  <text x="68" y="145" class="label">FixMyStreet Fork</text>
+
+  <rect x="70" y="180" width="1115" height="180" class="group"/>
+  <text x="95" y="212" class="label">Interfaces and Delivery Channels</text>
+
+  <rect x="95" y="235" width="215" height="92" class="box"/>
+  <text x="115" y="263" class="label">Public Web UI</text>
+  <text x="115" y="287" class="text">Report submission</text>
+  <text x="115" y="307" class="text">Report display and updates</text>
+
+  <rect x="340" y="235" width="215" height="92" class="box"/>
+  <text x="360" y="263" class="label">Staff and Admin UI</text>
+  <text x="360" y="287" class="text">Inspection and triage</text>
+  <text x="360" y="307" class="text">Configuration and moderation</text>
+
+  <rect x="585" y="235" width="215" height="92" class="box"/>
+  <text x="605" y="263" class="label">Waste Journeys</text>
+  <text x="605" y="287" class="text">Property lookup and forms</text>
+  <text x="605" y="307" class="text">Payments and bookings</text>
+
+  <rect x="830" y="235" width="155" height="92" class="box"/>
+  <text x="850" y="263" class="label">API and Tokens</text>
+  <text x="850" y="287" class="text">Mobile and AJAX</text>
+  <text x="850" y="307" class="text">Email or SMS confirm</text>
+
+  <rect x="1015" y="235" width="145" height="92" class="box"/>
+  <text x="1035" y="263" class="label">Email and SMS</text>
+  <text x="1035" y="287" class="text">Notifications</text>
+  <text x="1035" y="307" class="text">Alert delivery</text>
+
+  <rect x="70" y="390" width="1115" height="270" class="group"/>
+  <text x="95" y="422" class="label">Application Runtime</text>
+
+  <rect x="95" y="448" width="220" height="176" class="box"/>
+  <text x="115" y="476" class="label">Plack and Catalyst Entry</text>
+  <text x="115" y="500" class="text">app.psgi</text>
+  <text x="115" y="520" class="text">FixMyStreet::App</text>
+  <text x="115" y="540" class="text">Session and auth plugins</text>
+  <text x="115" y="560" class="text">Request setup and middleware</text>
+
+  <rect x="345" y="448" width="250" height="176" class="box"/>
+  <text x="365" y="476" class="label">Controllers</text>
+  <text x="365" y="500" class="text">Root</text>
+  <text x="365" y="520" class="text">Report, Report::New, Report::Update</text>
+  <text x="365" y="540" class="text">Waste, Admin, Auth, API</text>
+  <text x="365" y="560" class="text">Maps, alerts, moderation</text>
+
+  <rect x="625" y="448" width="240" height="176" class="box"/>
+  <text x="645" y="476" class="label">Cobrand Layer</text>
+  <text x="645" y="500" class="text">Host to cobrand resolution</text>
+  <text x="645" y="520" class="text">Per-body and per-council logic</text>
+  <text x="645" y="540" class="text">Hooks for behaviour and templates</text>
+
+  <rect x="895" y="448" width="260" height="176" class="box"/>
+  <text x="915" y="476" class="label">Views and Presentation</text>
+  <text x="915" y="500" class="text">Template Toolkit views</text>
+  <text x="915" y="520" class="text">Web templates and email templates</text>
+  <text x="915" y="540" class="text">Static assets and cobrand assets</text>
+
+  <rect x="70" y="690" width="1115" height="250" class="group"/>
+  <text x="95" y="722" class="label">Domain and Data</text>
+
+  <rect x="95" y="745" width="255" height="156" class="box"/>
+  <text x="115" y="773" class="label">Core Domain Models</text>
+  <text x="115" y="797" class="text">Problem, Comment, User, Alert</text>
+  <text x="115" y="817" class="text">Body, Contact, State, Token</text>
+  <text x="115" y="837" class="text">Questionnaire, AdminLog</text>
+
+  <rect x="380" y="745" width="245" height="156" class="box"/>
+  <text x="400" y="773" class="label">DB and ResultSets</text>
+  <text x="400" y="797" class="text">DBIx::Class schema</text>
+  <text x="400" y="817" class="text">Query restrictions by cobrand</text>
+  <text x="400" y="837" class="text">PostgreSQL and JSONB extras</text>
+
+  <rect x="655" y="745" width="240" height="156" class="box"/>
+  <text x="675" y="773" class="label">Operational Services</text>
+  <text x="675" y="797" class="text">Geocoding and MapIt</text>
+  <text x="675" y="817" class="text">Map rendering</text>
+  <text x="675" y="837" class="text">Photo storage and email build</text>
+
+  <rect x="925" y="745" width="230" height="156" class="box"/>
+  <text x="945" y="773" class="label">Background and Integrations</text>
+  <text x="945" y="797" class="text">Send daemon and cron jobs</text>
+  <text x="945" y="817" class="text">Open311 and council APIs</text>
+  <text x="945" y="837" class="text">Payment and waste backends</text>
+
+  <rect x="70" y="970" width="1115" height="140" class="group"/>
+  <text x="95" y="1002" class="label">Operations and Quality</text>
+
+  <rect x="95" y="1024" width="240" height="58" class="ops-box"/>
+  <text x="115" y="1051" class="label">bin and script Tasks</text>
+  <text x="115" y="1073" class="small">server, test, update, cron wrappers</text>
+
+  <rect x="365" y="1024" width="240" height="58" class="ops-box"/>
+  <text x="385" y="1051" class="label">Tests and Fixtures</text>
+  <text x="385" y="1073" class="small">Perl tests, mocks, Cypress, sample images</text>
+
+  <rect x="635" y="1024" width="240" height="58" class="ops-box"/>
+  <text x="655" y="1051" class="label">Docs and Notes</text>
+  <text x="655" y="1073" class="small">Installation, manuals, architecture notes</text>
+
+  <rect x="905" y="1024" width="250" height="58" class="ops-box"/>
+  <text x="925" y="1051" class="label">Cobrands and Config</text>
+  <text x="925" y="1073" class="small">general.yml, per-cobrand templates and assets</text>
+
+  <rect x="1290" y="170" width="455" height="950" class="group"/>
+  <text x="1315" y="202" class="label">AI and Automation Components</text>
+
+  <rect x="1315" y="235" width="405" height="95" class="data-box"/>
+  <text x="1335" y="263" class="label">Derived Data Exports</text>
+  <text x="1335" y="287" class="text">Controlled report, routing, duplicate, waste, and label exports</text>
+  <text x="1335" y="307" class="text">Pseudonymized training and analytics datasets</text>
+
+  <rect x="1315" y="360" width="405" height="105" class="data-box"/>
+  <text x="1335" y="388" class="label">Feature Store and AI Tables</text>
+  <text x="1335" y="412" class="text">Embeddings, quality scores, duplicate candidates, summaries</text>
+  <text x="1335" y="432" class="text">Model versions, evidence, feedback, evaluation metadata</text>
+
+  <rect x="1315" y="495" width="405" height="120" class="ai-box"/>
+  <text x="1335" y="523" class="label">Enrichment and Model Jobs</text>
+  <text x="1335" y="547" class="text">Category suggestion, duplicate scoring, routing audit</text>
+  <text x="1335" y="567" class="text">Quality scoring, triage summaries, hotspot detection</text>
+  <text x="1335" y="587" class="text">Waste clustering and operational analytics</text>
+
+  <rect x="1315" y="645" width="405" height="118" class="ai-box"/>
+  <text x="1335" y="673" class="label">Application AI Service Layer</text>
+  <text x="1335" y="697" class="text">Thin retrieval APIs for controllers and templates</text>
+  <text x="1335" y="717" class="text">Feature flags, confidence thresholds, human-in-loop logic</text>
+  <text x="1335" y="737" class="text">No heavy model logic inside request controllers</text>
+
+  <rect x="1315" y="793" width="405" height="118" class="ai-box"/>
+  <text x="1335" y="821" class="label">AI-Enhanced User and Staff Surfaces</text>
+  <text x="1335" y="845" class="text">Category suggestions, duplicate warnings, quality prompts</text>
+  <text x="1335" y="865" class="text">Staff summaries, routing warnings, queue assistance</text>
+  <text x="1335" y="885" class="text">Waste history summaries and incident views</text>
+
+  <rect x="1315" y="941" width="405" height="130" class="ai-box"/>
+  <text x="1335" y="969" class="label">Synthetic Data and Evaluation</text>
+  <text x="1335" y="993" class="text">Scenario packs for demo, test, staging, and shadow-mode evaluation</text>
+  <text x="1335" y="1013" class="text">Adversarial datasets, regression packs, feedback capture</text>
+  <text x="1335" y="1033" class="text">Used to validate models before production rollout</text>
+
+  <line x1="205" y1="327" x2="205" y2="448" class="arrow"/>
+  <line x1="447" y1="327" x2="470" y2="448" class="arrow"/>
+  <line x1="692" y1="327" x2="470" y2="448" class="arrow"/>
+  <line x1="907" y1="327" x2="470" y2="448" class="arrow"/>
+  <line x1="1087" y1="327" x2="1025" y2="448" class="arrow"/>
+
+  <line x1="315" y1="536" x2="345" y2="536" class="arrow"/>
+  <line x1="595" y1="536" x2="625" y2="536" class="arrow"/>
+  <line x1="865" y1="536" x2="895" y2="536" class="arrow"/>
+
+  <line x1="470" y1="624" x2="470" y2="745" class="arrow"/>
+  <line x1="745" y1="624" x2="745" y2="745" class="arrow"/>
+  <line x1="1025" y1="624" x2="1025" y2="745" class="arrow"/>
+
+  <line x1="222" y1="901" x2="215" y2="1024" class="arrow"/>
+  <line x1="503" y1="901" x2="485" y2="1024" class="arrow"/>
+  <line x1="775" y1="901" x2="755" y2="1024" class="arrow"/>
+  <line x1="1038" y1="901" x2="1030" y2="1024" class="arrow"/>
+
+  <line x1="625" y1="823" x2="1315" y2="282" class="data-arrow"/>
+  <line x1="1155" y1="823" x2="1315" y2="282" class="data-arrow"/>
+  <line x1="350" y1="823" x2="1315" y2="282" class="data-arrow"/>
+
+  <line x1="1517" y1="330" x2="1517" y2="360" class="data-arrow"/>
+  <line x1="1517" y1="465" x2="1517" y2="495" class="ai-arrow"/>
+  <line x1="1517" y1="615" x2="1517" y2="645" class="ai-arrow"/>
+  <line x1="1517" y1="763" x2="1517" y2="793" class="ai-arrow"/>
+
+  <line x1="1315" y1="705" x2="595" y2="536" class="ai-arrow"/>
+  <line x1="1315" y1="725" x2="1085" y2="536" class="ai-arrow"/>
+  <line x1="1315" y1="685" x2="1155" y2="536" class="ai-arrow"/>
+
+  <line x1="1315" y1="845" x2="310" y2="281" class="ai-arrow"/>
+  <line x1="1315" y1="865" x2="555" y2="281" class="ai-arrow"/>
+  <line x1="1315" y1="885" x2="985" y2="281" class="ai-arrow"/>
+
+  <line x1="1517" y1="941" x2="485" y2="1053" class="ai-arrow"/>
+  <line x1="1517" y1="1071" x2="1030" y2="1053" class="ai-arrow"/>
+  <line x1="1517" y1="1071" x2="215" y2="1053" class="ai-arrow"/>
+
+  <text x="1280" y="1098" class="small">Blue arrows: data exported out of the fork into AI storage and jobs.</text>
+  <text x="1280" y="1118" class="small">Teal arrows: AI outputs flow back into the application at the controller, template, staff, and operational layers.</text>
+</svg>

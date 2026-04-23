@@ -10,7 +10,7 @@ $(function(){
         '#FF4343', // red
         '#D97B0C', // orange
         '#FFD000', // yellow
-        '#56A54A', // green
+        '#8fd3ff', // light blue
         '#269AE9', // blue
         '#B446CA', // purple
         '#7B8B98', // gunmetal
@@ -18,7 +18,7 @@ $(function(){
         '#9C0101', // dark red
         '#CA6D00', // dark orange
         '#C2A526', // dark yellow
-        '#1D7710', // dark green
+        '#1573b9', // dark blue
         '#1D64B1', // dark blue
         '#7A108F', // dark purple
         '#3B576E', // dark gunmetal

@@ -62,8 +62,8 @@ STAGING_FLAGS:
   hide_staging_banner: 0
 
 # What to use as front page/alert example places placeholder
-# Defaults to High Street, Main Street
-EXAMPLE_PLACES: [ 'High Street', 'Main Street' ]
+# Defaults to Tyseley
+EXAMPLE_PLACES: [ 'Tyseley' ]
 
 # An array of languages for the site, in the following format:
 # <language code>,<pretty name>,<locale>

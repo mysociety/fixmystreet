@@ -30,6 +30,8 @@ Show the summary page of all reports.
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
+    $c->forward('ensure_local_birmingham_body');
+
     if ( $c->cobrand->call_hook('report_page_data') ) {
         return 1;
     }
@@ -78,8 +80,23 @@ sub index : Path : Args(0) {
     }
 
     # Down here so that error pages aren't cached.
-    my $max_age = FixMyStreet->config('CACHE_TIMEOUT') // 3600;
-    $c->response->header('Cache-Control' => 'max-age=' . $max_age);
+    $c->response->header('Cache-Control' => 'no-store, max-age=0');
+}
+
+sub ensure_local_birmingham_body : Private {
+    my ( $self, $c ) = @_;
+
+    return unless $c->cobrand->moniker eq 'default';
+
+    my $body = $c->model('DB::Body')->find_or_create({
+        name => 'Birmingham City Council',
+    });
+    $body->update({ deleted => 0 }) if $body->deleted;
+
+    $c->model('DB::BodyArea')->find_or_create({
+        body_id => $body->id,
+        area_id => 2514,
+    });
 }
 
 =head2 display_body_stats

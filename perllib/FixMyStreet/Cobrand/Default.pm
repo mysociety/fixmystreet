@@ -1064,7 +1064,7 @@ sub body {
 
 sub example_places {
     # uncoverable branch true
-    FixMyStreet->config('EXAMPLE_PLACES') || [ 'High Street', 'Main Street' ];
+    FixMyStreet->config('EXAMPLE_PLACES') || [ 'Tyseley' ];
 }
 
 =item title_list

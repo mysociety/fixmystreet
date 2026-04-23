@@ -18,23 +18,23 @@
         <div class="healthcheck-unit healthcheck-unit--good">
             <h3>Email delivery</h3>
             <p>
-                [% body.name %] receives reports from FixMyStreet via email; you can see a full list of the email addresses we send reports to at the bottom of this page.
+                [% body.name %] receives reports from SCC Incident Analysis via email; you can see a full list of the email addresses we send reports to at the bottom of this page.
             </p>
         </div>
         <div class="healthcheck-unit healthcheck-unit--bad">
             <h3>Integration with back end systems</h3>
             <p>
-                Local authorities can connect with FixMyStreet in a number of different ways so that reports drop directly into your existing system(s) instead of arriving by email.
+                Local authorities can connect with SCC Incident Analysis in a number of different ways so that reports drop directly into your existing system(s) instead of arriving by email.
             </p>
             <ol>
                 <li>You can do this yourself (for free) using our <a href="/about/open311-api-info">Open311 API</a></li>
                 <li>We can build and maintain the integration for you (carries an annual fee)</li>
-                <li>You can become a <a href="https://www.societyworks.org/services/highways/"> FixMyStreet Pro</a> user. FixMyStreet Pro is a more advanced version of FixMyStreet, which seeks to eliminate the significant costs councils incur from duplicate reporting, unnecessary contact and failure demand.</li>
+                <li>You can become a <a href="https://www.societyworks.org/services/highways/"> SCC Incident Analysis Pro</a> user. SCC Incident Analysis Pro is a more advanced version of SCC Incident Analysis, which seeks to eliminate the significant costs councils incur from duplicate reporting, unnecessary contact and failure demand.</li>
             </ol>
 
-            <p>FixMyStreet is an independent web service run by the charity mySociety to make it easier for anyone to report a problem in their local area without needing to have any knowledge of council boundaries or responsibilities.</p>
+            <p>SCC Incident Analysis is an independent web service run by the charity mySociety to make it easier for anyone to report a problem in their local area without needing to have any knowledge of council boundaries or responsibilities.</p>
 
-            <p>As a charity our goal is to help improve services for citizens and local authorities. If you would like some help connecting FixMyStreet to your own system(s), please send an email to support@fixmystreet.com.</p>
+            <p>As a charity our goal is to help improve services for citizens and local authorities. If you would like some help connecting SCC Incident Analysis to your own system(s), please send an email to support@SCC Incident Analysis.</p>
         </div>
     </div>
 </div>
@@ -140,7 +140,7 @@
         <h2 class="dashboard-subheading">[% tprintf( loc('Where we send %s reports'), body.name ) %]</h2>
         [% IF body.send_method == 'Refused' %]
           <p>
-            [% tprintf( loc('%s currently does not accept reports from FixMyStreet.'), body.name) %]
+            [% tprintf( loc('%s currently does not accept reports from SCC Incident Analysis.'), body.name) %]
           </p>
 
           <p>
@@ -159,7 +159,7 @@
           [% loc('We currently send all reports to the email addresses below.') %]
         </p>
         <p>
-          [% loc('You can find lots more information about FixMyStreet in <a href="/about/information-for-councils">our FAQs</a>. For anything else, please <a href="/contact">get in touch</a>') %]
+          [% loc('You can find lots more information about SCC Incident Analysis in <a href="/about/information-for-councils">our FAQs</a>. For anything else, please <a href="/contact">get in touch</a>') %]
         </p>
         <table class="dashboard-ranking-table" style="margin-bottom: 1em;">
           <tr>
@@ -175,10 +175,10 @@
           [% END %]
         </table>
         <p>
-          [% loc('If there’s a better contact address for the reports you are receiving, tell us by emailing support@fixmystreet.com and we’ll update it for you.') %]
+          [% loc('If there’s a better contact address for the reports you are receiving, tell us by emailing support@SCC Incident Analysis and we’ll update it for you.') %]
         <p>
         <p>
-          [% loc('You can find lots more information about FixMyStreet in <a href="/about/information-for-councils">our FAQs</a>. For anything else, please <a href="/contact">get in touch</a>') %]
+          [% loc('You can find lots more information about SCC Incident Analysis in <a href="/about/information-for-councils">our FAQs</a>. For anything else, please <a href="/contact">get in touch</a>') %]
         </p>
         [% END %]
     </div>

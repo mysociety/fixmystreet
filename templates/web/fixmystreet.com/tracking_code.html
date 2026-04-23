@@ -1,4 +1,4 @@
-[% IF c.config.BASE_URL == "https://www.fixmystreet.com" %]
+[% IF c.config.BASE_URL == "https://www.SCC Incident Analysis" %]
 <script nonce="[% csp_nonce %]" defer>Object.defineProperty(document,"cookie",{get:function(){var t=Object.getOwnPropertyDescriptor(Document.prototype,"cookie").get.call(document);return t.trim().length>0&&(t+="; "),t+="_ga=GA1.1."+Math.floor(1e9*Math.random())+"."+Math.floor(1e9*Math.random())},set:function(t){t.trim().startsWith("_ga")||Object.getOwnPropertyDescriptor(Document.prototype,"cookie").set.call(document,t)}});</script>
 <script nonce="[% csp_nonce %]" defer src="https://www.googletagmanager.com/gtag/js?id=G-QG7Y41TZLL"></script>
 <script nonce="[% csp_nonce %]">
@@ -9,5 +9,5 @@
     gtag('config','G-QG7Y41TZLL', {'client_id': client_id, 'cookie_expires': 1});
 </script>
 [% ELSE %]
-<!-- Tracking code not inserted as "[% c.config.BASE_URL %]" not "https://www.fixmystreet.com" -->
+<!-- Tracking code not inserted as "[% c.config.BASE_URL %]" not "https://www.SCC Incident Analysis" -->
 [% END %]

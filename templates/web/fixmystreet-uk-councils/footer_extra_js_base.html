@@ -6,17 +6,17 @@ IF bodyclass.match('mappage');
 END;
 IF bodyclass.match('mappage') AND NOT bodyclass.match('formflow') AND NOT bodyclass.match('accountpage');
     scripts.push(
-        version('/cobrands/fixmystreet-uk-councils/js.js'),
-        version('/cobrands/fixmystreet/assets.js'),
+        version('/cobrands/SCC Incident Analysis-uk-councils/js.js'),
+        version('/cobrands/SCC Incident Analysis/assets.js'),
     );
     IF validation;
         scripts.push(
-            version('/cobrands/fixmystreet-uk-councils/council_validation_rules.js'),
+            version('/cobrands/SCC Incident Analysis-uk-councils/council_validation_rules.js'),
         );
     END;
     IF hide_elements_for_categories;
         scripts.push(
-            version('/cobrands/fixmystreet-uk-councils/council_category_element_display_rules.js'),
+            version('/cobrands/SCC Incident Analysis-uk-councils/council_category_element_display_rules.js'),
         );
     END;
     IF cobrand_js;
@@ -34,11 +34,11 @@ IF bodyclass.match('mappage') AND NOT bodyclass.match('formflow') AND NOT bodycl
 <div id="roadworks-categories" data-roadworks-categories="[% c.cobrand.roadworks_categories %]"></div>
 [%
         scripts.push(
-            version('/cobrands/fixmystreet-uk-councils/roadworks.js'),
+            version('/cobrands/SCC Incident Analysis-uk-councils/roadworks.js'),
         );
     END;
     scripts.push(
-        version('/cobrands/fixmystreet-uk-councils/assets.js'),
+        version('/cobrands/SCC Incident Analysis-uk-councils/assets.js'),
         version('/js/asset_layers.js')
     );
 END;
