@@ -2,12 +2,12 @@
 
 <form method="post" enctype="multipart/form-data">
     <div class="admin-hint">
-      <p>[% loc("The <strong>FixMyStreet name</strong> is a string that represents the name of the web application as it is usually displayed to the user (e.g., amongst a list of other applications, or as a label for an icon).") %]</p>
+      <p>[% loc("The <strong>SCC Incident Analysis name</strong> is a string that represents the name of the web application as it is usually displayed to the user (e.g., amongst a list of other applications, or as a label for an icon).") %]</p>
     </div>
     [% form.field('name').render | safe %]
 
     <div class="admin-hint">
-      <p>[% loc("The <strong>FixMyStreet short name</strong> is a string that represents the name of the web application displayed to the user if there is not enough space to display name (e.g., as a label for an icon on the phone home screen).") %]</p>
+      <p>[% loc("The <strong>SCC Incident Analysis short name</strong> is a string that represents the name of the web application displayed to the user if there is not enough space to display name (e.g., as a label for an icon on the phone home screen).") %]</p>
     </div>
     [% form.field('short_name').render | safe %]
 

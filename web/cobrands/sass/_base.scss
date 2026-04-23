@@ -792,6 +792,7 @@ ul.error {
 }
 
 .dev-site-notice {
+  display: none !important;
   font-size: 1.5em;
   color: #fff;
   background-color: #f00;
@@ -802,6 +803,16 @@ ul.error {
   transform: rotate(-45deg);
   z-index: 20;
   pointer-events: none;
+}
+
+.footer-marketing,
+.platform-logo,
+.mysoc-footer,
+.societyworks-footer,
+.peterborough-waste-credits,
+[class*="fms-platform"],
+[class*="fixmystreet-logo"] {
+  display: none !important;
 }
 
 // Padding creates page margins on mobile
@@ -832,8 +843,8 @@ ul.error {
   height: 60px;
   background-position: 0 50%;
   background-repeat: no-repeat;
-  background-size: 175px 35px;
-  background-image: url("/cobrands/fixmystreet/images/site-logo.svg");
+  background-size: contain;
+  background-image: url("/i/New-SCC-logo-WHITE.png");
   text-indent: -999999px;
 }
 
@@ -947,6 +958,17 @@ html.mobile.js-nav-open #js-menu-open-modal {
   span {
     background-color: mix(#fff, $primary, 70%);
   }
+}
+
+.nav-menu__help-icon {
+  font-weight: bold;
+  text-align: center;
+}
+
+#plDebug,
+#plDebugToolbar,
+#plDebugToolbarHandle {
+  display: none !important;
 }
 
 .shadow-wrap {

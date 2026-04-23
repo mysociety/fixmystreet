@@ -1,8 +1,8 @@
 [% INCLUDE 'header.html', title = 'Open311', sidebar='about/_sidebar.html' %]
 
-<h1>FixMyStreet support for Open311</h1>
+<h1>SCC Incident Analysis support for Open311</h1>
 
-<p>FixMyStreet supports Open311 both as a
+<p>SCC Incident Analysis supports Open311 both as a
 <a href="[% c.cobrand.moniker == 'fixmystreet' ? '/about/open311-api-info' : '#client' %]">client</a>
 (sending reports made on the site to an external service via the Open311 protocol), and
 partly as a <a href="#server">server</a> (returning reports made on the site when
@@ -28,10 +28,10 @@ about future-proofing your communication channels in an easy and economical way
 </dd>
 
 [% IF c.cobrand.moniker == 'fixmystreet' %]
-<dt>Integrating with FixMyStreet using Open311</dt>
+<dt>Integrating with SCC Incident Analysis using Open311</dt>
 <dd>
-<p>Open311 enables any authority to receive reports from FixMyStreet.com and the app directly into a backend system instead of via email. It will also allow you to close/update reports on FixMyStreet.com or the app when work is completed.
-<p><a href="/about/open311-api-info">Find out more about connecting to FixMyStreet using Open311</a></p>
+<p>Open311 enables any authority to receive reports from SCC Incident Analysis and the app directly into a backend system instead of via email. It will also allow you to close/update reports on SCC Incident Analysis or the app when work is completed.
+<p><a href="/about/open311-api-info">Find out more about connecting to SCC Incident Analysis using Open311</a></p>
 </dd>
 [% END %]
 
@@ -45,7 +45,7 @@ about future-proofing your communication channels in an easy and economical way
 
 <hr>
 
-<h2 id="server">[% loc('Open311 API for the mySociety FixMyStreet server') %]</h2>
+<h2 id="server">[% loc('Open311 API for the SCC Incident Analysis server') %]</h2>
 
 [% IF error %]
 <p>[% tprintf( loc('Note: <strong>%s</strong>'), error ) %]</p>
@@ -179,4 +179,3 @@ call, the value provided is ignored.</dd>
 [% END %]
 
 [% INCLUDE 'footer.html' %]
-

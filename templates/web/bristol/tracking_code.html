@@ -1,4 +1,4 @@
-[% IF c.config.BASE_URL == "https://www.fixmystreet.com" %]
+[% IF c.config.BASE_URL == "https://www.SCC Incident Analysis" %]
 
 <script nonce="[% csp_nonce %]">
 function getConsentCookie(b){b+="=";for(var d=decodeURIComponent(document.cookie).split(";"),c=0;c<d.length;c++){for(var a=d[c];" "==a.charAt(0);)a=a.substring(1);if(0==a.indexOf(b))return a.substring(b.length,a.length)}return""};
@@ -9,5 +9,5 @@ if(cookieconsent=="allow"){
 </script>
 
 [% ELSE %]
-<!-- Tracking code not inserted as "[% c.config.BASE_URL %]" not "https://www.fixmystreet.com" -->
+<!-- Tracking code not inserted as "[% c.config.BASE_URL %]" not "https://www.SCC Incident Analysis" -->
 [% END %]

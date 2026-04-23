@@ -29,8 +29,8 @@ Or sign in as normal, with an email address and password:
 <script nonce="[% csp_nonce %]">
 (function(){
 
-    fixmystreet.borsetshire = fixmystreet.borsetshire || {};
-    fixmystreet.borsetshire.set_redirect = function(form) {
+    SCC Incident Analysis.borsetshire = SCC Incident Analysis.borsetshire || {};
+    SCC Incident Analysis.borsetshire.set_redirect = function(form) {
         var e = form.username.value;
         if (e == 'inspector@example.org') {
             form.r.value = 'my/planned';
@@ -45,7 +45,7 @@ Or sign in as normal, with an email address and password:
         var form = document.forms.general_auth;
         form.username.value = this.getAttribute('data-email');
         form.password_sign_in.value = 'password';
-        fixmystreet.borsetshire.set_redirect(form);
+        SCC Incident Analysis.borsetshire.set_redirect(form);
         form.submit();
     }
 

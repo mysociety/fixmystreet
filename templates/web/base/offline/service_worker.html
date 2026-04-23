@@ -1,133 +1,17 @@
-[%
-SET bodyclass = "offlinepage"; # For selection of scripts
-PROCESS 'common_scripts.html';
-SET offline_html = version('../templates/web/base/offline/fallback.html', '/offline/fallback');
-SET offline_waste_html = version('../templates/web/base/offline/waste_fallback.html', '/offline/waste_fallback');
-SET scripts_seen = {};
-
-~%]
-
-importScripts('[% version('/vendor/idb-keyval-iife.min.js') %]');
-
-const requiredOffline = [
-  "[% version('/cobrands/' _ c.cobrand.asset_moniker _ '/base.css') %]",
-  "[% version('/cobrands/' _ c.cobrand.asset_moniker _ '/layout.css') %]",
-  "[% version('/vendor/OpenLayers/theme/default/style.css') %]",
-  "[% version('/vendor/fancybox/jquery.fancybox-1.3.4.css') %]",
-  [%
-  FOR script IN scripts;
-    NEXT IF scripts_seen.${script};
-    scripts_seen.${script} = 1;
-    ~%]
-    "[%- script %]",
-  [% END %]
-  "[% offline_html %]",
-  "[% offline_waste_html %]"
-];
-
-const staticCache = 'static';
-// const pageCache = 'pages';
-
-addEventListener('install', function(evt) {
-  evt.waitUntil(precache());
+addEventListener('install', function(event) {
+  self.skipWaiting();
 });
 
-async function precache() {
-  const cache = await caches.open(staticCache);
-  return cache.addAll(requiredOffline);
-}
-
-addEventListener('fetch',  fetchEvent => {
-  const request = fetchEvent.request;
-  const url = new URL(request.url);
-
-  if (url.origin !== location.origin) {
-      return;
-  }
-
-  let offline_page = "[% offline_html %]";
-  if (RegExp('/waste').test(url)) {
-    offline_page = "[% offline_waste_html %]";
-  }
-
-  // Handle inspection form submission if offline...
-  if (request.method === 'POST' && RegExp('/report/\\d+$').test(url)) {
-    fetchEvent.respondWith(async function() {
-      const fetchPromise = fetch(request.clone());
-      try {
-        return await fetchPromise;
-      }
-      catch {
-        fetchEvent.waitUntil(async function() {
-          var request_buffer = await request.arrayBuffer();
-          var headers = request.headers;
-          let formData = {};
-          formData.contentType = headers.get('Content-Type');
-          let boundary_re = /.*boundary=(.*)/;
-          let bound = formData.contentType.match(boundary_re);
-
-          let saved = '--' + bound[1] + "\r\nContent-Disposition: form-data; name=\"saved_at\"\r\n\r\n" + Math.floor(+new Date() / 1000) + "\r\n";
-          var savedBuffer = new ArrayBuffer(saved.length);
-          var bufView = new Uint8Array(savedBuffer);
-          for (var i=0; i<saved.length; i++) {
-            bufView[i] = saved.charCodeAt(i);
-          }
-
-          var tmp = new Uint8Array(request_buffer.byteLength + savedBuffer.byteLength);
-          tmp.set(new Uint8Array(request_buffer), 0);
-          tmp.set(bufView, 0);
-          tmp.set(new Uint8Array(request_buffer), savedBuffer.byteLength);
-
-          formData.text = tmp.buffer;
-
-          var data = await idbKeyval.get('offlineData') || { cachedReports: {}, forms: [] };
-          var forms = data.forms;
-          if (!forms.length || tmp.toString() != new Uint8Array(forms[forms.length - 1][1].text).toString()) {
-            forms.push([request.url, formData]);
-          }
-          return idbKeyval.set('offlineData', data);
-        }());
-
-        return Response.redirect('/my/planned?saved=1');
-      };
-    }());
-  }
-
-  if (request.method === "POST" && RegExp('/photo/upload/offline').test(url)) {
-    // Pretend that the upload worked, to keep Dropzone happy.
-    // XXX could maybe actually cache photo here and upload automatically when
-    // online? But how to calculate same ID as server and give that to Dropzone...
-    fetchEvent.respondWith(new Response("OK"));
-  }
-
-  if (request.method !== "GET") {
-      return;
-  }
-
-  fetchEvent.respondWith(async function() {
-    if (request.mode === 'navigate') {
-      const fetchPromise = fetch(request);
-
-// For now, only save pages manually for inspectors
-//      fetchEvent.waitUntil(async function() {
-//        const responseCopy = (await fetchPromise).clone();
-//        const cache = await caches.open(pageCache);
-//        await responseCopy.ok ? cache.put(request, responseCopy) : cache.delete(request);
-//      }());
-
-      try {
-        return await fetchPromise;
-      }
-      catch {
-        let cached = await caches.match(request) || await caches.match(offline_page);
-        return cached || offlineResponse();
-      }
-    } else {
-      const responseFromCache = await caches.match(request);
-      return responseFromCache || fetch(request);
+addEventListener('activate', function(event) {
+  event.waitUntil((async function() {
+    if (self.caches) {
+      const keys = await caches.keys();
+      await Promise.all(keys.map(function(key) { return caches.delete(key); }));
     }
-  }());
+    await self.registration.unregister();
+    const clientsList = await clients.matchAll({ type: 'window' });
+    clientsList.forEach(function(client) {
+      client.navigate(client.url);
+    });
+  }()));
 });
-
-var offlineResponse = () =>
-    new Response('Service Unavailable', { status: 503, statusText: 'Service Unavailable', headers: { 'Content-Type': 'text/html' }});

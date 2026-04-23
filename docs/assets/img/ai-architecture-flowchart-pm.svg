@@ -1,0 +1,208 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1320" viewBox="0 0 1800 1320">
+  <defs>
+    <style>
+      .title { font: 700 32px Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 16px Arial, sans-serif; fill: #334155; }
+      .section { font: 700 19px Arial, sans-serif; fill: #0f172a; }
+      .label { font: 700 18px Arial, sans-serif; fill: #0f172a; }
+      .text { font: 400 15px Arial, sans-serif; fill: #0f172a; }
+      .small { font: 400 13px Arial, sans-serif; fill: #475569; }
+      .fork { fill: #fffefe; stroke: #1e293b; stroke-width: 3; stroke-dasharray: 10 8; rx: 24; ry: 24; }
+      .panel { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 2; rx: 18; ry: 18; }
+      .box { fill: #ffffff; stroke: #334155; stroke-width: 2; rx: 12; ry: 12; }
+      .ai { fill: #ecfeff; stroke: #0f766e; stroke-width: 2.5; rx: 12; ry: 12; }
+      .data { fill: #eff6ff; stroke: #2563eb; stroke-width: 2.5; rx: 12; ry: 12; }
+      .ops { fill: #fef3c7; stroke: #b45309; stroke-width: 2.5; rx: 12; ry: 12; }
+      .arrow { stroke: #475569; stroke-width: 2.5; fill: none; marker-end: url(#arrow); }
+      .data-arrow { stroke: #2563eb; stroke-width: 2.5; fill: none; marker-end: url(#arrowData); }
+      .ai-arrow { stroke: #0f766e; stroke-width: 2.5; fill: none; marker-end: url(#arrowAi); }
+      .badge { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.5; rx: 12; ry: 12; }
+      .badgeText { font: 700 13px Arial, sans-serif; fill: #0f172a; }
+      .badgeSub { font: 400 11px Arial, sans-serif; fill: #475569; }
+      .pill { fill: #e2e8f0; stroke: #94a3b8; stroke-width: 1.2; rx: 10; ry: 10; }
+      .pillText { font: 700 12px Arial, sans-serif; fill: #0f172a; }
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#475569"/>
+    </marker>
+    <marker id="arrowData" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/>
+    </marker>
+    <marker id="arrowAi" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#0f766e"/>
+    </marker>
+  </defs>
+
+  <text x="40" y="48" class="title">SCC Public Sector AI Incident Analysis</text>
+  <text x="40" y="76" class="subtitle">Product view of the FixMyStreet fork and the AI extensions that branch from the relevant operational areas.</text>
+
+  <rect x="40" y="100" width="980" height="1040" class="fork"/>
+  <text x="68" y="135" class="section">Existing FixMyStreet Fork</text>
+  <image href="fms-platform-logo.svg" x="770" y="116" width="210" height="42"/>
+
+  <rect x="60" y="160" width="940" height="920" class="panel"/>
+  <text x="85" y="194" class="section">Core Product Architecture</text>
+
+  <rect x="90" y="220" width="360" height="120" class="box"/>
+  <text x="115" y="250" class="label">Citizen Channels</text>
+  <text x="115" y="276" class="text">Residents use web, mobile, email, and SMS</text>
+  <text x="115" y="300" class="text">to report incidents, follow progress, and</text>
+  <text x="115" y="324" class="text">complete waste-service requests and payments.</text>
+
+  <rect x="570" y="220" width="360" height="120" class="box"/>
+  <text x="595" y="250" class="label">Council and Staff Channels</text>
+  <text x="595" y="276" class="text">Council teams inspect, triage, moderate,</text>
+  <text x="595" y="300" class="text">assign work, configure workflows, and</text>
+  <text x="595" y="324" class="text">monitor operational performance.</text>
+
+  <rect x="190" y="390" width="620" height="120" class="box"/>
+  <text x="215" y="420" class="label">Application Runtime</text>
+  <text x="215" y="446" class="text">A Perl application built on Catalyst, Plack,</text>
+  <text x="215" y="470" class="text">and Starman runs cobrand logic, auth, routing,</text>
+  <text x="215" y="494" class="text">report workflows, waste journeys, and views.</text>
+
+  <rect x="120" y="560" width="340" height="130" class="box"/>
+  <text x="145" y="590" class="label">Rules and Configuration</text>
+  <text x="145" y="616" class="text">Configuration defines how each cobrand,</text>
+  <text x="145" y="640" class="text">category, and body behaves, including</text>
+  <text x="145" y="664" class="text">routing, copy, templates, and feature flags.</text>
+
+  <rect x="550" y="560" width="340" height="130" class="box"/>
+  <text x="575" y="590" class="label">Operational Data</text>
+  <text x="575" y="616" class="text">Operational data captures reports, updates,</text>
+  <text x="575" y="640" class="text">users, waste activity, payments, photos,</text>
+  <text x="575" y="664" class="text">audit history, alerts, queues, and tokens.</text>
+
+  <rect x="190" y="740" width="620" height="120" class="ops"/>
+  <text x="215" y="770" class="label">Background Operations and Integrations</text>
+  <text x="215" y="796" class="text">Background jobs and integrations keep data moving</text>
+  <text x="215" y="820" class="text">between FixMyStreet, council systems, maps,</text>
+  <text x="215" y="844" class="text">messaging, payments, testing, and staging.</text>
+
+  <rect x="190" y="910" width="620" height="120" class="box"/>
+  <text x="215" y="940" class="label">Current Service Outcomes</text>
+  <text x="215" y="966" class="text">Today the fork supports public reporting,</text>
+  <text x="215" y="990" class="text">staff handling, and council waste operations</text>
+  <text x="215" y="1014" class="text">through one configurable service platform.</text>
+
+  <rect x="1120" y="100" width="640" height="1040" class="panel"/>
+  <text x="1145" y="135" class="section">AI and Automation Extensions</text>
+
+  <rect x="1150" y="220" width="580" height="120" class="data"/>
+  <text x="1175" y="250" class="label">Data Export and AI Store</text>
+  <text x="1175" y="276" class="text">Controlled exports turn operational records into</text>
+  <text x="1175" y="300" class="text">derived datasets, embeddings, labels, and auditable</text>
+  <text x="1175" y="324" class="text">prediction stores for privacy-aware experimentation.</text>
+
+  <rect x="1150" y="390" width="580" height="120" class="ai"/>
+  <text x="1175" y="420" class="label">Core AI Services</text>
+  <text x="1175" y="446" class="text">AI services score likely categories, detect duplicates,</text>
+  <text x="1175" y="470" class="text">summarize cases, assess quality, and surface routing</text>
+  <text x="1175" y="494" class="text">or service anomalies, mainly through batch enrichment.</text>
+
+  <rect x="1150" y="560" width="580" height="120" class="ai"/>
+  <text x="1175" y="590" class="label">AI-Enhanced Product Surfaces</text>
+  <text x="1175" y="616" class="text">The product layer turns AI outputs into prompts,</text>
+  <text x="1175" y="640" class="text">warnings, summaries, and queue assistance for</text>
+  <text x="1175" y="664" class="text">residents, staff, waste teams, and managers.</text>
+
+  <rect x="1150" y="740" width="580" height="120" class="ai"/>
+  <text x="1175" y="770" class="label">Human Controls and Rollout Safety</text>
+  <text x="1175" y="796" class="text">Governance controls keep rollout safe through feature</text>
+  <text x="1175" y="820" class="text">flags, thresholds, review loops, shadow mode, and</text>
+  <text x="1175" y="844" class="text">human approval before any narrow automation is used.</text>
+
+  <rect x="1150" y="910" width="580" height="120" class="ops"/>
+  <text x="1175" y="940" class="label">Synthetic Data and Evaluation</text>
+  <text x="1175" y="966" class="text">Synthetic data and evaluation packs create safe demo,</text>
+  <text x="1175" y="990" class="text">test, and staging scenarios that validate models and</text>
+  <text x="1175" y="1014" class="text">product behaviour before wider operational rollout.</text>
+
+  <line x1="270" y1="340" x2="270" y2="390" class="arrow"/>
+  <line x1="750" y1="340" x2="750" y2="390" class="arrow"/>
+  <line x1="500" y1="510" x2="500" y2="560" class="arrow"/>
+  <line x1="500" y1="690" x2="500" y2="740" class="arrow"/>
+  <line x1="500" y1="860" x2="500" y2="910" class="arrow"/>
+
+  <line x1="890" y1="625" x2="1150" y2="625" class="data-arrow"/>
+  <line x1="810" y1="800" x2="1150" y2="800" class="data-arrow"/>
+  <line x1="1730" y1="340" x2="1730" y2="390" class="data-arrow"/>
+  <line x1="1730" y1="510" x2="1730" y2="560" class="ai-arrow"/>
+  <line x1="1730" y1="680" x2="1730" y2="740" class="ai-arrow"/>
+  <line x1="1730" y1="860" x2="1730" y2="910" class="ai-arrow"/>
+
+  <line x1="1150" y1="620" x2="1010" y2="620" class="ai-arrow"/>
+  <line x1="1010" y1="620" x2="1010" y2="280" class="ai-arrow"/>
+  <line x1="1010" y1="280" x2="930" y2="280" class="ai-arrow"/>
+
+  <line x1="1150" y1="650" x2="980" y2="650" class="ai-arrow"/>
+  <line x1="980" y1="650" x2="980" y2="280" class="ai-arrow"/>
+  <line x1="980" y1="280" x2="450" y2="280" class="ai-arrow"/>
+
+  <line x1="1150" y1="790" x2="1040" y2="790" class="ai-arrow"/>
+  <line x1="1040" y1="790" x2="1040" y2="620" class="ai-arrow"/>
+  <line x1="1040" y1="620" x2="890" y2="620" class="ai-arrow"/>
+
+  <line x1="1150" y1="970" x2="1040" y2="970" class="ai-arrow"/>
+  <line x1="1040" y1="970" x2="1040" y2="800" class="ai-arrow"/>
+  <line x1="1040" y1="800" x2="810" y2="800" class="ai-arrow"/>
+
+  <rect x="40" y="1170" width="1720" height="110" class="panel"/>
+  <text x="65" y="1200" class="section">Technologies Used</text>
+  <text x="65" y="1224" class="small">Repo logos are used where available. Other technologies are shown as labeled badges.</text>
+
+  <rect x="65" y="1240" width="120" height="28" class="badge"/>
+  <text x="82" y="1259" class="badgeText">Perl</text>
+  <text x="118" y="1259" class="badgeSub">runtime</text>
+
+  <rect x="195" y="1240" width="130" height="28" class="badge"/>
+  <text x="212" y="1259" class="badgeText">Catalyst</text>
+  <text x="272" y="1259" class="badgeSub">MVC</text>
+
+  <rect x="335" y="1240" width="120" height="28" class="badge"/>
+  <text x="352" y="1259" class="badgeText">Plack</text>
+  <text x="391" y="1259" class="badgeSub">PSGI</text>
+
+  <rect x="465" y="1240" width="130" height="28" class="badge"/>
+  <text x="482" y="1259" class="badgeText">Starman</text>
+  <text x="542" y="1259" class="badgeSub">server</text>
+
+  <rect x="605" y="1240" width="150" height="28" class="badge"/>
+  <text x="622" y="1259" class="badgeText">PostgreSQL</text>
+  <text x="700" y="1259" class="badgeSub">database</text>
+
+  <rect x="765" y="1240" width="145" height="28" class="badge"/>
+  <text x="782" y="1259" class="badgeText">DBIx::Class</text>
+  <text x="858" y="1259" class="badgeSub">ORM</text>
+
+  <rect x="920" y="1240" width="160" height="28" class="badge"/>
+  <text x="937" y="1259" class="badgeText">Template Toolkit</text>
+  <text x="1042" y="1259" class="badgeSub">views</text>
+
+  <rect x="1090" y="1240" width="140" height="28" class="badge"/>
+  <text x="1107" y="1259" class="badgeText">JavaScript</text>
+  <text x="1184" y="1259" class="badgeSub">front end</text>
+
+  <rect x="1240" y="1240" width="140" height="28" class="badge"/>
+  <text x="1257" y="1259" class="badgeText">OpenLayers</text>
+  <text x="1338" y="1259" class="badgeSub">maps</text>
+
+  <rect x="1390" y="1240" width="120" height="28" class="badge"/>
+  <text x="1407" y="1259" class="badgeText">Open311</text>
+  <text x="1452" y="1259" class="badgeSub">councils</text>
+
+  <rect x="1520" y="1240" width="100" height="28" class="badge"/>
+  <text x="1537" y="1259" class="badgeText">MapIt</text>
+  <text x="1573" y="1259" class="badgeSub">areas</text>
+
+  <rect x="1630" y="1240" width="110" height="28" class="badge"/>
+  <text x="1647" y="1259" class="badgeText">AI Layer</text>
+  <text x="1690" y="1259" class="badgeSub">new</text>
+
+  <image href="icon-github.svg" x="1180" y="1165" width="26" height="26"/>
+  <text x="1212" y="1184" class="small">GitHub</text>
+  <image href="fms-platform-logo-m.svg" x="1290" y="1162" width="56" height="30"/>
+  <text x="1352" y="1184" class="small">FixMyStreet</text>
+  <image href="../../web/i/os-logo-maps.svg" x="1450" y="1163" width="42" height="28"/>
+  <text x="1498" y="1184" class="small">OS Maps assets</text>
+</svg>
