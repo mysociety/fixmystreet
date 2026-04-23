@@ -246,7 +246,7 @@ The following are all the configuration settings that you can change in `conf/ge
         <li>
           <code>
           EMAIL_DOMAIN: 'example.org'<br>
-          CONTACT_EMAIL: 'team@example.org'<br>
+          CONTACT_EMAIL: 'callum.woodford@scc.com'<br>
           CONTACT_NAME: 'FixMyStreet team'
           </code>
         </li>

@@ -40,7 +40,7 @@ CONTENT_SECURITY_POLICY: ''
 
 # Email domain used for emails, and contact name/email for admin use.
 EMAIL_DOMAIN: 'example.org'
-CONTACT_EMAIL: 'team@example.org'
+CONTACT_EMAIL: 'callum.woodford@scc.com'
 CONTACT_NAME: 'FixMyStreet'
 # Address used for emails you don't expect a reply to (e.g. confirmation
 # emails); can be same as CONTACT_EMAIL above, of course, if you don't have a
