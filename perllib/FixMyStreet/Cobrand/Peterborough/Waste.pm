@@ -181,6 +181,15 @@ sub look_up_property {
     return unless $id;
 
     my ($pc, $uprn) = split ":", $id;
+
+    if ($self->{c}->action eq 'waste/calendar_ics') {
+        # Only need the bare minimum for a calendar
+        return {
+            id => $id,
+            uprn => $uprn,
+        };
+    }
+
     my $premises = $self->_premises_for_postcode($pc);
     my %premises = map { $_->{uprn} => $_ } @$premises;
     return $premises{$uprn};
@@ -265,6 +274,8 @@ sub bin_services_for_address {
         # large food caddy?
         # small food caddy?
     );
+
+    return [] if $self->{c}->action eq 'waste/calendar_ics'; # Don't need any of this
 
     my $bartec = $self->feature('bartec');
     $bartec = Integrations::Bartec->new(%$bartec);
