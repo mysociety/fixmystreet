@@ -8,15 +8,17 @@ use Text::CSV;
 
 # Export a CSV from Postgres using this SQL:
 #
-# select uprn, extra->>'direct_debit_customer_id' as dd_customer_id
-# from problem
+# select p.id, p.name, replace(detail, E'Garden Subscription\n\n', '') as address, p.created, uprn, p.extra->>'direct_debit_customer_id' as dd_customer_id
+# from problem p join users u on p.user_id = u.id
 # where uprn in (
 #   select uprn from problem
 #   where bodies_str='2494' and category='Cancel Garden Subscription' and external_id is null and state='confirmed' and user_id=557571 and extra->>'direct_debit_contract_id' is not null order by id
 # )
-# and category like '%Garden Subscription' and extra->>'direct_debit_customer_id' is not null;
+# and category like '%Garden Subscription' and p.extra->>'direct_debit_customer_id' is not null order by created;
 
-my $input_path = 'bexley-final-with-customer-id.csv';
+my ($input_path) = @ARGV;
+
+die "Usage: $0 <bexley-export-from-postgres.csv>\n" unless $input_path;
 
 my $csv = Text::CSV->new({ binary => 1, auto_diag => 1 });
 
@@ -29,40 +31,45 @@ my $headers = $csv->getline($in);
 $csv->column_names($headers);
 
 $csv->eol("\n");
-$csv->print($out, [qw(uprn agile_status agile_end_date dd_status)]);
+$csv->print($out, [qw(wasteworks_url name address created uprn agile_status agile_end_date dd_status)]);
 
 my $b = FixMyStreet::Cobrand::Bexley->new;
 my $agile = $b->agile;
 my $ap = $b->get_dd_integration;
 
-my %uprn_to_customer_ids;
+my %uprn_to_data;
 my @uprn_order;
 
 while (my $row = $csv->getline_hr($in)) {
     my $uprn = $row->{uprn};
-    push @uprn_order, $uprn unless exists $uprn_to_customer_ids{$uprn};
-    $uprn_to_customer_ids{$uprn} //= [];
+    push @uprn_order, $uprn unless exists $uprn_to_data{$uprn};
+    $uprn_to_data{$uprn} //= { rows => [], customer_ids => [] };
+    push @{ $uprn_to_data{$uprn}{rows} }, $row;
     if ($row->{dd_customer_id}) {
-        push @{ $uprn_to_customer_ids{$uprn} }, $row->{dd_customer_id};
+        push @{ $uprn_to_data{$uprn}{customer_ids} }, $row->{dd_customer_id};
     }
 }
 
 close $in;
 
 for my $uprn (@uprn_order) {
-    my $customer_ids = $uprn_to_customer_ids{$uprn};
+    my $data = $uprn_to_data{$uprn};
+    my $customer_ids = $data->{customer_ids};
     next unless @$customer_ids;
 
     my $res = $agile->CustomerSearch($uprn);
-    use Data::Dumper;
-    warn Dumper($res);
-    my $agile_status;
+    die "Agile API error for UPRN $uprn\n" . Dumper($res) if $res->{error};
+
+    my $agile_status = 'NOACTIVE';
     my $agile_end_date = '';
-    if ($res->{IsFree} eq 'True') {
-        $agile_status = 'inactive';
-    } else {
-        $agile_status = 'active';
-        $agile_end_date = $res->{EndDate};
+    OUTER: for my $customer (@{ $res->{Customers} || [] }) {
+        for my $contract (@{ $customer->{ServiceContracts} || [] }) {
+            next unless $contract->{UPRN} == $uprn;
+            next if $contract->{ServiceContractStatus} eq 'NOACTIVE';
+            $agile_status = $contract->{ServiceContractStatus};
+            $agile_end_date = $contract->{EndDate} // '';
+            last OUTER;
+        }
     }
 
     my @dd_statuses;
@@ -74,10 +81,24 @@ for my $uprn (@uprn_order) {
             $has_active_dd = 1 if $contract->{Status} eq 'Active';
         }
     }
-    my $flagged = ($agile_status eq 'active' && !$has_active_dd)
-        || ($agile_status eq 'inactive' && $has_active_dd);
+    my $agile_is_active = $agile_status ne 'NOACTIVE';
+    my $flagged = ($agile_is_active && !$has_active_dd)
+        || (!$agile_is_active && $has_active_dd);
     next unless $flagged;
 
-    my $dd_status = join("\n", @dd_statuses);
-    $csv->print($out, [$uprn, $agile_status, $agile_end_date, $dd_status]);
+    my @urls     = map { "https://fix.bexley.gov.uk/admin/report_edit/$_->{id}" } @{ $data->{rows} };
+    my @names    = map { $_->{name} }    @{ $data->{rows} };
+    my @addrs    = map { $_->{address} } @{ $data->{rows} };
+    my @createds = map { substr($_->{created}, 0, 10) } @{ $data->{rows} };
+
+    $csv->print($out, [
+        join("\n", @urls),
+        join("\n", @names),
+        join("\n", @addrs),
+        join("\n", @createds),
+        $uprn,
+        $agile_status,
+        $agile_end_date,
+        join("\n", @dd_statuses),
+    ]);
 }
