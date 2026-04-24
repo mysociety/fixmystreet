@@ -333,6 +333,9 @@ sub url_report_new {
     for (qw(pc latitude longitude)) {
         $uri->query_param($_ => $c->stash->{$_}) if $c->stash->{$_};
     }
+    for (qw(filter_category filter_group)) {
+        $uri->query_param($_ => $c->get_param($_)) if $c->get_param($_);
+    }
     return $uri;
 }
 
