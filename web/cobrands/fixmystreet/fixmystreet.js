@@ -472,7 +472,7 @@ $.extend(fixmystreet.set_up, {
     $('#pc').trigger('focus');
 
     // In case we've come here by clicking back to a form that disabled a submit button
-    $('form.validate input[type=submit]').prop('disabled', false);
+    $('input[type=submit][data-disable],button[data-disable]').prop('disabled', false);
 
     $('[data-confirm]').on('click', function() {
         return confirm(this.getAttribute('data-confirm'));
@@ -546,7 +546,7 @@ $.extend(fixmystreet.set_up, {
             }
         },
         submitHandler: function(form) {
-            $('input[type=submit][data-disable]', form).prop("disabled", true);
+            $('input[type=submit][data-disable],button[data-disable]', form).prop("disabled", true);
             form.submit();
         },
         // make sure we can see the error message when we focus on invalid elements
