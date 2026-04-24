@@ -205,7 +205,7 @@ sub munge_report_new_bodies {
         $bristol->munge_overlapping_asset_bodies($bodies);
     }
 
-    if ( $bodies{'Brent Council'} ) {
+    if ( $bodies{'Brent Council'} || $bodies{'Hammersmith and Fulham Borough Council'} || $bodies{'Kensington and Chelsea Borough Council'} ) {
         my $brent = FixMyStreet::Cobrand::Brent->new({ c => $self->{c} });
         $brent->munge_overlapping_asset_bodies($bodies);
     }
