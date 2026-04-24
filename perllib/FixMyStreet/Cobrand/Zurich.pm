@@ -1440,6 +1440,8 @@ sub report_on_private_contacts {
     return [ FixMyStreet::DB->resultset('Contact')->not_deleted->search({category => $category})->all ];
 }
 
+# Zurich have some special prefill fields
+
 sub munge_around_filter_category_list {
     my $self = shift;
 
@@ -1447,6 +1449,16 @@ sub munge_around_filter_category_list {
 
     $c->stash->{prefill_category} = $c->get_param('prefill_category') if $c->get_param('prefill_category');
     $c->stash->{prefill_description} = $c->get_param('prefill_description') if $c->get_param('prefill_description');
+}
+
+sub url_report_new {
+    my ($self, $params) = @_;
+    my $c = $self->{c};
+    my $uri = $self->SUPER::url_report_new($params);
+    for (qw(prefill_category prefill_description)) {
+        $uri->query_param($_ => $c->stash->{$_}) if $c->stash->{$_};
+    }
+    return $uri;
 }
 
 1;

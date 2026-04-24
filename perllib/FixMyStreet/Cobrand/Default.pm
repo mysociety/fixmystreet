@@ -319,6 +319,34 @@ sub base_host {
     return $uri->host;
 }
 
+=item url_report_new
+
+Returns a URI to /report/new with some things from the stash included if present.
+Can pass in any extra parameters you want, e.g. skipped => 1.
+
+=cut
+
+sub url_report_new {
+    my ($self, $params) = @_;
+    my $c = $self->{c};
+    my $uri = $c->uri_for('/report/new', $params || {});
+    for (qw(pc latitude longitude)) {
+        $uri->query_param($_ => $c->stash->{$_}) if $c->stash->{$_};
+    }
+    return $uri;
+}
+
+=item url_skip_map
+
+Returns a URI to /report/new from above with skipped set to 1.
+
+=cut
+
+sub url_skip_map {
+    my $self = shift;
+    return $self->url_report_new({ skipped => 1 });
+}
+
 =item enter_postcode_text
 
 Return override text that prompts the user to enter their postcode/place name.
