@@ -54,6 +54,10 @@
 <div id="map_sidebar">
     <div id="side">
 
+  [% IF body.get_extra_metadata('logo') %]
+    <img src="/photo/temp.[% body.get_extra_metadata('logo') %]" alt="[% body_name %]" role="presentation" class="reports_logo">
+  [% END %]
+
   [% IF ward %]
     <h1 id="reports_heading">
         [% ward.name %][% IF c.cobrand.moniker.match('shropshire') %] [% thing | title %][% END %]
