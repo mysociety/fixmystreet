@@ -4,17 +4,17 @@ SET soon = 0 %]
 <div class="box-warning">
     <h1>[% loc('Important message') %]</h1>
     <p>
-        <span class="unresponsive-council">[% bodies.$first.name %]</span> doesn’t currently accept
+        <span class="unresponsive-council">[% bodies.$first.name %]</span> doesnâ€™t currently accept
       [% IF soon %]
-        FixMyStreet reports – though it will do so soon.
+        SCC Incident Analysis reports â€“ though it will do so soon.
       [% ELSE %]
       [% IF category %]
         <span class="refused-category">[% category | html %]</span>
       [% END %]
-        reports from third party reporting sites such as FixMyStreet.
+        reports from third party reporting sites such as SCC Incident Analysis.
       [% END %]
     </p>
-    <p>We can make your report public, but [% 'at the moment' IF soon %] we can’t send it to
+    <p>We can make your report public, but [% 'at the moment' IF soon %] we canâ€™t send it to
     [% IF bodies.size > 1 %] that [% ELSE %] the [% END %] council.</p>
     <a href="[% c.cobrand.base_url %]/unresponsive?body=[% first %][% IF category %];category=[% category | uri %][% END %]" class="btn">[% soon ? 'Find out more' : 'What can I do instead?' %]</a>
 </div>

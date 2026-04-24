@@ -1,0 +1,53 @@
+<form method="post" id="category_edit">
+
+  [% IF contact.in_storage %]
+    <h1>[% contact.category_display | html %]</h1>
+    <input type="hidden" name="category" value="[% contact.category | html %]" >
+  [% ELSE %]
+    <p>
+        <strong>[% loc('Category:') %] </strong>
+        <input type="text" class="form-control" name="category" size="30" value="[% contact.category | html %]" required>
+    </p>
+  [% END %]
+
+    <p>
+        <strong>KÃ¼rzel</strong>
+        <input type="text" class="form-control" name="extra[abbreviation]" id="abbreviation" size="30" value="[% contact.get_extra_metadata('abbreviation') | html %]">
+    </p>
+
+    <p>
+        <label for="admin_label">Admin-label</label>
+        <input type="text" class="form-control" name="extra[admin_label]" id="admin_label" size="30" value="[% contact.get_extra_metadata('admin_label') | html %]">
+    </p>
+
+    <p><strong>[% loc('Email:') %] </strong>
+    <input type="email" class="form-control" name="email" value="[% contact.email | html %]" size="30" autocomplete="email">
+
+    <p>
+      <strong>[% loc('Extra fields:') %]</strong>
+      [% IF contact.in_storage %]
+        <a href="#" class="js-show-extra-fields hidden-nojs">([% loc('show') %])</a>
+      [% END %]
+    </p>
+    <div class="js-extra-fields-ui[% IF contact.in_storage %] hidden-js[% END %]">
+      [% INCLUDE 'admin/extra-metadata-form.html' metas=(contact.get_metadata_for_input OR []) %]
+    </div>
+
+    <p>
+        <label for="state">[% loc('State') %]</label>
+        <select name="state" id="state">
+          <option value="confirmed"[% ' selected' IF contact.state == 'confirmed' %]>[% loc('Confirmed') %]
+          <option value="inactive"[% ' selected' IF contact.state == 'inactive' %]>[% loc('Inactive') %]
+          <option value="deleted"[% ' selected' IF contact.state == 'deleted' %]>[% loc('Deleted') %]
+        </select>
+        <input type="checkbox" name="photo_required" value="1" id="photo_required"[% ' checked' IF contact.get_extra_metadata('photo_required') %]>
+        <label class="inline" for="photo_required">[% loc('Photo required') %]</label>
+    </p>
+
+    <p><strong>[% loc('Note:') %] </strong><textarea class="form-control" name="note" rows="3" cols="40"></textarea>
+
+    <input type="hidden" name="token" value="[% csrf_token %]" >
+    <p><input type="submit" class="btn" name="Create category" value="[% contact.in_storage ? loc('Save changes') : loc('Create category') %]">
+  </p>
+
+</form>

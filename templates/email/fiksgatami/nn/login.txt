@@ -1,6 +1,6 @@
-Subject: [% loc('Your FixMyStreet.com account details') %]
+Subject: [% loc('Your SCC Incident Analysis account details') %]
 
-Ver venleg og klikk på lenkja under for å stadfesta e-posten din. Når
+Ver venleg og klikk pÃ¥ lenkja under for Ã¥ stadfesta e-posten din. NÃ¥r
 dette er gjort vil du lett kunna halda oversyn over problemrapportane
 dine. [% c.uri_for_action( 'auth/token', token ) %]
 

@@ -1,0 +1,23 @@
+flowchart TD
+    A[Resident submits a report<br/>What it does: captures a new issue from the public<br/>Main technology: browser, web form, map input] --> B
+
+    subgraph FMS["FixMyStreet repo and running platform"]
+        direction TB
+        B[FixMyStreet web app in Docker<br/>What it does: receives the report and runs the main website<br/>Main technology: FixMyStreet, Docker, web server]
+        C[(Postgres database<br/>What it does: stores reports, locations, categories and updates<br/>Main technology: PostgreSQL)]
+        B --> C
+    end
+
+    C --> D[AI processing layer<br/>What it does: reads selected data and prepares recommendations<br/>Main technology: Python jobs, embeddings, LLM prompts, rules]
+    D --> E[Suggestions and alerts<br/>What it does: creates practical guidance for the SCC team<br/>Main technology: vector search, classification, summarisation]
+    E --> F[SCC team reviews and acts<br/>What it does: checks the suggestions and decides next steps<br/>Main technology: dashboard and human review]
+    F --> G[Issue sent to the right SCC workflow<br/>What it does: moves the case into the correct handling process<br/>Main technology: routing, email, Open311 or API integrations]
+    G --> H[Dashboards and service reporting<br/>What it does: shows trends, hotspots and service performance<br/>Main technology: reporting tables, analytics queries, dashboards]
+
+    D --> D1[Category suggestion<br/>AI used: text classification and rules]
+    D --> D2[Duplicate detection<br/>AI used: embeddings and vector similarity]
+    D --> D3[Short case summary<br/>AI used: LLM summarisation]
+    D --> D4[Routing warning<br/>AI used: rules plus prediction checks]
+    D --> D5[Waste issue grouping<br/>AI used: clustering and similarity search]
+
+    style FMS stroke-dasharray: 8 6,stroke:#4aa3ff,stroke-width:2px,fill:#f9fcff

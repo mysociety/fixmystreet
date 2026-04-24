@@ -3,7 +3,7 @@ Subject: Your report has been logged: [% report.title %]
 Hello [% report.name %],
 
 [% IF report.state == 'for triage' %]
-Thank you for submitting your report to FixMyStreet, it will be
+Thank you for submitting your report to SCC Incident Analysis, it will be
 submitted to Island Roads for review.
 [% ELSE %]
 Thank you, your enquiry has been received by Island Roads and
@@ -11,11 +11,11 @@ appropriate action will be taken.
 
 We don't routinely contact customers regarding their enquiries,
 unless we have a specific query about the issue. Any status
-updates for the issue can be tracked via FixMyStreet, if you
+updates for the issue can be tracked via SCC Incident Analysis, if you
 contact us again about this issue, please quote your 8-digit
 reference number.
 
-Thank you for submitting your enquiry to us via FixMyStreet.
+Thank you for submitting your enquiry to us via SCC Incident Analysis.
 [% END %]
 
 [% IF cobrand.is_council && !cobrand.owns_problem( report ) %]

@@ -42,6 +42,7 @@ services:
     environment:
       POSTGRES_PASSWORD: 'password'
       LANG: "C.UTF-8"
+      FIXMYSTREET_APP_DEBUG: '0'
     networks:
       default:
         aliases:

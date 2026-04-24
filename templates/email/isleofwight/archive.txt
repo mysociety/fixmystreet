@@ -1,8 +1,8 @@
-Subject: Your reports on FixMyStreet
+Subject: Your reports on SCC Incident Analysis
 
 Hello [% user.name %],
 
-FixMyStreet is being updated for the Isle of Wight to improve how problems get reported.
+SCC Incident Analysis is being updated for the Isle of Wight to improve how problems get reported.
 
 As part of this process we are closing all enquiries made before the update. We noticed
 that you have [% report_count %] old [% nget('report', 'reports', report_count) %] on the system, which we've listed below.
@@ -23,4 +23,4 @@ View report: https://www.fixmystreet.com/report/[% report.id %]
 
 [% END %]
 
-The FixMyStreet team and Island Roads
+The SCC Incident Analysis team and Island Roads

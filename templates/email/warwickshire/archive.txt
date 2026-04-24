@@ -1,8 +1,8 @@
-Subject: Your reports on Warwickshire FixMyStreet
+Subject: Your reports on Warwickshire SCC Incident Analysis
 
 Hello [% user.name %],
 
-FixMyStreet is being updated in Warwickshire to improve how problems get fixed.
+SCC Incident Analysis is being updated in Warwickshire to improve how problems get fixed.
 
 As part of these updates, we are closing old reports that appear to be resolved but remain open in the system.
 

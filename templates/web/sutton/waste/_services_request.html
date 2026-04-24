@@ -1,0 +1,7 @@
+[% IF report.get_extra_metadata('grouped_ids') %]
+    Your reference numbers
+    <br><strong>LBS-[% report.id %], LBS-[% report.get_extra_metadata('grouped_ids').join(', LBS-') %]</strong>
+[% ELSE %]
+    Your reference number
+    <br><strong>LBS-[% report.id %]</strong>
+[% END %]

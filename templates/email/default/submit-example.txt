@@ -2,7 +2,7 @@ Subject: Problem Report: Dangerous pothole
 
 Dear Birmingham City Council,
 
-A user of FixMyStreet has submitted the following report of a
+A user of SCC Incident Analysis has submitted the following report of a
 local problem that they believe might require your attention.
 
 To view a map of the precise location of this issue, or to provide
@@ -44,16 +44,16 @@ generated): B30 1LA (83m away)
 Replies to this email will go to the user who submitted the problem.
 
 Yours,  
-The FixMyStreet team
+The SCC Incident Analysis team
 
-This message was sent via FixMyStreet, a project of mySociety,
+This message was sent via SCC Incident Analysis, a project of mySociety,
 registered charity number 1076346. If there is a more appropriate
 email address for messages about 'Potholes', please let us know by
 visiting <https://www.fixmystreet.com/contact>. This will help
 improve the service for local people. We also welcome any other
 feedback you may have.
 
-FixMyStreet is now available for full integration into council
+SCC Incident Analysis is now available for full integration into council
 websites, making life easier for both you and your residents.
 Read more here: https://www.fixmystreet.com/pro
 

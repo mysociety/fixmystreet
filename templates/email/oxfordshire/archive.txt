@@ -2,7 +2,7 @@ Subject: Your reports on [% site_name %]
 
 Hello [% user.name %],
 
-FixMyStreet is being updated in Oxfordshire to improve how problems get fixed.
+SCC Incident Analysis is being updated in Oxfordshire to improve how problems get fixed.
 
 As part of these updates, we are closing old reports that appear to be resolved but remain open in the system.
 

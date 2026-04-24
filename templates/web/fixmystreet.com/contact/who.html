@@ -41,7 +41,7 @@
         </div>
         <div class="govuk-radios__item">
             <input name="dest" id="dest_from_council" type="radio" value="from_council" class="govuk-radios__input required"[% IF dest AND dest == 'from_council' %] checked[% END %]>
-            <label class="govuk-label govuk-radios__label" for="dest_from_council">[% loc('I am from a council and I have a question for the FixMyStreet team') %]</label>
+            <label class="govuk-label govuk-radios__label" for="dest_from_council">[% loc('I am from a council and I have a question for the SCC Incident Analysis team') %]</label>
         </div>
         <div class="govuk-radios__item">
             <input name="dest" id="dest_council" type="radio" value="council" class="govuk-radios__input required"[% IF dest AND dest == 'council' %] checked[% END %]>
@@ -49,7 +49,7 @@
         </div>
         <div class="govuk-radios__item">
             <input class="govuk-radios__input" name="dest" id="dest_update" type="radio" value="update"[% IF dest AND dest == 'update' %] checked[% END %]>
-            <label class="govuk-label govuk-radios__label" for="dest_update">[% loc('My street problem hasn’t been fixed') %]</label>
+            <label class="govuk-label govuk-radios__label" for="dest_update">[% loc('My street problem hasnâ€™t been fixed') %]</label>
         </div>
     </div>
 </div>
@@ -57,23 +57,23 @@
 [% END %]
 
 <div id="dest-error"[% IF NOT field_errors.not_for_us %] class="hidden"[% END %]>
-  <div class="form-error">[% loc('You can only contact the team behind FixMyStreet using our contact form') %]</div>
+  <div class="form-error">[% loc('You can only contact the team behind SCC Incident Analysis using our contact form') %]</div>
 
   <div class="form-error__box form-error--council[% IF dest != 'council' %] hidden[% END %]">
     <p>
-    We’re not the council: we just run this website which helps you report issues
+    Weâ€™re not the council: we just run this website which helps you report issues
     to them.
     </p>
 
     <p>
     <strong>If you want to report a street problem</strong>, return to the
-    FixMyStreet homepage and enter your postcode. You can then make a report.
-    We'll send it to your council, and publish it on FixMyStreet.
+    SCC Incident Analysis homepage and enter your postcode. You can then make a report.
+    We'll send it to your council, and publish it on SCC Incident Analysis.
     </p>
 
     <p>
     <strong>If your problem is not a street issue</strong>, or is <strong>not
-    suitable for publication on the site</strong>, then FixMyStreet isn't the
+    suitable for publication on the site</strong>, then SCC Incident Analysis isn't the
     right place for it. You should find contact details on your council's own
     website.
     </p>
@@ -81,7 +81,7 @@
 
   <div class="form-error__box form-error--update[% IF dest != 'update' %] hidden[% END %]">
     <p>
-    FixMyStreet is great for reporting problems, but we don't fix them - your
+    SCC Incident Analysis is great for reporting problems, but we don't fix them - your
     council oversees that.
     </p>
 
@@ -92,7 +92,7 @@
     </p>
 
     <p>
-    It's a good idea to include the URL [web address] of your original FixMyStreet
+    It's a good idea to include the URL [web address] of your original SCC Incident Analysis
     report.
     </p>
 

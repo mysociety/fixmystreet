@@ -94,7 +94,7 @@
 
 <div class="dashboard-row">
     <div class="dashboard-item dashboard-item--6">
-      [% IF NOT body AND c.cobrand.moniker != 'SCC Incident Analysis' %]
+      [% IF NOT body AND c.cobrand.moniker != 'fixmystreet' %]
         <h2 class="dashboard-subheading">[% loc('Top 5 responsive councils') %]</h2>
         <p>[% loc('Average time between a problem being reported and being fixed, last 100 reports.') %]</p>
         <table class="dashboard-ranking-table">
@@ -107,7 +107,7 @@
                 <tr><td>[% loc('Overall average') %]</td><td>[% tprintf(nget("%s day", "%s days", average), average) %]</td></tr>
             </tfoot>
         </table>
-      [% ELSIF NOT body AND c.cobrand.moniker == 'SCC Incident Analysis' %]
+      [% ELSIF NOT body AND c.cobrand.moniker == 'fixmystreet' %]
         <h2 class="dashboard-subheading">[% loc('Understanding SCC Incident Analysis report data') %]</h2>
         <p>[% loc('Interested in SCC Incident Analysis report data? <a href="/about/understanding-report-data">Learn about what it can and can’t tell you</a>') %]</p>
       [% END %]

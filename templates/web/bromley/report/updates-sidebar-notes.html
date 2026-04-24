@@ -1,0 +1,18 @@
+[% USE date %]
+
+[% BLOCK banner %]
+    <div class="banner banner--[% id %]">
+        <p>
+            <img src="/i/pins/[% c.cobrand.pin_colour(problem, 'report') %]/pin.png" alt="" class="pin">
+            [% text %]
+        </p>
+    </div>
+[% END %]
+
+[% IF problem.is_fixed %]
+    [% INCLUDE banner, id = 'fixed', text = loc('Fixed') %]
+[% END %]
+
+[% IF problem.is_closed %]
+    [% INCLUDE banner, id = 'closed', text = loc('Closed') %]
+[% END %]

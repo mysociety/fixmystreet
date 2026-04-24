@@ -1,0 +1,17 @@
+[% INCLUDE 'report/banner.html' %]
+
+<div class="problem-header clearfix">
+    <h1>[% tprintf( loc('Reported in the %s category'), problem.category_display ) %]</h1>
+    <p class="sub">
+        [% prettify_dt( problem.created, 'zurich' ) %]
+        [%- IF !problem.used_map %]<br>[% loc('there is no pin shown as the user did not use the map') %][% END %]
+    </p>
+
+  [% IF problem.state != 'submitted' %]
+    [% INCLUDE 'report/photo.html' object=problem %]
+    [% problem.detail | add_links | html_para %]
+  [% ELSE %]
+    [% loc('This report is awaiting moderation.') %]
+  [% END %]
+
+</div>

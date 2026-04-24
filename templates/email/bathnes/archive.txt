@@ -2,7 +2,7 @@ Subject: Your reports on [% site_name %]
 
 Hello [% user.name %],
 
-FixMyStreet is being updated in Bath & North East Somerset to improve how problems get reported.
+SCC Incident Analysis is being updated in Bath & North East Somerset to improve how problems get reported.
 
 As part of this process we are closing all reports made before the update.
 
@@ -24,4 +24,4 @@ View report: [% cobrand.base_url_for_report( report ) %]/report/[% report.id %]
 
 [% END %]
 
-The FixMyStreet team and Bath & North East Somerset Council
+The SCC Incident Analysis team and Bath & North East Somerset Council
