@@ -4,9 +4,10 @@ use v5.14;
 use warnings;
 
 use Moo;
-use Types::Standard qw(Bool InstanceOf Int Maybe);
+use Types::Standard qw(Bool HashRef InstanceOf Int Maybe);
 use FixMyStreet::Script::ArchiveOldEnquiries;
 use FixMyStreet::DB;
+use JSON::MaybeXS;
 
 has commit => ( is => 'ro', default => 0 );
 
@@ -93,6 +94,8 @@ has template => (
     },
 );
 
+has extra => ( is => 'ro', isa => Maybe[HashRef] );
+
 sub close {
     my $self = shift;
 
@@ -108,11 +111,17 @@ sub close {
         $time_param = { '<', $dtf->format_datetime($self->to_date) };
     }
 
+    my $extra_query;
+    if ( $self->extra ) {
+        $extra_query = { '@>' => encode_json( $self->extra ) };
+    }
+
     my $reports = FixMyStreet::DB->resultset("Problem")->search({
         bodies_str => $self->body->id,
         state => $self->states,
         confirmed => $time_param,
         ( category => $self->category ) x !!$self->category,
+        ( extra => $extra_query ) x !!$extra_query,
     });
 
     # Provide some variables to the archiving script
