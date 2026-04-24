@@ -184,7 +184,7 @@ has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data proc
                 }
 
                 my %params;
-                if ($type eq 'png' && $self->c->action =~ /parishes/) {
+                if ($type eq 'png' && $self->c->action =~ m{parishes|admin/bodies}) {
                     %params = ( magick => 'PNG' );
                 } else {
                     %params = ( magick => 'JPEG' );
