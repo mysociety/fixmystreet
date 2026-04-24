@@ -71,7 +71,7 @@ has template => (
     default => sub {
         my $self = shift;
 
-        return if $self->closure_text;
+        return if defined $self->closure_text;
 
         my $template;
         if ($self->template_title) {
@@ -127,7 +127,7 @@ sub close {
     # Provide some variables to the archiving script
     FixMyStreet::Script::ArchiveOldEnquiries::update_options({
         user => $self->body->comment_user->id,
-        closure_text => $self->closure_text || $self->template->text,
+        closure_text => $self->closure_text // $self->template->text,
         retain_alerts => $self->retain_alerts,
         commit => $self->commit,
     });

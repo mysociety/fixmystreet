@@ -50,7 +50,7 @@ my $ac = FixMyStreet::Script::UK::AutoClose->new(
     retain_alerts => 1,
     body_name => 'Central Bedfordshire Council',
     to => 28,
-    closure_text => 'AUTOCLOSED',
+    closure_text => '',
     extra => { external_status_code => 'SL12' },
 );
 
@@ -62,7 +62,7 @@ is $older_problem_default->comments, 0, 'no comments';
 
 $older_problem_SL12->discard_changes;
 is $older_problem_SL12->state, 'closed', 'Older SL12 problem closed';
-is $older_problem_SL12->comments->first->text, 'AUTOCLOSED', 'comment set';
+is $older_problem_SL12->comments->first->text, '', 'comment set';
 
 $newer_problem_default->discard_changes;
 is $newer_problem_default->state, 'confirmed', 'Default newer problem unchanged';

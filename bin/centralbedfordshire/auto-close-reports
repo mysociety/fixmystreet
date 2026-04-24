@@ -20,7 +20,7 @@ use FixMyStreet::Script::UK::AutoClose;
 my $site = CronFns::site(FixMyStreet->config('BASE_URL'));
 CronFns::language($site);
 
-my $default_text = 'Reports with an external status code of SL12 are automatically closed after 28 days';
+my $default_text = '';
 
 my ($opts, $usage) = describe_options(
     '%c %o',
