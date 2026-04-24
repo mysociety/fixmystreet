@@ -363,6 +363,7 @@ has_field payment_transaction_id => (
 has_field payment_amount => (
     type => 'Text',
     label => 'Amount paid (£)',
+    required => 1,
     tags => { number => 1 },
 );
 
