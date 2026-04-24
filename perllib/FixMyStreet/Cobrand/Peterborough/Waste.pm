@@ -528,6 +528,7 @@ sub bin_future_collections {
 
     my $events = [];
     foreach (@$jobs) {
+        next unless $_->{NextDate};
         my $dt = construct_bin_date($_->{NextDate});
         push @$events, { date => $dt, desc => '', summary => $_->{JobName} };
     }
