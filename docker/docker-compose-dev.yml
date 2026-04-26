@@ -10,6 +10,7 @@ services:
     volumes:
       - ../:/var/www/fixmystreet
       - fixmystreet-local:/var/www/fixmystreet/local
+      - fixmystreet-upload:/var/www/upload
   css_watcher:
     build:
       context: ..
@@ -39,6 +40,7 @@ services:
     volumes:
       - ../:/var/www/fixmystreet
       - fixmystreet-local:/var/www/fixmystreet/local
+      - fixmystreet-upload:/var/www/upload
     environment:
       POSTGRES_PASSWORD: 'password'
       LANG: "C.UTF-8"
@@ -89,3 +91,4 @@ services:
 volumes:
   fixmystreet-pgdata:
   fixmystreet-local:
+  fixmystreet-upload:

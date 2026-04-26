@@ -17,6 +17,23 @@ normalize_bind_mounted_scripts() {
 
 normalize_bind_mounted_scripts
 
+seed_fixture_photos() {
+    mkdir -p ../upload
+    find t/images -type f | while read -r file; do
+        sum=$(sha1sum "$file" | cut -d' ' -f1)
+        ext=${file##*.}
+        case "$ext" in
+            jpg|jpeg)
+                ext=jpeg
+                ;;
+            tif)
+                ext=tiff
+                ;;
+        esac
+        cp "$file" "../upload/$sum.$ext"
+    done
+}
+
 if [ ! -f conf/general.yml ]; then
     sed -r \
         -e "s,^( *FMS_DB_HOST:).*,\\1 'postgres.svc'," \
@@ -32,5 +49,6 @@ if [ ! -f conf/general.yml ]; then
 fi
 
 script/update --development
+seed_fixture_photos
 perl bin/fixmystreet.com/tyseley-fixture --commit
 bin/update-all-reports
