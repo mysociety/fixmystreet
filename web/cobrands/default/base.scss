@@ -9,6 +9,18 @@
     margin-bottom: 1.25rem;
 }
 
+body.mappage {
+    #site-header {
+        padding-top: 0.25rem;
+    }
+
+    #site-logo {
+        min-height: 52px;
+        transform: translateY(-0.2rem) scale(0.9);
+        transform-origin: left center;
+    }
+}
+
 .js-reporting-page--next {
     font-size: 1.2rem;
     font-weight: 700;

@@ -113,6 +113,26 @@ body.mappage {
     }
 }
 
+body:not(.frontpage) {
+    #site-header {
+        min-height: 4rem;
+    }
+
+    #site-header .container {
+        min-height: 4rem;
+        display: flex;
+        align-items: center;
+    }
+
+    #site-logo {
+        margin: 0;
+    }
+
+    .site-logo__fallback {
+        flex: 0 0 auto;
+    }
+}
+
 #lang-switcher {
     z-index: 1;
     #{$right}: 0;

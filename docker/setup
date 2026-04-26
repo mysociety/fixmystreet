@@ -32,4 +32,5 @@ if [ ! -f conf/general.yml ]; then
 fi
 
 script/update --development
+perl bin/fixmystreet.com/tyseley-fixture --commit
 bin/update-all-reports

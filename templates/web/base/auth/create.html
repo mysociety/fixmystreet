@@ -37,11 +37,12 @@ INCLUDE 'header.html', bodyclass='authpage' %]
 </p>
 [% ELSE %]
 <p>
-    [% tprintf(loc('We collect only the minimum amount of personal data to allow you to mange your reports. Please see our <a href="%s">privacy policy</a> for more information.'), c.cobrand.privacy_policy_url) %]
+    [% loc('Account creation is not available here. Use the sign-in page and we will email you a link to continue.') %]
 </p>
 [% END %]
 
-<form action="/auth/[% expired_password ? 'expired' : forgotten ? 'forgot' : 'create' %]" method="post" name="general_auth" class="validate">
+[% IF forgotten OR expired_password %]
+<form action="/auth/[% expired_password ? 'expired' : 'forgot' %]" method="post" name="general_auth" class="validate">
 
     <input type="hidden" name="r" value="[% c.req.params.r | html %]">
 
@@ -80,5 +81,8 @@ INCLUDE 'header.html', bodyclass='authpage' %]
     </div>
 
 </form>
+[% ELSE %]
+<p><a href="/auth">[% loc('Go to sign in') %]</a></p>
+[% END %]
 
 [% INCLUDE 'footer.html' %]

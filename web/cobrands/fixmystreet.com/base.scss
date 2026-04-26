@@ -16,6 +16,9 @@
 #site-logo {
     text-indent: 0;
     background: none;
+    display: flex;
+    align-items: center;
+    min-height: 60px;
 
     // Vertically centre the 35px SVG in the 60px mobile header.
     svg {
@@ -41,8 +44,8 @@ svg|g.site-logo__svg {
 .site-logo__fallback {
     display: block;
     width: 175px;
-    height: 0;
-    padding-top: 60px;
+    height: 35px;
+    padding-top: 0;
     overflow: hidden;
     background-position: 0 50%;
     background-repeat: no-repeat;

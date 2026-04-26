@@ -1,0 +1,432 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use v5.14;
+use utf8;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use DateTime;
+use DateTime::Format::Pg;
+use FixMyStreet;
+use FixMyStreet::PhotoStorage;
+use FixMyStreet::DB::Factories;
+use Getopt::Long::Descriptive;
+
+my ($opt, $usage) = describe_options(
+    '%c %o',
+    [ 'empty', "Empty all tables of the database first" ],
+    [ 'commit', "Actually commit changes to the database" ],
+    [ 'force', "Insert the fixture even if it already exists" ],
+    [ 'help', "print usage message and exit", { shortcircuit => 1 } ],
+);
+print($usage->text), exit if $opt->help;
+
+FixMyStreet::DB::Factories->setup($opt);
+
+my $marker_email = 'tyseley-seed-marker@example.org';
+if (!$opt->force && FixMyStreet::DB->resultset('User')->find({ email => $marker_email })) {
+    say 'Tyseley fixture already present, skipping';
+    exit;
+}
+
+my $area_id = 2514;
+my $body = FixMyStreet::DB::Factory::Body->find_or_create({
+    area_id => $area_id,
+    name => 'Birmingham City Council',
+    categories => [
+        'Potholes',
+        'Street lighting',
+        'Graffiti',
+        'Other',
+    ],
+});
+$body->cobrand('birmingham');
+$body->update;
+
+for my $category ('Potholes', 'Street lighting', 'Graffiti', 'Other') {
+    my $existing = FixMyStreet::DB->resultset('Contact')->find({
+        body_id => $body->id,
+        category => $category,
+    });
+    next if $existing;
+    FixMyStreet::DB::Factory::Contact->create({
+        body => $body,
+        category => $category,
+    });
+}
+
+my %users;
+for my $data (
+    { name => 'Tyseley Seed Marker', email => $marker_email, email_verified => 1 },
+    { name => 'Aisha Rahman', email => 'aisha.tyseley@example.org', email_verified => 1 },
+    { name => 'Daniel Morris', email => 'daniel.tyseley@example.org', email_verified => 1 },
+    { name => 'Priya Shah', email => 'priya.tyseley@example.org', email_verified => 1 },
+    { name => 'Imran Ali', email => 'imran.tyseley@example.org', email_verified => 1 },
+    { name => 'Sophie Turner', email => 'sophie.tyseley@example.org', email_verified => 1 },
+    { name => 'Megan Price', email => 'megan.tyseley@example.org', email_verified => 1 },
+    { name => 'Harriet Helpful', email => 'tyseley.cs@example.org', email_verified => 1, body => $body, permissions => [
+        'contribute_as_body', 'contribute_as_another_user',
+        'moderate', 'view_body_contribute_details',
+    ] },
+    { name => 'Inspector Malik', email => 'tyseley.inspector@example.org', email_verified => 1, body => $body, permissions => [
+        'report_inspect', 'planned_reports'
+    ] },
+) {
+    $users{$data->{email}} = FixMyStreet::DB::Factory::User->find_or_create($data);
+}
+
+FixMyStreet::PhotoStorage::backend->init();
+
+my @reports = (
+    {
+        title => 'Deep pothole outside Tyseley station drop-off',
+        detail => 'A deep pothole has opened up by the station drop-off on Warwick Road and drivers are swerving around it during the morning rush.',
+        category => 'Potholes',
+        postcode => 'Warwick Road, Tyseley',
+        latitude => 52.45380,
+        longitude => -1.84410,
+        reporter => 'aisha.tyseley@example.org',
+        days_ago => 72,
+        status => 'fixed - council',
+        comments => [
+            { by => 'tyseley.cs@example.org', days_after => 2, text => 'Thanks for the detailed report. We have passed this to the highways inspector.', state => 'investigating' },
+            { by => 'tyseley.inspector@example.org', days_after => 6, text => 'Repair gang booked for next week.', state => 'action scheduled' },
+            { by => 'tyseley.inspector@example.org', days_after => 13, text => 'The pothole has been cut out and resurfaced.', state => 'fixed - council' },
+            { by => 'aisha.tyseley@example.org', days_after => 15, text => 'Passed by this morning and the surface looks good again. Thank you.' },
+        ],
+    },
+    {
+        title => 'Street light out by the footbridge on Spring Road',
+        detail => 'The lamp nearest the footbridge has been out for several nights, leaving the approach to the station very dark after 9pm.',
+        category => 'Street lighting',
+        postcode => 'Spring Road, Tyseley',
+        latitude => 52.45255,
+        longitude => -1.83890,
+        reporter => 'priya.tyseley@example.org',
+        days_ago => 41,
+        status => 'investigating',
+        comments => [
+            { by => 'tyseley.cs@example.org', days_after => 1, text => 'Logged with our lighting contractor for inspection.', state => 'investigating' },
+            { by => 'priya.tyseley@example.org', days_after => 5, text => 'Still dark as of last night, especially by the stairs.' },
+        ],
+    },
+    {
+        title => 'Graffiti across the shutters near Wharfdale Road',
+        detail => 'Fresh graffiti has been sprayed across several shutters by the parade near Wharfdale Road and it is very visible from the main road.',
+        category => 'Graffiti',
+        postcode => 'Wharfdale Road, Tyseley',
+        latitude => 52.45522,
+        longitude => -1.82984,
+        reporter => 'imran.tyseley@example.org',
+        days_ago => 24,
+        status => 'action scheduled',
+        comments => [
+            { by => 'tyseley.cs@example.org', days_after => 1, text => 'Added to the environmental maintenance queue.', state => 'investigating' },
+            { by => 'tyseley.inspector@example.org', days_after => 7, text => 'Removal team scheduled for the next cleansing round.', state => 'action scheduled' },
+        ],
+    },
+    {
+        title => 'Overflowing litter bin by the bus stop on Olton Boulevard East',
+        detail => 'The bin at the bus stop has been overflowing for a few days and rubbish is blowing across the pavement.',
+        category => 'Other',
+        postcode => 'Olton Boulevard East, Tyseley',
+        latitude => 52.44864,
+        longitude => -1.82174,
+        reporter => 'sophie.tyseley@example.org',
+        days_ago => 9,
+        status => 'confirmed',
+        comments => [
+            { by => 'sophie.tyseley@example.org', days_after => 2, text => 'There are now two black bags left beside it as well.' },
+        ],
+    },
+    {
+        title => 'Large pothole near the junction with Reddings Lane',
+        detail => 'There is a wide pothole right where traffic turns into Reddings Lane and it is catching cyclists.',
+        category => 'Potholes',
+        postcode => 'Reddings Lane, Tyseley',
+        latitude => 52.44671,
+        longitude => -1.82718,
+        reporter => 'daniel.tyseley@example.org',
+        days_ago => 58,
+        status => 'planned',
+        comments => [
+            { by => 'tyseley.cs@example.org', days_after => 3, text => 'Measured and assessed by the inspector. Repair has been added to the planned works list.', state => 'planned' },
+        ],
+    },
+    {
+        title => 'Lamp column flickering outside the school run crossing',
+        detail => 'The light near the crossing on Golden Hillock Road keeps flickering on and off in the evening.',
+        category => 'Street lighting',
+        postcode => 'Golden Hillock Road, Tyseley',
+        latitude => 52.46144,
+        longitude => -1.83802,
+        reporter => 'megan.tyseley@example.org',
+        days_ago => 17,
+        status => 'confirmed',
+        comments => [
+            { by => 'tyseley.cs@example.org', days_after => 1, text => 'Reported to street lighting for a safety check.' },
+        ],
+    },
+    {
+        title => 'Tagging on the rail bridge by Kings Road',
+        detail => 'A new tag has appeared on both sides of the rail bridge and is spreading along the parapet.',
+        category => 'Graffiti',
+        postcode => 'Kings Road, Tyseley',
+        latitude => 52.45112,
+        longitude => -1.83321,
+        reporter => 'aisha.tyseley@example.org',
+        days_ago => 35,
+        status => 'fixed - council',
+        comments => [
+            { by => 'tyseley.cs@example.org', days_after => 2, text => 'Bridge noted and sent to the graffiti removal team.', state => 'investigating' },
+            { by => 'tyseley.inspector@example.org', days_after => 8, text => 'Painted over during this week’s visit.', state => 'fixed - council' },
+            { by => 'aisha.tyseley@example.org', days_after => 10, text => 'Confirmed clear now.' },
+        ],
+    },
+    {
+        title => 'Damaged drain cover rattling on Yardley Road',
+        detail => 'The drain cover outside the shops rattles loudly whenever buses pass and looks loose.',
+        category => 'Other',
+        postcode => 'Yardley Road, Tyseley',
+        latitude => 52.45645,
+        longitude => -1.81892,
+        reporter => 'imran.tyseley@example.org',
+        days_ago => 63,
+        status => 'investigating',
+        comments => [
+            { by => 'tyseley.cs@example.org', days_after => 4, text => 'Forwarded to the drainage team for investigation.', state => 'investigating' },
+            { by => 'imran.tyseley@example.org', days_after => 9, text => 'Still making a loud bang through the evening.' },
+        ],
+    },
+    {
+        title => 'Broken surface in the cycle lane on Formans Road',
+        detail => 'The cycle lane surface is breaking up and there are several sharp edges close to the kerb.',
+        category => 'Potholes',
+        postcode => 'Formans Road, Tyseley',
+        latitude => 52.44895,
+        longitude => -1.84163,
+        reporter => 'priya.tyseley@example.org',
+        days_ago => 29,
+        status => 'action scheduled',
+        comments => [
+            { by => 'tyseley.cs@example.org', days_after => 2, text => 'Inspector has marked this for a patch repair.', state => 'investigating' },
+            { by => 'tyseley.inspector@example.org', days_after => 9, text => 'Temporary repair booked with our highways crew.', state => 'action scheduled' },
+        ],
+    },
+    {
+        title => 'Dark underpass lighting failure near the retail units',
+        detail => 'All of the lights appear to be out in the short underpass near the retail units, making it hard to see the floor.',
+        category => 'Street lighting',
+        postcode => 'Warwick Road underpass, Tyseley',
+        latitude => 52.45028,
+        longitude => -1.83674,
+        reporter => 'daniel.tyseley@example.org',
+        days_ago => 46,
+        status => 'planned',
+        comments => [
+            { by => 'tyseley.cs@example.org', days_after => 2, text => 'Inspection completed. Replacement parts are now on order.', state => 'planned' },
+        ],
+    },
+    {
+        title => 'Graffiti on utility box by the station car park entrance',
+        detail => 'The utility box at the station entrance has been covered in silver and black paint over the weekend.',
+        category => 'Graffiti',
+        postcode => 'Tyseley station car park, Tyseley',
+        latitude => 52.45431,
+        longitude => -1.84252,
+        reporter => 'sophie.tyseley@example.org',
+        days_ago => 11,
+        status => 'confirmed',
+        comments => [
+            { by => 'sophie.tyseley@example.org', days_after => 3, text => 'There is more on the side facing the footpath as well.' },
+        ],
+    },
+    {
+        title => 'Loose paving and standing water by the parade',
+        detail => 'There is a patch of broken paving outside the parade and water now sits there after every shower.',
+        category => 'Other',
+        postcode => 'Warwick Road parade, Tyseley',
+        latitude => 52.45734,
+        longitude => -1.82658,
+        reporter => 'megan.tyseley@example.org',
+        days_ago => 54,
+        status => 'fixed - council',
+        comments => [
+            { by => 'tyseley.cs@example.org', days_after => 3, text => 'Raised with highways as a pedestrian safety issue.', state => 'investigating' },
+            { by => 'tyseley.inspector@example.org', days_after => 14, text => 'Paving reset and drainage channel cleared.', state => 'fixed - council' },
+            { by => 'megan.tyseley@example.org', days_after => 16, text => 'Looks much better now and no puddle this morning.' },
+        ],
+    },
+    {
+        title => 'Road edge breaking away on Knights Road',
+        detail => 'The road edge is crumbling away near the parked cars and the hole is getting wider each week.',
+        category => 'Potholes',
+        postcode => 'Knights Road, Tyseley',
+        latitude => 52.44482,
+        longitude => -1.83366,
+        reporter => 'imran.tyseley@example.org',
+        days_ago => 21,
+        status => 'investigating',
+        comments => [
+            { by => 'tyseley.cs@example.org', days_after => 2, text => 'Logged for inspection with the neighbourhood highways officer.', state => 'investigating' },
+        ],
+    },
+    {
+        title => 'Lamp out beside the pedestrian crossing on Kyotts Lake Road',
+        detail => 'One of the lamps beside the crossing is out and the crossing is much darker than the rest of the road.',
+        category => 'Street lighting',
+        postcode => 'Kyotts Lake Road, Tyseley',
+        latitude => 52.45954,
+        longitude => -1.84612,
+        reporter => 'aisha.tyseley@example.org',
+        days_ago => 66,
+        status => 'fixed - council',
+        comments => [
+            { by => 'tyseley.cs@example.org', days_after => 1, text => 'Contractor notified.', state => 'investigating' },
+            { by => 'tyseley.inspector@example.org', days_after => 5, text => 'Lamp replaced and supply tested.', state => 'fixed - council' },
+            { by => 'aisha.tyseley@example.org', days_after => 7, text => 'Crossing is lit again, thanks.' },
+        ],
+    },
+    {
+        title => 'New graffiti on the side wall by the allotments',
+        detail => 'The long wall by the allotments has a fresh line of tags that were not there last week.',
+        category => 'Graffiti',
+        postcode => 'Olton Boulevard East allotments, Tyseley',
+        latitude => 52.44758,
+        longitude => -1.82463,
+        reporter => 'daniel.tyseley@example.org',
+        days_ago => 14,
+        status => 'planned',
+        comments => [
+            { by => 'tyseley.cs@example.org', days_after => 2, text => 'Added to the next programmed removal visit.', state => 'planned' },
+        ],
+    },
+    {
+        title => 'Rubbish and loose bags building up by the service road',
+        detail => 'Several loose bags and broken cardboard boxes have been left beside the service road behind the shops.',
+        category => 'Other',
+        postcode => 'Service road off Warwick Road, Tyseley',
+        latitude => 52.45212,
+        longitude => -1.83074,
+        reporter => 'priya.tyseley@example.org',
+        days_ago => 6,
+        status => 'confirmed',
+        comments => [
+            { by => 'priya.tyseley@example.org', days_after => 1, text => 'There were more bags there again this afternoon.' },
+        ],
+    },
+    {
+        title => 'Multiple potholes along the bus approach outside the depot',
+        detail => 'There are now several potholes in a row on the bus approach and vehicles are clipping them one after another.',
+        category => 'Potholes',
+        postcode => 'Warwick Road depot approach, Tyseley',
+        latitude => 52.45888,
+        longitude => -1.83924,
+        reporter => 'sophie.tyseley@example.org',
+        days_ago => 38,
+        status => 'action scheduled',
+        comments => [
+            { by => 'tyseley.cs@example.org', days_after => 2, text => 'Cluster recorded as one repair job for resurfacing.', state => 'investigating' },
+            { by => 'tyseley.inspector@example.org', days_after => 11, text => 'Crew scheduled to attend on the next highway patching run.', state => 'action scheduled' },
+        ],
+    },
+    {
+        title => 'Street light glowing during the day near the corner shop',
+        detail => 'The lamp outside the corner shop has been on continuously, including in full daylight.',
+        category => 'Street lighting',
+        postcode => 'Spring Road shops, Tyseley',
+        latitude => 52.45163,
+        longitude => -1.83542,
+        reporter => 'megan.tyseley@example.org',
+        days_ago => 27,
+        status => 'confirmed',
+        comments => [
+            { by => 'tyseley.cs@example.org', days_after => 4, text => 'Photo and column reference sent to the contractor.' },
+        ],
+    },
+    {
+        title => 'Offensive graffiti daubed on wall near the industrial units',
+        detail => 'There is offensive wording sprayed on the wall near the industrial units and it is visible from the public footpath.',
+        category => 'Graffiti',
+        postcode => 'Formans Road industrial units, Tyseley',
+        latitude => 52.44638,
+        longitude => -1.84438,
+        reporter => 'imran.tyseley@example.org',
+        days_ago => 19,
+        status => 'fixed - council',
+        comments => [
+            { by => 'tyseley.cs@example.org', days_after => 1, text => 'Prioritised for urgent removal due to the wording used.', state => 'investigating' },
+            { by => 'tyseley.inspector@example.org', days_after => 3, text => 'Covered over and cleared today.', state => 'fixed - council' },
+            { by => 'imran.tyseley@example.org', days_after => 4, text => 'Confirmed removed.' },
+        ],
+    },
+    {
+        title => 'Trip hazard from uneven utility cover on Golden Hillock Road',
+        detail => 'The utility cover sits proud of the pavement and people are catching their feet on it near the crossing point.',
+        category => 'Other',
+        postcode => 'Golden Hillock Road crossing, Tyseley',
+        latitude => 52.46012,
+        longitude => -1.83511,
+        reporter => 'aisha.tyseley@example.org',
+        days_ago => 33,
+        status => 'investigating',
+        comments => [
+            { by => 'tyseley.cs@example.org', days_after => 2, text => 'Passed to the utility company and our highways liaison officer.', state => 'investigating' },
+            { by => 'aisha.tyseley@example.org', days_after => 8, text => 'It is still sticking up by about an inch.' },
+        ],
+    },
+);
+
+say 'Creating 20 synthetic Tyseley reports';
+
+for my $report (@reports) {
+    my $reported_at = DateTime->now(time_zone => 'Europe/London')
+        ->subtract(days => $report->{days_ago}, hours => 9)
+        ->set_hour(8)
+        ->set_minute(0)
+        ->set_second(0);
+
+    my $problem = FixMyStreet::DB::Factory::Problem->create_problem({
+        body => $body,
+        areas => ",$area_id,",
+        user => $users{$report->{reporter}},
+        postcode => $report->{postcode},
+        latitude => $report->{latitude},
+        longitude => $report->{longitude},
+        cobrand => 'birmingham',
+        title => $report->{title},
+        detail => $report->{detail},
+        category => $report->{category},
+        confirmed => $reported_at,
+        whensent => $reported_at,
+        lastupdate => $reported_at,
+    });
+
+    my $last_update = $reported_at->clone;
+    for my $comment (@{ $report->{comments} }) {
+        my $comment_time = $reported_at->clone->add(days => $comment->{days_after}, hours => 2);
+        FixMyStreet::DB::Factory::Comment->create({
+            problem => $problem,
+            user => $users{$comment->{by}},
+            text => $comment->{text},
+            problem_state => $comment->{state},
+            confirmed => DateTime::Format::Pg->format_datetime($comment_time),
+        });
+        $last_update = $comment_time;
+        if ($comment->{state}) {
+            $problem->state($comment->{state});
+        }
+    }
+
+    $problem->lastupdate(DateTime::Format::Pg->format_datetime($last_update));
+    $problem->update;
+}
+
+say 'Tyseley fixture created';

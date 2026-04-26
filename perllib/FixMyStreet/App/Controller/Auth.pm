@@ -31,6 +31,11 @@ Present the user with a sign in / create account page.
 sub general : Path : Args(0) {
     my ( $self, $c ) = @_;
 
+    if ( $c->req->method eq 'GET' ) {
+        $c->response->redirect('/');
+        $c->detach;
+    }
+
     $c->detach( 'redirect_on_signin', [ $c->get_param('r') ] )
         if $c->req->method eq 'GET' && $c->user && $c->get_param('r');
 
@@ -52,12 +57,20 @@ sub general : Path : Args(0) {
 
 sub create : Path('create') : Args(0) {
     my ( $self, $c ) = @_;
+    if ( $c->req->method eq 'GET' ) {
+        $c->response->redirect('/');
+        $c->detach;
+    }
     return unless $c->req->method eq 'POST';
     $c->detach('code_sign_in');
 }
 
 sub forgot : Path('forgot') : Args(0) {
     my ( $self, $c ) = @_;
+    if ( $c->req->method eq 'GET' ) {
+        $c->response->redirect('/');
+        $c->detach;
+    }
     $c->stash->{forgotten} = 1;
     $c->stash->{template} = 'auth/create.html';
     return unless $c->req->method eq 'POST';
