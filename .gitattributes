@@ -4,6 +4,12 @@
 
 * -text
 
+# Shell and interpreter entrypoints are bind-mounted into Linux containers,
+# so they must always land with LF line endings on the host checkout.
+/bin/** text eol=lf
+/docker/** text eol=lf
+/script/** text eol=lf
+
 # Fix language detection on GitHub:
 *.pm linguist-language=Perl
 *.t linguist-language=Perl
