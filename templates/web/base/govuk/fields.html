@@ -64,7 +64,7 @@
         <div class="govuk-error-summary__body">
             <ul class="govuk-list govuk-error-summary__list">
               [% FOR error IN form.all_form_errors %]
-                <li>[% error %]</li>
+                <li>[% error | safe %]</li>
               [% END %]
               [% FOR error IN form.errors_by_id.pairs %]
                 <li>
