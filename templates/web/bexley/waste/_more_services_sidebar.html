@@ -23,18 +23,24 @@
     <li><a [% external_new_tab | safe %] href="https://www.bexley.gov.uk/services/rubbish-and-recycling/garden-waste-collection-service/sign-garden-waste-collection">Manage garden waste bins</a></li>
   [% END %]
 
-  <li><a [% external_new_tab | safe %] href="https://www.bexley.gov.uk/services/rubbish-and-recycling/clinical-waste-collections/get-clinical-waste-collected">Get clinical waste collected</a></li>
-  [% IF cobrand.feature('waste_features').clinical_enabled %]
-    <li><a href="[% c.uri_for_action('waste/clinical_report', [ property.id ]) %]">Report an issue with my clinical waste collection</a></li>
-  [% END %]
   <li><a [% external_new_tab | safe %] href="https://www.bexley.gov.uk/services/rubbish-and-recycling/recycling/which-bin-should-i-use">Which bin should I use?</a></li>
   [% IF property.show_bulky_waste %]
     <li><a href="[% c.uri_for_action('waste/bulky/index', [ property.id ]) %]">Arrange a bulky waste collection</a></li>
   [% END %]
-  [% IF property.show_sharps %]
-    <li><a href="[% c.uri_for_action('waste/bulky/index_sharps', [ property.id ]) %]">Arrange a sharps collection</a></li>
-  [% END %]
   <li><a [% external_new_tab | safe %] href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Request+assisted+collection">Get help with putting your bins out</a></li>
+
+  <li>
+    Clinical waste
+    <ul>
+      <li><a [% external_new_tab | safe %] href="https://www.bexley.gov.uk/services/rubbish-and-recycling/clinical-waste-collections/get-clinical-waste-collected">Sign up for clinical waste collection</a></li>
+      [% IF cobrand.feature('waste_features').clinical_enabled %]
+        <li><a href="[% c.uri_for_action('waste/clinical_report', [ property.id ]) %]">Report an issue with my clinical waste collection</a></li>
+      [% END %]
+      [% IF property.show_sharps %]
+        <li><a href="[% c.uri_for_action('waste/bulky/index_sharps', [ property.id ]) %]">Arrange a sharps collection</a></li>
+      [% END %]
+    </ul>
+  </li>
 </ul>
 
 [% IF c.user.from_body OR c.user.is_superuser %]
