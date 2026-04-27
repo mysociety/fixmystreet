@@ -41,9 +41,11 @@ FixMyStreet::override_config {
 
     };
 
+my $comment_user = $mech->create_user_ok('comment@user.com', name => 'Comment User');
 
 my $body = $mech->create_body_ok(2656, 'Dumfries and Galloway Council', {
-    cobrand => 'dumfries'
+    cobrand => 'dumfries',
+    comment_user => $comment_user,
 });
 
 my $contact = $mech->create_contact_ok(
@@ -698,6 +700,48 @@ subtest 'admin template external_status_code validation' => sub {
         }
 
         $mech->log_out_ok;
+    };
+};
+
+subtest 'reports raised by Dumfries cannot be edited by admin' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['dumfries'],
+    }, sub {
+        my $problem_staff = FixMyStreet::DB->resultset('Problem')->create({
+            postcode           => 'DG1 1AA',
+            bodies_str         => $body->id,
+            areas              => ',2656,',
+            category           => 'Potholes',
+            title              => 'Test problem',
+            detail             => 'Test detail',
+            used_map           => 1,
+            name               => 'Reporter',
+            anonymous          => 0,
+            state              => 'confirmed',
+            confirmed          => DateTime->now,
+            lastupdate         => DateTime->now->subtract(days => 20),
+            latitude           => 55.0706,
+            longitude          => -3.9568,
+            user_id            => $reporter->id,
+            cobrand            => 'dumfries',
+        });
+
+        $mech->log_in_ok( $superuser->email );
+
+        $mech->get_ok( '/report/' . $problem_staff->id );
+        $mech->content_contains( 'for="category"',
+            'Report raised by standard user can be edited' );
+        $mech->content_contains( 'for="problem_priority"',
+            'Report raised by standard user can be edited' );
+
+        $problem_staff->update( { user_id => $comment_user->id } );
+        $problem_staff->discard_changes;
+
+        $mech->get_ok( '/report/' . $problem_staff->id );
+        $mech->content_lacks( 'for="category"',
+            'Report raised by comment user cannot be edited' );
+        $mech->content_lacks( 'for="problem_priority"',
+            'Report raised by standard user cannot be edited' );
     };
 };
 
