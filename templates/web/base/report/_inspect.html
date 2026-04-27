@@ -1,3 +1,8 @@
+[%
+  SET forbid_staff_edits
+    = cobrand.moniker == 'dumfries'
+    && problem.user_id == cobrand.body.comment_user_id
+%]
 [% second_column = BLOCK -%]
   <div id="side-inspect">
 
@@ -8,6 +13,8 @@
     <form name="report_inspect_form" id="report_inspect_form" method="post" action="[% c.uri_for( '/report', problem.id ) %]" class="validate"[% IF c.cobrand.allow_photo_upload %] enctype="multipart/form-data"[% END %]>
 
     [% INCLUDE 'report/inspect/information.html' %]
+
+    [% IF NOT forbid_staff_edits %]
 
     [% IF permissions.report_edit_category OR permissions.report_inspect %]
       <div class="inspect-section">
@@ -82,6 +89,9 @@
       </div>
 
       <input type="hidden" name="js" value="">
+
+    [% END %] [% # forbid_staff_edits check %]
+
     </form>
   </div>
 [%- END %]
