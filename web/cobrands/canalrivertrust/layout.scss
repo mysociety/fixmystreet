@@ -1,0 +1,116 @@
+@import "_variables";
+@import "../sass/layout";
+
+/* GENERAL */
+html {
+    font-size: 1.25rem;
+}
+
+/* NAVBAR */
+#site-logo {
+  background-image: url("/cobrands/canalrivertrust/images/logo-desktop.svg");
+    background-size: auto 5rem;
+    height: $mappage-header-height;
+    width: 18.875rem;
+}
+
+.nav-menu--main {
+  a, span {
+    font-size: 1rem;
+  }
+
+  a {
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  span {
+    text-decoration: underline;
+    color: $primary_text;
+    text-underline-offset: 0.5rem;
+    &:hover {
+      color: $primary_text;
+    }
+  }
+}
+
+/* FRONTPAGE */
+#front-main {
+  padding: 6em 1em;
+  margin-bottom: 5rem;
+
+  #front-main-container {
+    max-width: fit-content;
+    padding: 2em;
+  }
+}
+
+#front_stats {
+  border-color: $cobrand_teal;
+  color: $cobrand_teal;
+}
+
+/* MAP PAGE */
+.big-green-banner {
+  border-top: 1px solid $cobrand_white;
+}
+
+/* DARK THEME */
+@media (prefers-color-scheme: dark) {
+  body {
+    @include true-black();
+  }
+
+  #front-main {
+    position: relative;
+    box-sizing: border-box;
+
+    &::after {
+      content: "";
+      position: absolute;
+      background-color: rgba(0, 0, 0, 0.5);
+      height: 100%;
+      width: 100%;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+
+    #front-main-container {
+      position: relative;
+      z-index: 1;
+      @include true-black();
+      h1 {
+        color: $cobrand_white;
+      }
+      h2 {
+        color: rgba($cobrand_white, 0.9);
+      }
+      .report-forms-wrapper {
+        color: $cobrand_white;
+  
+        .form-hint {
+          color: rgba($cobrand_white, 0.9);
+        }
+      }
+    }
+  }
+
+  .keyboard-instructions-wrapper {
+    background-color: #000;
+  }
+
+  .frontpage {
+    .content {
+      @include true-black();
+    }
+    h2 {
+      color: $cobrand_white;
+    }
+  }
+
+  .content, #map_sidebar  {
+    @include true-black;
+  }
+}
