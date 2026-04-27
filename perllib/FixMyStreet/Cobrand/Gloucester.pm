@@ -174,6 +174,29 @@ sub open311_pre_send {
     }
 }
 
+# For categories where user has said they have witnessed activity, send
+# an email
+sub open311_post_send {
+    my ( $self, $row, $h ) = @_;
+
+    # Check Open311 was successful
+    return unless $row->external_id;
+
+    return if $row->get_extra_metadata('extra_email_sent');
+
+    return if ( $row->get_extra_field_value('did_you_witness') || '' ) ne 'Yes';
+
+    my $emails = $self->feature('open311_email') or return;
+    my $dest = $emails->{$row->category} or return;
+
+    my $sender = FixMyStreet::SendReport::Email->new( to => [$dest] );
+    $sender->send( $row, $h );
+
+    if ($sender->success) {
+        $row->update_extra_metadata(extra_email_sent => 1);
+    }
+}
+
 =head2 _asset_layer_mapping
 
 Gloucester's Alloy integration has assets separated into different layers.
