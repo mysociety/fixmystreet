@@ -30,6 +30,12 @@ step1 = 'enquiry';
         </dd>
     </div>
   [% END %]
+  [% IF c.cobrand.moniker == 'bromley' AND data.declaration %]
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Declaration</dt>
+        <dd class="govuk-summary-list__value">I declare my container was in reach of the pavement and out by 7:00 AM</dd>
+      </div>
+  [% END %]
 [% END %]
 
 [% PROCESS waste/summary.html %]
