@@ -1699,13 +1699,18 @@ $.extend(fixmystreet.set_up, {
     // Go directly to RSS feed if RSS button clicked on alert page
     // (due to not wanting around form to submit, though good thing anyway)
     $('#distance').on('change', function() {
+        var a = $('a.js-alert-local');
         var dist = this.value.replace(/,/, '.');
         if (!parseFloat(dist)) {
+            a.attr('href', a.data('distanceHref'));
             return;
         }
-        var a = $('a.js-alert-local');
         if (!a.data('originalHref')) {
-            a.data('originalHref', a.attr('href'));
+            // stash this so we can restore it if required
+            a.data('distanceHref', a.attr('href'));
+            // remove any existing distance from the end of the url
+            var href = a.attr('href').replace(/\/[0-9.]*$/, '');
+            a.data('originalHref', href);
         }
         a.attr('href', a.data('originalHref') + '/' + dist);
     });

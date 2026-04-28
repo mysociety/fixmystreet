@@ -98,7 +98,7 @@ sub rss : Private {
         $c->res->redirect($url);
     }
     elsif ( $feed =~ /^local:([\d\.-]+):([\d\.-]+)$/ ) {
-        my $distance = $c->forward('get_distance');
+        my $distance = $c->forward('get_distance', [$1, $2]);
         $url = $c->cobrand->base_url() . '/rss/l/' . $1 . ',' . $2;
         if ($distance) {
             $distance = mySociety::Locale::in_gb_locale { sprintf("%f", $distance); };
@@ -424,11 +424,12 @@ sub setup_coordinate_rss_feeds : Private {
         $rss_feed = $c->uri_for( "/rss/pc/" . $c->stash->{pretty_pc_text} );
     }
     else {
-        $rss_feed = $c->uri_for(
-            sprintf( "/rss/l/%s,%s",
-                $c->stash->{latitude},
-                $c->stash->{longitude} )
-        );
+        my $distance = $c->forward('get_distance', [$c->stash->{latitude}, $c->stash->{longitude}]);
+        my $url = sprintf( "/rss/l/%s,%s", $c->stash->{latitude}, $c->stash->{longitude} );
+        if ($distance) {
+            $url .= "/$distance";
+        }
+        $rss_feed = $c->uri_for($url);
     }
 
     $c->stash->{rss_feed_uri} = $rss_feed;
