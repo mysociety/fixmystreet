@@ -134,6 +134,22 @@ sub open311_extra_data_include {
 sub open311_munge_update_params {
 }
 
+=head2 should_skip_sending_update
+
+Do not try and send updates on Open311 reports that are now sent by email.
+
+=cut
+
+sub should_skip_sending_update {
+    my ($self, $update) = @_;
+
+    my $code = $update->problem->contact;
+    return 1 unless $code; # No category found
+    $code = $code->email;
+    return 1 if $code =~ /@/; # Is now an email category
+    return 0;
+}
+
 sub report_new_munge_before_insert {
     my ($self, $report) = @_;
 
