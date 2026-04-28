@@ -253,7 +253,7 @@ Returns 1 on success, or a hashref with an error key on failure.
 sub cancel_plan {
     my ($self, $args) = @_;
     my $report = $args->{report};
-    my $contract_id = $report->get_extra_metadata('direct_debit_contract_id');
+    my $contract_id = $report ? $report->get_extra_metadata('direct_debit_contract_id') : undef;
 
     if ($contract_id) {
         # Single contract from metadata - handle errors properly

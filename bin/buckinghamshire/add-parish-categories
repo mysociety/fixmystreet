@@ -50,7 +50,7 @@ my $devolved_contacts = [
     {
         category => 'Dirty signs',
         extra_metadata => {
-            group => 'Road and street Signs'
+            group => 'Road and street signs'
         },
         extra_fields => [ $speed_limit_q ]
     },

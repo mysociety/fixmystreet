@@ -9,6 +9,7 @@
         - Improve category search to allow flexible searching for hyphenated categories
         - WasteWorks urls use a separate offline page #4655
         - Add photo first reporting flow. #15
+        - Disable anonymous reporting button when submitted.
     - Accessibility improvements:
         - Improved accessibility of small drawer. #5354
         - Added skip report tools to Around page. #5354
