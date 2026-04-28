@@ -346,10 +346,13 @@ sub problems_on_map_restriction {
     my ($self, $rs) = @_;
     my $date = $self->cut_off_date;
     my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
-    return $rs->search([
-        { "$table.created" => { '>=', $date } },
-        { "$table.service" => 'Open311' },
-    ]);
+    return $rs->search({
+        "$table.state" => { '!=', 'duplicate' },
+        -or => [
+            { "$table.created" => { '>=', $date } },
+            { "$table.service" => 'Open311' },
+        ]
+    });
 }
 
 =head2 dashboard_export_problems_add_columns
