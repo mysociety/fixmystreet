@@ -766,4 +766,42 @@ subtest 'junction lookup' => sub {
     };
 };
 
+subtest 'status dropdown' => sub {
+    # Oxfordshire $body created further up
+    my $surrey = $mech->create_body_ok(2242, 'Surrey County Council', {cobrand => 'surrey'});
+
+    my $staff_oxf = $mech->create_user_ok('staff@oxf.com', name => 'Staff Oxf', from_body => $body);
+    my $staff_surrey = $mech->create_user_ok('staff@surrey.com', name => 'Staff Surrey', from_body => $surrey);
+    my $other_user = $mech->create_user_ok('other@example.com', name => 'Other User');
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'oxfordshire',
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        subtest 'standard user' => sub {
+            $mech->log_in_ok($other_user->email);
+
+            $mech->get_ok('/around?latitude=51.754926&longitude=-1.256179');
+
+            $mech->content_contains('data-all-options=\'["open","closed","fixed"]\'');
+        };
+
+        subtest 'staff user who does not belong to body' => sub {
+            $mech->log_in_ok($staff_surrey->email);
+
+            $mech->get_ok('/around?latitude=51.754926&longitude=-1.256179');
+
+            $mech->content_contains('data-all-options=\'["open","closed","fixed"]\'');
+        };
+
+        subtest 'staff user who does belong to body' => sub {
+            $mech->log_in_ok($staff_oxf->email);
+
+            $mech->get_ok('/around?latitude=51.754926&longitude=-1.256179');
+
+            $mech->content_like(qr/data-all-options=.*confirmed.*investigating.*action scheduled.*in progress.*fixed.*not responsible.*duplicate.*unable to fix.*internal referral/);
+        };
+    };
+};
+
 done_testing();
