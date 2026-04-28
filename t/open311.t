@@ -986,6 +986,8 @@ EOT
 };
 
 subtest 'add_media with base64 data URIs' => sub {
+    my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
+
     my $o = Open311->new();
 
     # 1x1px PNG
@@ -1000,20 +1002,27 @@ subtest 'add_media with base64 data URIs' => sub {
         user => $user,
     });
 
-    # Test base64 data URI
-    $o->add_media($data_uri_base64, $test_problem);
-    ok $test_problem->photo, 'photo set from base64 data URI';
+    FixMyStreet::override_config {
+        PHOTO_STORAGE_BACKEND => 'FileSystem',
+        PHOTO_STORAGE_OPTIONS => {
+            UPLOAD_DIR => $UPLOAD_DIR,
+        },
+    }, sub {
+        # Test base64 data URI
+        $o->add_media($data_uri_base64, $test_problem);
+        ok $test_problem->photo, 'photo set from base64 data URI';
 
-    # Test multiple data URIs
-    $test_problem->photo(undef);
-    $o->add_media([$data_uri_base64, $data_uri_base64], $test_problem);
-    ok $test_problem->photo, 'photos set from multiple base64 data URIs';
+        # Test multiple data URIs
+        $test_problem->photo(undef);
+        $o->add_media([$data_uri_base64, $data_uri_base64], $test_problem);
+        ok $test_problem->photo, 'photos set from multiple base64 data URIs';
 
-    # Test invalid MIME type is rejected
-    $test_problem->photo(undef);
-    my $invalid_data_uri = "data:text/plain;base64,bmV2ZXIgZ29ubmEgZ2l2ZSB5b3UgdXA=";
-    $o->add_media($invalid_data_uri, $test_problem);
-    ok !$test_problem->photo, 'photo not set from invalid MIME type data URI';
+        # Test invalid MIME type is rejected
+        $test_problem->photo(undef);
+        my $invalid_data_uri = "data:text/plain;base64,bmV2ZXIgZ29ubmEgZ2l2ZSB5b3UgdXA=";
+        $o->add_media($invalid_data_uri, $test_problem);
+        ok !$test_problem->photo, 'photo not set from invalid MIME type data URI';
+    };
 };
 
 done_testing();
