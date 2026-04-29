@@ -16,7 +16,7 @@ use FixMyStreet::Script::Bexley::CancelGardenWaste;
 
 my ($opts, $usage) = describe_options(
     '%c %o',
-    ['days=i', 'How many days to check for cancellations (max 7)', { default => 7 } ],
+    ['days=i', 'How many days to check for cancellations', { default => 7 } ],
     ['uprn=s', 'A specific UPRN to cancel'],
     ['reference=s', 'Agile reference to cancel'],
     ['verbose|v', 'Print verbose output'],
@@ -24,9 +24,6 @@ my ($opts, $usage) = describe_options(
 );
 
 $usage->die if $opts->help;
-if ($opts->days > 7) {
-    $usage->die("Days must be 7 or less");
-}
 
 my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('bexley')->new;
 my $canceller = FixMyStreet::Script::Bexley::CancelGardenWaste->new(

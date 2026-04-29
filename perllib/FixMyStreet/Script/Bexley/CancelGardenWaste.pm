@@ -49,8 +49,8 @@ sub cancel_contract {
     my ( $self, $contract ) = @_;
 
     my $uprn = $contract->{UPRN};
+    my $id = $contract->{Id};
     my $reference = $contract->{Reference};
-    my $external_id = "Agile-$reference";
     my $reason = $contract->{Reason};
 
     $self->_vprint("Attempting to cancel contract $reference (UPRN: $uprn)");
@@ -60,8 +60,11 @@ sub cancel_contract {
     my $report = $self->cobrand->problems->search({
         category => 'Garden Subscription',
         title => ['Garden Subscription - New', 'Garden Subscription - Renew'],
-        external_id => $external_id,
+        # New reports get the reference back from Agile, but renewals get the
+        # ID, so we need to check for both.
+        external_id => [ "Agile-$reference", "Agile-$id" ],
         state => { '!=' => 'hidden' },
+        -bool => \"extra->>'direct_debit_cancellation_date' IS NULL",
     })->order_by('-id')->first;
 
     # Always check for legacy contracts regardless of whether we found a report.
@@ -72,30 +75,11 @@ sub cancel_contract {
 
     unless ($report) {
         # Expected as we might have handled a legacy cancellation above.
-        $self->_vprint("  No active garden subscription found with external_id $external_id");
+        $self->_vprint("  No active garden subscription found for Agile report $id ($reference)");
         return;
     }
 
     $self->_vprint("  Found active report " . $report->id);
-
-    # See if there is an existing cancellation report for current subscription
-    my $dtf = FixMyStreet::DB->schema->storage->datetime_parser;
-    my $current_created = $dtf->format_datetime( $report->created );
-    my $cancellation_report = $self->cobrand->problems->search({
-        category => 'Cancel Garden Subscription',
-        extra => { '@>' => encode_json({ original_report_id => $report->id }) },
-        state => [ FixMyStreet::DB::Result::Problem->open_states ],
-    })->order_by('-id')->first;
-
-    if ($cancellation_report) {
-        $self->_vprint("  Active cancellation report " . $cancellation_report->id . " already exists");
-        return;
-    }
-
-    $cancellation_report
-        = $self->create_cancellation_report( $report, $reason );
-
-    $self->_vprint("  Created cancellation report " . $cancellation_report->id);
 
     my $payment_method = $report->get_extra_field_value('payment_method') || 'credit_card';
     if ($payment_method eq 'direct_debit') {
@@ -103,74 +87,6 @@ sub cancel_contract {
     } else {
         # Nothing to do for credit card
     }
-}
-
-sub create_cancellation_report {
-    my ( $self, $existing_report, $reason ) = @_;
-
-    my %cancellation_params = (
-        state => 'confirmed',
-        confirmed => \'current_timestamp',
-        send_state => 'sent',
-        category => 'Cancel Garden Subscription',
-        title => 'Garden Subscription - Cancel',
-        detail => '', # Populated below
-        user_id => $self->cobrand->body->comment_user_id,
-        name => $self->cobrand->body->comment_user->name,
-    );
-    for (qw/
-        uprn
-        postcode
-        latitude
-        longitude
-        bodies_str
-        areas
-        used_map
-        anonymous
-        cobrand
-        cobrand_data
-        send_questionnaire
-        non_public
-    /) {
-        $cancellation_params{$_} = $existing_report->$_;
-    }
-
-    # Initiate report
-    my $cancellation_report = FixMyStreet::DB->resultset('Problem')
-        ->create( \%cancellation_params );
-
-    # Metadata
-    my $existing_meta = $existing_report->get_extra_metadata;
-    my %cancellation_meta
-        = %$existing_meta{qw/property_address direct_debit_contract_id direct_debit_customer_id/};
-    $cancellation_meta{original_report_id} = $existing_report->id;
-    $cancellation_report->set_extra_metadata(%cancellation_meta);
-
-    # Set 'detail' using category & property_address
-    $cancellation_report->detail(
-        $cancellation_params{category} . "\n\n" . $cancellation_meta{property_address} );
-
-    # Extra fields
-    my $existing_extra = $existing_report->get_extra_fields;
-    my $match_str = join '|', qw/
-        uprn
-        property_id
-        payment_method
-        customer_external_ref
-        direct_debit_reference
-    /;
-    my @cancellation_extra
-        = grep { $_->{name} =~ /^($match_str)$/ } @$existing_extra;
-    push @cancellation_extra, {
-        name  => 'reason',
-        value => 'Cancelled on Agile end: '
-            . ( $reason || 'No reason provided' )
-    };
-    $cancellation_report->set_extra_fields(@cancellation_extra);
-
-    $cancellation_report->update;
-
-    return $cancellation_report;
 }
 
 sub _cancel_direct_debit {
@@ -192,8 +108,21 @@ sub _cancel_direct_debit {
     my $resp = $i->cancel_plan({ report => $original_report });
 
     if ( ref $resp eq 'HASH' && $resp->{error} ) {
+        my $failures = $original_report->get_extra_metadata('direct_debit_cancellation_failures') // 0;
+        $failures++;
+        $original_report->set_extra_metadata(
+            direct_debit_cancellation_failures       => $failures,
+            direct_debit_cancellation_error          => $resp->{error},
+            direct_debit_cancellation_last_failed_at => DateTime->now->set_time_zone( FixMyStreet->local_time_zone )->iso8601,
+        );
+        $original_report->update;
         print "  Failed to send cancellation request to Direct Debit provider for Agile reference $reference: $resp->{error}\n";
     } else {
+        $original_report->set_extra_metadata(
+            direct_debit_cancellation_date => DateTime->now->set_time_zone( FixMyStreet->local_time_zone )->iso8601,
+            direct_debit_cancellation_note => 'Cancellation received from Agile LastCancelled API',
+        );
+        $original_report->update;
         $self->_vprint(
             "  Successfully sent cancellation request to Direct Debit provider."
         );

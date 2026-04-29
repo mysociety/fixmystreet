@@ -121,11 +121,12 @@ FixMyStreet::override_config {
             verbose => 1,
         );
 
+        my $id = 42;
         my $uprn = '123456789';
         my $reference = 'GW-SERV-001-12345';
-        my $external_id = "Agile-$reference";
 
         my $contract = {
+            Id => $id,
             UPRN => $uprn,
             Reference => $reference,
             Reason => 'Moved house',
@@ -134,50 +135,38 @@ FixMyStreet::override_config {
         subtest 'no active subscription found' => sub {
             stdout_is { $canceller->cancel_contract($contract) }
                 "Attempting to cancel contract $reference (UPRN: $uprn)\n" .
-                "  No active garden subscription found with external_id $external_id\n",
+                "  No active garden subscription found for Agile report $id ($reference)\n",
                 "Handles no active subscription correctly (UPRN with no legacy contracts)";
         };
 
-        subtest 'handles direct debit cancellation' => sub {
-            my $garden_report = _create_report( uprn => $uprn, external_id => $external_id );
+        subtest 'finds report by Agile reference (new subscription)' => sub {
+            my $garden_report = _create_report( uprn => $uprn, external_id => "Agile-$reference" );
 
             $access_mock->mock('cancel_plan', sub {
                 my ($self, $args) = @_;
-                is $args->{report}->id, $garden_report->id, 'Correct report passed';
+                is $args->{report}->id, $garden_report->id, 'Correct report passed (matched by Agile Reference)';
                 return 1;
             });
 
             stdout_like { $canceller->cancel_contract($contract) }
                 qr/Attempting to cancel contract $reference.*Found active report.*Cancelling Direct Debit.*Successfully sent cancellation request/s,
-                "Successfully handles direct debit cancellation";
+                "Finds report by Agile Reference (used for new subscriptions)";
+        };
 
-            my $cancel_report = _last_cancel_report();
+        subtest 'finds report by Agile Id (renewal)' => sub {
+            $mech->delete_problems_for_body( $body->id );
 
-            is $cancel_report->state, 'confirmed';
-            ok $cancel_report->confirmed, 'there is a confirmed timestamp';
-            is $cancel_report->send_state, 'sent';
-            is $cancel_report->category, 'Cancel Garden Subscription';
-            is $cancel_report->title, 'Garden Subscription - Cancel';
-            is $cancel_report->detail, "Cancel Garden Subscription\n\n123 Bexley St";
-            is $cancel_report->user_id, $comment_user->id;
-            is $cancel_report->name, $comment_user->name;
-            is $cancel_report->uprn, $uprn;
+            my $garden_report = _create_report( uprn => $uprn, external_id => "Agile-$id" );
 
-            cmp_deeply $cancel_report->get_extra_metadata, {
-                property_address => '123 Bexley St',
-                direct_debit_contract_id => 'PAYER123',
-                direct_debit_customer_id => 'CUST123',
-                original_report_id => $garden_report->id,
-            }, 'correct metadata set on cancellation report';
+            $access_mock->mock('cancel_plan', sub {
+                my ($self, $args) = @_;
+                is $args->{report}->id, $garden_report->id, 'Correct report passed (matched by Agile Id)';
+                return 1;
+            });
 
-            cmp_deeply $cancel_report->get_extra_fields, [
-                { name => 'property_id', value => $uprn },
-                { name => 'payment_method', value => 'direct_debit' },
-                { name => 'customer_external_ref', value => 'AGILE_CUSTOMER_REF' },
-                { name => 'direct_debit_reference', value => 'DD_REF_123' },
-                { name => 'reason', value => 'Cancelled on Agile end: Moved house' },
-            ], 'correct extra fields set on cancellation report';
-
+            stdout_like { $canceller->cancel_contract($contract) }
+                qr/Attempting to cancel contract $reference.*Found active report.*Cancelling Direct Debit.*Successfully sent cancellation request/s,
+                "Finds report by Agile Id (used for renewals)";
         };
 
         subtest 'handles legacy UPRN-based direct debit cancellation' => sub {
@@ -207,48 +196,6 @@ FixMyStreet::override_config {
             ok $cancel_plan_called, 'cancel_plan was called';
             is_deeply $passed_contract_ids, ['TEST-CONTRACT-20001'],
                 'Correct legacy contract ID passed from BexleyContracts lookup';
-
-            is _last_cancel_report(), undef, 'No cancellation report created without a matching FMS report';
-        };
-
-        subtest 'Cancellation report exists' => sub {
-            $mech->delete_problems_for_body( $body->id );
-
-            $access_mock->mock( 'cancel_plan', sub {} );
-
-            # Create old and new subscriptions
-            my $created = '2024-07-28 12:00:00';
-            _create_report( uprn => $uprn, external_id => $external_id, created => $created );
-            $created = '2025-07-28 12:00:00';
-            _create_report( uprn => $uprn, external_id => $external_id, created => $created );
-
-            subtest 'For a previous subscription' => sub {
-                $created = '2025-07-28 00:00:00';
-                _create_report(
-                    uprn      => $uprn,
-                    created   => $created,
-                    is_cancel => 1,
-                );
-
-                my $last_cancel_id = _last_cancel_report()->id;
-                stdout_unlike { $canceller->cancel_contract($contract) }
-                    qr/Active cancellation report.*already exists/;
-                my $new_cancel_id = _last_cancel_report()->id;
-                ok $last_cancel_id != $new_cancel_id,
-                    'New cancellation report created';
-            };
-
-            subtest 'For current subscription' => sub {
-                # Newer cancellation report should have been set up in
-                # previous test
-                my $last_cancel_id = _last_cancel_report()->id;
-                stdout_like { $canceller->cancel_contract($contract) }
-                    qr/Active cancellation report.*already exists/;
-                my $new_cancel_id = _last_cancel_report()->id;
-                ok $last_cancel_id == $new_cancel_id,
-                    'New cancellation report not created';
-            };
-
         };
 
         subtest 'archive_contract fails for single contract' => sub {
@@ -262,7 +209,7 @@ FixMyStreet::override_config {
                 }
             );
 
-            _create_report( uprn => $uprn, external_id => $external_id );
+            _create_report( uprn => $uprn, external_id => "Agile-$reference" );
 
             stdout_like { $canceller->cancel_contract($contract) }
                 qr/Attempting to cancel contract $reference.*Found active report.*Cancelling Direct Debit.*Failed to send cancellation request to Direct Debit provider for Agile reference $reference: Archive failed/s,
@@ -286,6 +233,84 @@ FixMyStreet::override_config {
             stdout_like { $canceller->cancel_contract($legacy_contract) }
                 qr/Attempting to cancel contract $reference.*Found 1 legacy contract.*Cancelling Direct Debit.*Successfully sent cancellation request.*No active garden subscription/s,
                 "Cancels legacy contracts even when archive_contract errors are ignored";
+        };
+
+        subtest 'records cancellation metadata on success' => sub {
+            $mech->delete_problems_for_body( $body->id );
+
+            my $garden_report = _create_report( uprn => $uprn, external_id => "Agile-$reference" );
+
+            $access_mock->mock( 'cancel_plan', sub { return 1 } );
+
+            stdout_like { $canceller->cancel_contract($contract) }
+                qr/Successfully sent cancellation request/,
+                'success path runs';
+
+            $garden_report->discard_changes;
+            like $garden_report->get_extra_metadata('direct_debit_cancellation_date'),
+                qr/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
+                'cancellation date set in ISO8601 format';
+            is $garden_report->get_extra_metadata('direct_debit_cancellation_note'),
+                'Cancellation received from Agile LastCancelled API',
+                'cancellation note set';
+        };
+
+        subtest 'records failure metadata on error' => sub {
+            $mech->delete_problems_for_body( $body->id );
+
+            my $garden_report = _create_report( uprn => $uprn, external_id => "Agile-$reference" );
+
+            $access_mock->mock( 'cancel_plan', sub { return { error => 'Provider down' } } );
+
+            stdout_like { $canceller->cancel_contract($contract) }
+                qr/Failed to send cancellation request.*Provider down/,
+                'failure path runs';
+
+            $garden_report->discard_changes;
+            is $garden_report->get_extra_metadata('direct_debit_cancellation_failures'), 1,
+                'failure count set to 1';
+            is $garden_report->get_extra_metadata('direct_debit_cancellation_error'), 'Provider down',
+                'error message recorded';
+            like $garden_report->get_extra_metadata('direct_debit_cancellation_last_failed_at'),
+                qr/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
+                'last failure timestamp set in ISO8601 format';
+            ok !$garden_report->get_extra_metadata('direct_debit_cancellation_date'),
+                'no cancellation date on failure';
+        };
+
+        subtest 'increments failure counter on repeated failures' => sub {
+            $mech->delete_problems_for_body( $body->id );
+
+            my $garden_report = _create_report( uprn => $uprn, external_id => "Agile-$reference" );
+            $garden_report->set_extra_metadata( direct_debit_cancellation_failures => 2 );
+            $garden_report->update;
+
+            $access_mock->mock( 'cancel_plan', sub { return { error => 'Still down' } } );
+
+            stdout_like { $canceller->cancel_contract($contract) }
+                qr/Failed to send cancellation request/,
+                'failure path runs';
+
+            $garden_report->discard_changes;
+            is $garden_report->get_extra_metadata('direct_debit_cancellation_failures'), 3,
+                'failure count incremented from existing value';
+        };
+
+        subtest 'skips reports already cancelled' => sub {
+            $mech->delete_problems_for_body( $body->id );
+
+            my $garden_report = _create_report( uprn => $uprn, external_id => "Agile-$reference" );
+            $garden_report->set_extra_metadata( direct_debit_cancellation_date => '2026-01-01T00:00:00' );
+            $garden_report->update;
+
+            my $cancel_plan_called = 0;
+            $access_mock->mock( 'cancel_plan', sub { $cancel_plan_called = 1; return 1; } );
+
+            stdout_like { $canceller->cancel_contract($contract) }
+                qr/No active garden subscription found/,
+                'falls through to no-active-subscription branch';
+
+            ok !$cancel_plan_called, 'cancel_plan not called for already-cancelled report';
         };
     };
 };

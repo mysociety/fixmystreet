@@ -410,6 +410,8 @@ sub _alert_iterator {
             my $longitude = $alert->parameter;
             my $latitude  = $alert->parameter2;
             my $distance = $alert->parameter3;
+            # we explicitly don't use the cobrand population here because all alerts with a cobrand
+            # population override will have recorded the distance
             $distance ||= FixMyStreet::Gaze::get_radius_containing_population($latitude, $longitude);
 
             return ($alert, $cobrand, $longitude, $latitude, $distance);
