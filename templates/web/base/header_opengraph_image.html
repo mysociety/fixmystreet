@@ -1,4 +1,4 @@
-        [% IF problem.photo %]
+        [% IF problem.photo AND c.cobrand.allow_photo_display(problem) %]
         [% photo = problem.photos.first %]
         [% content_type = problem.get_first_image_type %]
         <meta property="og:image" content="[% c.cobrand.base_url %][% photo.url_og %]">
