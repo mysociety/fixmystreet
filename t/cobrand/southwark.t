@@ -1,5 +1,6 @@
 use FixMyStreet::TestMech;
 use Test::MockModule;
+use FixMyStreet::Script::Alerts;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -43,6 +44,11 @@ $mech->create_contact_ok(
     category => 'Abandoned Bike (Estate)',
     email    => 'HOU_ABBI',
 );
+my $animal = $mech->create_contact_ok(
+    body_id => $southwark->id,
+    category => 'Clinical Waste - Dead Animal (Estates)',
+    email => 'email'
+);
 
 my $tfl = $mech->create_body_ok( SOUTHWARK_AREA_ID, 'TfL' );
 my $river_piers = $mech->create_contact_ok(
@@ -80,6 +86,10 @@ FixMyStreet::override_config {
                 allow_anonymous => 'true',
                 bodies => ['TfL'],
             },
+            $animal->category => {
+                allow_anonymous => 'true',
+                bodies => ['Southwark Council'],
+            },
         }, "Southwark 'street' area doesn't have River Piers category";
 
     };
@@ -95,8 +105,63 @@ FixMyStreet::override_config {
                 allow_anonymous => 'true',
                 bodies => ['Southwark Council'],
             },
+            $animal->category => {
+                allow_anonymous => 'true',
+                bodies => ['Southwark Council'],
+            },
         }, "Southwark 'estate' area doesn't have TfL categories or street category";
 
+    };
+
+    subtest 'Photos in certain categories hidden' => sub {
+        my $alert = FixMyStreet::DB->resultset('Alert')->create({
+            cobrand => 'southwark',
+            parameter => $southwark->id,
+            alert_type => 'council_problems',
+            user => $staffuser,
+        });
+        $alert->confirm;
+        my ($p) = $mech->create_problems_for_body(1, $southwark->id, 'Title', {
+            category => $animal->category,
+            cobrand => 'southwark',
+            areas => ',2491,',
+            latitude =>  51.50351,
+            longitude => -0.08051,
+            photo => '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg',
+            confirmed => \"current_timestamp + '3 hours'::interval",
+        });
+        my $url = '/report/' . $p->id;
+
+        # No photo in alert email
+        FixMyStreet::Script::Alerts::send_other();
+        my $email = $mech->get_email;
+        my $body;
+        $email->walk_parts(sub {
+            my $part = shift;
+            return if $part->subparts;
+            $body = $part->body_str if $part->content_type =~ m{text/html};
+            unlike $part->content_type, qr/image\/jpeg/; # No photo
+        });
+        unlike $body, qr/<img style="float/;
+
+        # No photo on report/around/alert pages
+        $mech->get_ok($url);
+        $mech->content_lacks('/photo/');
+        $mech->get_ok('/around?latitude=' . $p->latitude . '&longitude=' . $p->longitude);
+        $mech->content_contains($url);
+        $mech->content_lacks('/photo/');
+        $mech->get_ok('/alert');
+        $mech->content_lacks('/photo/');
+
+        # Staff can see it on report/around page still
+        $mech->log_in_ok($staffuser->email);
+        $mech->get_ok($url);
+        $mech->content_contains('/photo/');
+        $mech->get_ok('/around?latitude=' . $p->latitude . '&longitude=' . $p->longitude);
+        $mech->content_contains($url);
+        $mech->content_contains('/photo/');
+        $mech->get_ok('/alert');
+        $mech->content_lacks('/photo/'); # Easier just to not show them at all here
     };
 
     subtest 'Dashboard CSV extra columns' => sub {
