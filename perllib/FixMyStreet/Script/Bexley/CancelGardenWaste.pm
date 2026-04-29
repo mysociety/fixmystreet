@@ -113,13 +113,13 @@ sub _cancel_direct_debit {
         $original_report->set_extra_metadata(
             direct_debit_cancellation_failures       => $failures,
             direct_debit_cancellation_error          => $resp->{error},
-            direct_debit_cancellation_last_failed_at => DateTime->now->set_time_zone( FixMyStreet->local_time_zone ),
+            direct_debit_cancellation_last_failed_at => DateTime->now->set_time_zone( FixMyStreet->local_time_zone )->iso8601,
         );
         $original_report->update;
         print "  Failed to send cancellation request to Direct Debit provider for Agile reference $reference: $resp->{error}\n";
     } else {
         $original_report->set_extra_metadata(
-            direct_debit_cancellation_date => DateTime->now->set_time_zone( FixMyStreet->local_time_zone ),
+            direct_debit_cancellation_date => DateTime->now->set_time_zone( FixMyStreet->local_time_zone )->iso8601,
             direct_debit_cancellation_note => 'Cancellation received from Agile LastCancelled API',
         );
         $original_report->update;
