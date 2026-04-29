@@ -114,12 +114,12 @@ sub get_ids_from_csv {
 }
 
 sub get_closure_message {
-    return $opts->{closure_text} if $opts->{closure_text};
-
     if ( $opts->{closure_file} ) {
         my $file = path($opts->{closure_file});
         chomp(my $message = $file->slurp_utf8);
         return $message;
+    } elsif ( defined $opts->{closure_text} ) {
+        return $opts->{closure_text};
     } else {
         my $cobrand;
         eval {
