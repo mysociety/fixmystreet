@@ -53,7 +53,7 @@ FixMyStreet::override_config {
 }, sub {
     subtest 'Eligible property can make sharps booking' => sub {
         $mech->get_ok('/waste/10001');
-        $mech->content_contains('Arrange a sharps collection');
+        $mech->content_contains('Request a sharps box');
         # Sharps section
         $mech->content_contains('You need to sign in to see the full details of this property.');
         $mech->content_contains('Book a collection');
@@ -671,7 +671,7 @@ FixMyStreet::override_config {
             my $class = $eligible{$uprn};
             $mech->get_ok("/waste/$uprn");
             $mech->content_contains('id="sharps"', "$class-class property shows sharps section");
-            $mech->content_contains('Arrange a sharps collection', "$class-class property shows sharps sidebar link");
+            $mech->content_contains('Request a sharps box', "$class-class property shows sharps sidebar link");
             $mech->get("/waste/$uprn/sharps");
             is $mech->uri->path, "/waste/$uprn/sharps", "$class-class property can access sharps form";
         }
@@ -680,7 +680,7 @@ FixMyStreet::override_config {
     subtest 'Ineligible property class cannot access sharps' => sub {
         $mech->get_ok('/waste/10009');
         $mech->content_lacks('id="sharps"', 'Non-eligible property has no sharps section');
-        $mech->content_lacks('Arrange a sharps collection', 'Non-eligible property has no sharps sidebar link');
+        $mech->content_lacks('Request a sharps box', 'Non-eligible property has no sharps sidebar link');
 
         $mech->get('/waste/10009/sharps');
         is $mech->res->previous->code, 302, 'Accessing sharps form redirects';
