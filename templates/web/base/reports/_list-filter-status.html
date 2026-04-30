@@ -1,7 +1,7 @@
 [% # 'body' and 'filter_states' already set for /reports but not for /around %]
 [%
-  SET body = body || c.cobrand.body;
-  SET filter_states = filter_states || c.cobrand.state_groups_inspect;
+  DEFAULT body = c.cobrand.body;
+  DEFAULT filter_states = c.cobrand.state_groups_inspect;
 %]
 [% SET show_all_states = c.cobrand.filter_show_all_states OR (c.user_exists AND (c.user.is_superuser OR c.user.belongs_to_body(body.id) OR c.req.uri.path == '/my/planned')) %]
 
