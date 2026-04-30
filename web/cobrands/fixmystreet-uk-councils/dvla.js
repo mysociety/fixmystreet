@@ -20,6 +20,14 @@ const FIELDS = {
             'yes': 'Y',
             'no': 'N'
         }
+    },
+    'northumberland': {
+        'block': 'true',
+        'categories': [
+            'Vehicle abandoned on your property',
+            'Vehicle being repaired on road or pavement',
+        ],
+        'summary': 'question',
     }
 };
 
@@ -51,7 +59,7 @@ function dvla_lookup(e) {
     const yesno = document.querySelector('input[name=dvla_reg_have]:checked');
 
     if (!yesno) return;
-    if (!yesno.value) {
+    if (!yesno.value && fields.reg) {
         const field = document.querySelector('input[name*="' + fields.reg + '"]');
         if (field) {
             field.value = 'Not known';
@@ -120,19 +128,22 @@ function dvla_lookup(e) {
         if (data.make) make_and_colour.push(data.make);
         if (data.colour) make_and_colour.push(data.colour);
         data.make_and_colour = make_and_colour.join(' / ');
+        data.summary = `registration: ${reg}, make: ${data.make}, colour: ${data.colour}`;
 
         const type = data.typeApproval || '';
         const wheelplan = data.wheelplan || '';
         let types = TYPES[fixmystreet.cobrand];
         let vehicle_type = '';
-        if (type.match(/L[1-7]|motorcycle/i) || wheelplan.match(/motorcycle|moped|2 wheel/i)) {
-            vehicle_type = types.Motorbike;
-        } else if (type.match(/N1|commercial/i) || wheelplan.match(/van|commercial/i)) {
-            vehicle_type = types.Van;
-        } else if (type.match(/M1/i)) {
-            vehicle_type = types.Car;
-        } else if (type.match(/M[23]|N[23]/i) || wheelplan.match(/& artic|3 axle rigid|multi-axle rigid/i)) {
-            vehicle_type = types.Other;
+        if (types) {
+            if (type.match(/L[1-7]|motorcycle/i) || wheelplan.match(/motorcycle|moped|2 wheel/i)) {
+                vehicle_type = types.Motorbike;
+            } else if (type.match(/N1|commercial/i) || wheelplan.match(/van|commercial/i)) {
+                vehicle_type = types.Van;
+            } else if (type.match(/M1/i)) {
+                vehicle_type = types.Car;
+            } else if (type.match(/M[23]|N[23]/i) || wheelplan.match(/& artic|3 axle rigid|multi-axle rigid/i)) {
+                vehicle_type = types.Other;
+            }
         }
 
         const config = FIELDS[fixmystreet.cobrand] || {};
@@ -154,7 +165,7 @@ function dvla_lookup(e) {
             const height = wrapper.getBoundingClientRect().height;
             document.querySelector('.js-reporting-page--active').style.paddingBottom = height;
         } else {
-            ['make', 'colour', 'reg', 'make_and_colour'].forEach(name => {
+            ['make', 'colour', 'reg', 'make_and_colour', 'summary'].forEach(name => {
                 if (fields[name] && data[name]) {
                     let field = document.querySelector('input[name*="' + fields[name] + '"]');
                     if (field) {
