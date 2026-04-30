@@ -105,11 +105,10 @@
 
 </ul>
 </form>
-
 <p class="my-account-buttons">
   [% IF c.session.oauth.change_password_uri %]
     <a class="btn change-password has-inline-svg" href="[% c.session.oauth.change_password_uri | html %]">[% INCLUDE 'icons/password.html' width='1em' height='1em' %][% loc('Change password') %]</a>
-  [% ELSE %]
+  [% ELSIF !(c.cobrand.moniker == 'dumfries' AND c.session.oauth.logout_redirect_uri) %]
     <a class="btn change-password has-inline-svg" href="/auth/change_password">
     [%~ IF c.user.password ~%]
       [% INCLUDE 'icons/password.html' width='1em' height='1em' %]
