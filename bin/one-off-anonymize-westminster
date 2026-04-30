@@ -1,0 +1,143 @@
+#!/usr/bin/env perl
+#
+# Anonymises personal data left over from the Westminster cobrand
+# off-boarding.
+#
+# Users who only ever reported on the Westminster cobrand have their
+# accounts anonymised in place. Reports sent to Westminster council
+# (whether made on the Westminster cobrand or routed via .com /
+# neighbouring cobrands) are reassigned to the shared anonymous user,
+# along with their comments and alerts.
+
+use strict;
+use warnings;
+use v5.14;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
+
+use Getopt::Long;
+use Pod::Usage;
+use FixMyStreet;
+use FixMyStreet::DB;
+
+my %opt;
+GetOptions(\%opt, 'commit', 'verbose|v', 'help|h') or pod2usage(1);
+pod2usage(0) if $opt{help};
+
+my $dry_run = !$opt{commit};
+my $verbose = $opt{verbose};
+my $cobrand = 'westminster';
+my $westminster_body_id = 2504;
+my $westminster_body_query = \[
+    "regexp_split_to_array(bodies_str, ',') && ?",
+    [ {} => [$westminster_body_id] ],
+];
+
+say "DRY RUN — pass --commit to actually make changes" if $dry_run;
+
+my $anonymous_user = FixMyStreet::DB->resultset("User")->find_or_create({
+    email => 'removed-automatically@' . FixMyStreet->config('EMAIL_DOMAIN'),
+});
+
+my $users_with_westminster = FixMyStreet::DB->resultset("User")->search({
+    'problems.cobrand' => $cobrand,
+    'me.id' => { '!=' => $anonymous_user->id },
+    'me.email' => { -not_like => 'removed-%@' . FixMyStreet->config('EMAIL_DOMAIN') },
+}, {
+    join => 'problems',
+    distinct => 1,
+});
+
+my ($users_anonymised, $users_kept) = (0, 0);
+while (my $user = $users_with_westminster->next) {
+    next if $user->from_body || $user->is_superuser;
+
+    my $other_reports = $user->problems->search({
+        cobrand => { '!=' => $cobrand },
+    })->count;
+
+    if ($other_reports) {
+        $users_kept++;
+        say "User #" . $user->id . " has reports on other cobrands; account kept" if $verbose;
+        next;
+    }
+
+    $users_anonymised++;
+    say "Anonymising account for user #" . $user->id if $verbose;
+    $user->anonymize_account unless $dry_run;
+}
+
+my $problems = FixMyStreet::DB->resultset("Problem")->search({
+    cobrand => $cobrand,
+    user_id => { '!=' => $anonymous_user->id },
+    'user.email' => { -not_like => 'removed-%@' . FixMyStreet->config('EMAIL_DOMAIN') },
+}, {
+    join => 'user',
+});
+
+my $problems_anonymised = 0;
+while (my $problem = $problems->next) {
+    $problems_anonymised++;
+    say "Anonymising problem #" . $problem->id if $verbose;
+    next if $dry_run;
+
+    $problem->update({
+        user_id => $anonymous_user->id,
+        name => '',
+        anonymous => 1,
+        send_questionnaire => 0,
+    });
+
+    $problem->comments->search({
+        user_id => { '!=' => $anonymous_user->id },
+    })->update({
+        user_id => $anonymous_user->id,
+        name => '',
+        anonymous => 1,
+    });
+
+    $problem->alerts->search({
+        user_id => { '!=' => $anonymous_user->id },
+    })->update({
+        user_id => $anonymous_user->id,
+        whendisabled => \'current_timestamp',
+    });
+}
+
+my $cobrand_alerts = FixMyStreet::DB->resultset("Alert")->search({
+    cobrand => $cobrand,
+    whendisabled => undef,
+});
+
+my $alerts_disabled = $cobrand_alerts->count;
+$cobrand_alerts->update({ whendisabled => \'current_timestamp' }) unless $dry_run;
+
+say "Westminster-only users anonymised: $users_anonymised";
+say "Multi-cobrand users kept:          $users_kept";
+say "Westminster reports anonymised:    $problems_anonymised";
+say "Westminster alerts disabled:       $alerts_disabled";
+
+__END__
+
+=head1 NAME
+
+one-off-anonymize-westminster - anonymise personal data from the Westminster cobrand
+
+=head1 SYNOPSIS
+
+one-off-anonymize-westminster [--commit] [--verbose]
+
+By default the script runs as a dry run and reports what it would do
+without making any changes. Pass --commit to actually anonymise data.
+
+ Options:
+   --commit        Actually make the changes (otherwise dry run)
+   --verbose, -v   Print each user/report being touched
+   --help, -h      This help message
+
+=cut
