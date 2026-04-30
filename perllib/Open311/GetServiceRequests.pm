@@ -276,6 +276,15 @@ sub create_problems {
 
         my $problem = $self->schema->resultset('Problem')->new($params);
 
+        if ( $request->{extras}{original_service_code} && $contacts[0] && $contacts[0]->get_extra_field( code => '_wrapped_service_code' ) ) {
+            $problem->update_extra_field({ name => '_wrapped_service_code', value => $request->{extras}{original_service_code} });
+        }
+
+        if ( my $group = $request->{extras}{group} ) {
+            $group = $group->[0] if ref $group eq 'ARRAY';
+            $problem->set_extra_metadata( group => $group ) if $group;
+        }
+
         next if $cobrand && $cobrand->call_hook(open311_skip_report_fetch => $problem);
 
         next unless $self->commit;
