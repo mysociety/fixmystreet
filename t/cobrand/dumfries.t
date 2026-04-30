@@ -481,6 +481,44 @@ subtest 'MyGovScot OIDC login sets phone from userinfo mobilenumber' => sub {
     };
 };
 
+subtest 'MyGovScot OIDC login user does not see FMS change/set password button' => sub {
+    my $mock_oidc = t::Mock::MyGovScotOIDC->new;
+    $mock_oidc->returns_email(1);
+    $mock_oidc->returns_phone(1);
+    LWP::Protocol::PSGI->register($mock_oidc->to_psgi_app, host => 'mygov-oidc.example.org');
+
+    FixMyStreet::override_config $mygov_oidc_config, sub {
+        $mech->delete_user('simon.neil@example.org');
+        do_oidc_login();
+        $mech->get_ok('/my');
+        $mech->content_lacks('auth/change_password', 'No option to set/change an FMS password');
+        $mech->delete_user('simon.neil@example.org');
+
+        my $user = FixMyStreet::DB->resultset('User')->find_or_create({ email => 'simon.neil@example.org' });
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/my');
+        $mech->content_contains('auth/change_password', 'Button available for FMS password change on email login');
+        $mech->content_contains('Change password');
+        $mech->log_out_ok;
+        $mech->delete_user('simon.neil@example.org');
+
+        $mech->get_ok('/auth');
+        $mech->submit_form_ok(
+                          {
+                           form_name => 'general_auth',
+                           fields => { username => 'simon.neil@example.org'},
+                           button => 'sign_in_by_code',
+                          },
+                          "create an account for new user"
+        );
+        $mech->get_ok( $mech->get_link_from_email($mech->get_email) );
+        $mech->content_contains('auth/change_password', 'Button available for FMS password change on email login');
+        $mech->content_contains('Set password');
+        $mech->log_out_ok;
+        $mech->delete_user('simon.neil@example.org');
+    };
+};
+
 subtest 'MyGovScot OIDC login falls back to payload sub for email' => sub {
     my $mock_oidc = t::Mock::MyGovScotOIDC->new;
     $mock_oidc->returns_email(0);
