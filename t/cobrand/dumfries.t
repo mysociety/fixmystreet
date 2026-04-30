@@ -382,6 +382,28 @@ FixMyStreet::override_config {
         is $ooh->is_public_holiday($scotland_summer), 1,
             'Scottish Summer bank holiday recognized';
     };
+
+    subtest 'updates not raised by original reporter are not sent to Open311' => sub {
+        my $from_reporter = FixMyStreet::DB->resultset('Comment')->new(
+            {   problem_id => $problem->id,
+                user_id    => $reporter->id,
+                text       => 'Test update',
+                state      => 'confirmed',
+                confirmed  => DateTime->now,
+            }
+        );
+        ok ! $cobrand->should_skip_sending_update($from_reporter);
+
+        my $from_not_reporter = FixMyStreet::DB->resultset('Comment')->new(
+            {   problem_id => $problem->id,
+                user_id    => $staff_user->id,
+                text       => 'Test update 2',
+                state      => 'confirmed',
+                confirmed  => DateTime->now,
+            }
+        );
+        ok $cobrand->should_skip_sending_update($from_not_reporter);
+    };
 };
 
 $problem->delete;

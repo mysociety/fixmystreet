@@ -427,5 +427,17 @@ sub response_template_external_status_code_regex_match {
     };
 }
 
+=head2 should_skip_sending_update
+
+Skip updates that are not raised by the original reporter. This prevents
+unnecessary inspections from being raised in Alloy.
+
+=cut
+
+sub should_skip_sending_update {
+    my ( $self, $update ) = @_;
+
+    return $update->user_id != $update->problem->user_id;
+}
 
 1;
