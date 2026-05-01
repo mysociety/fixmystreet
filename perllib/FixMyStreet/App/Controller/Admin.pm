@@ -561,36 +561,36 @@ sub update_extra_fields : Private {
         if ($behaviour eq 'question') {
             $meta->{required} = $c->get_param("metadata[$i].required") ? 'true' : 'false';
             $meta->{variable} = 'true';
-            my $desc = $c->get_param("metadata[$i].description");
-            $meta->{description} = FixMyStreet::Template::sanitize($desc, 1);
             $meta->{datatype} = $c->get_param("metadata[$i].datatype");
-
-            if ( $meta->{datatype} eq "singlevaluelist" || $meta->{datatype} eq "multivaluelist" ) {
-                $meta->{values} = [];
-                my $re = qr{^metadata\[$i\]\.values\[\d+\]\.key};
-                my @vindices = grep { /$re/ } keys %{ $c->req->params };
-                @vindices = sort { $a <=> $b } map { /values\[(\d+)\]/ } @vindices;
-                foreach my $j (@vindices) {
-                    my $name = $c->get_param("metadata[$i].values[$j].name");
-                    my $key = $c->get_param("metadata[$i].values[$j].key");
-                    my $disable = $c->get_param("metadata[$i].values[$j].disable");
-                    my $disable_message = $c->get_param("metadata[$i].values[$j].disable_message");
-                    push(@{$meta->{values}}, {
-                        name => $name,
-                        key => $key,
-                        $disable ? (disable => 1, disable_message => $disable_message) : (),
-                    }) if $name;
-                }
-            }
         } elsif ($behaviour eq 'notice') {
             $meta->{variable} = 'false';
-            my $desc = $c->get_param("metadata[$i].description");
-            $meta->{description} = FixMyStreet::Template::sanitize($desc, 1);
             $meta->{disable_form} = $c->get_param("metadata[$i].disable_form") ? 'true' : 'false';
         } elsif ($behaviour eq 'hidden') {
             $meta->{automated} = 'hidden_field';
+            $meta->{datatype} = $c->get_param("metadata[$i].datatype");
         } elsif ($behaviour eq 'server') {
             $meta->{automated} = 'server_set';
+        }
+
+        my $desc = $c->get_param("metadata[$i].description");
+        $meta->{description} = FixMyStreet::Template::sanitize($desc, 1) if $desc;
+
+        if ($meta->{datatype} && ($meta->{datatype} eq "singlevaluelist" || $meta->{datatype} eq "multivaluelist")) {
+            $meta->{values} = [];
+            my $re = qr{^metadata\[$i\]\.values\[\d+\]\.key};
+            my @vindices = grep { /$re/ } keys %{ $c->req->params };
+            @vindices = sort { $a <=> $b } map { /values\[(\d+)\]/ } @vindices;
+            foreach my $j (@vindices) {
+                my $name = $c->get_param("metadata[$i].values[$j].name");
+                my $key = $c->get_param("metadata[$i].values[$j].key");
+                my $disable = $c->get_param("metadata[$i].values[$j].disable");
+                my $disable_message = $c->get_param("metadata[$i].values[$j].disable_message");
+                push(@{$meta->{values}}, {
+                    name => $name,
+                    key => $key,
+                    $disable ? (disable => 1, disable_message => $disable_message) : (),
+                }) if $name;
+            }
         }
 
         push @extra_fields, $meta;

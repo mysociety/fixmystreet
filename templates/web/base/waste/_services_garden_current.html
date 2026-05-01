@@ -21,6 +21,9 @@
             [%~ ' Cancellation in progress' IF pending_cancellation %]
             [%~ ', soon due for renewal.' IF unit.garden_due AND !unit.garden_overdue AND NOT waste_features.garden_renew_disabled %]
             [%~ ', subscription overdue.' IF unit.garden_overdue AND NOT waste_features.garden_renew_disabled ~%]
+            [% IF c.cobrand.moniker == 'bexley' AND unit.garden_overdue AND NOT waste_features.garden_renew_disabled %]
+            [%~ ' (Do not contact us to cancel. Your subscription will automatically cancel unless you renew)' ~%]
+            [% END %]
         </dd>
       </div>
     [% END %]

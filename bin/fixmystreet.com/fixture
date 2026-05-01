@@ -157,7 +157,6 @@ if ($opt->test_fixtures) {
     $incorrect->update;
 
     foreach (
-        { area_id => 2504, categories => ['Damaged, dirty, or missing bin', 'Signs and bollards', 'Busking and Street performance'], name => 'Westminster City Council', cobrand => 'westminster' },
         { area_id => 2482, categories => [
                 { group => 'Parks and Greenspace', category => 'Dog related incident' },
                 { group => 'Parks and Greenspace', category => 'Weeds' },
@@ -413,64 +412,6 @@ if ($opt->test_fixtures) {
         automated => 'hidden_field',
     }
     );
-    $child_cat->update;
-
-    $child_cat = FixMyStreet::DB->resultset("Contact")->find({
-        body => $bodies->{2504},
-        category => 'Damaged, dirty, or missing bin',
-    });
-    $child_cat->set_extra_fields({
-        code => 'bin_type',
-        datatype => 'singlevaluelist',
-        order => 1,
-        variable => 'true',
-        required => 'true',
-        values => [
-            { key => '1', name => 'Request new bin' },
-            { key => '2', name => 'Dirty bin' },
-        ],
-    });
-    $child_cat->update;
-
-    $child_cat = FixMyStreet::DB->resultset("Contact")->find({
-        body => $bodies->{2504},
-        category => 'Signs and bollards',
-    });
-    $child_cat->set_extra_fields({
-        code => 'featuretypecode',
-        datatype => 'singlevaluelist',
-        order => 1,
-        variable => 'true',
-        required => 'true',
-        values => [
-            { key => '1', name => 'Bollards' },
-            { key => '2', name => 'Nameplates' },
-        ],
-    }, {
-        code => 'USRN',
-        automated => 'hidden_field',
-    });
-    $child_cat->update;
-
-    $child_cat = FixMyStreet::DB->resultset("Contact")->find({
-        body => $bodies->{2504},
-        category => 'Busking and Street performance',
-    });
-    $child_cat->set_extra_fields({
-        code => 'type',
-        datatype => 'singlevaluelist',
-        order => 1,
-        variable => 'true',
-        required => 'true',
-        values => [
-            { key => '1', name => 'Obstruction' },
-            { key => '2', name => 'Indecent or offensive behaviour' },
-            { key => '3', name => 'Animal safety concerns' },
-        ],
-    }, {
-        code => 'UPRN',
-        automated => 'hidden_field',
-    });
     $child_cat->update;
 
     $child_cat = FixMyStreet::DB->resultset("Contact")->find({

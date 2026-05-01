@@ -238,15 +238,6 @@ for my $test (
         fixed => 0
     },
     {
-        cobrand => 'westminster',
-        description => 'old westminster report',
-        date => $old_date,
-        state => 'confirmed',
-        banner_id => undef,
-        banner_text => undef,
-        fixed => 0
-    },
-    {
         description => 'old fixed report',
         date => $old_date,
         state => 'fixed',

@@ -18,9 +18,18 @@ sub index : Path : Args(0) {
     $c->detach('/page_error_404_not_found');
 }
 
+my %redirects = (
+    banner => 'banners',
+);
+
 # GET/POST /licence/:type - show/process a specific licence form
 sub show : Path : Args(1) {
     my ($self, $c, $type) = @_;
+
+    if (my $new_type = $redirects{lc $type}) {
+        $c->res->redirect($c->uri_for("/licence/$new_type"), 301);
+        $c->detach;
+    }
 
     my $licence_config = FixMyStreet::App::Form::Licence->licence_types->{lc $type}
         or $c->detach('/page_error_404_not_found');
@@ -67,10 +76,11 @@ sub process_licence : Private {
             $section .= "[$stage->{title}]\n" if $stage->{title};
             for my $field (@visible_fields) {
                 my $pretty = $field->{pretty};
-                $pretty =~ s/<br>/\n/g;
                 my $desc = $field->{desc};
                 $desc .= ':' unless !$desc || $desc =~ /[?:.]$/;
-                $section .= "$desc $pretty\n";
+                $desc .= $field->{name} eq 'terms_accepted' ? "\n" : ' ';
+
+                $section .= "$desc$pretty\n";
             }
             push @sections, $section;
         }

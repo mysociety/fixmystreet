@@ -5,13 +5,15 @@
 
 <h1 class="govuk-heading-xl">Request new container</h1>
 
-<p class="govuk-body">
+<div class="govuk-panel govuk-panel--warning">
 [% IF form.saved_data.refuse_outcome AND form.saved_data.refuse_outcome == 'capacity' %]
-    Your property meets current general waste bin capacity requirements.
+    [% INCLUDE 'waste/_capacity_notice.html' %]
 [% ELSE %]
     We are unable to complete your request because our records show a similar container was recently ordered to this address.
     If you require further assistance, please email [% c.cobrand.feature('open311_email').item("Request new container") %].
 [% END %]
-</p>
+</div>
+
+[% INCLUDE 'waste/_button_show_upcoming.html' %]
 
 [% INCLUDE footer.html %]

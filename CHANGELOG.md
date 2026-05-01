@@ -9,6 +9,7 @@
         - Improve category search to allow flexible searching for hyphenated categories
         - WasteWorks urls use a separate offline page #4655
         - Add photo first reporting flow. #15
+        - Disable anonymous reporting button when submitted.
     - Accessibility improvements:
         - Improved accessibility of small drawer. #5354
         - Added skip report tools to Around page. #5354
@@ -24,6 +25,7 @@
         - Allow search of non-integer external IDs.
         - List categories that prevent reporting.
         - Show report search on the admin summary page for staff with `user_edit`. #5903
+        - Population lookup size for radius alert can be configured per cobrand
     - Development improvements
         - More logging when `page_error` is called, to aid troubleshooting. #5279
         - Docker changes needed for systemd to work. #5257

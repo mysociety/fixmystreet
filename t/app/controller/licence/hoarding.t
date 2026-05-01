@@ -121,6 +121,7 @@ subtest 'Hoarding form submission - smoke test' => sub {
         # Payment page
         $mech->content_contains('Large-Payment', 'Correct payment link');
         $mech->submit_form_ok({ with_fields => {
+            payment_amount => 100,
             payment_transaction_id => 'TEST-TRANSACTION-12345',
         }});
 

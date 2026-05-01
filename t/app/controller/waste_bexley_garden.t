@@ -949,6 +949,8 @@ FixMyStreet::override_config {
                 '"Renew today" notification box shown';
             like $mech->content, qr/14 March 2024, soon due for renewal/,
                 '"Due soon" message shown';
+            unlike $mech->content, qr/\(Do not contact us to cancel. Your subscription will automatically cancel unless you renew\)/,
+                'Additional overdue messaging  not shown';
             like $mech->content,
                 qr/Renew your brown wheelie bin subscription/,
                 'Renewal link available';
@@ -1007,10 +1009,14 @@ FixMyStreet::override_config {
                     '"Renew today" notification box not shown';
                 unlike $mech->content, qr/14 March 2024, soon due for renewal/,
                     '"Due soon" message not shown';
+                unlike $mech->content, qr/\(Do not contact us to cancel. Your subscription will automatically cancel unless you renew\)/,
+                    'Additional overdue messaging not shown';
                 unlike $mech->content,
                     qr/Renew your brown wheelie bin subscription/,
                     'Renewal link not available';
             };
+
+            $mech->log_out_ok;
 
             subtest 'within renewal window' => sub {
                 $agile_mock->mock( 'CustomerSearch', sub { {
@@ -1192,6 +1198,13 @@ FixMyStreet::override_config {
                         },
                     );
 
+                    $mech->submit_form_ok({ with_fields => {
+                        verifications_first_name => 'Ferrety',
+                        verifications_last_name => 'Wright',
+                        email => 'hmm@example.org',
+                        phone => '+4407111111111',
+                    } });
+
                     like $mech->content, qr/name="current_bins.*value="2"/s,
                         'Current bins pre-populated';
                     like $mech->content, qr/name="bins_wanted.*value="2"/s,
@@ -1218,6 +1231,9 @@ FixMyStreet::override_config {
                         bins_wanted  => 1,
                         customer_external_ref => 'CUSTOMER_123',
                     );
+                    is $renew_report->name, 'Ferrety Wright';
+                    is $renew_report->user->email, 'hmm@example.org';
+                    is $renew_report->get_extra_metadata('phone'), '+4407111111111';
                     is $renew_report->uprn, $uprn;
                     is $renew_report->get_extra_field_value('payment'), $ggw_cost_first;
                     is $renew_report->get_extra_field_value('type'), 'renew';
@@ -1241,6 +1257,78 @@ FixMyStreet::override_config {
                     like $email_body, qr/Total:.*?$ggw_cost_first_human/;
 
                     $renew_report->delete;
+                };
+
+                subtest 'requesting same number of bins as staff' => sub {
+                    $mech->log_in_ok($staff_user->email);
+
+                    $mech->get_ok("/waste/$uprn/garden_renew");
+
+                    $mech->submit_form_ok({ with_fields => {
+                        has_reference => 'Yes',
+                        customer_reference => 'GWIT-456',
+                    } });
+
+                    $mech->submit_form_ok({ with_fields => {
+                        verifications_first_name => 'Ferrety',
+                        verifications_last_name => 'Wright',
+                        email => 'hmm@example.org',
+                        phone => '+4407111111111',
+                    } });
+
+                    like $mech->content, qr/name="current_bins.*value="2"/s,
+                        'Current bins pre-populated';
+                    like $mech->content, qr/name="bins_wanted.*value="2"/s,
+                        'Wanted bins pre-populated';
+                    $mech->submit_form_ok({ with_fields => {
+                        payment_method => 'credit_card',
+                    } });
+
+                    my $cost = sprintf("%.2f", ($ggw_cost_first + $ggw_cost)/100);
+                    like $mech->text,
+                        qr/Total£$cost/, 'correct cost';
+                    my $mech2 = $mech->clone;
+                    $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
+                    is $mech2->res->previous->code, 302, 'payments issues a redirect';
+                    like $mech2->res->previous->header('Location'), qr{http://paye.example.org/faq};
+
+                    my ( $token, $renew_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+                    check_extra_data_pre_confirm(
+                        $renew_report,
+                        type         => 'Renew',
+                        current_bins => 2,
+                        new_bins     => 0,
+                        bins_wanted  => 2,
+                        customer_external_ref => 'CUSTOMER_123',
+                        ref_type => 'apn',
+                    );
+                    is $renew_report->name, 'Ferrety Wright';
+                    is $renew_report->user->email, 'hmm@example.org';
+                    is $renew_report->get_extra_metadata('phone'), '+4407111111111';
+                    is $renew_report->uprn, $uprn;
+                    is $renew_report->get_extra_field_value('payment'), $ggw_cost_first + $ggw_cost;
+                    is $renew_report->get_extra_field_value('type'), 'renew';
+
+                    $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
+                    check_extra_data_post_confirm($renew_report);
+
+                    $mech->clear_emails_ok;
+                    FixMyStreet::Script::Reports::send();
+
+                    my @emails = $mech->get_email;
+                    my ($to_user) = grep {
+                        $mech->get_text_body_from_email($_)
+                            =~ /Thank you for renewing your subscription/
+                    } @emails;
+                    ok $to_user, 'Email sent to user';
+                    my $email_body = $mech->get_text_body_from_email($to_user);
+                    like $email_body, qr/Number of bin subscriptions: 2/;
+                    unlike $email_body, qr/Bins to be delivered/;
+                    unlike $email_body, qr/Bins to be removed/;
+                    like $email_body, qr/Total:.*?$cost/;
+
+                    $renew_report->delete;
+                    $mech->log_out_ok;
                 };
 
             };
@@ -1318,7 +1406,7 @@ FixMyStreet::override_config {
                         'cannot cancel';
                     unlike $mech->content, qr/Renew subscription today/,
                         '"Renew today" notification box not shown';
-                    like $mech->content, qr/18 January 2024, subscription overdue/,
+                    like $mech->content, qr/18 January 2024, subscription overdue. \(Do not contact us to cancel. Your subscription will automatically cancel unless you renew\)/,
                         '"Overdue" message shown';
                     like $mech->content,
                         qr/Renew your brown wheelie bin subscription/,
@@ -1332,6 +1420,12 @@ FixMyStreet::override_config {
                             },
                         },
                     );
+
+                    $mech->submit_form_ok({ with_fields => {
+                        verifications_first_name => 'Ferrety',
+                        verifications_last_name => 'Wright',
+                        email => 'hmm@example.org',
+                    } });
 
                     like $mech->content, qr/name="current_bins.*value="2"/s,
                         'Current bins pre-populated';
@@ -1447,6 +1541,7 @@ FixMyStreet::override_config {
                                 CustomerReference => 'GWIT-456',
                                 Firstname => 'Verity',
                                 Surname => 'Wright',
+                                Email => 'test@example.org',
                                 CustomertStatus => 'INACTIVE',
                                 ServiceContracts => [
                                     {
@@ -1490,7 +1585,7 @@ FixMyStreet::override_config {
                         'cannot cancel';
                     unlike $mech->content, qr/Renew subscription today/,
                         '"Renew today" notification box not shown';
-                    like $mech->content, qr/1 November 2023, subscription overdue/,
+                    like $mech->content, qr/1 November 2023, subscription overdue. \(Do not contact us to cancel. Your subscription will automatically cancel unless you renew\)/,
                         '"Overdue" message shown';
                     like $mech->content,
                         qr/Renew your brown wheelie bin subscription/,
@@ -2446,6 +2541,7 @@ FixMyStreet::override_config {
                         CustomerReference => 'GWIT-456',
                         Firstname => 'Verity',
                         Surname => 'Wright',
+                        Email => 'test@example.org',
                         CustomertStatus => 'ACTIVATED',
                         ServiceContracts => [
                             {
@@ -2574,6 +2670,7 @@ FixMyStreet::override_config {
                         CustomerReference => 'GWIT-LEGACY',
                         Firstname => 'Legacy',
                         Surname => 'User',
+                        Email => 'test@example.org',
                         CustomertStatus => 'ACTIVATED',
                         ServiceContracts => [
                             {
@@ -2666,6 +2763,7 @@ FixMyStreet::override_config {
                         CustomerReference => 'GWIT-NO-ORIG',
                         Firstname => 'No',
                         Surname => 'OrigSub',
+                        Email => 'test@example.org',
                         CustomertStatus => 'ACTIVATED',
                         ServiceContracts => [
                             {
@@ -2759,6 +2857,7 @@ FixMyStreet::override_config {
                         CustomerReference => 'GWIT-HOOK',
                         Firstname => 'Hook',
                         Surname => 'Test',
+                        Email => 'test@example.org',
                         CustomertStatus => 'ACTIVATED',
                         ServiceContracts => [
                             {
@@ -2913,6 +3012,12 @@ FixMyStreet::override_config {
                 },
             },
         );
+
+        $mech->submit_form_ok({ with_fields => {
+            verifications_first_name => 'Verity',
+            verifications_last_name => 'Wright',
+            phone => '+4407111111111',
+        } });
 
         like $mech->content, qr/name="current_bins.*value="2"/s,
             'Current bins pre-populated';
@@ -3185,7 +3290,7 @@ FixMyStreet::override_config {
                     qr/Your subscription is soon due for renewal/,
                     'renewal warning not shown';
                 like $mech->content,
-                    qr/subscription overdue/,
+                    qr/subscription overdue. \(Do not contact us to cancel. Your subscription will automatically cancel unless you renew\)/,
                     'overdue message shown';
                 like $mech->content,
                     qr/Renew your brown wheelie bin subscription/,
@@ -3320,6 +3425,7 @@ FixMyStreet::override_config {
 
                 $mech->get_ok('/waste/10001');
                 $mech->content_lacks('Your subscription is soon due for renewal');
+                $mech->content_lacks('Do not contact us to cancel. Your subscription will automatically cancel unless you renew');
                 $mech->content_contains('This property has an existing direct debit subscription which will renew automatically');
                 $mech->content_lacks('value="Renew subscription today"');
                 $mech->content_lacks('Renew your brown wheelie bin subscription');
@@ -3338,6 +3444,9 @@ FixMyStreet::override_config {
                 unlike $mech->text,
                     qr/Your subscription is soon due for renewal/,
                     'renewal warning not shown';
+                unlike $mech->text,
+                    qr/\(Do not contact us to cancel. Your subscription will automatically cancel unless you renew\)/,
+                    'additional message not shown';
                 unlike $mech->content,
                     qr/subscription overdue/,
                     'overdue message not shown';
@@ -3349,6 +3458,33 @@ FixMyStreet::override_config {
                     'active DD message still shown';
 
                 $access_mock->unmock_all;
+            };
+
+            # Change sub to credit card so renewal is possible in next test
+            $agile_mock->mock( 'CustomerSearch', sub { {
+                Customers => [ {
+                    CustomerExternalReference => 'CUSTOMER_123',
+                    CustomerReference => 'GWIT-456',
+                    CustomertStatus => 'ACTIVATED',
+                    ServiceContracts => [ {
+                        EndDate => '01/02/2025 00:00',
+                        Reference => 'CONTRACT_123',
+                        WasteContainerQuantity => 1,
+                        ServiceContractStatus => 'ACTIVE',
+                        UPRN => '10001',
+                        Payments => [{ PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' }],
+                    } ],
+                } ],
+            } } );
+
+            subtest 'Active sub, abandoned DD set up, can still renew again' => sub {
+                set_fixed_time('2025-01-01T00:00:00Z'); # Renewal time
+                # Change DD report to be unconfirmed (not completed renewal/setup)
+                $dd_report->update({ state => 'unconfirmed' });
+                $mech->get_ok('/waste/10001');
+                $mech->content_contains('Renew your brown wheelie bin subscription', 'Renewal link present');
+                $mech->get_ok('/waste/10001/garden_renew');
+                $mech->content_contains('Please enter your customer reference number', 'Form shown');
             };
         };
     };

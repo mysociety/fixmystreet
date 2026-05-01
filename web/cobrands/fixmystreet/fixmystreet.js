@@ -472,7 +472,7 @@ $.extend(fixmystreet.set_up, {
     $('#pc').trigger('focus');
 
     // In case we've come here by clicking back to a form that disabled a submit button
-    $('form.validate input[type=submit]').prop('disabled', false);
+    $('input[type=submit][data-disable],button[data-disable]').prop('disabled', false);
 
     $('[data-confirm]').on('click', function() {
         return confirm(this.getAttribute('data-confirm'));
@@ -546,7 +546,7 @@ $.extend(fixmystreet.set_up, {
             }
         },
         submitHandler: function(form) {
-            $('input[type=submit][data-disable]', form).prop("disabled", true);
+            $('input[type=submit][data-disable],button[data-disable]', form).prop("disabled", true);
             form.submit();
         },
         // make sure we can see the error message when we focus on invalid elements
@@ -1301,7 +1301,7 @@ $.extend(fixmystreet.set_up, {
 
     var modal = document.getElementById('js-menu-open-modal'),
         nav = document.getElementById('main-nav'),
-        nav_checkbox = document.getElementById('main-nav-btn');
+        nav_checkbox = document.getElementById('main-nav-btn'),
         nav_link = document.querySelector('label[for="main-nav-btn"]');
 
     var toggle_menu = function(e) {
@@ -1319,6 +1319,18 @@ $.extend(fixmystreet.set_up, {
       }
       nav_checkbox.setAttribute('aria-expanded', opened);
       nav_checkbox.checked = opened;
+
+      nav_link.setAttribute('aria-label', opened ? 
+        translation_strings.nav_menu.aria_label_nav_close
+        : translation_strings.nav_menu.aria_label_nav_open
+      );
+
+      // trim for cobrands that don't have visible text
+      if (nav_link.textContent.trim()) {
+        nav_link.textContent = opened ? 
+          translation_strings.nav_menu.text_nav_close
+          : translation_strings.nav_menu.text_nav_open;
+      }
     };
 
     nav_checkbox.addEventListener('focus', function() {
@@ -1687,13 +1699,18 @@ $.extend(fixmystreet.set_up, {
     // Go directly to RSS feed if RSS button clicked on alert page
     // (due to not wanting around form to submit, though good thing anyway)
     $('#distance').on('change', function() {
+        var a = $('a.js-alert-local');
         var dist = this.value.replace(/,/, '.');
         if (!parseFloat(dist)) {
+            a.attr('href', a.data('distanceHref'));
             return;
         }
-        var a = $('a.js-alert-local');
         if (!a.data('originalHref')) {
-            a.data('originalHref', a.attr('href'));
+            // stash this so we can restore it if required
+            a.data('distanceHref', a.attr('href'));
+            // remove any existing distance from the end of the url
+            var href = a.attr('href').replace(/\/[0-9.]*$/, '');
+            a.data('originalHref', href);
         }
         a.attr('href', a.data('originalHref') + '/' + dist);
     });

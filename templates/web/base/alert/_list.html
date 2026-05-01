@@ -1,3 +1,4 @@
+  [% USE Number.Format %]
   [% SET name_of_location = pretty_pc || loc('this location') %]
 
   <input type="hidden" name="token" value="[% csrf_token %]">
@@ -37,7 +38,12 @@
           [% ELSE %]
             [% tprintf( loc('Problems within %.1fkm of %s'), population_radius, name_of_location ) %]
           [% END %]
+          [% IF population_count;
+            pop_count = population_count | format_number;
+            tprintf('covers roughly %s people', pop_count ) %]
+          [% ELSE %]
             [% loc('(covers roughly 200,000 people)') %]
+          [% END %]
           </label>
         </div>
         <a href="[% rss_feed_uri %]" class="alerts-rss-link js-alert-local" id="rss-[% rss_feed_id %]">

@@ -18,34 +18,34 @@ END { FixMyStreet::App->log->enable('info'); }
 #my $tfl_mock = Test::MockModule->new('FixMyStreet::Cobrand::TfL');
 #$tfl_mock->mock('must_have_2fa', sub { 0 });
 
-my $body = $mech->create_body_ok(2504, 'Westminster City Council');
-my $body2 = $mech->create_body_ok(2508, 'Hackney Council');
-my $body3 = $mech->create_body_ok(2488, 'Brent Council', { cobrand => 'brent' });
-my $body4 = $mech->create_body_ok(2482, 'TfL', { cobrand => 'tfl' }); # Bromley area
+my $body = $mech->create_body_ok(2508, 'Hackney Council');
+my $body2 = $mech->create_body_ok(2488, 'Brent Council', { cobrand => 'brent' });
+my $body3 = $mech->create_body_ok(2482, 'TfL', { cobrand => 'tfl' }); # Bromley area
 
 FixMyStreet::DB->resultset("Role")->create({
-    body => $body4,
+    body => $body3,
     name => 'Streetcare - Basic Editor Viewers',
     permissions => ['moderate', 'user_edit'],
 });
 
 FixMyStreet::DB->resultset("Role")->create({
-    body => $body4,
+    body => $body3,
     name => 'Streetcare - Admin',
     permissions => ['moderate', 'user_edit'],
 });
 
-my ($report) = $mech->create_problems_for_body(1, $body->id, 'My Test Report');
+my ($report) = $mech->create_problems_for_body(1, $body->id, 'My Test Report', {
+    postcode => 'E8 1DY',
+    areas => ',2508,',
+});
 my $test_email = $report->user->email;
-my ($report2) = $mech->create_problems_for_body(1, $body2->id, 'My Test Report');
-my $test_email2 = $report->user->email;
-my ($report3) = $mech->create_problems_for_body(1, $body3->id, 'My Test Report');
+my ($report3) = $mech->create_problems_for_body(1, $body2->id, 'My Test Report');
 my $test_email3 = $report3->user->email;
-my ($report4) = $mech->create_problems_for_body(1, $body4->id, 'My Test Report');
+my ($report4) = $mech->create_problems_for_body(1, $body3->id, 'My Test Report');
 my $test_email4 = $report4->user->email;
 
 
-foreach ($body->id, $body2->id, $body3->id, $body4->id) {
+foreach ($body->id, $body2->id, $body3->id) {
     $mech->create_contact_ok(
         body_id => $_, category => 'Damaged bin', email => 'BIN',
         group => 'Bins',
@@ -125,7 +125,7 @@ for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
                 $mech->get_ok('/my');
             } elsif ($page eq 'report') {
                 $mech->get_ok('/');
-                $mech->submit_form_ok( { with_fields => { pc => $test->{pc} || 'SW1A1AA' } }, "submit location" );
+                $mech->submit_form_ok( { with_fields => { pc => $test->{pc} || 'E8 1DY' } }, "submit location" );
                 $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
                 $mech->submit_form(with_fields => {
                     category => 'G|Bins',
@@ -316,7 +316,7 @@ for my $tw_state ( 'refused', 'existing UID', 'no email' ) {
                 $mech->get_ok('/my');
             } elsif ($page eq 'report') {
                 $mech->get_ok('/');
-                $mech->submit_form_ok( { with_fields => { pc => 'SW1A1AA' } }, "submit location" );
+                $mech->submit_form_ok( { with_fields => { pc => 'E8 1DY' } }, "submit location" );
                 $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
                 $mech->submit_form(with_fields => {
                     category => 'G|Bins',
@@ -429,77 +429,6 @@ my @configurations = (
         error_callback => '/auth/Facebook?error_code=ERROR',
         success_callback => '/auth/Facebook?code=response-code',
         redirect_pattern => qr{facebook\.com.*dialog/oauth.*facebook-app-id},
-    }, {
-        type => 'oidc',
-        config => {
-            ALLOWED_COBRANDS => 'westminster',
-            MAPIT_URL => 'http://mapit.uk/',
-            COBRAND_FEATURES => {
-                anonymous_account => {
-                    westminster => 'test',
-                },
-                oidc_login => {
-                    westminster => {
-                        client_id => 'example_client_id',
-                        secret => 'example_secret_key',
-                        auth_uri => 'http://oidc.example.org/oauth2/v2.0/authorize',
-                        token_uri => 'http://oidc.example.org/oauth2/v2.0/token',
-                        logout_uri => 'http://oidc.example.org/oauth2/v2.0/logout',
-                        password_change_uri => 'http://oidc.example.org/oauth2/v2.0/password_change',
-                        display_name => 'MyWestminster'
-                    }
-                }
-            }
-        },
-        email => $mech->uniquify_email('oidc@example.org'),
-        uid => "westminster:example_client_id:my_cool_user_id",
-        mock => 't::Mock::OpenIDConnect',
-        mock_hosts => ['oidc.example.org'],
-        host => 'oidc.example.org',
-        error_callback => '/auth/OIDC?error=ERROR',
-        success_callback => '/auth/OIDC?code=response-code&state=login',
-        redirect_pattern => qr{oidc\.example\.org/oauth2/v2\.0/authorize},
-        logout_redirect_pattern => qr{http://oidc\.example\.org/oauth2/v2\.0/logout\?post_logout_redirect_uri=http%3A%2F%2Foidc.example.org%2Fauth%2Fsign_out&id_token_hint=},
-        password_change_pattern => qr{oidc\.example\.org/oauth2/v2\.0/password_change},
-        user_extras => [
-            [westminster_account_id => "1c304134-ef12-c128-9212-123908123901"],
-        ],
-    }, {
-        type => 'oidc',
-        config => {
-            ALLOWED_COBRANDS => 'westminster',
-            MAPIT_URL => 'http://mapit.uk/',
-            COBRAND_FEATURES => {
-                anonymous_account => {
-                    westminster => 'test',
-                },
-                oidc_login => {
-                    westminster => {
-                        client_id => 'example_client_id',
-                        secret => 'example_secret_key',
-                        auth_uri => 'http://oidc.example.org/oauth2/v2.0/authorize',
-                        token_uri => 'http://oidc.example.org/oauth2/v2.0/token',
-                        logout_uri => 'http://oidc.example.org/oauth2/v2.0/logout',
-                        logout_uri_redirect_param => 'custom_redirect_uri',
-                        password_change_uri => 'http://oidc.example.org/oauth2/v2.0/password_change',
-                        display_name => 'MyWestminster'
-                    }
-                }
-            }
-        },
-        email => $mech->uniquify_email('oidc@example.org'),
-        uid => "westminster:example_client_id:my_cool_user_id",
-        mock => 't::Mock::OpenIDConnect',
-        mock_hosts => ['oidc.example.org'],
-        host => 'oidc.example.org',
-        error_callback => '/auth/OIDC?error=ERROR',
-        success_callback => '/auth/OIDC?code=response-code&state=login',
-        redirect_pattern => qr{oidc\.example\.org/oauth2/v2\.0/authorize},
-        logout_redirect_pattern => qr{http://oidc\.example\.org/oauth2/v2\.0/logout\?custom_redirect_uri=http%3A%2F%2Foidc.example.org%2Fauth%2Fsign_out&id_token_hint=},
-        password_change_pattern => qr{oidc\.example\.org/oauth2/v2\.0/password_change},
-        user_extras => [
-            [westminster_account_id => "1c304134-ef12-c128-9212-123908123901"],
-        ],
     },
     {
         type => 'oidc',
@@ -531,10 +460,44 @@ my @configurations = (
         error_callback => '/auth/OIDC?error=ERROR',
         success_callback => '/auth/OIDC?code=response-code&state=login',
         redirect_pattern => qr{oidc\.example\.org/oauth2/v2\.0/authorize},
-        logout_redirect_pattern => qr{oidc\.example\.org/oauth2/v2\.0/logout},
+        logout_redirect_pattern => qr{http://oidc\.example\.org/oauth2/v2\.0/logout\?post_logout_redirect_uri=http%3A%2F%2Foidc.example.org%2Fauth%2Fsign_out&id_token_hint=},
         password_change_pattern => qr{oidc\.example\.org/oauth2/v2\.0/password_change},
         report => $report3,
-        report_email => $test_email3,
+        pc => 'HA9 0FJ',
+    }, {
+        type => 'oidc',
+        config => {
+            ALLOWED_COBRANDS => 'brent',
+            MAPIT_URL => 'http://mapit.uk/',
+            COBRAND_FEATURES => {
+                anonymous_account => {
+                    brent => 'test',
+                },
+                oidc_login => {
+                    brent => {
+                        client_id => 'example_client_id',
+                        secret => 'example_secret_key',
+                        auth_uri => 'http://oidc.example.org/oauth2/v2.0/authorize',
+                        token_uri => 'http://oidc.example.org/oauth2/v2.0/token',
+                        logout_uri => 'http://oidc.example.org/oauth2/v2.0/logout',
+                        logout_uri_redirect_param => 'custom_redirect_uri',
+                        password_change_uri => 'http://oidc.example.org/oauth2/v2.0/password_change',
+                        display_name => 'MyAccount'
+                    }
+                }
+            }
+        },
+        email => $mech->uniquify_email('oidc@example.org'),
+        uid => "brent:example_client_id:my_cool_user_id",
+        mock => 't::Mock::OpenIDConnect',
+        mock_hosts => ['oidc.example.org'],
+        host => 'oidc.example.org',
+        error_callback => '/auth/OIDC?error=ERROR',
+        success_callback => '/auth/OIDC?code=response-code&state=login',
+        redirect_pattern => qr{oidc\.example\.org/oauth2/v2\.0/authorize},
+        logout_redirect_pattern => qr{http://oidc\.example\.org/oauth2/v2\.0/logout\?custom_redirect_uri=http%3A%2F%2Foidc.example.org%2Fauth%2Fsign_out&id_token_hint=},
+        password_change_pattern => qr{oidc\.example\.org/oauth2/v2\.0/password_change},
+        report => $report3,
         pc => 'HA9 0FJ',
     },
     {
@@ -581,7 +544,6 @@ my @configurations = (
         logout_redirect_pattern => qr{brent-wasteworks-oidc\.example\.org/oauth2/v2\.0/logout},
         password_change_pattern => qr{brent-wasteworks-oidc\.example\.org/oauth2/v2\.0/password_change},
         report => $report3,
-        report_email => $test_email3,
         pc => 'HA9 0FJ',
     },
     {
@@ -619,9 +581,7 @@ my @configurations = (
         success_callback => '/auth/OIDC?code=response-code&state=login',
         redirect_pattern => qr{oidc\.example\.org/oauth2/v2\.0/authorize_google},
         pc => 'E8 1DY',
-        # Need to use a different report that's within Hackney
-        report => $report2,
-        report_email => $test_email2,
+        report => $report,
     },
 );
 
@@ -691,7 +651,6 @@ for my $setup (
         logout_redirect_pattern => qr{oidc\.example\.org/oauth2/v2\.0/logout},
         password_change_pattern => qr{oidc\.example\.org/oauth2/v2\.0/password_change},
         report => $report4,
-        report_email => $test_email4,
         pc => 'BR1 3UH',
         roles => $setup->{roles},
         expected_roles => $setup->{expected_roles},

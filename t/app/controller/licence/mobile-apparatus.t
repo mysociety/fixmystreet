@@ -208,6 +208,7 @@ subtest 'Mobile apparatus form submission - smoke test' => sub {
                 $mech->content_contains('Step 16 of 17');
                 $mech->content_contains("$_-link");
                 $mech->submit_form_ok({ with_fields => {
+                    payment_amount => 100,
                     payment_transaction_id => 'TEST-TRANSACTION-12345',
                 }});
 

@@ -20,6 +20,9 @@
     </button>
   [% END %]
   [% IF c.cobrand.feature('oidc_login') %]
+    [% IF cobrand.moniker == 'dumfries' %]
+      <img class="mygovscot-img" src="/cobrands/fixmystreet/images/mygovscot-myaccount-logo.svg" alt="" aria-hidden="true" role="decoration" width="120">
+    [% END %]
     <button name="social_sign_in" id="oidc_sign_in" value="oidc" class="btn btn--block btn--social btn--oidc">
         [% tprintf(loc('Sign in with %s'), c.cobrand.feature('oidc_login').display_name) %]
     </button>
@@ -40,7 +43,7 @@
 [% IF type == 'report' %]
   <div class="js-show-if-anonymous" class="[% 'hidden-nojs hidden-js' IF c.cobrand.allow_anonymous_reports != 'button' %]">
     <small class="or">[% loc('or') %]</small>
-    <button name="report_anonymously" value="yes" class="btn btn--block js-new-report-submit">[% loc('Report anonymously') %]</button>
+    <button name="report_anonymously" value="yes" class="btn btn--block js-new-report-submit" data-disable>[% loc('Report anonymously') %]</button>
     <small>[% loc('No personal details will be stored, and you will not receive updates about this report.') %]</small>
   </div>
 [% END %]
@@ -49,7 +52,7 @@
 
 [% IF (c.user_exists OR NOT c.cobrand.social_auth_enabled) AND type == 'report' AND c.cobrand.allow_anonymous_reports == 'button' %]
 <div class="form-section-preview form-section-preview--next hidden-js">
-    <button name="report_anonymously" value="yes" class="btn btn--block">[% loc('Report anonymously') %]</button>
+    <button name="report_anonymously" value="yes" class="btn btn--block" data-disable>[% loc('Report anonymously') %]</button>
     <small>[% loc('No personal details will be stored, and you will not receive updates about this report.') %]</small>
     <small class="or">[% loc('or') %]</small>
 </div>

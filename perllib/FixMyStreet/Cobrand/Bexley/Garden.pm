@@ -282,11 +282,12 @@ Returns an arrayref of contract IDs, or undef if none found.
 =cut
 
 sub waste_get_legacy_contract_ids {
-    my ($self, $report) = @_;
+    my ($self, $uprn_or_report) = @_;
 
-    return undef unless $report->uprn;
+    my $uprn = ref $uprn_or_report ? $uprn_or_report->uprn : $uprn_or_report;
+    return undef unless $uprn;
 
-    my $contract_ids = BexleyContracts::contract_ids_for_uprn($report->uprn);
+    my $contract_ids = BexleyContracts::contract_ids_for_uprn($uprn);
     return undef unless @$contract_ids;
 
     return $contract_ids;

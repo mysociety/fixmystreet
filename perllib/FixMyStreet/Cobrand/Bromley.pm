@@ -1065,7 +1065,14 @@ sub bulky_location_text_prompt {
   " Please note items can't be collected inside the property."
 }
 
-sub bulky_minimum_charge { $_[0]->wasteworks_config->{per_item_min_collection_price} }
+sub bulky_per_item_min_collection_price {
+    my $self = shift;
+    my $cfg = $self->wasteworks_config;
+    my ($min_domestic, $min_trade) = split /\s*,\s*/, $cfg->{per_item_min_collection_price};
+    return $min_domestic unless $min_trade;
+    my $price_key = $self->bulky_per_item_price_key;
+    return $price_key eq 'price_Domestic' ? $min_domestic : $min_trade;
+}
 
 sub bulky_booking_paid {
     my ($self, $collection) = @_;
@@ -1089,7 +1096,6 @@ sub bulky_send_cancellation_confirmation {
             ],
 
             wasteworks_id => $collection_report->id,
-            paid => $self->bulky_booking_paid($collection_report),
             refund_amount => $self->bulky_refund_amount($collection_report),
             collection_date => $self->bulky_nice_collection_date($collection_report),
         },
@@ -1135,9 +1141,12 @@ sub bulky_refund_would_be_partial {
 
 sub bulky_refund_amount {
     my ($self, $collection) = @_;
+
+    return 0 unless $self->bulky_booking_paid($collection);
+
     my $charged = $collection->get_extra_field_value('payment');
     if ($self->bulky_refund_would_be_partial($collection)) {
-        my $refund_amount = $charged - $self->bulky_minimum_charge;
+        my $refund_amount = $charged - $self->bulky_per_item_min_collection_price;
         if ($refund_amount < 0) {
             return 0;
         }
@@ -1160,6 +1169,7 @@ sub waste_munge_bulky_data {
     my ($self, $data) = @_;
 
     my $c = $self->{c};
+    my $property = $c->stash->{property};
     my ($date, $ref, $expiry) = split(";", $data->{chosen_date});
 
     my $guid_key = $c->stash->{booking_class}->guid_key;
@@ -1167,11 +1177,12 @@ sub waste_munge_bulky_data {
     $data->{extra_reservation} = $ref;
 
     $data->{title} = "Bulky goods collection";
-    $data->{detail} = "Address: " . $c->stash->{property}->{address};
+    $data->{detail} = "Address: " . $property->{address};
     $data->{category} = "Bulky collection";
     $data->{extra_Collection_Date} = $date;
     $data->{extra_Exact_Location} = $data->{location};
     $data->{extra_Notes} = $data->{location}; # We also want to pass this in to the Notes field
+    $data->{extra_property_type} = $property->{pricing_property_type};
 
     my @items_list = @{ $self->bulky_items_master_list };
     my %items = map { $_->{name} => $_->{bartec_id} } @items_list;

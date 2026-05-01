@@ -116,8 +116,14 @@ FixMyStreet::DB->resultset('BodyArea')->find_or_create({
     area_id => 2488,
     body_id => $harrow->id,
 });
-
-my $contact = $mech->create_contact_ok(body_id => $brent->id, category => 'Graffiti', email => 'graffiti@example.org');
+my $hammersmith = $mech->create_body_ok(2502, 'Hammersmith and Fulham Borough Council');
+my $kensington = $mech->create_body_ok(2503, 'Kensington and Chelsea Borough Council');
+my $contact = $mech->create_contact_ok(body_id => $brent->id, category => 'Graffiti', email => 'graffiti@example.org', extra => {
+    _fields => [{
+        code => 'UnitID',
+        automated => 'hidden_field',
+    }]
+});
 my $gully = $mech->create_contact_ok(body_id => $brent->id, category => 'Gully grid missing',
     email => 'Symology-gully', group => ['Drains and gullies']);
 my $parks_contact = $mech->create_contact_ok(body_id => $brent->id, category => 'Overgrown grass',
@@ -126,7 +132,13 @@ my $parks_contact2 = $mech->create_contact_ok(body_id => $brent->id, category =>
     email => 'ATAK-LEAF_CLEARANCE', group => 'Parks and open spaces');
 my $parks_contact3 = $mech->create_contact_ok(body_id => $brent->id, category => 'Ponds',
     email => 'ponds@example.org', group => 'Parks and open spaces');
-my $user1 = $mech->create_user_ok('user1@example.org', email_verified => 1, name => 'User 1');
+my $user1 = $mech->create_user_ok(
+    'user1@example.org',
+    email_verified => 1,
+    name           => 'User 1',
+    phone          => '44 07 999 999 999',
+    phone_verified => 1,
+);
 my $role = FixMyStreet::DB->resultset("Role")->create({
     body => $brent,
     name => 'Role',
@@ -193,7 +205,8 @@ $contact->set_extra_fields(
 $contact->update;
 
 create_contact({ category => 'Report missed collection', email => 'Echo-missed' });
-create_contact({ category => 'Request new container', email => 'request@example.org' },
+create_contact({ category => 'Request new container', email => 'request@example.org',
+    extra => { anonymous_allowed => 1 } },
     { code => 'Container_Request_Quantity', required => 1, automated => 'hidden_field' },
     { code => 'Container_Request_Container_Type', required => 1, automated => 'hidden_field' },
     { code => 'Container_Request_Action', required => 0, automated => 'hidden_field' },
@@ -207,7 +220,10 @@ create_contact({ category => 'Request new container', email => 'request@example.
     { code => 'request_ordered_previously', required => 0, automated => 'hidden_field' },
     { code => 'request_contamination_reports', required => 0, automated => 'hidden_field' },
     { code => 'request_property_people', required => 0, automated => 'hidden_field' },
+    { code => 'request_property_type', required => 0, automated => 'hidden_field' },
     { code => 'request_property_nappies', required => 0, automated => 'hidden_field' },
+    { code => 'request_property_general_waste_bins', required => 0, automated => 'hidden_field' },
+    { code => 'request_property_largest_general_waste_bin', required => 0, automated => 'hidden_field' },
 );
 create_contact({ category => 'Assisted collection add', email => 'Echo-assisted' },
     { code => 'Notes', description => 'Additional notes', required => 0, datatype => 'text' },
@@ -713,6 +729,60 @@ FixMyStreet::override_config {
     };
 
     $mech->host("brent.fixmystreet.com");
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'brent', 'tfl', 'fixmystreet' ],
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+    for my $host (
+                  {
+                   host => 'fixmystreet',
+                   outside_text => 'We do not yet have details for the council that covers this location',
+                   end_text => 'Thank you for reporting this issue'
+                  },
+                  {
+                   host => 'brent',
+                   outside_text => 'That location is not covered by Brent Council',
+                   end_text => 'Your issue is on its way to the council'
+                  }) {
+        for my $test (
+                      {
+                       name => 'Hammersmith',
+                       lon => '-0.228924',
+                       lat => '51.530133',
+                       title => 'Graffiti issue in Hammersmith from Brent',
+                      },
+                      {
+                       name => 'Kensington',
+                       lon => '-0.228293',
+                       lat => '51.530115',
+                       title => 'Graffiti issue in Kensington from Brent',
+                      }
+         ) {
+            subtest "report on H&F Council and K&C Council only when on light asset" => sub {
+                $mech->host($host->{host} . ".fixmystreet.com");
+                $mech->get_ok('/report/new?longitude=' . $test->{lon} . '&latitude=' . $test->{lat});
+                $mech->content_contains($host->{outside_text});
+                $mech->log_in_ok($comment_user->email);
+                $mech->get_ok("/report/new?longitude=-0.28168&latitude=51.55904&category=Graffiti", "Start report in Brent");
+                $mech->submit_form_ok(
+                                      { with_fields => {
+                                                     name => 'Test User',
+                                                     title => $test->{title},
+                                                     detail => 'Graffiti issue',
+                                                     longitude => $test->{lon},
+                                                     latitude => $test->{lat},
+                                                     UnitID => '12345',
+                                                       }}, 'Location in ' . $test->{name} . ' ok as clicked from Brent location onto Brent asset');
+                $mech->content_contains($host->{end_text});
+                my $problem = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
+                is $problem->title, $test->{title}, 'Report has been made';
+                is $problem->body, 'Brent Council', 'Problem on correct body';
+                $problem->delete;
+            };
+        };
+    };
 };
 
 package SOAP::Result;
@@ -1341,76 +1411,334 @@ FixMyStreet::override_config {
         restore_time();
     };
 
-    subtest 'test requesting a replacement refuse container' => sub {
-        $mech->get_ok('/waste/12345');
-        $mech->follow_link_ok({url => 'http://brent.fixmystreet.com/waste/12345/request'});
-        $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } }, "Choose refuse bin");
-        $mech->submit_form_ok({ with_fields => { 'request_reason' => 'damaged' } }, "Request replacement for damaged refuse container");
-        $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user1->email } });
-        $mech->submit_form_ok({ with_fields => { 'process' => 'summary' } });
-        $mech->content_contains('Your container request has been sent');
-        my ($report) = FixMyStreet::DB->resultset('Problem')->search(
-                {
-                    category => 'Request new container',
-                    title => ['Request new General rubbish bin (grey bin)'],
-                }
-            );
-        is $report->get_extra_field_value('request_referral'), 1, "Damaged refuse container is a referral";
-        $report->delete;
-    };
+    subtest 'test general waste (refuse) container requests' => sub {
+        foreach ((
+            # Some extra container rejection scenarios
+            {
+                should_be_referred => 0,
+                reason => 'extra',
+                property_people => 'Up to 5',
+                property_nappies => 'None',
+                property_general_waste_bins => '1',
+                property_largest_general_waste_bin => '140L',
+                # Check report detail for rejections.
+                expected_report_detail => "Request automatically calculated\n\n" .
+                                          "Quantity: 1\n\n" .
+                                          "2 Example Street, Brent, NW2 1AA\n\n" .
+                                          "Reason: I would like an extra container",
+            },
+            {
+                should_be_referred => 0,
+                reason => 'extra',
+                property_people => 'Up to 5',
+                property_nappies => '1 or more',
+                property_general_waste_bins => '2 or more',
+                property_largest_general_waste_bin => '140L',
+            },
+            {
+                should_be_referred => 0,
+                reason => 'extra',
+                property_people => '6 or more',
+                property_nappies => '1 or more',
+                property_general_waste_bins => '1',
+                property_largest_general_waste_bin => '240L',
+            },
+            {
+                should_be_referred => 0,
+                reason => 'extra',
+                property_people => '6 or more',
+                property_nappies => '1 or more',
+                property_general_waste_bins => '1',
+                property_largest_general_waste_bin => '360L',
+            },
+            # Some extra container referral scenarios
+            {
+                should_be_referred => '1',
+                test_send => 1,
+                user_email => 'new_user_1@example.com',
+                reason => 'extra',
+                property_people => '6 or more',
+                property_nappies => 'None',
+                property_general_waste_bins => '1',
+                property_largest_general_waste_bin => '140L',
+                should_be_referred => 1,
+                # Check report detail for referrals.
+                expected_report_detail => "Request forwarded to Brent Council by email\n\n" .
+                                          "Quantity: 1\n\n" .
+                                          "2 Example Street, Brent, NW2 1AA\n\n" .
+                                          "Reason: I would like an extra container",
+            },
+            {
+                should_be_referred => 1,
+                test_send => 1,
+                reason => 'extra',
+                property_people => 'Up to 5',
+                property_nappies => '1 or more',
+                property_general_waste_bins => '1',
+                property_largest_general_waste_bin => '140L',
+            },
+            # Some replacement (damaged) container rejection scenarios
+            {
+                should_be_referred => 0,
+                reason => 'damaged',
+                property_people => 'Up to 5',
+                property_nappies => 'None',
+                property_general_waste_bins => '2 or more',
+                property_largest_general_waste_bin => '140L',
+            },
+            {
+                should_be_referred => 0,
+                reason => 'damaged',
+                property_people => 'Up to 5',
+                property_nappies => '1 or more',
+                property_general_waste_bins => '2 or more',
+                property_largest_general_waste_bin => '240L',
+            },
+            {
+                should_be_referred => 0,
+                reason => 'damaged',
+                property_people => '6 or more',
+                property_nappies => 'None',
+                property_general_waste_bins => '2 or more',
+                property_largest_general_waste_bin => '360L',
+            },
+            # Some replacement (damaged) container referral scenarios
+            {
+                should_be_referred => 1,
+                test_send => 1,
+                reason => 'damaged',
+                property_people => 'Up to 5',
+                property_nappies => 'None',
+                property_general_waste_bins => '1',
+                property_largest_general_waste_bin => '140L',
+            },
+            {
+                should_be_referred => 1,
+                reason => 'damaged',
+                property_people => 'Up to 5',
+                property_nappies => '1 or more',
+                property_general_waste_bins => '1',
+                property_largest_general_waste_bin => '360L',
+            },
+            {
+                should_be_referred => 1,
+                reason => 'damaged',
+                property_people => 'Up to 5',
+                property_nappies => '1 or more',
+                property_general_waste_bins => '2 or more',
+                property_largest_general_waste_bin => '140L',
+            },
+            {
+                should_be_referred => 1,
+                reason => 'damaged',
+                property_people => '6 or more',
+                property_nappies => '1 or more',
+                property_general_waste_bins => '2 or more',
+                property_largest_general_waste_bin => '360L',
+            },
+            # Some missing container rejection scenarios
+            {
+                should_be_referred => 0,
+                reason => 'missing',
+                property_people => 'Up to 5',
+                property_nappies => 'None',
+                property_general_waste_bins => '1',
+                property_largest_general_waste_bin => '140L',
+            },
+            {
+                should_be_referred => 0,
+                reason => 'missing',
+                property_people => '6 or more',
+                property_nappies => '1 or more',
+                property_general_waste_bins => '2 or more',
+                property_largest_general_waste_bin => '140L',
+            },
+            {
+                should_be_referred => 0,
+                reason => 'missing',
+                property_people => '6 or more',
+                property_nappies => 'None',
+                property_general_waste_bins => '1',
+                property_largest_general_waste_bin => '240L',
+            },
+            # Some missing container referral scenarios
+            {
+                should_be_referred => 1,
+                test_send => 1,
+                reason => 'missing',
+                property_people => 'Up to 5',
+                property_nappies => 'None',
+                property_general_waste_bins => 'None',
+                property_largest_general_waste_bin => '140L',
+            },
+            {
+                should_be_referred => 1,
+                reason => 'missing',
+                property_people => '6 or more',
+                property_nappies => 'None',
+                property_general_waste_bins => '1',
+                property_largest_general_waste_bin => '140L',
+            },
+            {
+                should_be_referred => 1,
+                reason => 'missing',
+                property_people => '6 or more',
+                property_nappies => '1 or more',
+                property_general_waste_bins => '1',
+                property_largest_general_waste_bin => '360L',
+            },
+        )) {
+            my $should_be_referred = $_->{should_be_referred};
+            my $test_send = $_->{test_send};
+            my $user_email = $_->{user_email} || $user1->email;
+            my $reason = $_->{reason};
+            my $people = $_->{property_people};
+            my $nappies = $_->{property_nappies};
+            my $bins = $_->{property_general_waste_bins};
+            my $largest_bin_size = $_->{property_largest_general_waste_bin};
+            my $expected_report_detail = $_->{expected_report_detail};
 
-    subtest 'test requesting an extra refuse container' => sub {
-        for my $test (
-            { children => 'Yes', detail => "Request forwarded to Brent Council by email\n\nQuantity: 1\n\n2 Example Street, Brent, NW2 1AA\n\nReason: I would like an extra container", referral => 1},
-            { children => 'No', detail => "Request automatically calculated\n\nQuantity: 1\n\n2 Example Street, Brent, NW2 1AA\n\nReason: I would like an extra container", referral => ''},
-        ) {
+            my $outcome_text = $should_be_referred ? 'REFER' : 'REFUSE';
+
+
+            subtest "$outcome_text | reason: $reason | people: $people | nappies: $nappies | bins: $bins | largest bin size: $largest_bin_size" => sub {
+                FixMyStreet::DB->resultset('Problem')->search(
+                    {
+                        category => 'Request new container',
+                        title => ['Request new General rubbish bin (grey bin)'],
+                    }
+                )->delete;
+                $mech->get_ok('/waste/12345');
+                $mech->follow_link_ok({url => 'http://brent.fixmystreet.com/waste/12345/request'});
+                $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } }, "Choose refuse bin");
+
+                $mech->content_contains("Why do you need a replacement container?");
+                $mech->content_contains("My container is damaged", "Can report damaged container");
+                $mech->content_contains("I would like an extra container", "Can request an extra container");
+                $mech->content_contains("My container is missing", "Can report missing container");
+                $mech->content_lacks("I am a new resident without a container", "Can not request new container as new resident");
+
+                $mech->submit_form_ok({ with_fields => { 'request_reason' => $reason } }, "Request with reason $reason");
+
+                $mech->content_contains('Household details', "Questions for extra refuse container");
+                $mech->submit_form_ok({ with_fields => { 'property_type' => 'Shared flat' } }); # Doesn't affect refusal/referral logic.
+                $mech->submit_form_ok({ with_fields => { 'property_people' => $people } }, "Answer household detail questions");
+                $mech->submit_form_ok({ with_fields => { 'property_nappies' => $nappies } }, "Answer household detail questions");
+                $mech->submit_form_ok({ with_fields => { 'property_general_waste_bins' => $bins } }, "Answer household detail questions");
+                if ($bins ne 'None') {
+                    $mech->submit_form_ok({ with_fields => { 'property_largest_general_waste_bin' => $largest_bin_size } }, "Answer household detail questions");
+                } else {
+                    # For email test below
+                    $largest_bin_size = 'none';
+                }
+
+                if ($should_be_referred) {
+                    # Exit early to prevent clutter.
+                    $mech->content_contains('About you', "'about you' section shown - report will be referred") or return;
+                    # We onlt collect personal details if the request won't be rejected.
+                    $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user_email, phone => '44 07 111 111 111' } });
+                } else {
+                    # Exit early to prevent clutter.
+                    $mech->content_lacks('About you', "'about you' section not shown - report will be rejected") or return;
+                }
+                $mech->submit_form_ok({ with_fields => { 'process' => 'summary' } });
+
+                my ($report) = FixMyStreet::DB->resultset('Problem')->search({ category => 'Request new container' })->order_by('-id')->first;
+                if ($should_be_referred) {
+                    is $report->get_extra_field_value('request_referral'), 1, 'Request was referred';
+                    is $report->state, 'confirmed', 'Referred report in confirmed state';
+                } else {
+                    is $report->get_extra_field_value('request_referral'), '', 'Request was refused';
+                    is $report->state, 'fixed - council', 'Refused report in fixed - council state';
+                }
+                if ($expected_report_detail) {
+                    is $report->detail, $expected_report_detail, "Report detail is correct";
+                }
+
+                # Check post submit page text.
+                if ($should_be_referred) {
+                    $mech->content_contains('Your container request has been sent');
+                    $mech->content_contains('let you know if your request has been approved');
+                } else {
+                    $mech->content_lacks('Your container request');
+                    $mech->content_lacks('let you know if your request has been approved');
+                    $mech->content_contains('Your property meets current general waste capacity requirements');
+                }
+
+                if ($test_send) {
+                    FixMyStreet::Script::Reports::send( 0, 0, 0, $report->id );
+                    my @emails = $mech->get_email;
+                    my ($to_client) = grep { $_->header('To') eq 'referral@example.org' } @emails;
+
+                    # Test we have the phone number provided in the form
+                    my $plain = $mech->get_text_body_from_email($to_client);
+                    my $html = $mech->get_html_body_from_email($to_client);
+
+                    if ( $user_email eq $user1->email ) {
+                        # Pre-existing user; use pretty original phone
+                        like $plain, qr/\+44 7999 999999/, 'plain email contains phone';
+                        like $html, qr/\+44 7999 999999/, 'html email contains phone';
+                    } else {
+                        like $plain, qr/44 07 111 111 111/, 'plain email contains phone';
+                        like $html, qr/44 07 111 111 111/, 'html email contains phone';
+                    }
+
+                    my $action = $reason eq 'damaged' ? 'Collect\+Deliver' : 'Deliver';
+                    my $reason_display = {
+                        damaged => 'Damaged',
+                        missing => 'Missing',
+                        extra => 'Increase capacity',
+                    }->{$reason};
+
+                    like $plain, qr/Which container do you need\?: General rubbish bin \(grey bin\)/;
+                    like $plain, qr/Collect or deliver\?: $action/;
+                    like $plain, qr/Why do you need a replacement container\?: $reason_display/;
+
+                    like $plain, qr/How many people \(including children\) live at your property\?: $people/;
+                    like $plain, qr/How many children in nappies live at your property\?: $nappies/;
+                    like $plain, qr/How many general waste bins do you currently have.*: $bins/;
+                    like $plain, qr/What size is the largest general waste bin\?: $largest_bin_size/;
+                    like $plain, qr/Property type: Shared flat/;
+                    like $plain, qr/Referral\?: Yes/;
+
+                    like $html, qr/Which container do you need\?:.*General rubbish bin \(grey bin\)/;
+                    like $html, qr/Collect or deliver\?:.*$action/;
+                    like $html, qr/Why do you need a replacement container\?:.*$reason_display/;
+
+                    like $html, qr/How many people \(including children\) live at your property\?:.*$people/;
+                    like $html, qr/How many children in nappies live at your property\?:.*$nappies/;
+                    like $html, qr/How many general waste bins do you currently have.*$bins/;
+                    like $html, qr/What size is the largest general waste bin\?:.*$largest_bin_size/;
+                    like $html, qr/Property type:.*Shared flat/;
+                    like $html, qr/Referral\?:.*Yes/;
+
+                    $mech->clear_emails_ok;
+                }
+
+                # Check what happens if we try and raise another request.
+                for my $new_reason ( qw/extra damaged missing/ ) {
+                    $mech->get_ok('/waste/12345');
+                    $mech->follow_link_ok({url => 'http://brent.fixmystreet.com/waste/12345/request'});
+                    $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } }, "Choose refuse bin");
+                    $mech->submit_form_ok({ with_fields => { 'request_reason' => $new_reason } }, "Request container with reason $new_reason");
+                    if ($should_be_referred) {
+                        # Displays wording to indicate a recent non-refused report has already been made.
+                        $mech->content_contains('We are unable to complete your request because our records show a similar container');
+                    } else {
+                        # Displays wording for instant refusal of the request since there is already a recent refusal.
+                        $mech->content_contains('Your property meets current general waste capacity requirements');
+                    }
+                }
+            };
+
+            # Cleanup.
             FixMyStreet::DB->resultset('Problem')->search(
                 {
                     category => 'Request new container',
                     title => ['Request new General rubbish bin (grey bin)'],
                 }
             )->delete;
-            $mech->get_ok('/waste/12345');
-            $mech->follow_link_ok({url => 'http://brent.fixmystreet.com/waste/12345/request'});
-            $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } }, "Choose refuse bin");
-            $mech->content_contains("Why do you need a replacement container?");
-            $mech->content_contains("My container is damaged", "Can report damaged container");
-            $mech->content_contains("I would like an extra container", "Can not request an extra container");
-            $mech->content_contains("My container is missing", "Can report missing container");
-            $mech->content_lacks("I am a new resident without a container", "Can not request new container as new resident");
-            $mech->submit_form_ok({ with_fields => { 'request_reason' => 'extra' } }, "Request extra container");
-            $mech->content_contains('Household details', "Questions for extra refuse container");
-            $mech->submit_form_ok({ with_fields =>
-                    {
-                        'property_people' => 'Up to 5' ,
-                        'property_children' => $test->{children},
-                    },
-                }, "Request extra container");
-            $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user1->email } });
-            $mech->submit_form_ok({ with_fields => { 'process' => 'summary' } });
-            if ($test->{referral}) {
-                $mech->content_contains('Your container request has been sent');
-                $mech->content_contains('contact you to let you know if your request has been approved');
-            } else {
-                $mech->content_lacks('Your container request');
-                $mech->content_lacks('contact you to let you know if your request has been approved');
-                $mech->content_contains('Your property meets current general waste bin capacity requirements');
-            }
-            $mech->content_lacks('A copy has been sent to your email address');
-            my ($report) = FixMyStreet::DB->resultset('Problem')->search({ category => 'Request new container' })->order_by('-id')->first;
-            is $report->detail, $test->{detail};
-            is $report->get_extra_field_value('request_referral'), $test->{referral}, "Correct referral status";
-            is $report->state, $test->{referral} ? 'confirmed' : 'fixed - council';
-            $mech->get_ok('/waste/12345');
-            $mech->follow_link_ok({url => 'http://brent.fixmystreet.com/waste/12345/request'});
-            $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } }, "Choose refuse bin");
-            $mech->submit_form_ok({ with_fields => { 'request_reason' => 'extra' } }, "Request extra container");
-            if ($test->{referral}) {
-                $mech->content_contains('We are unable to complete your request because our records show a similar container');
-            } else {
-                $mech->content_contains('Your property meets current general waste bin capacity requirements');
-            }
-        };
+        }
     };
 
     subtest 'test requesting a container with payment' => sub {

@@ -205,7 +205,7 @@ sub munge_report_new_bodies {
         $bristol->munge_overlapping_asset_bodies($bodies);
     }
 
-    if ( $bodies{'Brent Council'} ) {
+    if ( $bodies{'Brent Council'} || $bodies{'Hammersmith and Fulham Borough Council'} || $bodies{'Kensington and Chelsea Borough Council'} ) {
         my $brent = FixMyStreet::Cobrand::Brent->new({ c => $self->{c} });
         $brent->munge_overlapping_asset_bodies($bodies);
     }
@@ -506,14 +506,6 @@ sub problem_state_processed {
     $state = ( $cfg->{$state}->{$code} || $state ) if $cfg->{$state};
 
     return $state;
-}
-
-sub suppress_reporter_alerts {
-    my ($self, $problem) = @_;
-    if ($problem->to_body_named('Westminster')) {
-        return 1;
-    }
-    return 0;
 }
 
 sub must_have_2fa {

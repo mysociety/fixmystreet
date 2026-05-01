@@ -98,7 +98,7 @@ sub rss : Private {
         $c->res->redirect($url);
     }
     elsif ( $feed =~ /^local:([\d\.-]+):([\d\.-]+)$/ ) {
-        my $distance = $c->forward('get_distance');
+        my $distance = $c->forward('get_distance', [$1, $2]);
         $url = $c->cobrand->base_url() . '/rss/l/' . $1 . ',' . $2;
         if ($distance) {
             $distance = mySociety::Locale::in_gb_locale { sprintf("%f", $distance); };
@@ -262,7 +262,7 @@ sub set_local_alert_options : Private {
     {
         $type = 'local_problems';
         push @params, $2, $1; # Note alert parameters are lon,lat
-        my $distance = $c->forward('get_distance');
+        my $distance = $c->forward('get_distance', [$1, $2]);
         push @params, $distance if $distance;
     }
     return unless $type;
@@ -424,11 +424,12 @@ sub setup_coordinate_rss_feeds : Private {
         $rss_feed = $c->uri_for( "/rss/pc/" . $c->stash->{pretty_pc_text} );
     }
     else {
-        $rss_feed = $c->uri_for(
-            sprintf( "/rss/l/%s,%s",
-                $c->stash->{latitude},
-                $c->stash->{longitude} )
-        );
+        my $distance = $c->forward('get_distance', [$c->stash->{latitude}, $c->stash->{longitude}]);
+        my $url = sprintf( "/rss/l/%s,%s", $c->stash->{latitude}, $c->stash->{longitude} );
+        if ($distance) {
+            $url .= "/$distance";
+        }
+        $rss_feed = $c->uri_for($url);
     }
 
     $c->stash->{rss_feed_uri} = $rss_feed;
@@ -479,7 +480,10 @@ sub determine_location : Private {
         $c->go('index');
     }
 
-    my $dist = FixMyStreet::Gaze::get_radius_containing_population($c->stash->{latitude}, $c->stash->{longitude});
+    my $population = $c->cobrand->feature('alerts_population');
+
+    my $dist = FixMyStreet::Gaze::get_radius_containing_population($c->stash->{latitude}, $c->stash->{longitude}, $population);
+    $c->stash->{population_count} = $c->cobrand->feature('alerts_population');
     $c->stash->{population_radius} = $dist;
 
     return 1;
@@ -545,11 +549,17 @@ sub setup_request : Private {
 }
 
 sub get_distance : Private {
-    my ($self, $c) = @_;
+    my ($self, $c, $lat, $long) = @_;
 
     my $distance = $c->get_param('distance') || 0;
     $distance = 0 unless $distance =~ /^\d*([,.]\d+)?$/;
     $distance = 150 if $distance > 150; # Match Gaze maximum
+    if (($lat and $long) and not $distance) {
+        $distance = FixMyStreet::Gaze::get_radius_containing_population(
+            $lat,
+            $long,
+            $c->cobrand->feature('alerts_population') );
+    }
     return $distance + 0;
 }
 

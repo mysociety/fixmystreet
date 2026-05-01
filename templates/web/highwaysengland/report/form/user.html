@@ -16,7 +16,7 @@
 [% IF type == 'report' %]
   <div class="js-show-if-anonymous" class="[% 'hidden-nojs hidden-js' IF c.cobrand.allow_anonymous_reports != 'button' %]">
     <small id="or">[% loc('or') %]</small>
-    <button name="report_anonymously" value="yes" class="btn btn--block js-new-report-submit">Report anonymously</button>
+    <button name="report_anonymously" value="yes" class="btn btn--block js-new-report-submit" data-disable>Report anonymously</button>
     <small>No personal details will be provided, and you will not receive updates about this report.</small>
   </div>
 [% END %]
@@ -25,7 +25,7 @@
 
 [% IF type == 'report' AND c.cobrand.allow_anonymous_reports == 'button' %]
 <div class="form-section-preview form-section-preview--next hidden-js">
-    <button name="report_anonymously" value="yes" class="btn btn--block">Report anonymously</button>
+    <button name="report_anonymously" value="yes" class="btn btn--block" data-disable>Report anonymously</button>
     <small>No personal details will be provided, and you will not receive updates about this report.</small>
     <small id="or">[% loc('or') %]</small>
 </div>

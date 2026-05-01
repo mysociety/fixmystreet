@@ -13,6 +13,8 @@ $blue: #001E61; // Links
 $RCCGreen: #009977;
 $RCCGreen_dark: #265123;
 $RCCbg: #F1F1F1;
+$golden: #EAAF0F;
+$golden-hover: #f5d06a;
 
 $primary: $RCCGreen;
 $primary_b: #000000;
@@ -36,11 +38,13 @@ $col_click_map:$RCCGreen;
 
 $front-main-background-desktop: #03a27e;
 
-$button-primary-bg-top: $primary;
-$button-primary-border: $primary;
-$button-primary-text: $primary_b;
-
-$button-primary-hover-text: $primary_b;
-$button-primary-hover-border: $primary;
+$button-primary-bg-top: $golden;
+$button-primary-bg-bottom: $golden;
+$button-primary-border: $golden;
+$button-primary-text: $primary_text;
+$button-primary-hover-bg-bottom: $golden-hover;
+$button-primary-hover-bg-top: $golden-hover;
+$button-primary-hover-border: $golden-hover;
+$button-primary-hover-text: $primary_text;
 
 $dropzone-frontpage-white-background-desktop: true;

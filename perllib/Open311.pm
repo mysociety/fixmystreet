@@ -71,7 +71,7 @@ sub get_service_meta_info {
 
 sub ignore_failure {
     my $problem = shift;
-    return unless $problem->cobrand =~ /fixmystreet|bristol|westminster/;
+    return unless $problem->cobrand =~ /fixmystreet|bristol/;
     my $bodies = $problem->bodies;
     return unless %$bodies;
     my $body = (values %$bodies)[0];
@@ -410,6 +410,9 @@ sub post_service_request_update {
 sub add_media {
     my ($self, $url, $object) = @_;
 
+    if (ref $url eq 'HASH') {
+        $url = $url->{media_url};
+    };
     $url = [ $url ] unless ref $url;
 
     my @photos;

@@ -76,11 +76,7 @@ sub dispatch_request {
             extension_CrmContactId => "1c304134-ef12-c128-9212-123908123901",
             nonce => 'MyAwesomeRandomValue',
         };
-        if ($self->cobrand eq 'westminster') {
-            $payload->{given_name} = "Andy";
-            $payload->{family_name} = "Dwyer";
-            $payload->{emails} = ['pkg-tappcontrollerauth_socialt-oidc@example.org'] if $self->returns_email;
-        } elsif ($self->cobrand eq 'brent') {
+        if ($self->cobrand eq 'brent') {
             $payload->{givenName} = "Andy";
             $payload->{surname} = "Dwyer";
             $payload->{email} = 'pkg-tappcontrollerauth_socialt-oidc@example.org' if $self->returns_email;

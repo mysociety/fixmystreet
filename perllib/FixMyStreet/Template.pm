@@ -183,7 +183,7 @@ sub sanitize {
 
     my %allowed_tags = map { $_ => 1 } qw( p ul ol li br b i strong em );
     my %admin_tags = (
-        p => { class => 1, id => 1, style => 1 },
+        p => { class => 1, id => 1, style => 1, 'data-area-ids' => 1, 'data-area-invert' => 1 },
         h1 => 1,
         h2 => 1,
         h3 => 1,

@@ -141,7 +141,7 @@ sub bulky_show_location_field_mandatory { 0 }
 
 sub bulky_item_notes_field_mandatory { 0 }
 
-sub bulky_show_individual_notes { $_[0]->wasteworks_config->{show_individual_notes} };
+sub bulky_show_individual_notes { $_[0]->wasteworks_config->{show_individual_notes} }
 
 sub bulky_points_per_item_pricing { 0 }
 
@@ -155,7 +155,7 @@ sub bulky_pricing_strategy {
         my ($points, $sat) = $self->bulky_pricing_model($data);
         $out = { strategy => 'points', points => $points, saturday => $sat };
     } elsif ($self->bulky_per_item_costs) {
-        my $min_collection_price = $self->wasteworks_config->{per_item_min_collection_price} || 0;
+        my $min_collection_price = $self->bulky_minimum_cost || 0;
         $out = { strategy => 'per_item', min => $min_collection_price };
     } elsif (my $band1_price = $self->wasteworks_config->{band1_price}) {
         my $max = $self->{c}->stash->{booking_maximum};
@@ -253,7 +253,7 @@ sub bulky_minimum_cost {
     my $cfg = $self->wasteworks_config;
 
     if ($self->bulky_points_per_item_pricing) {
-        return $cfg->{per_item_min_collection_price};
+        return $self->bulky_per_item_min_collection_price;
     } elsif ( $cfg->{per_item_costs} ) {
 
         my $price_key = $self->bulky_per_item_price_key;
@@ -261,7 +261,7 @@ sub bulky_minimum_cost {
         my @sorted = sort { $a <=> $b }
             map { $_->{$price_key} } @{ $self->bulky_items_master_list };
         my $min_item_price =  $sorted[0] // 0;
-        my $min_collection_price = $cfg->{per_item_min_collection_price};
+        my $min_collection_price = $self->bulky_per_item_min_collection_price;
         if ($min_collection_price && $min_collection_price > $min_item_price) {
             return $min_collection_price;
         }
@@ -273,6 +273,8 @@ sub bulky_minimum_cost {
         return $cfg->{base_price} // 0;
     }
 }
+
+sub bulky_per_item_min_collection_price { $_[0]->wasteworks_config->{per_item_min_collection_price} }
 
 sub bulky_total_cost {
     my ($self, $data) = @_;
@@ -314,7 +316,7 @@ sub bulky_total_cost {
                 my $item = $data->{"item_$_"} or next;
                 $total += $prices{$item};
             }
-            my $min_collection_price = $cfg->{per_item_min_collection_price};
+            my $min_collection_price = $self->bulky_minimum_cost;
             if ($min_collection_price && $min_collection_price > $total) {
                 $c->stash->{payment} = $min_collection_price;
             } else {

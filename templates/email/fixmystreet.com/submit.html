@@ -37,10 +37,11 @@ of a local problem that they believe might require your attention.</p>
         [%~ END ~%]
       </td>
     </tr>
-    [%~ IF report.user.phone %]
+    [% SET phone = report.cobrand_data == 'waste' ? report.phone_waste : report.user.phone %]
+    [%~ IF phone %]
       <tr>
         <th style="[% contact_th_style %]">Phone</th>
-        <td style="[% contact_td_style %]"><a href="tel:[% report.user.phone | html %]">[% report.user.phone | html %]</a></td>
+        <td style="[% contact_td_style %]"><a href="tel:[% phone | html %]">[% phone | html %]</a></td>
       </tr>
     [%~ END %]
   </table>
@@ -56,10 +57,17 @@ of a local problem that they believe might require your attention.</p>
     [% report.detail | html_para_email(secondary_p_style) %]
   [% IF report.get_extra_fields %]
     <p style="[% secondary_p_style %]">
-      [%~ FOR field IN report.get_extra_fields %][% IF field.value_label OR field.value.length %]
-        <strong>[% field.description OR field.name %]:</strong> [% field.value_label OR field.value %]
-        [% IF NOT loop.last %]<br>[% END %]
-      [%~ END %][% END %]
+      [%~ FOR field IN report.get_extra_fields %]
+        [% IF field.value_label OR field.value.length %]
+          [% SET name = field.description OR field.name %]
+          [% SET val = field.value_label OR field.value %]
+
+          [% TRY %][% PROCESS '_extra_fields.html' %][% CATCH file %][% END %]
+
+          <strong>[% name %]:</strong> [% val %]
+          [% IF NOT loop.last %]<br>[% END %]
+        [%~ END %]
+      [% END %]
     </p>
   [% END %]
     <p style="[% secondary_p_style %]">

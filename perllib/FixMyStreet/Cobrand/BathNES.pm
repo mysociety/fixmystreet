@@ -47,6 +47,12 @@ sub admin_user_domain { 'bathnes.gov.uk' }
 
 sub on_map_default_status { 'open' }
 
+=item * We have aerial maps
+
+=cut
+
+sub has_aerial_maps { 'tilma.mysociety.org/mapcache/gmaps/bathnesaerial@{grid}' }
+
 =item * Sends out confirmation emails when a report is sent.
 
 =cut

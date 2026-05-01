@@ -51,6 +51,10 @@ a:focus,
     overflow: hidden;
 }
 
+#nav-link {
+    color: inherit;
+}
+
 .nav-menu {
     a, span {
         letter-spacing: 0.08px;

@@ -71,6 +71,9 @@ $footer-main-nav-padding: 2em 0 !default;
 $footer-main-nav-background: #2E3033 !default;
 $footer-main-nav-color: #fff !default;
 
+// Invisble when there is not enough space
+$is-mobile-menu-visible: true !default;
+
 @import "_mixins";
 @import "_report_list";
 
@@ -841,13 +844,18 @@ label[for="main-nav-btn"] {
 }
 
 #nav-link {
-  width: 3em;
-  height: 0;
-  padding-top: 3em;
   overflow: hidden;
   background: transparent inline-image("../fixmystreet/images/#{$menu-image}.svg") center center no-repeat;
   background-size: 22px 18px;
-  #{$right}: 0;
+  #{$right}: if($is-mobile-menu-visible, 1rem, 0);
+  width: auto;
+  height: auto;
+  padding: 0 0 0 2.5em;
+  background-position: 0.5em center;
+  height: 44px;
+  line-height: 44px;
+  min-height: 44px;
+  box-sizing: border-box;
 
   html.js-nav-open & {
     background-image: inline-image("../fixmystreet/images/#{$close-menu-image}.svg");
@@ -874,7 +882,7 @@ label[for="main-nav-btn"] {
 
 // A shortcut to the Reporting page, in the mobile header
 #report-cta {
-  #{$right}: 3.5em;
+  #{$right}: if($is-mobile-menu-visible, 7.5em, 3.5em);
 
   font-size: 0.9em;
   line-height: 1em;
@@ -3645,6 +3653,25 @@ $site-message-border: 1px solid #525252 !default;
   color: #222;
   border-radius: 4px;
   vertical-align: middle;
+}
+
+// Mygovscot styling
+body.authpage {
+  .content:has(.mygovscot-form) {
+    text-align: center;
+  }
+
+  .mygovscot-form {
+    background: transparent;
+  }
+}
+
+.mygovscot-img {
+  margin-bottom: 0.5rem;
+}
+
+.form-section-preview--next:has(.mygovscot-img) {
+  text-align: center;
 }
 
 @import "_admin";

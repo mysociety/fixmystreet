@@ -43,14 +43,16 @@ h4 {
   background-image: url("/cobrands/buckinghamshire/img/bucks-logo.svg");
   background-position: 0 50%;
   background-repeat: no-repeat;
-  background-size: 178px 45px;
+  background-size: 100%;
   padding: 12px 1em;
-  width: 178px;
+  width: 120px;
   height: 45px
 }
 
 #report-cta {
   @include bucks-button();
+  padding: 0.5em;
+  right: 6.5em;
 }
 
 .nav-menu {

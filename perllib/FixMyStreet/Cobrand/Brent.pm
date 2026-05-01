@@ -204,6 +204,8 @@ in Camden, or Camden in Brent), return the name of the area.
 sub check_report_is_on_cobrand_asset {
     my $self = shift;
 
+    return 'Brent' if $self->{c}->get_param('UnitID');
+
     my $lat = $self->{c}->stash->{latitude};
     my $lon = $self->{c}->stash->{longitude};
     my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
@@ -273,10 +275,16 @@ sub munge_overlapping_asset_bodies {
                 } values %$bodies;
         } else {
             # If it's for Brent shared with Camden, make wholly Brent's responsibility
+
             if (grep { $_->get_column('name') eq 'Camden Borough Council' } values %$bodies) {
                 %$bodies = map { $_->id => $_ } grep {
                     $_->get_column('name') eq 'Brent Council' || $_->get_column('name') eq 'TfL' || $_->get_column('name') eq 'National Highways'
                 } values %$bodies;
+            # If it's for Brent, but H&F or K&C covering the area (for light asset in neighbours area) we need to add Brent and remove the other Council
+            } elsif (grep { $_->get_column('name') eq 'Hammersmith and Fulham Borough Council' || $_->get_column('name') eq 'Kensington and Chelsea Borough Council' } values %$bodies) {
+                my $body = $self->body;
+                %$bodies = map { $_->id => $_ } grep { $_->get_column('name') ne 'Hammersmith and Fulham Borough Council' && $_->get_column('name') ne 'Kensington and Chelsea Borough Council' } values %$bodies;
+                $$bodies{$body->id} = $body;
             }
         }
     }
@@ -307,6 +315,10 @@ sub munge_cobrand_asset_categories {
 
     my $brent_body = $self->body->id;
     if (!$in_area && $cobrand eq 'Brent') {
+        # In H&F or K&C but Brent's responsibility (lights assets), we're not mixing any categories
+        if (grep {$_->{name} eq 'Hammersmith and Fulham Borough Council' || $_->{name} eq 'Kensington and Chelsea Borough Council'} values %{$self->{c}->stash->{all_areas}}){
+            return;
+        }
         # Outside the area of Brent, but Brent's responsibility
         my $area;
         # Camden do not mix categories with Brent
@@ -441,6 +453,33 @@ sub report_age {
     };
 }
 
+sub extra_fields_email_labels {
+    return {
+        Container_Request_Action => 'Collect or deliver?',
+        Container_Request_Container_Type => 'Which container do you need?',
+        Container_Request_Quantity => 'Container quantity to collect/deliver',
+        Container_Request_Reason => 'Why do you need a replacement container?',
+
+        request_property_general_waste_bins => 'How many general waste bins do you currently have?',
+        request_property_largest_general_waste_bin => 'What size is the largest general waste bin?',
+        request_property_nappies => 'How many children in nappies live at your property?',
+        request_property_people => 'How many people (including children) live at your property?',
+        request_property_type => 'Property type',
+        request_referral => 'Referral?',
+    };
+}
+
+sub echo_ids_to_strings {
+    return {
+        action => { 1 => 'Deliver', '2::1' => 'Collect+Deliver' },
+        reason => { 9 => 'Increase capacity', 6 => 'New property', 1 => 'Missing', '4::4' => 'Damaged' },
+        type => {
+            %$BRENT_CONTAINERS,
+            map { $_ . '::' . $_ => $BRENT_CONTAINERS->{$_} } keys %$BRENT_CONTAINERS,
+        },
+    };
+}
+
 =head2 dashboard_export_problems_add_columns
 
 Brent have various additional columns for extra report data.
@@ -502,14 +541,7 @@ sub dashboard_export_problems_add_columns {
         return $values->{$field}{$v} || '';
     };
 
-    my $request_lookups = {
-        action => { 1 => 'Deliver', '2::1' => 'Collect+Deliver' },
-        reason => { 9 => 'Increase capacity', 6 => 'New property', 1 => 'Missing', '4::4' => 'Damaged' },
-        type => {
-            %$BRENT_CONTAINERS,
-            map { $_ . '::' . $_ => $BRENT_CONTAINERS->{$_} } keys %$BRENT_CONTAINERS,
-        },
-    };
+    my $request_lookups = echo_ids_to_strings();
 
     $csv->csv_extra_data(sub {
         my $report = shift;
@@ -1296,7 +1328,22 @@ sub waste_munge_request_data {
 
     my $c = $self->{c};
 
-    for (qw(how_long_lived contamination_reports ordered_previously property_people property_children)) {
+    if ($data->{about_you_skipped}) {
+        $data->{name} = "Waste User";  # Can't use the anonymous account name as it fails validation.
+        $data->{email} = $self->anonymous_account->{email};
+    }
+
+    my @fields = qw(
+        how_long_lived
+        contamination_reports
+        ordered_previously
+        property_people
+        property_nappies
+        property_type
+        property_general_waste_bins
+        property_largest_general_waste_bin
+    );
+    for (@fields) {
         $c->set_param("request_$_", $data->{$_} || '');
     }
     my $referral = request_referral($id, $data);
@@ -1337,7 +1384,7 @@ sub waste_munge_request_data {
     $data->{detail} = "Quantity: 1\n\n$address";
     $data->{detail} .= "\n\nReason: $nice_reason" if $nice_reason;
 
-    if ($id == $CONTAINER_IDS{rubbish_grey_bin} && $reason eq 'extra') {
+    if ($id == $CONTAINER_IDS{rubbish_grey_bin}) {
         if ($referral) {
             $data->{detail} = "Request forwarded to Brent Council by email\n\n$data->{detail}";
         } else {
@@ -1376,12 +1423,27 @@ sub request_referral {
           || $data->{'container-' . $CONTAINER_IDS{rubbish_grey_bin}}
         )
     ) {
+        my $bins = $data->{property_general_waste_bins};
+        my $largest_bin_size = $data->{property_largest_general_waste_bin};
+        my $people = $data->{property_people};
+        my $nappies = $data->{property_nappies};
+
         if ($data->{request_reason} eq 'extra') {
-            if ($data->{property_people} == 6 || $data->{property_children} eq 'Yes') {
-                return 1;
-            }
-        } else {
-          return 1;
+            return 0 if $largest_bin_size ne '140L';
+            return 0 if $bins eq '2 or more';
+            return 0 if $people eq 'Up to 5' && $nappies eq 'None';
+            return 1;
+        } elsif ($data->{request_reason} eq 'damaged') {
+            return 0 if $people eq 'Up to 5' && $nappies eq 'None' && $bins eq '2 or more';
+            return 0 if $largest_bin_size ne '140L' && $bins eq '2 or more' && ($people eq 'Up to 5' || $nappies eq 'None');
+            return 1;
+        } elsif ($data->{request_reason} eq 'missing') {
+            return 1 if $bins eq 'None';
+            return 0 if $bins eq '2 or more';
+            # Only single bin scenarios left.
+            return 0 if $people eq 'Up to 5' && $nappies eq 'None';
+            return 0 if $largest_bin_size ne '140L' && ($people eq 'Up to 5' || $nappies eq 'None');
+            return 1;
         }
     }
 }
@@ -1543,10 +1605,7 @@ sub waste_garden_mod_params {
 sub waste_post_report_creation {
     my ($self, $report, $data) = @_;
 
-    if (
-        $report->title =~ /Request new General rubbish bin \(grey bin\)/
-        && $data->{request_reason} eq 'extra'
-        ) {
+    if ($report->title =~ /Request new General rubbish bin \(grey bin\)/) {
 
         if (!$report->get_extra_field_value('request_referral')) {
             $self->{c}->stash->{brent_request_automatic} = 1;
