@@ -5,6 +5,7 @@ use warnings;
 use FixMyStreet::Cobrand::Bexley;
 
 use Text::CSV;
+use Data::Dumper;
 
 # Export a CSV from Postgres using this SQL:
 #
@@ -72,33 +73,39 @@ for my $uprn (@uprn_order) {
         }
     }
 
-    my @dd_statuses;
-    my $has_active_dd = 0;
+    my $latest_contract;
+    my $latest_customer_id;
     for my $customer_id (@$customer_ids) {
         my $contracts = $ap->get_contracts($customer_id);
         for my $contract (@$contracts) {
-            push @dd_statuses, "$contract->{Id}=$contract->{Status}";
-            $has_active_dd = 1 if $contract->{Status} eq 'Active';
+            die "Contract missing Start:\n" . Dumper($contract) unless $contract->{Start};
+            if (!$latest_contract || $contract->{Start} gt $latest_contract->{Start}) {
+                $latest_contract = $contract;
+                $latest_customer_id = $customer_id;
+            }
         }
     }
+    my $has_active_dd = $latest_contract && $latest_contract->{Status} eq 'Active';
+    my $dd_status = $latest_contract ? "$latest_contract->{Id}=$latest_contract->{Status}" : '';
     my $agile_is_active = $agile_status ne 'NOACTIVE';
     my $flagged = ($agile_is_active && !$has_active_dd)
         || (!$agile_is_active && $has_active_dd);
     next unless $flagged;
 
-    my @urls     = map { "https://fix.bexley.gov.uk/admin/report_edit/$_->{id}" } @{ $data->{rows} };
-    my @names    = map { $_->{name} }    @{ $data->{rows} };
-    my @addrs    = map { $_->{address} } @{ $data->{rows} };
-    my @createds = map { substr($_->{created}, 0, 10) } @{ $data->{rows} };
+    my @matching_rows = $latest_customer_id
+        ? grep { ($_->{dd_customer_id} // '') eq $latest_customer_id } @{ $data->{rows} }
+        : @{ $data->{rows} };
 
-    $csv->print($out, [
-        join("\n", @urls),
-        join("\n", @names),
-        join("\n", @addrs),
-        join("\n", @createds),
-        $uprn,
-        $agile_status,
-        $agile_end_date,
-        join("\n", @dd_statuses),
-    ]);
+    for my $row (@matching_rows) {
+        $csv->print($out, [
+            "https://fix.bexley.gov.uk/admin/report_edit/$row->{id}",
+            $row->{name},
+            $row->{address},
+            substr($row->{created}, 0, 10),
+            $uprn,
+            $agile_status,
+            $agile_end_date,
+            $dd_status,
+        ]);
+    }
 }
