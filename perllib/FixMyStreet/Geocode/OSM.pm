@@ -51,7 +51,7 @@ sub string {
     $url .= join('&', map { "$_=$query_params{$_}" } sort keys %query_params);
 
     my $out = { geocoder_url => $url };
-    my $js = FixMyStreet::Geocode::cache('osm', $url);
+    my $js = FixMyStreet::Geocode::cache('osm', $url, undef, qr/^\[\]$/);
     if (!$js) {
         return { %$out, error => _('Sorry, we could not find that location.') };
     }
