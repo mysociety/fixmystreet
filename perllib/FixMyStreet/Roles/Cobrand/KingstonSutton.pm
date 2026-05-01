@@ -690,6 +690,7 @@ sub dashboard_export_problems_add_columns {
         uprn => 'UPRN',
         user_email => 'User Email',
         user_phone => 'User Phone',
+        staff_user => 'Staff User',
         payment_method => 'Payment method',
         payment_reference => 'Payment reference',
         payment => 'Payment',
@@ -708,6 +709,8 @@ sub dashboard_export_problems_add_columns {
         join => 'user',
     });
 
+    my $user_lookup = $self->csv_staff_users;
+
     $csv->csv_extra_data(sub {
         my $report = shift;
 
@@ -717,6 +720,7 @@ sub dashboard_export_problems_add_columns {
         } else {
             my @fields = @{ $report->get_extra_fields() };
             %fields = map { $_->{name} => $_->{value} } @fields;
+            $fields{contributed_by} = $report->get_extra_metadata('contributed_by');
         }
 
         my $detail = $csv->dbi ? $report->{detail} : $report->detail;
@@ -733,6 +737,7 @@ sub dashboard_export_problems_add_columns {
                 user_email => $report->user->email || '',
                 user_phone => $report->user->phone || '',
                 payment_reference => $report->get_extra_metadata('payment_reference') || '',
+                staff_user => $self->csv_staff_user_lookup($fields{contributed_by}, $user_lookup),
             ),
             payment_method => $fields{payment_method} || '',
             payment => $fields{payment},
