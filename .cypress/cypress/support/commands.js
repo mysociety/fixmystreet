@@ -15,9 +15,8 @@ Cypress.Commands.add('nextPageReporting', function() {
 Cypress.Commands.add('uploadPhoto', function(filename, selector) {
     var dropEvent = { dataTransfer: { files: [] } };
     cy.fixture('../fixtures/' + filename).then(function(picture) {
-      return Cypress.Blob.base64StringToBlob(picture, 'image/jpeg').then(function(blob) {
-        dropEvent.dataTransfer.files.push(blob);
-      });
+      const blob = Cypress.Blob.base64StringToBlob(picture, 'image/jpeg');
+      dropEvent.dataTransfer.files.push(blob);
     });
     cy.get(selector).trigger('drop', dropEvent);
     cy.wait('@photo-upload');
