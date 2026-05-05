@@ -2,10 +2,9 @@ describe('Clicking the map', function() {
     beforeEach(function(){
         cy.visit('/');
         cy.contains('Go');
-        cy.get('[name=pc]').type(Cypress.env('postcode'));
+        cy.get('[name=pc]').type(Cypress.expose('postcode'));
         cy.get('[name=pc]').parents('form').submit();
-        cy.server();
-        cy.route('/report/new/ajax*').as('report-ajax');
+        cy.intercept('/report/new/ajax*').as('report-ajax');
     });
 
     it('allows me to report a new problem', function() {
@@ -79,10 +78,9 @@ describe('Leaving updates', function() {
     });
 
     it('works when pulled in via JS', function() {
-        cy.server();
-        cy.route('/report/*').as('show-report');
-        cy.route('/reports/*').as('show-all');
-        cy.route('/mapit/area/*').as('get-geometry');
+        cy.intercept('/report/*').as('show-report');
+        cy.intercept('/reports/*').as('show-all');
+        cy.intercept('/mapit/area/*').as('get-geometry');
         cy.visit('/around?lon=-2.295894&lat=51.526877&zoom=0');
         // force to hopefully work around apparent Cypress SVG issue
         cy.get('image[title="Lights out in tunnel"]').last().click({force: true});
@@ -93,10 +91,9 @@ describe('Leaving updates', function() {
 
 describe('Clicking the "big green banner" on a map page', function() {
     before(function() {
-        cy.server();
-        cy.route('/around\?ajax*').as('update-results');
+        cy.intercept('/around\?ajax*').as('update-results');
         cy.visit('/');
-        cy.get('[name=pc]').type(Cypress.env('postcode'));
+        cy.get('[name=pc]').type(Cypress.expose('postcode'));
         cy.get('[name=pc]').parents('form').submit();
         cy.wait('@update-results');
         cy.get('.big-green-banner').click();
@@ -120,8 +117,7 @@ describe('Clicking on drawers', function() {
     });
 
     it('works on a pulled-in report page', function() {
-        cy.server();
-        cy.route('/report/*').as('show-report');
+        cy.intercept('/report/*').as('show-report');
         cy.visit('/around?lon=-2.295894&lat=51.526877&zoom=0');
         // force to hopefully work around apparent Cypress SVG issue
         cy.get('image[title="Lights out in tunnel"]').last().click({force: true});

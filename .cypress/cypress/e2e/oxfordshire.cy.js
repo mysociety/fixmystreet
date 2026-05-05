@@ -1,8 +1,7 @@
 describe("Oxfordshire cobrand", function() {
   it("looks up private street light information", function() {
-    cy.server();
-    cy.route('/report/new/ajax*').as('report-ajax');
-    cy.route('*oxfordshire.staging*', 'fixture:oxon-street-lights.json').as('street-lights-layer');
+    cy.intercept('/report/new/ajax*').as('report-ajax');
+    cy.intercept('*oxfordshire.staging*', {fixture: 'oxon-street-lights.json'}).as('street-lights-layer');
     cy.visit('http://oxfordshire.localhost:3001/report/new?latitude=51.754926&longitude=-1.256179');
     cy.wait('@report-ajax');
     cy.pickCategory('Lamp Out of Light');
@@ -17,8 +16,7 @@ describe("Oxfordshire cobrand", function() {
   });
 
   it("allows inspectors to instruct defects", function() {
-    cy.server();
-    cy.route('/report/*').as('show-report');
+    cy.intercept('/report/*').as('show-report');
 
     cy.visit('http://oxfordshire.localhost:3001/_test/setup/oxfordshire-defect');
 
