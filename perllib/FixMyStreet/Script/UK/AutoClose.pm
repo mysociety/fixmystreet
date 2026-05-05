@@ -103,28 +103,46 @@ sub close {
 
     my $dtf = FixMyStreet::DB->schema->storage->datetime_parser;
 
-    my $time_param;
-    if ($self->from) {
-        $time_param = [ -and =>
-            { '>=', $dtf->format_datetime($self->from_date) },
-            { '<', $dtf->format_datetime($self->to_date) }
-        ];
-    } else {
-        $time_param = { '<', $dtf->format_datetime($self->to_date) };
-    }
-
     my $extra_query;
     if ( $self->extra ) {
         $extra_query = { '@>' => encode_json( $self->extra ) };
     }
 
-    my $reports = FixMyStreet::DB->resultset("Problem")->search({
-        bodies_str => $self->body->id,
-        state => $self->states,
-        confirmed => $time_param,
-        ( category => $self->category ) x !!$self->category,
-        ( extra => $extra_query ) x !!$extra_query,
-    });
+    my $reports;
+    if ( $self->body_name eq 'Central Bedfordshire Council' ) {
+        $reports = FixMyStreet::DB->resultset("Problem")->search({
+            bodies_str => $self->body->id,
+            'me.state' => $self->states,
+            ( 'me.extra' => $extra_query ) x !!$extra_query,
+            'comments.state' => 'confirmed',
+            'comments.problem_state' => $self->states,
+        },
+        {
+            join => ['comments'],
+            group_by => 'me.id',
+            # Make sure we look at the most recent 'planned' update
+            having => \[ 'MAX(comments.confirmed) < ?', $dtf->format_datetime($self->to_date) ],
+        });
+
+    } else {
+        my $time_param;
+        if ($self->from) {
+            $time_param = [ -and =>
+                { '>=', $dtf->format_datetime($self->from_date) },
+                { '<', $dtf->format_datetime($self->to_date) }
+            ];
+        } else {
+            $time_param = { '<', $dtf->format_datetime($self->to_date) };
+        }
+
+        $reports = FixMyStreet::DB->resultset("Problem")->search({
+            bodies_str => $self->body->id,
+            state => $self->states,
+            confirmed => $time_param,
+            ( category => $self->category ) x !!$self->category,
+            ( extra => $extra_query ) x !!$extra_query,
+        });
+    }
 
     # Provide some variables to the archiving script
     FixMyStreet::Script::ArchiveOldEnquiries::update_options({
