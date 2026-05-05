@@ -231,9 +231,17 @@ sub send_email_and_close {
 }
 
 sub close_problems {
-    return unless $opts->{commit};
-
     my $problems = shift;
+
+    unless ( $opts->{commit} ) {
+        printf "Running with --commit will close the following reports:\n";
+
+        for ( $problems->all ) {
+            printf $_->id . "\n";
+        }
+
+        return;
+    }
 
     my $extra = { auto_closed_by_script => 1 };
 

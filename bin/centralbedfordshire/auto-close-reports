@@ -40,5 +40,6 @@ FixMyStreet::Script::UK::AutoClose->new(
     body_name => 'Central Bedfordshire Council',
     to => $opts->days,
     closure_text => $opts->closure_text,
+    states => ['planned'],
     extra => { external_status_code => 'SL12' },
 )->close;
