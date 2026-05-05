@@ -19,7 +19,7 @@ jobs:
     - name: Setup node
       uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
       with:
-        node-version: 12.x
+        node-version: 24
 
     - name: Setup cache (carton)
       uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
@@ -33,13 +33,14 @@ jobs:
         path: |
           ~/.npm
           node_modules
-        key: ubuntu-24-node-12-cypress-3.8.3-coverage
+          ~/.cache/Cypress
+        key: ubuntu-24-node-24-cypress-15.17.0-plus-coverage
 
     - name: Install packages
       run: |
         sudo apt update
         sudo apt install -y gettext jhead language-pack-en libreadline-dev libpng-dev
-        npm install cypress@3.8.3 @cypress/code-coverage@3.9.4
+        npm install cypress@15.17.0 @cypress/code-coverage@4.0.3
         vendor/bin/carton install --deployment
         commonlib/bin/gettext-makemo FixMyStreet
         echo "$(npm bin)" >> $GITHUB_PATH
