@@ -155,18 +155,16 @@ has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data proc
                 # get the photo into a variable
                 my $photo_blob = eval {
                     my $filename = $upload->tempname;
-                    my $out;
-                    if ($type eq 'jpeg' && can_run('jhead')) {
+                    my ($w, $h, $err) = Image::Size::imgsize($filename);
+                    die _("Please upload an image only") . "\n" if !defined $w || $err !~ /JPG|GIF|PNG|TIF|WEBP/;
+                    if ($err eq 'JPG' && can_run('jhead')) {
                         my $pid = open3(undef, my $stdout, undef, 'jhead', '-se', '-autorot', $filename);
-                        $out = join('', <$stdout>);
+                        my $out = join('', <$stdout>);
                         waitpid($pid, 0);
                         close $stdout;
+                        die _("Please upload an image only") . "\n" if $out && $out =~ /Not JPEG:/;
                     }
-                    unless (defined $out) {
-                        my ($w, $h, $err) = Image::Size::imgsize($filename);
-                        die _("Please upload an image only") . "\n" if !defined $w || $err !~ /JPG|GIF|PNG|TIF|WEBP/;
-                    }
-                    die _("Please upload an image only") . "\n" if $out && $out =~ /Not JPEG:/;
+                    $type = $err; # Switch to detected type over provided type
                     my $photo = $upload->slurp;
                 };
                 if ( my $error = $@ ) {
@@ -178,13 +176,13 @@ has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data proc
                     return ();
                 }
 
-                if ($type eq 'jpeg' && !$self->c->stash->{photo_gps}) {
+                if ($type eq 'JPG' && !$self->c->stash->{photo_gps}) {
                     # only store GPS for the first uploaded photo
                     $self->stash_gps_info($upload->tempname);
                 }
 
                 my %params;
-                if ($type eq 'png' && $self->c->action =~ m{parishes|admin/bodies}) {
+                if ($type eq 'PNG' && $self->c->action =~ m{parishes|admin/bodies}) {
                     %params = ( magick => 'PNG' );
                 } else {
                     %params = ( magick => 'JPEG' );
