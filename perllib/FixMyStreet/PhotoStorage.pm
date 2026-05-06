@@ -22,6 +22,7 @@ sub detect_type {
     return 'png' if $photo =~ /^\x{89}\x{50}/;
     return 'tiff' if $photo =~ /^II/;
     return 'gif' if $photo =~ /^GIF/;
+    return 'webp' if $photo =~ /^RIFF(?s:....)WEBP/;
     return '';
 }
 

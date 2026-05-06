@@ -138,7 +138,7 @@ has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data proc
                 my $upload = $part;
                 my $ct = $upload->type;
                 $ct =~ s/x-citrix-//; # Thanks, Citrix
-                my ($type) = $ct =~ m{image/(jpeg|pjpeg|gif|tiff|png)};
+                my ($type) = $ct =~ m{image/(jpeg|pjpeg|gif|tiff|png|webp)};
                 $type = 'jpeg' if $type && $type eq 'pjpeg';
                 # Had a report of a JPEG from an Android 2.1 coming through as a byte stream
                 $type = 'jpeg' if !$type && $ct eq 'application/octet-stream';
@@ -164,7 +164,7 @@ has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data proc
                     }
                     unless (defined $out) {
                         my ($w, $h, $err) = Image::Size::imgsize($filename);
-                        die _("Please upload an image only") . "\n" if !defined $w || $err !~ /JPG|GIF|PNG|TIF/;
+                        die _("Please upload an image only") . "\n" if !defined $w || $err !~ /JPG|GIF|PNG|TIF|WEBP/;
                     }
                     die _("Please upload an image only") . "\n" if $out && $out =~ /Not JPEG:/;
                     my $photo = $upload->slurp;
