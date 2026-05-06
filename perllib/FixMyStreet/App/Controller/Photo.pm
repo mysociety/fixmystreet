@@ -127,7 +127,7 @@ sub upload : Local {
     };
     my $out;
     if ($c->stash->{photo_error} || !$fileid) {
-        $c->res->status(500);
+        $c->res->status(400);
         $out = { error => $c->stash->{photo_error} || _('Unknown error') };
     } else {
         $out = { id => $fileid };
