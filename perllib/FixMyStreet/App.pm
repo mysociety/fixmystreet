@@ -80,7 +80,7 @@ __PACKAGE__->config(
                 factors => [
                   # Catalyst::Authentication::Credential::Password
                   {
-                      class => 'Password',
+                      class => 'ConstantTimePassword',
                       password_field => 'password',
                       password_type => 'self_check',
                   },
@@ -93,7 +93,7 @@ __PACKAGE__->config(
         },
         no_password => {       # use post confirm etc
             credential => {    # Catalyst::Authentication::Credential::Password
-                class         => 'Password',
+                class         => 'ConstantTimePassword',
                 password_type => 'none',
             },
             store => $store,
