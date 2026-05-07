@@ -1,37 +1,25 @@
-it('loads the right front page', function() {
-    cy.visit('http://northumberland.localhost:3001/');
-    cy.contains('Northumberland');
-});
-
-it('toggles the aerial map', function() {
-    cy.get('[name=pc]').type(Cypress.env('postcode'));
-    cy.get('[name=pc]').parents('form').submit();
-    cy.get('.map-layer-toggle').click();
-    cy.get('.map-layer-toggle').should('have.class', 'roads');
-    cy.get('.map-layer-toggle').click();
-    cy.get('.map-layer-toggle').should('have.class', 'aerial');
-});
-
 describe('Abandoned vehicle behaviour', function() {
   beforeEach(function() {
     cy.server();
     cy.route('/report/new/ajax*').as('report-ajax');
     cy.route('/around\?ajax*').as('update-results');
-    cy.visit('http://northumberland.localhost:3001/');
-    cy.contains('Northumberland');
-    cy.get('[name=pc]').type('NE61 1BE');
+    cy.visit('http://bristol.localhost:3001/');
+    cy.contains('Bristol');
+    cy.get('[name=pc]').type('BS10 5EE');
     cy.get('[name=pc]').parents('form').submit();
     cy.wait('@update-results');
     cy.get('#map_box').click(322, 307);
     cy.wait('@report-ajax');
-    cy.pickCategory('Vehicle abandoned on your property');
+    cy.pickCategory('Abandoned vehicle');
+    cy.nextPageReporting();
+    cy.pickSubcategory('Abandoned vehicle', 'A vehicle left on public road for over two months');
     cy.nextPageReporting();
   });
 
   it('No reg plate', function() {
     cy.get('.js-reporting-page--active').contains('No').click();
     cy.nextPageReporting();
-    cy.get('[name=question]').should('have.value', '');
+    cy.get('[name=NE02]').should('have.value', 'Not known');
   });
 
   it('Said yes but no reg plate', function() {
@@ -46,7 +34,7 @@ describe('Abandoned vehicle behaviour', function() {
     cy.get('[name=dvla_reg]').type('G00D');
     cy.nextPageReporting();
     cy.wait('@dvla');
-    cy.contains('White Audi, Petrol, 2016');
+    cy.contains('White Audi c, Petrol, 2016');
     cy.contains('that are taxed or have a valid MOT');
   });
 
@@ -56,6 +44,10 @@ describe('Abandoned vehicle behaviour', function() {
     cy.get('[name=dvla_reg]').type('B4D');
     cy.nextPageReporting();
     cy.wait('@dvla');
-    cy.get('[name=question]').invoke('val').should('include', 'B4D');
+    cy.get('[name=NE02]').should('have.value', 'B4D');
+    cy.get('[name=NE01]').should('have.value', 'N');
+    cy.get('[name=NE03]').should('have.value', 'MM');
+    cy.get('[name=NE04]').should('have.value', 'Kawasaki');
+    cy.get('[name=NE07]').should('have.value', 'Black');
   });
 });

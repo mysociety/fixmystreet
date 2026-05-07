@@ -54,7 +54,7 @@ describe('Photo-first reporting with GPS', function() {
             cy.contains('now need to locate your problem').should('be.visible');
             cy.get('.photo-preview img').should('be.visible');
 
-            cy.get('[name=pc]').type(Cypress.env('postcode'));
+            cy.get('[name=pc]').type('L2 3SW');
             cy.get('[name=pc]').parents('form').submit();
             cy.get('#map_box').click(200, 200);
             cy.wait('@report-ajax');
