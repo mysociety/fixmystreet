@@ -48,6 +48,6 @@ describe('Abandoned vehicle behaviour', function() {
     cy.get('[name=NE01]').should('have.value', 'N');
     cy.get('[name=NE03]').should('have.value', 'MM');
     cy.get('[name=NE04]').should('have.value', 'Kawasaki');
-    cy.get('[name=NE07]').should('have.value', 'Black');
+    cy.get('[name=NE06]').should('have.value', 'Black');
   });
 });
