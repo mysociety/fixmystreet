@@ -205,6 +205,10 @@ function dvla_lookup(e) {
                     if (field) {
                         field.value = data[name];
                     }
+                    field = document.querySelector('textarea[name*="' + fields[name] + '"]');
+                    if (field) {
+                        field.value = data[name];
+                    }
                 }
             });
 
