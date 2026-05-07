@@ -615,6 +615,7 @@ FixMyStreet::override_config {
         like $mech2->res->previous->header('Location'), qr/paye.example.org/;
 
         my ($token, $report, $report_id) = get_report_from_redirect($sent_params->{returnUrl});
+        is $sent_params->{email}, $user->email, 'user email address used for paye';
         is $sent_params->{items}[0]{reference}, 'bulky-customer-ref';
         is $sent_params->{narrative}, "Bulky waste - $report_id";
         is $call_params->{'temp:request'}{sale}{receiptDetails}{name}{surname}, 'Bob Marge';
