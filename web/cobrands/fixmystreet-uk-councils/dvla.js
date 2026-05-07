@@ -28,7 +28,7 @@ const FIELDS = {
         'taxed': 'NE01',
         'type': 'NE03',
         'make': 'NE04',
-        'colour': 'NE07',
+        'colour': 'NE06',
         'tax': {
             'yes': 'Y',
             'no': 'N'
