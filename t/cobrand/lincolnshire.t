@@ -136,6 +136,30 @@ FixMyStreet::override_config {
         $p->delete;
     };
 
+    subtest 'Category change on pulled in request includes wrapped' => sub {
+        my $requests_xml = xml_reports({ id => 456, name => 'John Smith', email => $user2->email });
+        $requests_xml =~ s{</request>}{<extras>
+            <original_service_code>ORIGINAL_CODE_123</original_service_code>
+            <group>Group</group>
+            </extras></request>};
+        $requests_xml =~ s/CODE/surface_issue\@example.org/;
+        Open311->_inject_response('/requests.xml', $requests_xml);
+        my $args = $update->format_args;
+        my $requests = $update->get_requests($o, $body, $args);
+        $update->create_problems( $o, $body, $args, $requests );
+
+        my $p = FixMyStreet::DB->resultset('Problem')->search(
+            { external_id => 'lincs-456' },
+            { prefetch => 'user' },
+        )->first;
+        is $p->category, 'Surface Issue', 'Correct category';
+        is $p->get_extra_field_value('_wrapped_service_code'), 'ORIGINAL_CODE_123',
+            '_wrapped_service_code field set from original_service_code';
+        is $p->get_extra_metadata('group'), 'Group';
+
+        $p->delete;
+    };
+
     subtest 'Category changes are passed to Open311' => sub {
         (my $report) = $mech->create_problems_for_body(1, $body->id, 'Pothole', {
             category => 'Pothole', cobrand => 'lincolnshire',

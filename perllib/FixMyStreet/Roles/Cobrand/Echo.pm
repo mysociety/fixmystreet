@@ -558,6 +558,7 @@ sub waste_task_resolutions {
         if ($resolution_id) {
             my $template = FixMyStreet::DB->resultset('ResponseTemplate')->search({
                 'me.body_id' => $self->body->id,
+                'me.deleted' => 0,
                 'contact.category' => [ 'Report missed collection', undef ],
                 'me.external_status_code' => [
                     "$resolution_id,$task_type_id,$state",

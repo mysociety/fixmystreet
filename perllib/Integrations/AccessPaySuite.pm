@@ -323,37 +323,13 @@ sub one_off_payment {
     my ($self, $args) = @_;
 
     my $orig_sub = $args->{orig_sub};
-    my $adhoc_contract_id = $orig_sub->get_extra_metadata('direct_debit_adhoc_contract_id');
-
-    unless ($adhoc_contract_id) {
-        # Adhoc contract ID not found, create a new one
-        my $customer_id = $orig_sub->get_extra_metadata('direct_debit_customer_id');
-        unless ($customer_id) {
-            die "No direct debit customer ID found in original subscription report metadata";
-        }
-
-        # Create a new contract for the adhoc payment
-        my $contract_data = {
-            scheduleId => $self->config->{adhoc_schedule_id},
-            start => $args->{date}->strftime('%Y-%m-%dT%H:%M:%S.000'),
-            isGiftAid => 0,
-            terminationType => "Until further notice",
-            atTheEnd => "Switch to further notice",
-        };
-        my $resp = $self->create_contract($customer_id, $contract_data);
-
-        if ( ref $resp eq 'HASH' && $resp->{error} ) {
-            die 'Could not create ad hoc contract: ' . $resp->{error};
-        }
-
-        $adhoc_contract_id = $resp->{Id};
-        # Store the new adhoc contract ID back in metadata for future use
-        $orig_sub->set_extra_metadata('direct_debit_adhoc_contract_id', $adhoc_contract_id);
-        $orig_sub->update;
+    my $contract_id = $orig_sub->get_extra_metadata('direct_debit_contract_id');
+    unless ($contract_id) {
+        die "No direct debit contract ID found in original subscription report metadata";
     }
 
-    # Create the adhoc payment using the determined contract ID
-    my $resp = $self->create_payment($adhoc_contract_id, {
+    # Create the adhoc payment using the contract ID
+    my $resp = $self->create_payment($contract_id, {
         amount => $args->{amount},
         date => $args->{date}->strftime('%Y-%m-%dT%H:%M:%S.000'),
         comment => "WasteWorks: AdHoc payment for " . $orig_sub->id,

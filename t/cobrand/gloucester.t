@@ -51,6 +51,20 @@ my $flytipping = $mech->create_contact_ok(
     email    => 'Regular_fly-tipping_(not_witnessed_and_no_evidence_likely)',
 );
 
+my $grass = $mech->create_contact_ok(
+    body_id => $body->id,
+    category => 'Grass',
+    email => 'grass@example.org',
+    extra => { _fields => [
+        { code => 'notice', variable => 'false', description => '<p>Paragraph for everyone.</p>
+<p data-area-ids="148467">Paragraph only for Westgate</p>
+<p data-area-ids="148474">Paragraph only for Moreland</p>
+<p data-area-invert="148467">Paragraph not for Westgate</p>
+<p data-area-invert="148474">Paragraph not for Moreland</p>
+' },
+    ] },
+);
+
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'gloucester' ],
     MAPIT_URL        => 'http://mapit.uk/',
@@ -149,6 +163,26 @@ FixMyStreet::override_config {
 
             $mech->email_count_is(0), 'no email sent';
         };
+    };
+
+    subtest 'Ward-based category messaging' => sub {
+        my ($j, $text);
+
+        $j = $mech->get_ok_json('/report/new/ajax?longitude=-2.2458&latitude=51.86506');
+        $text = $j->{by_category}{Grass}{category_extra};
+        like $text, qr/Paragraph for everyone/;
+        like $text, qr/Paragraph only for Westgate/;
+        unlike $text, qr/Paragraph only for Moreland/;
+        unlike $text, qr/Paragraph not for Westgate/;
+        like $text, qr/Paragraph not for Moreland/;
+
+        $j = $mech->get_ok_json('/report/new/ajax?longitude=-2.2458&latitude=51.85');
+        $text = $j->{by_category}{Grass}{category_extra};
+        like $text, qr/Paragraph for everyone/;
+        unlike $text, qr/Paragraph only for Westgate/;
+        like $text, qr/Paragraph only for Moreland/;
+        like $text, qr/Paragraph not for Westgate/;
+        unlike $text, qr/Paragraph not for Moreland/;
     };
 };
 

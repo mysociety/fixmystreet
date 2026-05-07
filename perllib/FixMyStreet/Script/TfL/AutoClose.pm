@@ -54,6 +54,7 @@ sub categories {
 
     my $templates = FixMyStreet::DB->resultset('ResponseTemplate')->search({
         state => 'fixed - council',
+        deleted => 0,
         auto_response => 1,
         body_id => $self->body->id,
     });

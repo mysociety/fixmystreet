@@ -192,6 +192,9 @@ fixmystreet.staff_set_up = {
       $.each(data, function(k,v) {
         var label = window.fixmystreet.utils[label_formatter](v);
         var $opt = $('<option></option>').attr('value', v.id).text(label);
+        if (v.text) {
+            $opt.attr('data-text', v.text);
+        }
         if (v.state) {
             $opt.attr('data-problem-state', v.state);
         }
@@ -393,15 +396,15 @@ fixmystreet.staff_set_up = {
     // mark it as dirty so it doesn't get clobbered if we select another
     // response template. If the field is empty, it's not considered dirty.
     $('.js-template-name').each(function() {
-        var $input = $('#' + $(this).data('for'));
-        $input.on('change', function() { $(this).data('dirty', !/^\s*$/.test($(this).val())); });
+        var $input = $('#' + this.dataset.for);
+        $input.on('change', function() { this.dataset.dirty = !/^\s*$/.test(this.value); });
     });
 
     $('.js-template-name').on('change', function() {
-        var $this = $(this);
-        var $input = $('#' + $this.data('for'));
-        if (!$input.data('dirty')) {
-            $input.val($this.val());
+        var input = document.getElementById(this.dataset.for);
+        if (!input.dataset.dirty) {
+            var opt = this.selectedOptions[0];
+            input.value = opt.dataset.text || '';
         }
     });
   },

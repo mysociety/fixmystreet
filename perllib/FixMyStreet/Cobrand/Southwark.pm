@@ -17,6 +17,7 @@ use strict;
 use warnings;
 
 use List::Util qw(any);
+use Scalar::Util qw(blessed);
 use Moo;
 
 =head2 Defaults
@@ -82,6 +83,49 @@ sub pin_colour {
 }
 
 sub path_to_pin_icons { '/i/pins/whole-shadow-cone-spot/' }
+
+sub allow_photo_display {
+    my ($self, $object_or_hash, $idx) = @_;
+
+    if ($self->{c} && $self->{c}->user_exists) {
+        my $user = $self->{c}->user;
+        my $body = $self->body;
+        return 1 if $user->is_superuser;
+        return 1 if $body && $user->belongs_to_body($body->id);
+    }
+
+    my $category;
+    if (blessed $object_or_hash) {
+        $category = $object_or_hash->category;
+    } else {
+        $category = $object_or_hash->{category};
+    }
+
+    my %cats = map { $_ => 1 } @{$self->hide_photo_categories};
+    return 0 if $cats{$category};
+    return 1;
+}
+
+sub hide_photo_categories { [
+    'Clinical Waste - Dead Animal (Estates)',
+    'Clinical Waste - Dead Animal (Street)',
+    'Flytipping - Animal Carcass (Estates)',
+    'Flytipping - Animal Carcass (Street)',
+    'Fly Posting - Racist/Obscene (Estates)',
+    'Fly Posting - Racist/Obscene (Street)',
+    'Graffiti - Racist / Obscene',
+    'Graffiti - Racist/Obscene',
+] }
+
+sub recent_photos {
+    my ( $self, $area, $num, $lat, $lon, $dist ) = @_;
+    return $self->problems->search({
+        category => { -not_in => $self->hide_photo_categories },
+    })->recent_photos({
+        num => $num,
+        point => [$lat, $lon, $dist]
+    });
+}
 
 sub disambiguate_location {
     my $self    = shift;

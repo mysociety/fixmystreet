@@ -3,6 +3,7 @@ use FixMyStreet::TestMech;
 use HTML::Selector::Element qw(find);
 use FixMyStreet::Script::Reports;
 use FixMyStreet::Script::Alerts;
+use Open311::PostServiceRequestUpdates;
 
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
@@ -18,6 +19,7 @@ my $merton = $mech->create_body_ok(2500, 'Merton Council', {
     jurisdiction => 'merton',
     endpoint => 'http://endpoint.example.org',
     send_method => 'Open311',
+    send_comments => 1,
     comment_user => $superuser,
     cobrand => 'merton'
 });
@@ -356,6 +358,27 @@ subtest "hides duplicate updates from endpoint" => sub {
 
     $p->discard_changes;
     is $p->comments->search({ state => 'confirmed' })->count, 1;
+};
+
+subtest 'Does not send updates on now-email categories' => sub {
+    # Create a report that had been sent via Open311 but is now email (default Other category)
+    my ($p) = $mech->create_problems_for_body(1, $merton->id, 'Title', {
+        whensent => \'current_timestamp',
+        send_method_used => 'Open311',
+        external_id => 'EXT',
+    });
+    my $comment = $mech->create_comment_for_problem($p, $p->user, 'Name', 'Text', 't', 'confirmed');
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'merton',
+    }, sub {
+        my $updates = Open311::PostServiceRequestUpdates->new();
+        $updates->send;
+    };
+
+    $comment->discard_changes;
+    is $comment->send_fail_count, 0, "comment sending not attempted";
+    is $comment->send_state, 'skipped', "skipped sending comment";
 };
 
 package SOAP::Result;

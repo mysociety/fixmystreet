@@ -289,7 +289,7 @@ sub send_local_postgis {
 
     my $states = "'" . join( "', '", FixMyStreet::DB::Result::Problem::visible_states() ) . "'";
     my $query = "select problem.id, problem.bodies_str, problem.postcode, problem.geocode, problem.confirmed, problem.cobrand,
-        problem.title, problem.detail, problem.photo from problem
+        problem.title, problem.detail, problem.category, problem.photo from problem
         where
             ST_DWithin(ST_SetSRID(ST_Point(longitude, latitude), 4326)::geography, ST_SetSRID(ST_Point(?, ?), 4326)::geography, ?)
         and problem.state in ($states)
@@ -338,7 +338,7 @@ sub send_local_find_nearby {
 
     my $states = "'" . join( "', '", FixMyStreet::DB::Result::Problem::visible_states() ) . "'";
     my $reports = "select problem.id, problem.bodies_str, problem.postcode, problem.geocode, problem.confirmed, problem.cobrand,
-        problem.latitude, problem.longitude, problem.title, problem.detail, problem.photo, problem.user_id
+        problem.latitude, problem.longitude, problem.title, problem.detail, problem.category, problem.photo, problem.user_id
         from problem where
             problem.state in ($states)
         and problem.non_public = 'f'

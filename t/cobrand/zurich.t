@@ -1242,6 +1242,34 @@ subtest 'Anonymise reports that are over two years old' => sub {
     };
 };
 
+subtest 'Recording of response templates' => sub {
+    # Create some templates
+    $mech->log_in_ok( 'dm1@example.org' );
+    $mech->get_ok('/admin/templates');
+    $mech->follow_link_ok({ text => 'Neue Vorlage' });
+    $mech->submit_form_ok({ with_fields => { title => 'Title', text => 'Text' } });
+    my $template = FixMyStreet::DB->resultset('ResponseTemplate')->order_by('-id')->search(undef, { rows => 1 })->single;
+    $mech->follow_link_ok({ text => 'Neue Vorlage' });
+    $mech->submit_form_ok({ with_fields => { title => 'Inactive title', text => 'Inactive text', deleted => 'on' } });
+    $report->update({ state => 'feedback pending' });
+    # Try them out
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->content_contains('<option value="">Vorlage wählen</option>');
+    $mech->content_contains('<option value="' . $template->id . '" data-text="Text" data-problem-state=""> Title </option>');
+    $mech->content_lacks('Inactive title');
+    $mech->submit_form_ok({ with_fields => { response_template_status_update => $template->id, status_update => 'Text' } });
+    $mech->content_contains('<option value="' . $template->id . '" data-text="Text" data-problem-state="" selected> Title </option>');
+    $report->discard_changes;
+    is $report->get_extra_metadata('template_used'), $template->id;
+    # Export CSV
+    $mech->get_ok( '/admin/stats?export=1' );
+    is $mech->res->code, 200, 'csv retrieved ok';
+    my @rows = $mech->content_as_csv;
+    shift @rows; # Get rid of header
+    my @row = grep { $_->[0] == $report->id } @rows;
+    is $row[0][-1], 'Title';
+};
+
 };
 
 done_testing();

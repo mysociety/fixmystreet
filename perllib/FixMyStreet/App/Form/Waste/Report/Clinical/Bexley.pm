@@ -87,6 +87,8 @@ has_field bin_location => (
     required => 1,
     label => 'Where are the containers located?',
     options_method => sub {
+        # Bexley want 'staff_or_assisted' locations for any clinical
+        # report
         my $options
             = FixMyStreet::Cobrand::Bexley::Waste->_bin_location_options()
             ->{staff_or_assisted};

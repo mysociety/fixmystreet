@@ -54,7 +54,7 @@ END;
   [% TRY ~%]
     [% PROCESS 'report/_item_photo_title.html' ~%]
   [% CATCH file ~%]
-    [% IF problem.photo %]
+    [% IF problem.photo AND c.cobrand.allow_photo_display(problem) %]
         <img loading="lazy" class="img" height="60" width="90" src="[% problem.photos.first.url_fp %]" alt="">
     [% END %]
       [% TRY %]

@@ -107,6 +107,8 @@ sub edit : Path : Args(2) {
             $ext_code ||= $c->get_param('external_status_code');
             $template->external_status_code($ext_code);
 
+            $template->deleted ( $c->get_param('deleted') ? 1 : 0 );
+
             # Allow cobrands to validate the external_status_code format
             # Use the body's cobrand handler, not the page cobrand
             my $body_cobrand = $c->stash->{body}->get_cobrand_handler;
@@ -145,13 +147,14 @@ sub edit : Path : Args(2) {
 
                 my $query = {
                     'auto_response' => 1,
+                    deleted => 0,
                     'contact.id' => [ @check_contact_ids ],
                     %$params,
                 };
                 if ($template->in_storage) {
                     $query->{'me.id'} = { '!=', $template->id };
                 }
-                if ($c->stash->{body}->response_templates->search($query, {
+                if (!$template->deleted && $c->stash->{body}->response_templates->search($query, {
                     join => { 'contact_response_templates' => 'contact' },
                 })->count) {
                     $c->stash->{errors} ||= {};

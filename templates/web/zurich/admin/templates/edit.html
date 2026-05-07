@@ -21,21 +21,20 @@
     [% END %]
     <p>
         <strong>[% loc('Title:') %] </strong>
-        <input type="text" name="title" class="form-control required" size="30" value="[% rt.title| html %]">
+        <input type="text" name="title" class="form-control required" size="30" value="[% rt.title %]">
     </p>
     <p>
         <strong>[% loc('Text:') %] </strong>
-        <textarea name="text" class="form-control required">[% rt.text |html %]</textarea>
+        <textarea name="text" class="form-control required">[% rt.text %]</textarea>
+    </p>
+    <p>
+        <label for="state">[% loc('Flag as deleted') %] </label>
+        <input type="checkbox" name="deleted" id="deleted"[% ' checked' IF rt.deleted %]>
     </p>
     <p>
     <input type="hidden" name="token" value="[% csrf_token %]" >
     <input type="submit" class="btn" name="Edit templates" value="[% rt.id ? loc('Save changes') : loc('Create template') %]" >
     </p>
-    [% IF rt.id %]
-        <p>
-            <input class="delete btn btn--danger" type="submit" name="delete_template" value="[% loc('Delete template') %]">
-        </p>
-    [% END %]
 </form>
 
 [% INCLUDE 'admin/footer.html' %]

@@ -18,8 +18,8 @@ with 'FixMyStreet::Roles::Cobrand::Waste';
 use BexleyAddresses;
 use DateTime;
 use DateTime::Format::W3CDTF;
-use DBI;
 use FixMyStreet;
+use FixMyStreet::App::Form::Waste::Report::Clinical::Bexley;
 use FixMyStreet::App::Form::Waste::Request::Bexley;
 use FixMyStreet::Template;
 use JSON::MaybeXS;
@@ -332,6 +332,7 @@ sub bin_services_for_address {
     # Mark which containers have an assisted service.
     my @site_services_filtered;
     my %assisted;
+    my %seen_containers;
     for my $service (@$site_services) {
         next if $service->{ServiceItemName} eq 'CW-SACK'; # Clinical
 
@@ -376,6 +377,9 @@ sub bin_services_for_address {
             next;
         }
 
+        # There may be duplicate container types; skip if container has been seen before.
+        next if $seen_containers{ $container->{name} };
+
         my $filtered_service = {
             id => $service->{SiteServiceID},
             service_id => $service->{ServiceItemName},
@@ -390,15 +394,12 @@ sub bin_services_for_address {
             garden_waste => $container->{description} eq 'Garden waste' ? 1 : 0,
         };
         push @site_services_filtered, $filtered_service;
+        $seen_containers{ $container->{name} } = 1;
     }
 
-    # Now set the assisted flag on the right services and skip any duplicates
-    my %seen_containers;
+    # Now set the assisted flag on the right services
     for my $service (@site_services_filtered) {
-        # There may be duplicate container types; skip if container has been seen before.
-        next if $seen_containers{ $service->{service_name} };
         $service->{assisted_collection} = $assisted{$service->{service_name}} ? 1 : 0;
-        $seen_containers{ $service->{service_name} } = 1;
     }
 
     # If fetching the calendar page, we can shortcircuit with just what we need
@@ -1257,8 +1258,11 @@ sub waste_munge_report_form_fields {
     push @$field_list, $self->_bin_location_field;
 }
 
-sub waste_munge_clinical_report_form_fields {
+sub waste_setup_clinical_report_form {
     my ( $self, $field_list ) = @_;
+
+    $self->{c}->stash->{form_class}
+        = 'FixMyStreet::App::Form::Waste::Report::Clinical::Bexley';
 
     my $service = $self->{c}->stash->{property}{clinical_service};
 

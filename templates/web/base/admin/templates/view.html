@@ -12,7 +12,7 @@
     </thead>
     <tbody>
 [% FOR t IN response_templates %]
-    <tr>
+    <tr[% ' class="is-deleted"' IF t.deleted %]>
         <td> [% t.title | html %] </td>
         <td>
             [% UNLESS t.contacts.size %]

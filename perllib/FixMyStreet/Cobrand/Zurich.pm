@@ -690,6 +690,11 @@ sub admin_report_edit {
         # update the public update from DM
         if (my $update = $c->get_param('status_update')) {
             $problem->set_extra_metadata(public_response => $update);
+            if (my $template_id = $c->get_param('response_template_status_update')) {
+                $problem->set_extra_metadata(template_used => $template_id);
+            } else {
+                $problem->unset_extra_metadata('template_used');
+            }
         }
 
         if (
@@ -1065,6 +1070,7 @@ sub stash_states {
     $c->stash->{states} = \@states;
 
     # stash details about the public response
+    $c->stash->{response_template_used_id} = $problem->get_extra_metadata('template_used');
     $c->stash->{default_public_response} = "\nFreundliche Grüsse\n\nIhre Stadt Zürich\n";
     $c->stash->{show_publish_response} =
         ($problem->state eq 'feedback pending');
@@ -1273,6 +1279,10 @@ sub admin_stats {
 sub export_as_csv {
     my ($self, $c, $params) = @_;
 
+    my %templates = map { $_->id => $_->title } FixMyStreet::DB->resultset("ResponseTemplate")->search(
+        undef, { columns => ['id', 'title'] },
+    )->all;
+
     my $reporting = FixMyStreet::Reporting->new(
         objects_rs => $c->model('DB::Problem')->search_rs(
             $params,
@@ -1302,7 +1312,7 @@ sub export_as_csv {
             'External Body', 'Time Spent', 'Title', 'Detail',
             'Media URL', 'Interface Used', 'Council Response',
             'Strasse', 'Mast-Nr.', 'Haus-Nr.', 'Hydranten-Nr.',
-            'Interne meldung',
+            'Interne meldung', 'Template',
         ],
         csv_columns => [
             'id', 'created', 'whensent', 'lastupdate', 'local_coords_x',
@@ -1311,7 +1321,7 @@ sub export_as_csv {
             'body_name', 'sum_time_spent', 'title', 'detail',
             'media_url', 'service', 'public_response',
             'strasse', 'mast_nr',' haus_nr', 'hydranten_nr',
-            'interne_meldung',
+            'interne_meldung', 'template',
         ],
         csv_extra_data => sub {
             my $report = shift;
@@ -1339,6 +1349,9 @@ sub export_as_csv {
                 ? $c->cobrand->base_url . $report->photos->[$photo_to_display-1]->{url}
                 : '';
 
+            my $template = $report->get_extra_metadata('template_used') || '';
+            $template = $templates{$template} if $template;
+
             return {
                 whensent => $report->whensent,
                 lastupdate => $report->lastupdate,
@@ -1358,6 +1371,7 @@ sub export_as_csv {
                 haus_nr => $extras{'haus_nr'} || '',
                 hydranten_nr => $extras{'hydranten_nr'} || '',
                 interne_meldung => $report->non_public,
+                template => $template,
             };
         },
         filename => 'stats',
@@ -1440,6 +1454,8 @@ sub report_on_private_contacts {
     return [ FixMyStreet::DB->resultset('Contact')->not_deleted->search({category => $category})->all ];
 }
 
+# Zurich have some special prefill fields
+
 sub munge_around_filter_category_list {
     my $self = shift;
 
@@ -1447,6 +1463,16 @@ sub munge_around_filter_category_list {
 
     $c->stash->{prefill_category} = $c->get_param('prefill_category') if $c->get_param('prefill_category');
     $c->stash->{prefill_description} = $c->get_param('prefill_description') if $c->get_param('prefill_description');
+}
+
+sub url_report_new {
+    my ($self, $params) = @_;
+    my $c = $self->{c};
+    my $uri = $self->SUPER::url_report_new($params);
+    for (qw(prefill_category prefill_description)) {
+        $uri->query_param($_ => $c->stash->{$_}) if $c->stash->{$_};
+    }
+    return $uri;
 }
 
 1;

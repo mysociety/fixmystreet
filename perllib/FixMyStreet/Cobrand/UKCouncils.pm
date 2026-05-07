@@ -286,15 +286,6 @@ sub reports_body_check {
     return;
 }
 
-sub recent_photos {
-    my ( $self, $area, $num, $lat, $lon, $dist ) = @_;
-    $num = 2 if $num == 3;
-    return $self->problems->recent_photos({
-        num => $num,
-        point => [$lat, $lon, $dist]
-    });
-}
-
 # Returns true if the cobrand owns the problem, i.e. it was sent to the body
 # associated with this cobrand.
 sub owns_problem {

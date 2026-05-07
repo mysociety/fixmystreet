@@ -78,12 +78,14 @@ has template => (
             $template = FixMyStreet::DB->resultset("ResponseTemplate")->search({
                 'me.body_id' => $self->body->id,
                 'me.title' => $self->template_title,
+                'me.deleted' => 0,
             })->first;
         } else {
             $template = FixMyStreet::DB->resultset("ResponseTemplate")->search({
                 'me.state' => 'closed',
                 'me.auto_response' => 1,
                 'me.body_id' => $self->body->id,
+                'me.deleted' => 0,
                 ( 'contact.category' => $self->category ) x !!$self->category,
             }, {
                 join => { contact_response_templates => 'contact' },

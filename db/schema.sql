@@ -567,6 +567,7 @@ create table response_templates (
     auto_response boolean NOT NULL DEFAULT 'f',
     state text,
     external_status_code text,
+    deleted boolean not null default 'f',
     unique(body_id, title)
 );
 
