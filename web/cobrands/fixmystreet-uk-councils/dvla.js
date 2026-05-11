@@ -20,7 +20,6 @@ const FIELDS = {
         'block': true,
         'categories': [
             'A vehicle left on public road for over two months',
-            'A vehicle being repaired on road or pavement',
             'A vehicle abandoned on your property',
             'A badly damaged or burnt out vehicle on a public road',
         ],
