@@ -520,6 +520,9 @@ sub csc_payment_failed : Path('csc_payment_failed') : Args(0) {
 
 sub property_id : Chained('/') : PathPart('waste') : CaptureArgs(1) {
     my ($self, $c, $id) = @_;
+    if ($id !~ /^[A-Za-z0-9 :]+$/) {
+        $c->detach( '/page_error_404_not_found', [] );
+    }
     $c->stash->{property_id} = $id;
 }
 
