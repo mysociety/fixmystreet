@@ -622,9 +622,6 @@ sub direct_debit_modify : Private {
 
     my $p = $c->stash->{report};
 
-    my $ref = $c->stash->{orig_sub}->get_extra_metadata('payerReference');
-    $p->set_extra_metadata(payerReference => $ref);
-    $p->update;
     $c->cobrand->call_hook('waste_report_extra_dd_data');
 
     my $pro_rata = $p->get_extra_field_value('pro_rata') || 0;
@@ -666,15 +663,6 @@ sub direct_debit_cancel_sub : Private {
     my ($self, $c) = @_;
 
     my $p = $c->stash->{report};
-    # Copy payer reference from original subscription if available
-    my $ref;
-    if ($c->stash->{orig_sub}) {
-        $ref = $c->stash->{orig_sub}->get_extra_metadata('payerReference');
-        if ($ref) {
-            $p->set_extra_metadata(payerReference => $ref);
-            $p->update;
-        }
-    }
     $c->cobrand->call_hook('waste_report_extra_dd_data');
 
     my $i = $c->cobrand->get_dd_integration;

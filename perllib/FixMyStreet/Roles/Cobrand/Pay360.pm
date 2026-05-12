@@ -105,4 +105,17 @@ sub waste_check_existing_dd {
     }
 }
 
+sub waste_report_extra_dd_data {
+    my ($self) = @_;
+    my $c = $self->{c};
+    my $orig_sub = $c->stash->{orig_sub};
+
+    if ($orig_sub) {
+        my $report = $c->stash->{report};
+        my $ref = $orig_sub->get_extra_metadata('payerReference');
+        $report->set_extra_metadata(payerReference => $ref) if $ref;
+        $report->update;
+    }
+}
+
 1;
