@@ -33,6 +33,9 @@ body {
   font-size: 0.9rem;
 }
 
+::selection {
+  background-color: #b3d7fe; // From CRT website
+}
 
 /* BUTTONS */
 
@@ -56,7 +59,9 @@ body {
   }
 }
 
-a#geolocate_link {
+a#geolocate_link,
+.btn,
+.dz-clickable .dz-message u {
   @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text,$focus-bg-bottom: $button-primary-focus-bg-bottom, $focus-bg-top: $button-primary-focus-bg-top, $focus-border: $button-primary-focus-border, $focus-text: $button-primary-focus-text);
   text-decoration: none;
   @extend .btn-crt;
@@ -76,11 +81,89 @@ a,
   }
 }
 
+/* INPUTS */
+.multi-select-button,
+input[type="email"],
+input[type="text"],
+input[type="tel"],
+input[type="url"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+textarea,
+.govuk-textarea,
+select,
+.postcode-form-box div {
+  border-radius: 0.5rem;
+}
+
+input[type="checkbox"],
+.govuk-multi-select--checkboxes .govuk-multi-select__label:before,
+.govuk-checkboxes--small .govuk-checkboxes__label:before {
+  border-radius: 0.375rem;
+  border-color: $cobrand_black;
+}
+
+.govuk-select:focus, .multi-select-button:focus {
+  box-shadow: inset 0px 0px 0 2px $cobrand_black;
+}
+
+.govuk-select, .multi-select-button {
+  border-color: $cobrand_black;
+  &:focus {
+    outline-color: $cobrand_yellow;
+  }
+}
+
+.govuk-checkboxes__input:focus+.govuk-checkboxes__label:before {
+  box-shadow: 0 0 0 3px $cobrand_yellow;
+}
+
+.govuk-multi-select__label:focus-within:before {
+  box-shadow: 0 0 0 7px $cobrand_yellow;
+  outline-color: $cobrand_black;
+}
+
+.govuk-multi-select__label:focus-within:hover:before {
+  box-shadow: 0 0 0 5px $cobrand_yellow, 0 0 0 10px $cobrand_gravel_500;
+}
+
+.govuk-multi-select__label:hover:before {
+  box-shadow: 0 0 0 10px $cobrand_gravel_500;
+}
+
+.segmented-control--radio input+label {
+  background-color: #fff;
+  color: $primary !important; // Overrides .btn
+}
+
 /* NAVBAR */
 #site-logo {
   background-image: url("/cobrands/canalrivertrust/images/logo.svg");
   background-size: auto 4rem;
   height: 5rem;
+  width: 11.875rem;
+}
+
+.crt-logo-wrapper {
+  width: fit-content;
+  .strapline {
+    display: none;
+  }
+}
+
+.strapline-mobile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 300;
+  letter-spacing: -.05em;
+  text-align: center;
+  height: 2rem;
+  padding-bottom: .25rem;
+  padding-top: .25rem;
+  background-color: #fff;
+  color: $primary;
 }
 
 .nav-menu--main {
@@ -98,6 +181,14 @@ a,
     background-color: $primary;
     color: $primary_text;
   }
+}
+
+#nav-link, #report-cta {
+  top: 2.5rem;
+}
+
+#main-nav {
+  top: 5rem;
 }
 
 /* FRONTPAGE */
@@ -119,13 +210,88 @@ a,
       color: $button-primary-text;
     }
   }
+
+  div {
+    overflow: hidden; // So the border-radius works
+    input[type="text"] {
+      border-radius: 0;
+      outline: none;
+    }
+  }
+}
+
+.js #photoForm,
+.js #photoForm .dropzone {
+  border-radius: 50px;
+  z-index: 2; // Avoid footer overlapping.
+}
+
+.js .image-first-form-wrapper .dropzone-mobile u {
+  padding: $button-padding-bottom $button-padding-left;
+}
+
+.badge {
+  background-color: $cobrand_blue_100;
+  border-color: $cobrand_blue_800;
 }
 
 /* OTHERS */
-.item-list__item {
+.item-list__item,
+.item-list--reports__item {
   a {
     text-decoration: none;
   }
+
+  small {
+    font-size: 1rem;
+    color: $cobrand_black_400;
+  }
+}
+
+.report_meta_info, 
+.council_sent_info,
+.item-list__update-text .meta-2,
+.report-list-filters {
+  font-size: 1rem;
+}
+
+#mobile-sticky-sidebar-button {
+  z-index: 2; // Avoids footer overlapping
+}
+
+#key-tools a, #key-tools button {
+  background-color: #fff;
+
+  &:focus, &:hover {
+    background-color: $primary;
+  }
+}
+
+/* MAPPAGE */
+.map-fullscreen {
+  #map_box {
+    top: 5rem;
+  }
+}
+
+.mobile-map-banner, 
+.map-mobile-report-button, .sub-map-links, 
+.map-mobile-report-button:hover, 
+.map-mobile-report-button:focus,
+.map-links>* {
+  background-color: $cobrand_gravel_900;
+}
+
+html.js .form-section-preview,
+.banner {
+  background-color: $cobrand_gravel_200;
+  border-color: $cobrand_gravel_500;
+}
+
+.change_location,
+.problem-back:link, .problem-back:visited, .problem-back:hover {
+  color: $cobrand_black_400;
+  border-color: $cobrand_gravel_500;
 }
 
 /* SITE MESSAGE */
@@ -148,142 +314,146 @@ a,
   }
 }
 
-/* DARK THEME */
-@media (prefers-color-scheme: dark) {
-  // General
-  body,
-  .pagination,
-  #front-main-container,
-  #front-main-container .report-forms-wrapper,
-  .frontpage .content {
-    @include true-black();
-  }
-
-  // Typography 
-  h1, .h1, h2, .h2, h3, .h3,
-  .meta-2,
-  #front-main-container h1,
-  .frontpage h2,
-  .item-list__heading {
-    color: $cobrand_white;
-  }
-
-  .form-hint,
-  .form-section-description,
-  .confirmation-header p,
-  #front-main-container h2,
-  #front-main-container .report-forms-wrapper .form-hint,
-  .item-list__description,
-  .item-list--reports__item small,
-  .item-list--reports__item .small-print,
-  .item-list__item small,
-  .item-list__item .small-print,
-  .item-list__item--indented h3 {
-    color: rgba($cobrand_white, 0.8);
-  }
-
-  // Buttons
-  .btn {
-    color: #000 !important; // Overrides .btn in _base
-    &:hover { color: $primary !important; }
-  }
-
-  .btn-primary,
-  .btn--primary,
-  a#geolocate_link {
-    border-color: $cobrand_white !important;
-    color: $cobrand_white !important; // Overrides .btn
-    &:hover { color: $cobrand_white !important; } // Overrides .btn
-  }
-
-  // Forms & inputs
-  .govuk-input,
-  .form-control {
-    background-color: $cobrand_white;
-    color: #000;
-  }
-
-  .multi-select-menu,
-  .govuk-select,
-  .sort-select {
-    color: #000;
-  }
-
-  input:-webkit-autofill,
-  input:-webkit-autofill:hover,
-  input:-webkit-autofill:focus {
-    -webkit-text-fill-color: #000 !important;
-    -webkit-box-shadow: 0 0 0px 1000px #fff inset !important;
-  }
-
-  .js #photoForm {
-    border: 1px solid $cobrand_white;
-    z-index: 4;
-  }
-
-  .postcode-form-box div {
-    border-color: $cobrand_white;
-  }
-
-  .problem-back:link, .problem-back:visited, .problem-back:hover {
-    color: rgba($cobrand_white, 0.8);
-  }
-
-  // Components
-  .description_tips {
-    background: white;
-    padding: 0.5rem;
-    border-radius: 4px;
-  }
-
-  .floating-button {
-    background-color: #000;
-    box-shadow: 0 0 2em 2em #000;
-  }
-
-  html.js .form-section-preview {
-    background-color: #000;
-  }
-
-  .item-list--reports__item,
-  .item-list__item {
-    background-color: #000;
-
-    &:hover, &:focus, &:focus-within {
-      a { background: #5A5A5A; }
-    }
-  }
-
-  .item-list__item__shortlist-add {
-    background-image: url(/cobrands/fixmystreet/images/icon-shortlist-inactive-dark-theme.svg);
-  }
-
-  .dropzone {
-    background: $cobrand_white;
-    color: #000;
-
-    &:hover { background-color: #D2D4FD; }
-    &:focus {
-      background-color: #D2D4FD;
-      outline: 3px solid $cobrand_yellow;
-    }
-  }
-
-  // Admin
-  .box-warning,
-  .fms-admin-warning,
-  .admin table tr.is-deleted {
-    background-color: #7b0505;
-  }
-
-  .box-warning {
-    background-color: #010775;
-  }
-
-  .fms-admin-info {
-    background-color: #005f00;
-  }
+.pre-button-messaging {
+  background-color: $cobrand_blue_100;
 }
+
+/* DARK THEME */
+// @media (prefers-color-scheme: dark) {
+//   // General
+//   body,
+//   .pagination,
+//   #front-main-container,
+//   #front-main-container .report-forms-wrapper,
+//   .frontpage .content {
+//     @include true-black();
+//   }
+
+//   // Typography 
+//   h1, .h1, h2, .h2, h3, .h3,
+//   .meta-2,
+//   #front-main-container h1,
+//   .frontpage h2,
+//   .item-list__heading {
+//     color: $cobrand_white;
+//   }
+
+//   .form-hint,
+//   .form-section-description,
+//   .confirmation-header p,
+//   #front-main-container h2,
+//   #front-main-container .report-forms-wrapper .form-hint,
+//   .item-list__description,
+//   .item-list--reports__item small,
+//   .item-list--reports__item .small-print,
+//   .item-list__item small,
+//   .item-list__item .small-print,
+//   .item-list__item--indented h3 {
+//     color: rgba($cobrand_white, 0.8);
+//   }
+
+//   // Buttons
+//   .btn {
+//     color: #000 !important; // Overrides .btn in _base
+//     &:hover { color: $primary !important; }
+//   }
+
+//   .btn-primary,
+//   .btn--primary,
+//   a#geolocate_link {
+//     border-color: $cobrand_white !important;
+//     color: $cobrand_white !important; // Overrides .btn
+//     &:hover { color: $cobrand_white !important; } // Overrides .btn
+//   }
+
+//   // Forms & inputs
+//   .govuk-input,
+//   .form-control {
+//     background-color: $cobrand_white;
+//     color: #000;
+//   }
+
+//   .multi-select-menu,
+//   .govuk-select,
+//   .sort-select {
+//     color: #000;
+//   }
+
+//   input:-webkit-autofill,
+//   input:-webkit-autofill:hover,
+//   input:-webkit-autofill:focus {
+//     -webkit-text-fill-color: #000 !important;
+//     -webkit-box-shadow: 0 0 0px 1000px #fff inset !important;
+//   }
+
+//   .js #photoForm {
+//     border: 1px solid $cobrand_white;
+//     z-index: 4;
+//   }
+
+//   .postcode-form-box div {
+//     border-color: $cobrand_white;
+//   }
+
+//   .problem-back:link, .problem-back:visited, .problem-back:hover {
+//     color: rgba($cobrand_white, 0.8);
+//   }
+
+//   // Components
+//   .description_tips {
+//     background: white;
+//     padding: 0.5rem;
+//     border-radius: 4px;
+//   }
+
+//   .floating-button {
+//     background-color: #000;
+//     box-shadow: 0 0 2em 2em #000;
+//   }
+
+//   html.js .form-section-preview {
+//     background-color: #000;
+//   }
+
+//   .item-list--reports__item,
+//   .item-list__item {
+//     background-color: #000;
+
+//     &:hover, &:focus, &:focus-within {
+//       a { background: #5A5A5A; }
+//     }
+//   }
+
+//   .item-list__item__shortlist-add {
+//     background-image: url(/cobrands/fixmystreet/images/icon-shortlist-inactive-dark-theme.svg);
+//   }
+
+//   .dropzone {
+//     background: $cobrand_white;
+//     color: #000;
+
+//     &:hover { background-color: #D2D4FD; }
+//     &:focus {
+//       background-color: #D2D4FD;
+//       outline: 3px solid $cobrand_yellow;
+//     }
+//   }
+
+//   // Admin
+//   .box-warning,
+//   .fms-admin-warning,
+//   .admin table tr.is-deleted {
+//     background-color: #7b0505;
+//   }
+
+//   .box-warning {
+//     background-color: #010775;
+//   }
+
+//   .fms-admin-info {
+//     background-color: #005f00;
+//   }
+// }
 
 .olMapViewport {
     background-color: #fff;
