@@ -12,7 +12,7 @@ ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 
 # check that we can get the page
 $mech->get_ok('/faq');
-$mech->content_like(qr{Frequently Asked Questions ::\s+FixMyStreet});
+$mech->content_like(qr{Frequently asked questions ::\s+FixMyStreet});
 $mech->content_contains('html class="no-js" lang="en-gb"');
 
 $mech->get_ok('/privacy');
