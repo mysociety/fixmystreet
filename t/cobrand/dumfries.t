@@ -691,6 +691,15 @@ subtest 'admin template external_status_code validation' => sub {
             { name => 'Wildcard in middle of text returns error', code => 'abc:d*f:ghi', valid => 0, error => 'cannot be mixed' },
             { name => 'Wildcard at end of text returns error', code => 'abc:def:ghi*', valid => 0, error => 'cannot be mixed' },
             { name => 'Double wildcard returns error', code => 'abc:**:ghi', valid => 0, error => 'cannot be mixed' },
+
+            { name => 'Add an old_external_status_code - valid', code => 'abc:def:ghi', old_code => 'def', valid => 1 },
+            {   name =>
+                    'Add an old_external_status_code - matches first part of external_status_code',
+                code     => 'abc:def:ghi',
+                old_code => 'abc',
+                valid    => 0,
+                error    => 'Old status cannot be the same as new',
+            },
         );
 
         my $i = 0;
@@ -701,6 +710,7 @@ subtest 'admin template external_status_code validation' => sub {
                     text => 'Template text',
                     auto_response => 'on',
                     defined $case->{code} ? (external_status_code => $case->{code}) : (),
+                    defined $case->{old_code} ? (old_external_status_code => $case->{old_code}) : (),
                 );
 
                 $mech->get_ok('/admin/templates/' . $body->id . '/new');
@@ -709,8 +719,15 @@ subtest 'admin template external_status_code validation' => sub {
                 if ($case->{valid}) {
                     is $mech->uri->path, '/admin/templates/' . $body->id,
                         'Redirected after valid submission';
-                    $mech->delete_response_template($_)
-                        for $body->response_templates->search({ title => 'Test template' });
+
+                    my $template = $body->response_templates->search(
+                        { title => 'Test template' } )->first;
+
+                    is $template->old_external_status_code,
+                        $case->{old_code} // '',
+                        'correct old code or empty string set';
+
+                    $mech->delete_response_template($template);
                 } else {
                     is $mech->uri->path, '/admin/templates/' . $body->id . '/new',
                         'Not redirected on error';
@@ -718,6 +735,57 @@ subtest 'admin template external_status_code validation' => sub {
                 }
             };
         }
+
+        subtest 'Set templates with same external_status_code but different old_external_status_codes' => sub {
+            my %fields = (
+                title => 'Test template',
+                text => 'Template text',
+                auto_response => 'on',
+                external_status_code => 'abc:def:ghi',
+                old_external_status_code => 'xyz',
+            );
+
+            $mech->get_ok('/admin/templates/' . $body->id . '/new');
+            $mech->submit_form_ok({ with_fields => \%fields });
+            is $mech->uri->path, '/admin/templates/' . $body->id,
+                'Redirected after valid submission';
+
+            %fields = (
+                title => 'Test template 2',
+                text => 'Template text 2',
+                auto_response => 'on',
+                external_status_code => 'abc:def:ghi',
+                old_external_status_code => 'zyx',
+            );
+
+            $mech->get_ok('/admin/templates/' . $body->id . '/new');
+            $mech->submit_form_ok({ with_fields => \%fields });
+            is $mech->uri->path, '/admin/templates/' . $body->id,
+                'Redirected after valid submission';
+
+            %fields = (
+                title => 'Test template 3',
+                text => 'Template text 3',
+                auto_response => 'on',
+                external_status_code => 'abc:def:ghi',
+                old_external_status_code => '',
+            );
+
+            $mech->get_ok('/admin/templates/' . $body->id . '/new');
+            $mech->submit_form_ok({ with_fields => \%fields });
+            is $mech->uri->path, '/admin/templates/' . $body->id,
+                'Redirected after valid submission';
+
+            $mech->delete_response_template($_)
+                for $body->response_templates->search(
+                {   title => [
+                        'Test template',
+                        'Test template 2',
+                        'Test template 3',
+                    ]
+                }
+            );
+        };
 
         $mech->log_out_ok;
     };
