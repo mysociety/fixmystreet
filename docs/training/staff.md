@@ -210,7 +210,8 @@ see all the reports on a map.
   <br>
   see `/dashboard`
 
-This only displays something if you are logged in with a staff account.
+This only displays something if you are logged in with a staff account with the
+View Dashboard permission.
 
 
 ## Submit new problem reports as staff user?

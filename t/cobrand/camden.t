@@ -25,6 +25,7 @@ my $camden = $mech->create_body_ok(CAMDEN_MAPIT_ID, 'Camden Borough Council', {
 $mech->create_contact_ok(body_id => $camden->id, category => 'Potholes', email => 'potholes@camden.fixmystreet.com');
 my $staffuser = $mech->create_user_ok( 'staff@example.com', name => 'Staffer', from_body => $camden );
 $staffuser->user_body_permissions->create( { body => $camden, permission_type => 'report_edit' } );
+$staffuser->user_body_permissions->create( { body => $camden, permission_type => 'view_dashboard' } );
 
 $mech->create_contact_ok(
     body_id => $camden->id,

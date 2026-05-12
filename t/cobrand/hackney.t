@@ -83,6 +83,7 @@ my $hackney_user = $mech->create_user_ok('hackney_user@example.org', name => 'Ha
 $hackney_user->user_body_permissions->create({ body => $hackney, permission_type => 'moderate' });
 $hackney_user->user_body_permissions->create({ body => $hackney, permission_type => 'category_edit' });
 $hackney_user->user_body_permissions->create({ body => $hackney, permission_type => 'report_edit' });
+$hackney_user->user_body_permissions->create({ body => $hackney, permission_type => 'view_dashboard' });
 
 my $contact2 = $mech->create_contact_ok(
     body_id => $hackney->id,

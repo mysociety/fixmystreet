@@ -28,6 +28,7 @@
         - Show report search on the admin summary page for staff with `user_edit`. #5903
         - Population lookup size for radius alert can be configured per cobrand
         - Split original report_mark_private permission into a view-only permission (report_view_private) and an edit permission (report_mark_private) #5973
+        - Require view dashboard permission in order to view the dashboard
     - Development improvements
         - More logging when `page_error` is called, to aid troubleshooting. #5279
         - Docker changes needed for systemd to work. #5257

@@ -7,6 +7,10 @@ package FixMyStreet::Cobrand::No2FA;
 use parent 'FixMyStreet::Cobrand::FixMyStreet';
 sub must_have_2fa { 0 }
 
+package FixMyStreet::Cobrand::ACouncil;
+use parent 'FixMyStreet::Cobrand::FixMyStreet';
+sub council_area_id { 2651 }
+
 package FixMyStreet::Cobrand::Tester;
 use parent 'FixMyStreet::Cobrand::Default';
 # Allow access if CSV export for a body, otherwise deny
@@ -29,7 +33,7 @@ set_absolute_time('2014-02-01T12:00:00');
 my $mech = FixMyStreet::TestMech->new;
 
 my $other_body = $mech->create_body_ok(1234, 'Some Other Council');
-my $body = $mech->create_body_ok(2651, 'City of Edinburgh Council');
+my $body = $mech->create_body_ok(2651, 'City of Edinburgh Council', {cobrand => 'acouncil'});
 my @cats = ('Litter', 'Other', 'Potholes', 'Traffic lights & bells', 'White lines');
 for my $contact ( @cats ) {
     my $c = $mech->create_contact_ok(body_id => $body->id, category => $contact, email => "$contact\@example.org");
@@ -41,12 +45,19 @@ for my $contact ( @cats ) {
 
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body);
+my $nondashboard_counciluser = $mech->create_user_ok('nondashboard_counciluser@example.com', name => 'Other Council User', from_body => $body);
 my $role = FixMyStreet::DB->resultset("Role")->create({
     body => $body,
     name => 'Role A',
-    permissions => ['report_inspect', 'planned_reports'],
+    permissions => ['report_inspect', 'planned_reports', 'view_dashboard'],
 });
 $counciluser->add_to_roles($role);
+my $role_b = FixMyStreet::DB->resultset("Role")->create({
+    body => $body,
+    name => 'Role B',
+    permissions => ['report_inspect', 'planned_reports'],
+});
+$nondashboard_counciluser->add_to_roles($role_b);
 my $normaluser = $mech->create_user_ok('normaluser@example.com', name => 'Normal User');
 
 my $body_id = $body->id;
@@ -96,6 +107,30 @@ my $categories = scraper {
 my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 
 FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'acouncil',
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+    subtest 'not logged in, redirected to login' => sub {
+        $mech->not_logged_in_ok;
+        $mech->get_ok('/dashboard');
+        $mech->content_contains( 'sign in' );
+    };
+
+    subtest 'normal user, 404' => sub {
+        $mech->log_in_ok( $normaluser->email );
+        $mech->get('/dashboard');
+        is $mech->status, '404', 'If not council user get 404';
+    };
+
+    subtest 'non dashboard council user, 404' => sub {
+        $mech->log_in_ok( $nondashboard_counciluser->email );
+        $mech->get('/dashboard');
+        is $mech->status, '404', 'If council but no dashboard permission user get 404';
+        $mech->log_out_ok;
+    };
+};
+
+FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'no2fa',
     COBRAND_FEATURES => { category_groups => { no2fa => 1 } },
     MAPIT_URL => 'http://mapit.uk/',
@@ -114,6 +149,12 @@ FixMyStreet::override_config {
         $mech->log_in_ok( $normaluser->email );
         $mech->get('/dashboard');
         is $mech->status, '404', 'If not council user get 404';
+    };
+
+    subtest 'non dashboard council user ok' => sub {
+        $mech->log_in_ok( $nondashboard_counciluser->email );
+        $mech->get('/dashboard');
+        is $mech->status, '200', 'If single cobrand than any council user is ok';
     };
 
     subtest 'superuser, body list' => sub {

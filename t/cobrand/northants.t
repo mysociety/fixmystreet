@@ -330,6 +330,7 @@ subtest 'check pin colour / reference shown' => sub {
 
 my $staffuser = $mech->create_user_ok($test->{moniker} . 'counciluser@example.com', name => 'Council User',
     from_body => $northants, password => 'password');
+$staffuser->user_body_permissions->create({ body => $northants, permission_type => 'view_dashboard' });
 $mech->log_in_ok( $staffuser->email );
 
 subtest 'Dashboard CSV extra columns' => sub {

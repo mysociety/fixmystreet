@@ -208,7 +208,7 @@ Refer to the section “HTML Content in notices” above for details of what tag
 
 When you log in to the Admin area and click ‘Stats’ in the admin navigation. From here you’ll see some top-level statistics, including the number of reports published on the site, the number of updates, and the number of alerts set up. This can be useful for a quick snapshot of activity.
 
-For a more detailed breakdown, from the ‘Stats’ page click ‘Summary statistics’ or type ‘/dashboard’ on the end of your WasteWorks URL.
+For a more detailed breakdown, from the ‘Stats’ page click ‘Summary statistics’ or type ‘/dashboard’ on the end of your WasteWorks URL. You will need to have the View Dashboard permission to see this.
 
 From here, you can access statistics on:
 
