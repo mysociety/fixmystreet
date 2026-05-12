@@ -423,6 +423,7 @@ subtest 'Dashboard CSV export includes bulky items' => sub {
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         my $staff_user = $mech->create_user_ok('staff@sutton.gov.uk', name => 'Staff User', from_body => $body);
+        $staff_user->user_body_permissions->create({ body => $body, permission_type => 'view_dashboard' });
 
         my ($report) = $mech->create_problems_for_body(1, $body->id, 'Bulky collection', {
             areas => "2498", category => 'Bulky collection', cobrand => 'sutton',

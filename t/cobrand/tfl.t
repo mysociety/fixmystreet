@@ -46,6 +46,7 @@ $staffuser->user_body_permissions->create({ body => $body, permission_type => 'c
 $staffuser->user_body_permissions->create({ body => $body, permission_type => 'default_to_body' });
 $staffuser->user_body_permissions->create({ body => $body, permission_type => 'category_edit' });
 $staffuser->user_body_permissions->create({ body => $body, permission_type => 'report_edit_category' });
+$staffuser->user_body_permissions->create({ body => $body, permission_type => 'view_dashboard' });
 
 my $user = $mech->create_user_ok('londonresident@example.com');
 

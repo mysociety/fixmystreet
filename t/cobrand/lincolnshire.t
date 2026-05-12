@@ -299,7 +299,7 @@ subtest 'Dashboard CSV export includes extra staff columns' => sub {
         my $csv_role = FixMyStreet::DB->resultset("Role")->create({
             body => $body,
             name => 'CSV Role',
-            permissions => ['moderate', 'user_edit'],
+            permissions => ['moderate', 'user_edit', 'view_dashboard'],
         });
         $csv_staff->add_to_roles($csv_role);
 

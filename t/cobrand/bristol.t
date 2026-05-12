@@ -28,11 +28,12 @@ my $bristol = $mech->create_body_ok( 2561, 'Bristol City Council', {
 });
 $comment_user->update({ from_body => $bristol->id });
 $comment_user->user_body_permissions->create({ body => $bristol, permission_type => 'report_edit' });
+$comment_user->user_body_permissions->create({ body => $bristol, permission_type => 'view_dashboard' });
 
 my $role = FixMyStreet::DB->resultset("Role")->create({
     body => $bristol,
     name => 'Role',
-    permissions => ['moderate', 'user_edit'],
+    permissions => ['moderate', 'user_edit', 'view_dashboard'],
 });
 
 my $staff_user = $mech->create_user_ok('staff@example.org', from_body => $bristol, name => 'Staff User');

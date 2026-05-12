@@ -481,6 +481,7 @@ foreach (
         @$perms_cs, @$perms_inspector, 'report_edit',
         'category_edit', 'template_edit', 'responsepriority_edit',
         'user_assign_body', 'user_manage_permissions', 'user_edit',
+        'view_dashboard',
     ] },
     { name => 'Wizard of Oz', email_verified => 1, email => 'admin@example.org', is_superuser => 't' },
     { name => "Norma User", email_verified => 1, email => 'user@example.org' },

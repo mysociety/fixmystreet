@@ -883,6 +883,9 @@ sub available_permissions {
             responsepriority_edit => _("Add/edit response priorities"),
             emergency_message_edit => _("Add/edit site message"),
         },
+        _("Dashboard") => {
+            view_dashboard => _("View the dashboard"),
+        },
     };
 }
 

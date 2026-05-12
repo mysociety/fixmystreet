@@ -100,6 +100,9 @@ sub available_permissions {
         Waste => {
             wasteworks_config => "Can edit WasteWorks configuration",
         },
+        _("Dashboard") => {
+            view_dashboard => _("View the dashboard"),
+        },
     };
 }
 

@@ -77,6 +77,7 @@ $peterborough->update( { comment_user_id => $user->id } );
 
 my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $peterborough);
 $staffuser->user_body_permissions->create({ body => $peterborough, permission_type => 'report_inspect' });
+$staffuser->user_body_permissions->create({ body => $peterborough, permission_type => 'view_dashboard' });
 
 subtest 'open311 request handling', sub {
     FixMyStreet::override_config {
