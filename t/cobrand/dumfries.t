@@ -723,4 +723,153 @@ subtest 'admin template external_status_code validation' => sub {
     };
 };
 
+subtest 'Alloy "planned" set back to "reported" - template message triggers' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['dumfries'],
+    }, sub {
+        my %templates = (
+            1 => {   body_id => $body->id,
+                title   => 'Alloy anything to reported (empty string)',
+                text    =>
+                    'This defect has been reopened (matches empty string).',
+                auto_response        => 1,
+                state => '',
+                external_status_code => 'external_reported:*:*',
+                old_external_status_code => '',
+            },
+            2 => {   body_id => $body->id,
+                title   => 'Alloy planned to reported',
+                text    =>
+                    'A planned job was cancelled so this defect has been reopened.',
+                auto_response        => 1,
+                state => '',
+                external_status_code => 'external_reported:*:*',
+                old_external_status_code => 'external_planned',
+            },
+            3 => {   body_id => $body->id,
+                title   => 'Alloy planned to reported and priority_1',
+                text    =>
+                    'A planned job was cancelled so this defect has been reopened with priority_1.',
+                auto_response        => 1,
+                state => '',
+                external_status_code => 'external_reported:*:priority_1',
+                old_external_status_code => 'external_planned',
+            },
+        );
+
+        # Use hash to make sure we are not relying on a particular order of
+        # templates
+        for ( values %templates ) {
+            FixMyStreet::DB->resultset('ResponseTemplate')->create($_);
+        }
+
+        my $test_problem = FixMyStreet::DB->resultset('Problem')->create({
+            postcode           => 'DG1 1AA',
+            bodies_str         => $body->id,
+            areas              => ',2656,',
+            category           => 'Potholes',
+            title              => 'Pretending to be a report sent to Alloy',
+            detail             => 'Test detail',
+            used_map           => 1,
+            name               => 'Reporter',
+            anonymous          => 0,
+            state              => 'confirmed',
+            confirmed          => DateTime->now,
+            lastupdate         => DateTime->now,
+            latitude           => 55.0706,
+            longitude          => -3.9568,
+            user_id            => $reporter->id,
+            cobrand            => 'dumfries',
+
+            external_id => 12345,
+        });
+
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com');
+        my $update = Open311::GetServiceRequestUpdates->new(
+            system_user     => $staff_user,
+            current_open311 => $o,
+            current_body    => $body,
+        );
+
+        note 'No initial external_status_code';
+
+        _inject_response( update_id => 'UPDATE_1' );
+
+        is $test_problem->state, 'confirmed';
+        is $test_problem->get_extra_metadata('external_status_code'), undef;
+        $update->process_body;
+        $test_problem->discard_changes;
+        is $test_problem->comments->order_by('-id')->first->text,
+            'This defect has been reopened (matches empty string).',
+            'Problem with no initial external_status_code correctly triggers general template';
+
+        note 'Planned to reported';
+
+        _inject_response( update_id => 'UPDATE_2' );
+
+        $test_problem->state('planned');
+        $test_problem->set_extra_metadata( 'external_status_code',
+            'external_planned::' );
+        $test_problem->update;
+        $update->process_body;
+        $test_problem->discard_changes;
+        is $test_problem->comments->order_by('-id')->first->text,
+            'A planned job was cancelled so this defect has been reopened.',
+            'Planned->reported problem correctly triggers specific template';
+
+        note 'Planned to reported with priority_1';
+
+        _inject_response(
+            update_id            => 'UPDATE_3',
+            external_status_code => 'external_reported::priority_1',
+        );
+
+        $test_problem->state('planned');
+        $test_problem->set_extra_metadata( 'external_status_code',
+            'external_planned::' );
+        $test_problem->update;
+        $update->process_body;
+        $test_problem->discard_changes;
+        is $test_problem->comments->order_by('-id')->first->text,
+            'A planned job was cancelled so this defect has been reopened with priority_1.',
+            'Planned->reported-with-priority problem correctly triggers specific template';
+
+        note 'Investigating to reported';
+
+        _inject_response( update_id => 'UPDATE_4' );
+
+        $test_problem->state('investigating');
+        $test_problem->set_extra_metadata( 'external_status_code',
+            'external_investigating::' );
+        $test_problem->update;
+        $update->process_body;
+        $test_problem->discard_changes;
+        is $test_problem->comments->order_by('-id')->first->text,
+            'This defect has been reopened (matches empty string).',
+            'Investigating->reported problem correctly triggers general template';
+    };
+};
+
+sub _inject_response {
+    my %args = @_;
+
+    $args{external_status_code} //= 'external_reported::';
+
+    my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+        <service_requests_updates>
+        <request_update>
+        <update_id>$args{update_id}</update_id>
+        <service_request_id>12345</service_request_id>
+        <status>open</status>
+        <external_status_code>$args{external_status_code}</external_status_code>
+        <updated_datetime>UPDATED_DATETIME</updated_datetime>
+        </request_update>
+        </service_requests_updates>
+    };
+    my $update_dt = DateTime->now(formatter => DateTime::Format::W3CDTF->new);
+    $requests_xml =~ s/UPDATED_DATETIME/$update_dt/g;
+
+    Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
+}
+
 done_testing();

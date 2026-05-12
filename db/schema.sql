@@ -568,6 +568,7 @@ create table response_templates (
     state text,
     external_status_code text,
     deleted boolean not null default 'f',
+    old_external_status_code text NOT NULL DEFAULT '',
     unique(body_id, title)
 );
 
