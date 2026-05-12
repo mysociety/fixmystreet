@@ -14,9 +14,36 @@ html {
     width: 18.875rem;
 }
 
+.crt-logo-wrapper {
+  position: relative;
+  .strapline {
+    display: block;
+    position: absolute;
+    font-size: .875rem;
+    font-weight: 400;
+    left: 114px;
+    letter-spacing: 0;
+    line-height: .75rem;
+    margin-top: -1.75rem;
+  }
+}
+
+.strapline-mobile {
+  display: none;
+}
+
 .nav-menu--main {
-  a, span {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 60%;
+  right: 0;
+  position: absolute;
+  justify-content: flex-end;
+
+  a, span, a.report-a-problem-btn {
     font-size: 1rem;
+    padding: 0.2em 0.75em;
+    margin: 0;
   }
 
   a {
@@ -32,6 +59,10 @@ html {
     &:hover {
       color: $primary_text;
     }
+  }
+
+  @media (min-width: 1440px) {
+    max-width: 100%;
   }
 }
 
@@ -51,66 +82,100 @@ html {
   color: $cobrand_teal;
 }
 
+.js #photoForm,
+.js #photoForm .dropzone {
+  border-radius: 0;
+}
+
 /* MAP PAGE */
 .big-green-banner {
   border-top: 1px solid $cobrand_white;
+  text-transform: none;
 }
 
-/* DARK THEME */
-@media (prefers-color-scheme: dark) {
-  body {
-    @include true-black();
-  }
+/* CONTACT FORM */
+@media (min-width: 1180px) {
+  // Applying same media query rule than CRT website, otherwise the form looks too squashed on smaller screen.
+  .help-contact-form {
+    .govuk-form-group {
+      margin-bottom: 2rem;
+      display: flex;
+      flex-direction: row;
+      gap: 1rem;
+      align-items: center;
 
-  #front-main {
-    position: relative;
-    box-sizing: border-box;
-
-    &::after {
-      content: "";
-      position: absolute;
-      background-color: rgba(0, 0, 0, 0.5);
-      height: 100%;
-      width: 100%;
-      top: 0;
-      left: 0;
-      z-index: 0;
+      &:has(textarea) {
+        align-items: flex-start;
+      }
     }
 
-    #front-main-container {
-      position: relative;
-      z-index: 1;
-      @include true-black();
-      h1 {
-        color: $cobrand_white;
-      }
-      h2 {
-        color: rgba($cobrand_white, 0.9);
-      }
-      .report-forms-wrapper {
-        color: $cobrand_white;
+    .govuk-label {
+      font-size: 1rem;
+      width: 20rem;
+      margin: 0;
+    }
+
+    .govuk-textarea {
+      font-size: 1rem;
+    }
+  }
+}
+
+// /* DARK THEME */
+// @media (prefers-color-scheme: dark) {
+//   body {
+//     @include true-black();
+//   }
+
+//   #front-main {
+//     position: relative;
+//     box-sizing: border-box;
+
+//     &::after {
+//       content: "";
+//       position: absolute;
+//       background-color: rgba(0, 0, 0, 0.5);
+//       height: 100%;
+//       width: 100%;
+//       top: 0;
+//       left: 0;
+//       z-index: 0;
+//     }
+
+//     #front-main-container {
+//       position: relative;
+//       z-index: 1;
+//       @include true-black();
+//       h1 {
+//         color: $cobrand_white;
+//       }
+//       h2 {
+//         color: rgba($cobrand_white, 0.9);
+//       }
+//       .report-forms-wrapper {
+//         color: $cobrand_white;
   
-        .form-hint {
-          color: rgba($cobrand_white, 0.9);
-        }
-      }
-    }
-  }
+//         .form-hint {
+//           color: rgba($cobrand_white, 0.9);
+//         }
+//       }
+//     }
+//   }
 
-  .keyboard-instructions-wrapper {
-    background-color: #000;
-  }
+//   .keyboard-instructions-wrapper {
+//     background-color: #000;
+//   }
 
-  .frontpage {
-    .content {
-      @include true-black();
-    }
-    h2 {
-      color: $cobrand_white;
-    }
-  }
+//   .frontpage {
+//     .content {
+//       @include true-black();
+//     }
+//     h2 {
+//       color: $cobrand_white;
+//     }
+//   }
 
-  .content, #map_sidebar  {
-    @include true-black;
-  }
-}
+//   .content, #map_sidebar  {
+//     @include true-black;
+//   }
+// }
