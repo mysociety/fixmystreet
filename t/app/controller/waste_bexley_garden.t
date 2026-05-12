@@ -712,6 +712,8 @@ FixMyStreet::override_config {
                 my $dd_customer_id = 'DD_CUSTOMER_123';
                 my $dd_contract_id = 'DD_CONTRACT_123';
 
+                mock_agile('01/02/2025 12:00', PaymentMethod => 'Direct debit');
+
                 $access_mock->mock(
                     get_contracts => sub { [ { Status => 'Active' } ] },
                 );
@@ -2312,7 +2314,7 @@ FixMyStreet::override_config {
         );
 
         # Set up the mock for Agile to return customer data
-        mock_agile('12/12/2025 12:21', only_uprn => 10001);
+        mock_agile('12/12/2025 12:21', only_uprn => 10001, PaymentMethod => 'Direct debit');
 
         # Set up the mock for AccessPaySuite
         my $archive_contract_called = 0;
@@ -2504,7 +2506,7 @@ FixMyStreet::override_config {
         $mech->log_in_ok($staff_user->email);
 
         $mech->get_ok('/waste/20001/garden_renew');
-        $mech->content_lacks('which will renew automatically');
+        $mech->content_contains('which will renew automatically');
 
         $mech->get_ok('/waste/20001/garden_cancel');
         $mech->submit_form_ok({
@@ -2554,16 +2556,16 @@ FixMyStreet::override_config {
                 title => 'Garden Subscription - New',
                 external_id => "Agile-HOOK-TEST",
                 user => $user,
+                uprn => 20001,
             },
         );
-        $sub->uprn(20001);
         # No payment_method, should be auto-detected.
-        $sub->update;
         FixMyStreet::Script::Reports::send();
 
         mock_agile('12/12/2025 12:21', only_uprn => 20001,
             CustomerExternalReference => 'CUSTOMER_HOOK_TEST',
             CustomerReference => 'GWIT-HOOK',
+            PaymentMethod => 'Direct debit',
         );
 
         # Track archive_contract calls

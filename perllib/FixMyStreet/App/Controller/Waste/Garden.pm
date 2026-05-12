@@ -98,12 +98,8 @@ sub modify : Chained('setup') : PathPart('garden_modify') : Args(0) {
         $c->forward('/waste/get_original_sub', ['user']);
 
         my $max_bins = $c->cobrand->waste_garden_maximum;
-        my $payment_method = 'credit_card';
-        if ( $c->stash->{orig_sub} ) {
-            my $orig_sub = $c->stash->{orig_sub};
-            my $orig_payment_method = $orig_sub->get_extra_field_value('payment_method');
-            $payment_method = $orig_payment_method if $orig_payment_method && $orig_payment_method ne 'csc';
-        }
+        my $payment_method = $c->forward('/waste/get_current_payment_method');
+        $payment_method = 'credit_card' if $payment_method eq 'csc';
 
         $c->forward('check_if_staff_can_pay', [ $payment_method ]);
 
