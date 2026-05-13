@@ -291,7 +291,8 @@ sub check_and_stash_category : Private {
         if ($c->user->is_superuser) {
             $rs = $rs->not_deleted_admin;
         } elsif ($c->user->has_body_permission_to('report_inspect') ||
-                 $c->user->has_body_permission_to('report_mark_private')) {
+                    $c->user->has_body_permission_to('report_view_private') ||
+                    $c->user->has_body_permission_to('report_mark_private')) {
             $where = {
                 -or => [
                     {

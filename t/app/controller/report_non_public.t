@@ -13,6 +13,13 @@ my $staffuser = $mech->create_user_ok('body-user@example.net', name => 'Body Use
 $staffuser->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_another_user' });
 $staffuser->user_body_permissions->create({ body => $body, permission_type => 'report_mark_private' });
 
+my $staffuser_view_private = $mech->create_user_ok(
+    'body-user-view-private@example.net',
+    name      => 'View Private',
+    from_body => $body->id,
+);
+$staffuser_view_private->user_body_permissions->create({ body => $body, permission_type => 'report_view_private' });
+
 my $user = $mech->create_user_ok('test@example.com', name => 'Test User');
 my $user2 = $mech->create_user_ok('test2@example.com', name => 'Other User');
 
@@ -47,6 +54,24 @@ subtest "check owner of report can view non public reports" => sub {
     $mech->content_lacks('Report another problem here');
     $mech->content_lacks($report->latitude);
     $mech->content_lacks($report->longitude);
+    $mech->log_out_ok;
+};
+
+subtest 'check staff with report_view_private can view non-public, but not edit' => sub {
+    $mech->log_in_ok( $staffuser_view_private->email );
+    ok $mech->get("/report/$report_id"), "get '/report/$report_id'";
+    is $mech->res->code, 200, "report can be viewed";
+    is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
+    $mech->content_lacks('id="side-inspect"', 'inspect bar is not shown');
+    $mech->log_out_ok;
+};
+
+subtest 'check staff with report_mark_private can view and edit non-public' => sub {
+    $mech->log_in_ok( $staffuser->email );
+    ok $mech->get("/report/$report_id"), "get '/report/$report_id'";
+    is $mech->res->code, 200, "report can be viewed";
+    is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
+    $mech->content_contains('id="side-inspect"', 'inspect bar is shown');
     $mech->log_out_ok;
 };
 

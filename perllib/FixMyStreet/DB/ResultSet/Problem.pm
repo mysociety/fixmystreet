@@ -41,7 +41,8 @@ sub non_public_if_possible {
             # See all reports, no restriction
             $params->{"$table.non_public"} = 1 if $only_non_public;
         } elsif ($c->user->has_body_permission_to('report_inspect') ||
-                 $c->user->has_body_permission_to('report_mark_private')) {
+                    $c->user->has_body_permission_to('report_view_private') ||
+                    $c->user->has_body_permission_to('report_mark_private')) {
             if ($only_non_public) {
                 push @{ $params->{-and} }, {
                     -and => [
