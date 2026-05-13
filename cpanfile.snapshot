@@ -1227,121 +1227,122 @@ DISTRIBUTIONS
     requirements:
       Crypt::URandom 0.40
       ExtUtils::MakeMaker 0
-  CryptX-0.087
-    pathname: M/MI/MIK/CryptX-0.087.tar.gz
+  CryptX-0.088
+    pathname: M/MI/MIK/CryptX-0.088.tar.gz
     provides:
-      Crypt::AuthEnc 0.087
-      Crypt::AuthEnc::CCM 0.087
-      Crypt::AuthEnc::ChaCha20Poly1305 0.087
-      Crypt::AuthEnc::EAX 0.087
-      Crypt::AuthEnc::GCM 0.087
-      Crypt::AuthEnc::OCB 0.087
-      Crypt::Checksum 0.087
-      Crypt::Checksum::Adler32 0.087
-      Crypt::Checksum::CRC32 0.087
-      Crypt::Cipher 0.087
-      Crypt::Cipher::AES 0.087
-      Crypt::Cipher::Anubis 0.087
-      Crypt::Cipher::Blowfish 0.087
-      Crypt::Cipher::CAST5 0.087
-      Crypt::Cipher::Camellia 0.087
-      Crypt::Cipher::DES 0.087
-      Crypt::Cipher::DES_EDE 0.087
-      Crypt::Cipher::IDEA 0.087
-      Crypt::Cipher::KASUMI 0.087
-      Crypt::Cipher::Khazad 0.087
-      Crypt::Cipher::MULTI2 0.087
-      Crypt::Cipher::Noekeon 0.087
-      Crypt::Cipher::RC2 0.087
-      Crypt::Cipher::RC5 0.087
-      Crypt::Cipher::RC6 0.087
-      Crypt::Cipher::SAFERP 0.087
-      Crypt::Cipher::SAFER_K128 0.087
-      Crypt::Cipher::SAFER_K64 0.087
-      Crypt::Cipher::SAFER_SK128 0.087
-      Crypt::Cipher::SAFER_SK64 0.087
-      Crypt::Cipher::SEED 0.087
-      Crypt::Cipher::Serpent 0.087
-      Crypt::Cipher::Skipjack 0.087
-      Crypt::Cipher::Twofish 0.087
-      Crypt::Cipher::XTEA 0.087
-      Crypt::Digest 0.087
-      Crypt::Digest::BLAKE2b_160 0.087
-      Crypt::Digest::BLAKE2b_256 0.087
-      Crypt::Digest::BLAKE2b_384 0.087
-      Crypt::Digest::BLAKE2b_512 0.087
-      Crypt::Digest::BLAKE2s_128 0.087
-      Crypt::Digest::BLAKE2s_160 0.087
-      Crypt::Digest::BLAKE2s_224 0.087
-      Crypt::Digest::BLAKE2s_256 0.087
-      Crypt::Digest::CHAES 0.087
-      Crypt::Digest::Keccak224 0.087
-      Crypt::Digest::Keccak256 0.087
-      Crypt::Digest::Keccak384 0.087
-      Crypt::Digest::Keccak512 0.087
-      Crypt::Digest::MD2 0.087
-      Crypt::Digest::MD4 0.087
-      Crypt::Digest::MD5 0.087
-      Crypt::Digest::RIPEMD128 0.087
-      Crypt::Digest::RIPEMD160 0.087
-      Crypt::Digest::RIPEMD256 0.087
-      Crypt::Digest::RIPEMD320 0.087
-      Crypt::Digest::SHA1 0.087
-      Crypt::Digest::SHA224 0.087
-      Crypt::Digest::SHA256 0.087
-      Crypt::Digest::SHA384 0.087
-      Crypt::Digest::SHA3_224 0.087
-      Crypt::Digest::SHA3_256 0.087
-      Crypt::Digest::SHA3_384 0.087
-      Crypt::Digest::SHA3_512 0.087
-      Crypt::Digest::SHA512 0.087
-      Crypt::Digest::SHA512_224 0.087
-      Crypt::Digest::SHA512_256 0.087
-      Crypt::Digest::SHAKE 0.087
-      Crypt::Digest::Tiger192 0.087
-      Crypt::Digest::Whirlpool 0.087
-      Crypt::KeyDerivation 0.087
-      Crypt::Mac 0.087
-      Crypt::Mac::BLAKE2b 0.087
-      Crypt::Mac::BLAKE2s 0.087
-      Crypt::Mac::F9 0.087
-      Crypt::Mac::HMAC 0.087
-      Crypt::Mac::OMAC 0.087
-      Crypt::Mac::PMAC 0.087
-      Crypt::Mac::Pelican 0.087
-      Crypt::Mac::Poly1305 0.087
-      Crypt::Mac::XCBC 0.087
-      Crypt::Misc 0.087
-      Crypt::Mode 0.087
-      Crypt::Mode::CBC 0.087
-      Crypt::Mode::CFB 0.087
-      Crypt::Mode::CTR 0.087
-      Crypt::Mode::ECB 0.087
-      Crypt::Mode::OFB 0.087
-      Crypt::PK 0.087
-      Crypt::PK::DH 0.087
-      Crypt::PK::DSA 0.087
-      Crypt::PK::ECC 0.087
-      Crypt::PK::Ed25519 0.087
-      Crypt::PK::RSA 0.087
-      Crypt::PK::X25519 0.087
-      Crypt::PRNG 0.087
-      Crypt::PRNG::ChaCha20 0.087
-      Crypt::PRNG::Fortuna 0.087
-      Crypt::PRNG::RC4 0.087
-      Crypt::PRNG::Sober128 0.087
-      Crypt::PRNG::Yarrow 0.087
-      Crypt::Stream::ChaCha 0.087
-      Crypt::Stream::RC4 0.087
-      Crypt::Stream::Rabbit 0.087
-      Crypt::Stream::Salsa20 0.087
-      Crypt::Stream::Sober128 0.087
-      Crypt::Stream::Sosemanuk 0.087
-      CryptX 0.087
-      Math::BigInt::LTM 0.087
+      Crypt::AuthEnc 0.088
+      Crypt::AuthEnc::CCM 0.088
+      Crypt::AuthEnc::ChaCha20Poly1305 0.088
+      Crypt::AuthEnc::EAX 0.088
+      Crypt::AuthEnc::GCM 0.088
+      Crypt::AuthEnc::OCB 0.088
+      Crypt::Checksum 0.088
+      Crypt::Checksum::Adler32 0.088
+      Crypt::Checksum::CRC32 0.088
+      Crypt::Cipher 0.088
+      Crypt::Cipher::AES 0.088
+      Crypt::Cipher::Anubis 0.088
+      Crypt::Cipher::Blowfish 0.088
+      Crypt::Cipher::CAST5 0.088
+      Crypt::Cipher::Camellia 0.088
+      Crypt::Cipher::DES 0.088
+      Crypt::Cipher::DES_EDE 0.088
+      Crypt::Cipher::IDEA 0.088
+      Crypt::Cipher::KASUMI 0.088
+      Crypt::Cipher::Khazad 0.088
+      Crypt::Cipher::MULTI2 0.088
+      Crypt::Cipher::Noekeon 0.088
+      Crypt::Cipher::RC2 0.088
+      Crypt::Cipher::RC5 0.088
+      Crypt::Cipher::RC6 0.088
+      Crypt::Cipher::SAFERP 0.088
+      Crypt::Cipher::SAFER_K128 0.088
+      Crypt::Cipher::SAFER_K64 0.088
+      Crypt::Cipher::SAFER_SK128 0.088
+      Crypt::Cipher::SAFER_SK64 0.088
+      Crypt::Cipher::SEED 0.088
+      Crypt::Cipher::Serpent 0.088
+      Crypt::Cipher::Skipjack 0.088
+      Crypt::Cipher::Twofish 0.088
+      Crypt::Cipher::XTEA 0.088
+      Crypt::Digest 0.088
+      Crypt::Digest::BLAKE2b_160 0.088
+      Crypt::Digest::BLAKE2b_256 0.088
+      Crypt::Digest::BLAKE2b_384 0.088
+      Crypt::Digest::BLAKE2b_512 0.088
+      Crypt::Digest::BLAKE2s_128 0.088
+      Crypt::Digest::BLAKE2s_160 0.088
+      Crypt::Digest::BLAKE2s_224 0.088
+      Crypt::Digest::BLAKE2s_256 0.088
+      Crypt::Digest::CHAES 0.088
+      Crypt::Digest::Keccak224 0.088
+      Crypt::Digest::Keccak256 0.088
+      Crypt::Digest::Keccak384 0.088
+      Crypt::Digest::Keccak512 0.088
+      Crypt::Digest::MD2 0.088
+      Crypt::Digest::MD4 0.088
+      Crypt::Digest::MD5 0.088
+      Crypt::Digest::RIPEMD128 0.088
+      Crypt::Digest::RIPEMD160 0.088
+      Crypt::Digest::RIPEMD256 0.088
+      Crypt::Digest::RIPEMD320 0.088
+      Crypt::Digest::SHA1 0.088
+      Crypt::Digest::SHA224 0.088
+      Crypt::Digest::SHA256 0.088
+      Crypt::Digest::SHA384 0.088
+      Crypt::Digest::SHA3_224 0.088
+      Crypt::Digest::SHA3_256 0.088
+      Crypt::Digest::SHA3_384 0.088
+      Crypt::Digest::SHA3_512 0.088
+      Crypt::Digest::SHA512 0.088
+      Crypt::Digest::SHA512_224 0.088
+      Crypt::Digest::SHA512_256 0.088
+      Crypt::Digest::SHAKE 0.088
+      Crypt::Digest::Tiger192 0.088
+      Crypt::Digest::Whirlpool 0.088
+      Crypt::KeyDerivation 0.088
+      Crypt::Mac 0.088
+      Crypt::Mac::BLAKE2b 0.088
+      Crypt::Mac::BLAKE2s 0.088
+      Crypt::Mac::F9 0.088
+      Crypt::Mac::HMAC 0.088
+      Crypt::Mac::OMAC 0.088
+      Crypt::Mac::PMAC 0.088
+      Crypt::Mac::Pelican 0.088
+      Crypt::Mac::Poly1305 0.088
+      Crypt::Mac::XCBC 0.088
+      Crypt::Misc 0.088
+      Crypt::Mode 0.088
+      Crypt::Mode::CBC 0.088
+      Crypt::Mode::CFB 0.088
+      Crypt::Mode::CTR 0.088
+      Crypt::Mode::ECB 0.088
+      Crypt::Mode::OFB 0.088
+      Crypt::PK 0.088
+      Crypt::PK::DH 0.088
+      Crypt::PK::DSA 0.088
+      Crypt::PK::ECC 0.088
+      Crypt::PK::Ed25519 0.088
+      Crypt::PK::RSA 0.088
+      Crypt::PK::X25519 0.088
+      Crypt::PRNG 0.088
+      Crypt::PRNG::ChaCha20 0.088
+      Crypt::PRNG::Fortuna 0.088
+      Crypt::PRNG::RC4 0.088
+      Crypt::PRNG::Sober128 0.088
+      Crypt::PRNG::Yarrow 0.088
+      Crypt::Stream::ChaCha 0.088
+      Crypt::Stream::RC4 0.088
+      Crypt::Stream::Rabbit 0.088
+      Crypt::Stream::Salsa20 0.088
+      Crypt::Stream::Sober128 0.088
+      Crypt::Stream::Sosemanuk 0.088
+      CryptX 0.088
+      Math::BigInt::LTM 0.088
     requirements:
       ExtUtils::MakeMaker 0
       Math::BigInt 0
+      Time::HiRes 0
       perl 5.006
   DBD-Pg-3.8.0
     pathname: T/TU/TURNSTEP/DBD-Pg-3.8.0.tar.gz
@@ -7325,19 +7326,19 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 6.59
       perl 5.006001
-  Starman-0.4014
-    pathname: M/MI/MIYAGAWA/Starman-0.4014.tar.gz
+  Starman-0.4018
+    pathname: M/MI/MIYAGAWA/Starman-0.4018.tar.gz
     provides:
       HTTP::Server::PSGI::Net::Server::PreFork undef
       Plack::Handler::Starman undef
-      Starman 0.4014
+      Starman 0.4018
       Starman::Server undef
     requirements:
       Data::Dump 0
       HTTP::Date 0
       HTTP::Parser::XS 0
       HTTP::Status 0
-      Module::Build::Tiny 0.039
+      Module::Build::Tiny 0.034
       Net::Server 2.007
       Plack 0.9971
       Test::TCP 2.00

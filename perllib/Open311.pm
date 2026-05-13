@@ -420,7 +420,7 @@ sub add_media {
         my $photo_blob;
         if ($_ =~ /^data:/) {
             my @parts = split ',', $_, 2;
-            if ($parts[0] =~ m{image/(jpeg|pjpeg|gif|tiff|png)}) {
+            if ($parts[0] =~ m{image/(jpeg|pjpeg|gif|tiff|png|webp)}) {
                 my $data = $parts[1];
                 if ($parts[0] =~ /;base64/) {
                     $data = decode_base64($data);
@@ -430,7 +430,7 @@ sub add_media {
         } else {
             my $ua = LWP::UserAgent->new;
             my $res = $ua->get($_);
-            if ( $res->is_success && $res->content_type =~ m{image/(jpeg|pjpeg|gif|tiff|png)} ) {
+            if ( $res->is_success && $res->content_type =~ m{image/(jpeg|pjpeg|gif|tiff|png|webp)} ) {
                 $photo_blob = $res->decoded_content;
             }
         }

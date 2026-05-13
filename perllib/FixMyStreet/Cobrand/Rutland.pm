@@ -99,12 +99,14 @@ sub open311_get_update_munging {
     my ($self, $comment, $state, $request) = @_;
     my $problem = $comment->problem;
 
-    my @recategorise_ids = ('1600', '1610', '1611', '1612', '1620', '1621');
-    if (grep { $comment->get_extra_metadata('external_status_code') eq $_ } @recategorise_ids) {
-        $problem->category('Street Cleansing');
-        $comment->state('hidden');
-        $problem->resend;
-        return;
+    if (my $esc = $comment->get_extra_metadata('external_status_code')) {
+        my @recategorise_ids = ('1600', '1610', '1611', '1612', '1620', '1621');
+        if (grep { $esc eq $_ } @recategorise_ids) {
+            $problem->category('Street Cleansing');
+            $comment->state('hidden');
+            $problem->resend;
+            return;
+        }
     }
 }
 

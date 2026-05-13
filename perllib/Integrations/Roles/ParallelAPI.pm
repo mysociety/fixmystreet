@@ -105,7 +105,9 @@ sub call_api {
             $data = $self->_parallel_api_calls(@_);
         } elsif ($background) {
             # wrap the $calls value in single quotes
-            push(@cmd, "'" . pop(@cmd) . "'");
+            my $calls = pop(@cmd);
+            $calls =~ s/'/\\u0027/g;
+            push(@cmd, "'$calls'");
             # run it in the background
             push @cmd, '&';
             my $cmd = join(" ", @cmd);

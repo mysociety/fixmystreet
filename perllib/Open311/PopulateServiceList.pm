@@ -265,7 +265,7 @@ sub _add_meta_to_contact {
         map {
             if ($_->{description}) {
                 $_->{description} =~ s/:\s*$//;
-                $_->{description} = FixMyStreet::Template::sanitize($_->{description});
+                $_->{description} = FixMyStreet::Template::sanitize($_->{description}, 1);
             }
             if (defined $_->{order}) {
                 $_->{order} += 0;

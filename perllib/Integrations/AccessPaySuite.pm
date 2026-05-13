@@ -250,6 +250,33 @@ not know which contract is the correct one).
 Returns 1 on success, or a hashref with an error key on failure.
 
 =cut
+sub _record_dd_failure {
+    my ($self, $report, $op, $error, $context) = @_;
+    my $errors = $report->get_extra_metadata('direct_debit_errors') || {};
+    my $existing = $errors->{$op} || {};
+    $errors->{$op} = {
+        error          => $error,
+        last_failed_at => DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->iso8601,
+        failures       => ($existing->{failures} // 0) + 1,
+        ($context ? (context => $context) : ()),
+    };
+    $report->set_extra_metadata(direct_debit_errors => $errors);
+    $report->update;
+}
+
+sub _clear_dd_failure {
+    my ($self, $report, $op) = @_;
+    my $errors = $report->get_extra_metadata('direct_debit_errors');
+    return unless $errors && $errors->{$op};
+    delete $errors->{$op};
+    if (%$errors) {
+        $report->set_extra_metadata(direct_debit_errors => $errors);
+    } else {
+        $report->unset_extra_metadata('direct_debit_errors');
+    }
+    $report->update;
+}
+
 sub cancel_plan {
     my ($self, $args) = @_;
     my $report = $args->{report};
@@ -259,7 +286,14 @@ sub cancel_plan {
         # Single contract from metadata - handle errors properly
         my $resp = $self->archive_contract($contract_id);
         if (ref $resp eq 'HASH' && $resp->{error}) {
+            $self->_record_dd_failure($report, 'cancellation', $resp->{error});
             return $resp;
+        } else {
+            $report->set_extra_metadata(
+                direct_debit_cancellation_date => DateTime->now->set_time_zone( FixMyStreet->local_time_zone )->iso8601
+            );
+            $report->update;
+            $self->_clear_dd_failure($report, 'cancellation');
         }
         return 1;
     } elsif ($args->{contract_ids}) {
@@ -288,7 +322,10 @@ sub amend_plan {
 
     my $contract_id = $args->{orig_sub}->get_extra_metadata('direct_debit_contract_id');
     unless ($contract_id) {
-        die "No direct debit contract ID found in original subscription report metadata";
+        $self->_record_dd_failure($args->{orig_sub}, 'amend',
+            "No direct debit contract ID found in original subscription report metadata",
+            { amount => $args->{amount} });
+        return;
     }
 
     my $path = "contract/" . $contract_id . "/amount";
@@ -300,8 +337,13 @@ sub amend_plan {
     my $resp = $self->call('PATCH', $path, $data);
 
     if (ref $resp eq 'HASH' && $resp->{error}) {
-        die "Error amending plan: " . $resp->{error};
+        $self->_record_dd_failure($args->{orig_sub}, 'amend', $resp->{error},
+            { amount => $args->{amount} });
+        return;
     }
+
+    $self->_clear_dd_failure($args->{orig_sub}, 'amend');
+    return 1;
 }
 
 =item * create_payment
@@ -325,7 +367,10 @@ sub one_off_payment {
     my $orig_sub = $args->{orig_sub};
     my $contract_id = $orig_sub->get_extra_metadata('direct_debit_contract_id');
     unless ($contract_id) {
-        die "No direct debit contract ID found in original subscription report metadata";
+        $self->_record_dd_failure($orig_sub, 'one_off',
+            "No direct debit contract ID found in original subscription report metadata",
+            { amount => $args->{amount}, date => $args->{date}->iso8601 });
+        return;
     }
 
     # Create the adhoc payment using the contract ID
@@ -336,19 +381,15 @@ sub one_off_payment {
     });
 
     if (ref $resp eq 'HASH' && $resp->{error}) {
-        die 'Could not create ad hoc payment: ' . $resp->{error};
-    } elsif (ref $resp eq 'HASH' && keys %$resp) {
-        # Assuming a successful response might return some data, but 1 indicates success
-        return 1;
-    } elsif (ref $resp eq 'HASH' && !keys %$resp) {
-        # Handle cases where success might be an empty hash {}
-        return 1;
-    } else {
-        # Handle unexpected response format or potential success cases not returning a hash
-        # Log or handle as appropriate, returning 1 for presumed success if no error indicated
-        $self->log('Unexpected response format from AccessPaySuite adhoc payment: ' . Dumper($resp) );
-        return 1; # Assuming success if no error hash
+        $self->_record_dd_failure($orig_sub, 'one_off', $resp->{error},
+            { amount => $args->{amount}, date => $args->{date}->iso8601 });
+        return;
     }
+
+    $self->log('Unexpected response format from AccessPaySuite adhoc payment: ' . Dumper($resp))
+        unless ref $resp eq 'HASH';
+    $self->_clear_dd_failure($orig_sub, 'one_off');
+    return 1;
 }
 
 sub set_callback_url {

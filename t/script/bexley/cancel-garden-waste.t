@@ -235,67 +235,6 @@ FixMyStreet::override_config {
                 "Cancels legacy contracts even when archive_contract errors are ignored";
         };
 
-        subtest 'records cancellation metadata on success' => sub {
-            $mech->delete_problems_for_body( $body->id );
-
-            my $garden_report = _create_report( uprn => $uprn, external_id => "Agile-$reference" );
-
-            $access_mock->mock( 'cancel_plan', sub { return 1 } );
-
-            stdout_like { $canceller->cancel_contract($contract) }
-                qr/Successfully sent cancellation request/,
-                'success path runs';
-
-            $garden_report->discard_changes;
-            like $garden_report->get_extra_metadata('direct_debit_cancellation_date'),
-                qr/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
-                'cancellation date set in ISO8601 format';
-            is $garden_report->get_extra_metadata('direct_debit_cancellation_note'),
-                'Cancellation received from Agile LastCancelled API',
-                'cancellation note set';
-        };
-
-        subtest 'records failure metadata on error' => sub {
-            $mech->delete_problems_for_body( $body->id );
-
-            my $garden_report = _create_report( uprn => $uprn, external_id => "Agile-$reference" );
-
-            $access_mock->mock( 'cancel_plan', sub { return { error => 'Provider down' } } );
-
-            stdout_like { $canceller->cancel_contract($contract) }
-                qr/Failed to send cancellation request.*Provider down/,
-                'failure path runs';
-
-            $garden_report->discard_changes;
-            is $garden_report->get_extra_metadata('direct_debit_cancellation_failures'), 1,
-                'failure count set to 1';
-            is $garden_report->get_extra_metadata('direct_debit_cancellation_error'), 'Provider down',
-                'error message recorded';
-            like $garden_report->get_extra_metadata('direct_debit_cancellation_last_failed_at'),
-                qr/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
-                'last failure timestamp set in ISO8601 format';
-            ok !$garden_report->get_extra_metadata('direct_debit_cancellation_date'),
-                'no cancellation date on failure';
-        };
-
-        subtest 'increments failure counter on repeated failures' => sub {
-            $mech->delete_problems_for_body( $body->id );
-
-            my $garden_report = _create_report( uprn => $uprn, external_id => "Agile-$reference" );
-            $garden_report->set_extra_metadata( direct_debit_cancellation_failures => 2 );
-            $garden_report->update;
-
-            $access_mock->mock( 'cancel_plan', sub { return { error => 'Still down' } } );
-
-            stdout_like { $canceller->cancel_contract($contract) }
-                qr/Failed to send cancellation request/,
-                'failure path runs';
-
-            $garden_report->discard_changes;
-            is $garden_report->get_extra_metadata('direct_debit_cancellation_failures'), 3,
-                'failure count incremented from existing value';
-        };
-
         subtest 'skips reports already cancelled' => sub {
             $mech->delete_problems_for_body( $body->id );
 

@@ -28,7 +28,7 @@ Display a photo
 
 =cut
 
-sub during :LocalRegex('^(temp|fulltemp)\.([0-9a-f]{40}\.(?:jpeg|png|gif|tiff))$') {
+sub during :LocalRegex('^(temp|fulltemp)\.([0-9a-f]{40}\.(?:jpeg|png|gif|tiff|webp))$') {
     my ( $self, $c ) = @_;
     my ( $size, $filename ) = @{ $c->req->captures };
 
@@ -48,7 +48,7 @@ sub during :LocalRegex('^(temp|fulltemp)\.([0-9a-f]{40}\.(?:jpeg|png|gif|tiff))$
     $c->forward( 'output', [ $photo ] );
 }
 
-sub index :LocalRegex('^(c/)?([1-9]\d*)(?:\.(\d+))?(?:\.(full|tn|fp|og))?\.(?:jpeg|png|gif|tiff)$') {
+sub index :LocalRegex('^(c/)?([1-9]\d*)(?:\.(\d+))?(?:\.(full|tn|fp|og))?\.(?:jpeg|png|gif|tiff|webp)$') {
     my ( $self, $c ) = @_;
     my ( $is_update, $id, $photo_number, $size ) = @{ $c->req->captures };
 
@@ -127,7 +127,7 @@ sub upload : Local {
     };
     my $out;
     if ($c->stash->{photo_error} || !$fileid) {
-        $c->res->status(500);
+        $c->res->status(400);
         $out = { error => $c->stash->{photo_error} || _('Unknown error') };
     } else {
         $out = { id => $fileid };

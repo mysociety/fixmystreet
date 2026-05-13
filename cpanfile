@@ -15,7 +15,7 @@ requires 'HTTP::Tiny', '0.090';
 requires 'Net::Server', '2.009';
 requires 'XML::LibXML', '2.0210';
 requires 'PkgConfig'; # If you don't have pkg-config installed, XML::LibXML won't install
-requires 'CryptX', '0.087';
+requires 'CryptX', '0.088';
 requires 'JSON::XS', '4.04';
 requires 'Cpanel::JSON::XS', '4.40';
 requires 'HTML::TreeBuilder', '5.07'; # Demanded by PDF::Builder
@@ -133,7 +133,7 @@ requires 'Readonly';
 requires 'Regexp::Common';
 requires 'Scalar::Util';
 requires 'Statistics::Distributions';
-requires 'Starman', '0.4014';
+requires 'Starman', '0.4018';
 requires 'Storable';
 requires 'Template', '2.29';
 requires 'Template::Plugin::Number::Format';
