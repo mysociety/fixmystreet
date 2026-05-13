@@ -61,7 +61,7 @@ sub one_off_payment {
         amountString => $args->{amount},
         dueDateString => $args->{date}->strftime('%d-%m-%Y'),
         clientSUN => $self->config->{dd_sun},
-        yourRef => $args->{reference},
+        yourRef => $args->{report}->id,
         comments => $args->{comments}
     ];
 

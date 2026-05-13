@@ -634,23 +634,24 @@ sub direct_debit_modify : Private {
 
     # TODO Display error messages to user
 
+    my $dd_reference = $c->cobrand->waste_dd_get_reference('single');
+
     # if reducing bin count then there won't be an ad-hoc payment
     if ( $ad_hoc ) {
         my $one_off_ref = $i->one_off_payment( {
                 # this will be set when the initial payment is confirmed
-                dd_reference => $ref,
+                dd_reference => $dd_reference,
                 amount => sprintf('%.2f', $ad_hoc / 100),
-                reference => $p->id,
                 comments => '',
                 date => $c->cobrand->waste_get_next_dd_day('ad-hoc'),
-                orig_sub => $c->stash->{orig_sub},
+                report => $p,
         } );
     }
 
     my $update_ref = $i->amend_plan( {
-        dd_reference => $ref,
+        dd_reference => $dd_reference,
         amount => sprintf('%.2f', $total / 100),
-        orig_sub => $c->stash->{orig_sub},
+        report => $p,
     } );
 
     if ( $c->cobrand->moniker eq 'bexley' ) {
@@ -669,16 +670,15 @@ sub direct_debit_cancel_sub : Private {
 
     $c->stash->{payment_method} = 'direct_debit';
 
-    # For Bexley legacy subscriptions without stored contract ID, look up by UPRN
     my @extra_args;
-    if ($c->cobrand->moniker eq 'bexley' && !$p->get_extra_metadata('direct_debit_contract_id')) {
-        if (my $legacy_ids = $c->cobrand->waste_get_legacy_contract_ids($p)) {
-            push @extra_args, contract_ids => $legacy_ids;
-        }
+    my $dd_reference = $c->cobrand->waste_dd_get_reference('all');
+    if (ref $dd_reference eq 'ARRAY') {
+        push @extra_args, contract_ids => $dd_reference;
+        $dd_reference = undef;
     }
 
     my $update_ref = $i->cancel_plan( {
-        dd_reference => $ref,
+        dd_reference => $dd_reference,
         report => $p,
         @extra_args,
     } );

@@ -105,7 +105,7 @@ sub _cancel_direct_debit {
 
     $self->_vprint("  Cancelling Direct Debit plan with contract ID $contract_id");
 
-    my $resp = $i->cancel_plan({ report => $original_report });
+    my $resp = $i->cancel_plan({ dd_reference => $contract_id, report => $original_report });
 
     if ( ref $resp eq 'HASH' && $resp->{error} ) {
         print "  Failed to send cancellation request to Direct Debit provider for Agile reference $reference: $resp->{error}\n";

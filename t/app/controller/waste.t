@@ -785,12 +785,12 @@ my $dd_sent_params = {};
 my $dd = Test::MockModule->new('Integrations::Pay360');
 $dd->mock('one_off_payment', sub {
     my ($self, $params) = @_;
-    delete $params->{orig_sub};
+    delete $params->{report};
     $dd_sent_params->{'one_off_payment'} = $params;
 });
 $dd->mock('amend_plan', sub {
     my ($self, $params) = @_;
-    delete $params->{orig_sub};
+    delete $params->{report};
     $dd_sent_params->{'amend_plan'} = $params;
 });
 $dd->mock('cancel_plan', sub {
@@ -1411,7 +1411,6 @@ FixMyStreet::override_config {
         is_deeply $dd_sent_params->{one_off_payment}, {
             dd_reference => $dd_ref,
             amount => '7.50',
-            reference => $new_report->id,
             comments => '',
             date => $ad_hoc_payment_date,
         }, "correct direct debit ad hoc payment params sent";

@@ -252,6 +252,37 @@ sub waste_report_extra_dd_data {
     }
 }
 
+=head2 waste_dd_get_reference
+
+Used in garden subscription modifying, to return the contract ID to modify;
+this could be one from the original subscription report, or a legacy entry.
+
+=cut
+
+sub waste_dd_get_reference {
+    my ($self, $type) = @_;
+
+    my $c = $self->{c};
+    my $orig_sub = $c->stash->{orig_sub};
+    my $p = $c->stash->{report};
+
+    if ($orig_sub) {
+        my $contract_id = $orig_sub->get_extra_metadata('direct_debit_contract_id');
+        return $contract_id if $contract_id;
+    }
+
+    my $legacy_ids = $c->cobrand->waste_get_legacy_contract_ids($p);
+    if ($type eq 'single') {
+        if ($legacy_ids && @$legacy_ids == 1) {
+            return $legacy_ids->[0];
+        } else {
+            return;
+        }
+    } else {
+        return $legacy_ids;
+    }
+}
+
 =head2 waste_get_legacy_contract_ids
 
 For legacy pre-WasteWorks garden subscriptions, Bexley needs to look up

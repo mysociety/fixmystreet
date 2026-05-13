@@ -811,14 +811,14 @@ FixMyStreet::override_config {
 
                 $mech->submit_form_ok( { with_fields => { tandc => 1 } }, "Confirm" );
 
-                ok $amend_plan_args, 'Integrations::AccessPaySuite->amend_plan was called';
-                isa_ok $amend_plan_args->{orig_sub}, 'FixMyStreet::DB::Result::Problem', 'amend_plan received report object for original sub';
-                is $amend_plan_args->{orig_sub}->id, $orig_dd_sub_report->id, 'amend_plan received correct original report object';
-                is $amend_plan_args->{amount}, $new_annual_cost_human, 'amend_plan called with correct new annual amount';
-
                 my $modify_report = FixMyStreet::DB->resultset('Problem')
                     ->search({ title => 'Garden Subscription - Amend' })
                     ->order_by('-id')->first;
+
+                ok $amend_plan_args, 'Integrations::AccessPaySuite->amend_plan was called';
+                isa_ok $amend_plan_args->{report}, 'FixMyStreet::DB::Result::Problem', 'amend_plan received report object for original sub';
+                is $amend_plan_args->{report}->id, $modify_report->id, 'amend_plan received correct original report object';
+                is $amend_plan_args->{amount}, $new_annual_cost_human, 'amend_plan called with correct new annual amount';
 
                 ok $modify_report, "Found the amend report";
                 is $modify_report->category, 'Garden Subscription', 'Amend report: correct category';
@@ -835,6 +835,116 @@ FixMyStreet::override_config {
                 $access_mock->unmock_all;
             };
 
+            subtest 'amending with no existing record, but a legacy DD identifier' => sub {
+                my $uprn = 20001; # The one with a legacy mock
+
+                $mech->delete_problems_for_body($body->id);
+
+                mock_agile('01/02/2025 12:00', only_uprn => $uprn,
+                    PaymentMethod => 'Direct debit');
+
+                my ($amend_plan_args, $one_off_args);
+                $access_mock->mock(
+                    get_contracts => sub { [ { Status => 'Active' } ] },
+                    create_contract => sub {
+                        {   Id             => 'CONTRACT_123',
+                            DirectDebitRef => 'APIRTM-DEFGHIJ1KL'
+                        };
+                    },
+                    create_payment => sub { {} }, # Empty hash implies success
+                    amend_plan => sub {
+                        my ( $self, $args ) = @_;
+                        $amend_plan_args = $args;
+                        return 1;
+                    },
+                    one_off_payment => sub {
+                        my ( $self, $args ) = @_;
+                        $one_off_args = $args;
+                        return 1;
+                    },
+                );
+
+                $mech->log_in_ok( $user->email );
+                $mech->get_ok("/waste/$uprn/garden_modify");
+                $mech->submit_form_ok({ with_fields => { task => 'modify' } });
+                $mech->submit_form_ok({ with_fields => {
+                    has_reference => 'Yes',
+                    customer_reference => 'GWIT-456',
+                } });
+
+                like $mech->content, qr/current_bins.*value="2"/s;
+
+                $mech->submit_form_ok({ with_fields => { bins_wanted => 3 } });
+
+                like $mech->text, qr/Garden waste collection3 bins/;
+                like $mech->text, qr/One-off Direct Debit payment.55\.00/;
+
+                $mech->submit_form_ok( { with_fields => { tandc => 1 } }, "Confirm" );
+
+                my $modify_report = FixMyStreet::DB->resultset('Problem')
+                    ->search({ title => 'Garden Subscription - Amend' })
+                    ->order_by('-id')->first;
+
+                ok $amend_plan_args, 'Integrations::AccessPaySuite->amend_plan was called';
+                isa_ok $amend_plan_args->{report}, 'FixMyStreet::DB::Result::Problem', 'amend_plan received report object for original sub';
+                is $amend_plan_args->{report}->id, $modify_report->id, 'amend_plan received correct original report object';
+                is $amend_plan_args->{dd_reference}, 'TEST-CONTRACT-20001';
+
+                is $one_off_args->{amount}, '55.00';
+                is $one_off_args->{dd_reference}, 'TEST-CONTRACT-20001';
+
+                $access_mock->unmock_all;
+            };
+
+            subtest 'amending with no existing record and no legacy DD identifier' => sub {
+                $mech->delete_problems_for_body($body->id);
+
+                mock_agile('01/02/2025 12:00', PaymentMethod => 'Direct debit');
+
+                # Do not mock amend/one_off so error setting called
+                $access_mock->mock(
+                    get_contracts => sub { [ { Status => 'Active' } ] },
+                    create_contract => sub {
+                        {   Id             => 'CONTRACT_123',
+                            DirectDebitRef => 'APIRTM-DEFGHIJ1KL'
+                        };
+                    },
+                    create_payment => sub { {} }, # Empty hash implies success
+                );
+
+                $mech->log_in_ok( $user->email );
+                $mech->get_ok("/waste/$uprn/garden_modify");
+                $mech->submit_form_ok({ with_fields => { task => 'modify' } });
+                $mech->submit_form_ok({ with_fields => {
+                    has_reference => 'Yes',
+                    customer_reference => 'GWIT-456',
+                } });
+
+                like $mech->content, qr/current_bins.*value="2"/s;
+
+                $mech->submit_form_ok({ with_fields => { bins_wanted => 3 } });
+
+                like $mech->text, qr/Garden waste collection3 bins/;
+                like $mech->text, qr/One-off Direct Debit payment.55\.00/;
+
+                $mech->submit_form_ok( { with_fields => { tandc => 1 } }, "Confirm" );
+
+                my $report = FixMyStreet::DB->resultset('Problem')
+                    ->search({ title => 'Garden Subscription - Amend' })
+                    ->order_by('-id')->first;
+
+                my $cost = $ggw_cost_first - $ggw_first_bin_discount + $ggw_cost * 2;
+                my $human = sprintf('%.2f', $cost / 100);
+                my $info = ($report->get_extra_metadata('direct_debit_errors') || {})->{amend} || {};
+                like $info->{error}, qr/No direct debit contract ID/, 'error recorded';
+                is $info->{context}{amount}, $human, 'amount stashed for retry';
+
+                $info = ($report->get_extra_metadata('direct_debit_errors') || {})->{one_off} || {};
+                like $info->{error}, qr/No direct debit contract ID/, 'error recorded';
+                is $info->{context}{amount}, '55.00', 'amount stashed for retry';
+
+                $access_mock->unmock_all;
+            };
         };
     };
 
