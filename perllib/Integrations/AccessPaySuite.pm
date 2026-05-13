@@ -175,9 +175,9 @@ sub parse_response {
 }
 
 sub call {
-    my ($self, $method, $path, $data) = @_;
+    my ($self, $method, $path, $data, $no_log) = @_;
     $self->log($path);
-    $self->log($data);
+    $self->log($data) unless $no_log;
     my $url = $self->build_request_url($method, $path, $data);
     my $req = $self->create_request($method, $url, $data);
     my $resp = $self->ua->request($req);
@@ -199,7 +199,7 @@ sub get_customer_by_customer_ref {
 
 sub create_customer {
     my ($self, $data) = @_;
-    return $self->call('POST', "customer", $data);
+    return $self->call('POST', "customer", $data, 1);
 }
 
 # Contract (mandate) API methods
