@@ -75,7 +75,12 @@ sub waste_check_existing_dd {
             # https://api-docs-ddcms-v3.accesspaysuite.com/#tag/Contract-Querying-and-Creation/paths/~1client~1{clientCode}~1customer~1{customerId}~1contract/post
             # contracts either have a status of 'Inactive' or 'Active'
             if ( $contract->{Status} eq 'Inactive' ) {
-                $c->stash->{direct_debit_status} = 'pending';
+                my $reason = $contract->{StatusExplanation} || '';
+                if ($reason =~ /BACS cancellation received|Contract and Payment Schedule cancelled|Contract archived|Contract Status updated from .*? to (Cancelled|Expired)/) {
+                    $c->stash->{direct_debit_status} = 'none';
+                } else {
+                    $c->stash->{direct_debit_status} = 'pending';
+                }
             } else {
                 $c->stash->{direct_debit_status} = 'active';
             }
