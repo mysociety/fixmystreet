@@ -2,6 +2,7 @@ use strict; use warnings;
 
 use Test::More;
 use Test::MockModule;
+use Test::MockObject;
 use Test::MockTime ':all';
 use Path::Tiny;
 use DateTime;
@@ -153,12 +154,15 @@ subtest "check create payment" => sub {
         day => 19
     );
 
+    my $report = Test::MockObject->new;
+    $report->mock('id', sub { 12 });
+
     my $res = $integration->one_off_payment({
-            payer_reference => 'payer1',
+            dd_reference => 'payer1',
             amount => 9.99,
             date => $dt,
-            reference => 12,
-            comment => 'more of a question',
+            report => $report,
+            comments => 'more of a question',
     });
 
     ok $res, 'got response';
@@ -181,7 +185,7 @@ subtest "check create payment" => sub {
 
 subtest "check amend plan" => sub {
     my $res = $integration->amend_plan({
-        payer_reference => 'payer2',
+        dd_reference => 'payer2',
         amount => 9.99,
     });
 

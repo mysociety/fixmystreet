@@ -396,29 +396,7 @@ FixMyStreet::override_config {
         $new_sub_report->update;
         FixMyStreet::Script::Reports::send();
 
-        $agile_mock->mock( 'CustomerSearch', sub { {
-            Customers => [
-                {
-                    CustomerExternalReference => 'CUSTOMER_123',
-                    CustomerReference => 'GWIT-456',
-                    Firstname => '  Verity  ',
-                    Surname => '  Wright  ',
-                    Email => 'verity@wright.com',
-                    Mobile => '+4407222222222',
-                    CustomertStatus => 'ACTIVATED',
-                    ServiceContracts => [
-                        {
-                            EndDate => '01/02/2025 12:00',
-                            Reference => $contract_id,
-                            WasteContainerQuantity => 2,
-                            ServiceContractStatus => 'ACTIVE',
-                            UPRN => '10001',
-                            Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => '' } ]
-                        },
-                    ],
-                },
-            ],
-        } } );
+        mock_agile('01/02/2025 12:00');
 
         $whitespace_mock->mock(
             'GetSiteCollections',
@@ -749,6 +727,8 @@ FixMyStreet::override_config {
                 my $dd_customer_id = 'DD_CUSTOMER_123';
                 my $dd_contract_id = 'DD_CONTRACT_123';
 
+                mock_agile('01/02/2025 12:00', PaymentMethod => 'Direct debit');
+
                 $access_mock->mock(
                     get_contracts => sub { [ { Status => 'Active' } ] },
                 );
@@ -846,14 +826,14 @@ FixMyStreet::override_config {
 
                 $mech->submit_form_ok( { with_fields => { tandc => 1 } }, "Confirm" );
 
-                ok $amend_plan_args, 'Integrations::AccessPaySuite->amend_plan was called';
-                isa_ok $amend_plan_args->{orig_sub}, 'FixMyStreet::DB::Result::Problem', 'amend_plan received report object for original sub';
-                is $amend_plan_args->{orig_sub}->id, $orig_dd_sub_report->id, 'amend_plan received correct original report object';
-                is $amend_plan_args->{amount}, $new_annual_cost_human, 'amend_plan called with correct new annual amount';
-
                 my $modify_report = FixMyStreet::DB->resultset('Problem')
                     ->search({ title => 'Garden Subscription - Amend' })
                     ->order_by('-id')->first;
+
+                ok $amend_plan_args, 'Integrations::AccessPaySuite->amend_plan was called';
+                isa_ok $amend_plan_args->{report}, 'FixMyStreet::DB::Result::Problem', 'amend_plan received report object for original sub';
+                is $amend_plan_args->{report}->id, $modify_report->id, 'amend_plan received correct original report object';
+                is $amend_plan_args->{amount}, $new_annual_cost_human, 'amend_plan called with correct new annual amount';
 
                 ok $modify_report, "Found the amend report";
                 is $modify_report->category, 'Garden Subscription', 'Amend report: correct category';
@@ -870,6 +850,116 @@ FixMyStreet::override_config {
                 $access_mock->unmock_all;
             };
 
+            subtest 'amending with no existing record, but a legacy DD identifier' => sub {
+                my $uprn = 20001; # The one with a legacy mock
+
+                $mech->delete_problems_for_body($body->id);
+
+                mock_agile('01/02/2025 12:00', only_uprn => $uprn,
+                    PaymentMethod => 'Direct debit');
+
+                my ($amend_plan_args, $one_off_args);
+                $access_mock->mock(
+                    get_contracts => sub { [ { Status => 'Active' } ] },
+                    create_contract => sub {
+                        {   Id             => 'CONTRACT_123',
+                            DirectDebitRef => 'APIRTM-DEFGHIJ1KL'
+                        };
+                    },
+                    create_payment => sub { {} }, # Empty hash implies success
+                    amend_plan => sub {
+                        my ( $self, $args ) = @_;
+                        $amend_plan_args = $args;
+                        return 1;
+                    },
+                    one_off_payment => sub {
+                        my ( $self, $args ) = @_;
+                        $one_off_args = $args;
+                        return 1;
+                    },
+                );
+
+                $mech->log_in_ok( $user->email );
+                $mech->get_ok("/waste/$uprn/garden_modify");
+                $mech->submit_form_ok({ with_fields => { task => 'modify' } });
+                $mech->submit_form_ok({ with_fields => {
+                    has_reference => 'Yes',
+                    customer_reference => 'GWIT-456',
+                } });
+
+                like $mech->content, qr/current_bins.*value="2"/s;
+
+                $mech->submit_form_ok({ with_fields => { bins_wanted => 3 } });
+
+                like $mech->text, qr/Garden waste collection3 bins/;
+                like $mech->text, qr/One-off Direct Debit payment.55\.00/;
+
+                $mech->submit_form_ok( { with_fields => { tandc => 1 } }, "Confirm" );
+
+                my $modify_report = FixMyStreet::DB->resultset('Problem')
+                    ->search({ title => 'Garden Subscription - Amend' })
+                    ->order_by('-id')->first;
+
+                ok $amend_plan_args, 'Integrations::AccessPaySuite->amend_plan was called';
+                isa_ok $amend_plan_args->{report}, 'FixMyStreet::DB::Result::Problem', 'amend_plan received report object for original sub';
+                is $amend_plan_args->{report}->id, $modify_report->id, 'amend_plan received correct original report object';
+                is $amend_plan_args->{dd_reference}, 'TEST-CONTRACT-20001';
+
+                is $one_off_args->{amount}, '55.00';
+                is $one_off_args->{dd_reference}, 'TEST-CONTRACT-20001';
+
+                $access_mock->unmock_all;
+            };
+
+            subtest 'amending with no existing record and no legacy DD identifier' => sub {
+                $mech->delete_problems_for_body($body->id);
+
+                mock_agile('01/02/2025 12:00', PaymentMethod => 'Direct debit');
+
+                # Do not mock amend/one_off so error setting called
+                $access_mock->mock(
+                    get_contracts => sub { [ { Status => 'Active' } ] },
+                    create_contract => sub {
+                        {   Id             => 'CONTRACT_123',
+                            DirectDebitRef => 'APIRTM-DEFGHIJ1KL'
+                        };
+                    },
+                    create_payment => sub { {} }, # Empty hash implies success
+                );
+
+                $mech->log_in_ok( $user->email );
+                $mech->get_ok("/waste/$uprn/garden_modify");
+                $mech->submit_form_ok({ with_fields => { task => 'modify' } });
+                $mech->submit_form_ok({ with_fields => {
+                    has_reference => 'Yes',
+                    customer_reference => 'GWIT-456',
+                } });
+
+                like $mech->content, qr/current_bins.*value="2"/s;
+
+                $mech->submit_form_ok({ with_fields => { bins_wanted => 3 } });
+
+                like $mech->text, qr/Garden waste collection3 bins/;
+                like $mech->text, qr/One-off Direct Debit payment.55\.00/;
+
+                $mech->submit_form_ok( { with_fields => { tandc => 1 } }, "Confirm" );
+
+                my $report = FixMyStreet::DB->resultset('Problem')
+                    ->search({ title => 'Garden Subscription - Amend' })
+                    ->order_by('-id')->first;
+
+                my $cost = $ggw_cost_first - $ggw_first_bin_discount + $ggw_cost * 2;
+                my $human = sprintf('%.2f', $cost / 100);
+                my $info = ($report->get_extra_metadata('direct_debit_errors') || {})->{amend} || {};
+                like $info->{error}, qr/No direct debit contract ID/, 'error recorded';
+                is $info->{context}{amount}, $human, 'amount stashed for retry';
+
+                $info = ($report->get_extra_metadata('direct_debit_errors') || {})->{one_off} || {};
+                like $info->{error}, qr/No direct debit contract ID/, 'error recorded';
+                is $info->{context}{amount}, '55.00', 'amount stashed for retry';
+
+                $access_mock->unmock_all;
+            };
         };
     };
 
@@ -911,26 +1001,9 @@ FixMyStreet::override_config {
                     RoundSchedule => 'RND-1 Mon',
                 } ];
             });
-            $agile_mock->mock( 'CustomerSearch', sub { {
-                Customers => [
-                    {
-                        CustomerExternalReference => 'CUSTOMER_123',
-                        CustomerReference => 'GWIT-456',
-                        CustomertStatus => 'ACTIVATED',
-                        ServiceContracts => [
-                            {
-                                # 42 days away
-                                EndDate => '14/03/2024 12:00',
-                                Reference => $contract_id,
-                                WasteContainerQuantity => 2,
-                                ServiceContractStatus => 'ACTIVE',
-                                UPRN => '10002',
-                                Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => '' } ]
-                            },
-                        ],
-                    },
-                ],
-            } } );
+
+            # 42 days away
+            mock_agile('14/03/2024 12:00', UPRN => 10002);
 
             $mech->get_ok("/waste/$uprn");
             like $mech->content, qr/You do not have a Garden waste collection/;
@@ -938,26 +1011,7 @@ FixMyStreet::override_config {
 
         subtest 'with no garden container in Whitespace' => sub {
             $whitespace_mock->mock( 'GetSiteCollections', sub { [] } );
-            $agile_mock->mock( 'CustomerSearch', sub { {
-                Customers => [
-                    {
-                        CustomerExternalReference => 'CUSTOMER_123',
-                        CustomerReference => 'GWIT-456',
-                        CustomertStatus => 'ACTIVATED',
-                        ServiceContracts => [
-                            {
-                                # 42 days away
-                                EndDate => '14/03/2024 12:00',
-                                Reference => $contract_id,
-                                WasteContainerQuantity => 2,
-                                ServiceContractStatus => 'ACTIVE',
-                                UPRN => '10001',
-                                Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
-                            },
-                        ],
-                    },
-                ],
-            } } );
+            mock_agile('14/03/2024 12:00');
 
             $mech->get_ok("/waste/$uprn");
             like $mech->content, qr/Renew subscription today/,
@@ -992,26 +1046,7 @@ FixMyStreet::override_config {
             );
 
             subtest 'already renewed' => sub {
-                $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
-                    Customers => [
-                        {
-                            CustomerExternalReference => 'CUSTOMER_123',
-                            CustomerReference => 'GWIT-456',
-                            CustomertStatus => 'ACTIVATED',
-                            ServiceContracts => [
-                                {
-                                    # 42 days away
-                                    EndDate => '14/03/2024 12:00',
-                                    Reference => $contract_id,
-                                    WasteContainerQuantity => 2,
-                                    ServiceContractStatus => 'RENEWALDUE',
-                                    UPRN => '10001',
-                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
-                                },
-                            ],
-                        },
-                    ],
-                } } );
+                mock_agile('14/03/2024 12:00', contract_status => 'RENEWALDUE');
 
                 $mech->get_ok("/waste/$uprn");
                 like $mech->content,
@@ -1034,28 +1069,7 @@ FixMyStreet::override_config {
             $mech->log_out_ok;
 
             subtest 'within renewal window' => sub {
-                $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
-                    Customers => [
-                        {
-                            CustomerExternalReference => 'CUSTOMER_123',
-                            CustomerReference => 'GWIT-456',
-                            Firstname => 'Verity',
-                            Surname => 'Wright',
-                            CustomertStatus => 'ACTIVATED',
-                            ServiceContracts => [
-                                {
-                                    # 42 days away
-                                    EndDate => '14/03/2024 12:00',
-                                    Reference => $contract_id,
-                                    WasteContainerQuantity => 2,
-                                    ServiceContractStatus => 'ACTIVE',
-                                    UPRN => '10001',
-                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
-                                },
-                            ],
-                        },
-                    ],
-                } } );
+                mock_agile('14/03/2024 12:00', Email => '', Phone => '');
 
                 $mech->get_ok("/waste/$uprn");
                 unlike $mech->content,
@@ -1352,26 +1366,7 @@ FixMyStreet::override_config {
                 'only original subscription in DB';
 
             subtest 'too early' => sub {
-                $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
-                    Customers => [
-                        {
-                            CustomerExternalReference => 'CUSTOMER_123',
-                            CustomerReference => 'GWIT-456',
-                            CustomertStatus => 'ACTIVATED',
-                            ServiceContracts => [
-                                {
-                                    # 43 days away
-                                    EndDate => '15/03/2024 12:00',
-                                    Reference => $contract_id,
-                                    WasteContainerQuantity => 2,
-                                    ServiceContractStatus => 'ACTIVE',
-                                    UPRN => '10001',
-                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
-                                },
-                            ],
-                        },
-                    ],
-                } } );
+                mock_agile('15/03/2024 12:00');
 
                 $mech->get_ok("/waste/$uprn");
                 like $mech->content,
@@ -1389,28 +1384,8 @@ FixMyStreet::override_config {
 
             subtest 'subscription expired' => sub {
                 subtest 'within 14 days after expiry - is a renewal' => sub {
-                    $agile_mock->mock( 'CustomerSearch', sub { {
-                        Customers => [
-                            {
-                                CustomerExternalReference => 'CUSTOMER_123',
-                                CustomerReference => 'GWIT-456',
-                                Firstname => 'Verity',
-                                Surname => 'Wright',
-                                CustomertStatus => 'ACTIVATED',
-                                ServiceContracts => [
-                                    {
-                                        # 14 days ago
-                                        EndDate => '18/01/2024 12:00',
-                                        Reference => $contract_id,
-                                        WasteContainerQuantity => 2,
-                                        ServiceContractStatus => 'NOACTIVE',
-                                        UPRN => '10001',
-                                        Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
-                                    },
-                                ],
-                            },
-                        ],
-                    } } );
+                    # 14 days ago
+                    mock_agile('18/01/2024 12:00', contract_status => 'NOACTIVE', Email => '', Phone => '');
 
                     $mech->get_ok("/waste/$uprn");
                     unlike $mech->content,
@@ -1699,28 +1674,8 @@ FixMyStreet::override_config {
                 };
 
                 subtest 'Ended more than 3 months ago - no renewal option' => sub {
-                    $agile_mock->mock( 'CustomerSearch', sub { {
-                        Customers => [
-                            {
-                                CustomerExternalReference => 'CUSTOMER_123',
-                                CustomerReference => 'GWIT-456',
-                                Firstname => 'Verity',
-                                Surname => 'Wright',
-                                CustomertStatus => 'INACTIVE',
-                                ServiceContracts => [
-                                    {
-                                        # Just over 3 months ago
-                                        EndDate => '31/10/2023 12:00',
-                                        Reference => 'CONTRACT_OLD',
-                                        WasteContainerQuantity => 2,
-                                        ServiceContractStatus => 'NOACTIVE',
-                                        UPRN => '10001',
-                                        Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
-                                    },
-                                ],
-                            },
-                        ],
-                    } } );
+                    # Just over 3 months ago
+                    mock_agile('31/10/2023 12:00', contract_id => 'CONTRACT_OLD', contract_status => 'NOACTIVE', customer_status => 'INACTIVE');
 
                     $mech->get_ok("/waste/$uprn");
                     unlike $mech->content,
@@ -1750,28 +1705,8 @@ FixMyStreet::override_config {
                     );
                     $new_sub_report->update;
 
-                    $agile_mock->mock( 'CustomerSearch', sub { {
-                        Customers => [
-                            {
-                                CustomerExternalReference => 'CUSTOMER_123',
-                                CustomerReference => 'GWIT-456',
-                                Firstname => 'Verity',
-                                Surname => 'Wright',
-                                CustomertStatus => 'INACTIVE',
-                                ServiceContracts => [
-                                    {
-                                        # 14 days ago
-                                        EndDate => '18/01/2024 12:00',
-                                        Reference => $contract_id,
-                                        WasteContainerQuantity => 2,
-                                        ServiceContractStatus => 'NOACTIVE',
-                                        UPRN => '10001',
-                                        Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Direct debit' } ]
-                                    },
-                                ],
-                            },
-                        ],
-                    } } );
+                    # 14 days ago
+                    mock_agile('18/01/2024 12:00', PaymentMethod => 'Direct debit', contract_status => 'NOACTIVE', customer_status => 'INACTIVE');
 
                     $mech->get_ok("/waste/$uprn");
                     unlike $mech->content,
@@ -2210,27 +2145,7 @@ FixMyStreet::override_config {
         set_fixed_time('2024-02-01T00:00:00');
         my $tomorrow = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y' )->format_datetime( DateTime->now->add(days => 1) );
 
-        $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
-            Customers => [
-                {
-                    CustomerExternalReference => 'CUSTOMER_123',
-                    CustomerReference => 'GWIT-456',
-                    Firstname => 'VERITY',
-                    Surname => 'wright',
-                    Email => 'verity@wright.com',
-                    CustomertStatus => 'ACTIVATED',
-                    ServiceContracts => [
-                        {
-                            EndDate => '12/12/2025 12:21',
-                            ServiceContractStatus => 'ACTIVE',
-                            UPRN => '10001',
-                            WasteContainerQuantity => 2,
-                            Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
-                        },
-                    ],
-                },
-            ],
-        } } );
+        mock_agile('12/12/2025 12:21');
 
         # Staff can see all reports at a property and that can confuse the cancellation
         # as it sees the direct debit set up above and tries to cancel the DD
@@ -2409,27 +2324,7 @@ FixMyStreet::override_config {
 
             my $uprn = '10001';
             my $contract_id = 'CONTRACT_123';
-
-            $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
-                Customers => [
-                    {
-                        CustomerExternalReference => 'CUSTOMER_123',
-                        CustomerReference => 'GWIT-456',
-                        Firstname => 'Verity',
-                        Surname => 'Wright',
-                        CustomertStatus => 'ACTIVATED',
-                        ServiceContracts => [
-                            {
-                                EndDate => '12/12/2025 12:21',
-                                Reference => $contract_id,
-                                WasteContainerQuantity => 2,
-                                ServiceContractStatus => 'ACTIVE',
-                                UPRN => "$uprn",
-                            },
-                        ],
-                    },
-                ],
-            } } );
+            mock_agile('12/12/2025 12:21');
 
             my ($new_sub_report) = $mech->create_problems_for_body(
                 1,
@@ -2546,34 +2441,7 @@ FixMyStreet::override_config {
         );
 
         # Set up the mock for Agile to return customer data
-        $bexley_mocks{agile}->mock( 'CustomerSearch', sub {
-            my ($self, $uprn) = @_;
-            # Make sure the UPRN is what's expected, otherwise return empty
-            return {} unless $uprn eq '10001';
-
-            return {
-                Customers => [
-                    {
-                        CustomerExternalReference => 'CUSTOMER_123',
-                        CustomerReference => 'GWIT-456',
-                        Firstname => 'Verity',
-                        Surname => 'Wright',
-                        Email => 'test@example.org',
-                        CustomertStatus => 'ACTIVATED',
-                        ServiceContracts => [
-                            {
-                                EndDate => '12/12/2025 12:21',
-                                ServiceContractStatus => 'ACTIVE',
-                                UPRN => '10001',
-                                Reference => $contract_id,
-                                WasteContainerQuantity => 2,
-                                Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ],
-                            },
-                        ],
-                    },
-                ],
-            };
-        });
+        mock_agile('12/12/2025 12:21', only_uprn => 10001, PaymentMethod => 'Direct debit');
 
         # Set up the mock for AccessPaySuite
         my $archive_contract_called = 0;
@@ -2677,32 +2545,11 @@ FixMyStreet::override_config {
             }
         );
 
-        $agile_mock->mock( 'CustomerSearch', sub {
-            my ($self, $uprn) = @_;
-            return {} unless $uprn eq '20001';
-            return {
-                Customers => [
-                    {
-                        CustomerExternalReference => 'CUSTOMER_LEGACY',
-                        CustomerReference => 'GWIT-LEGACY',
-                        Firstname => 'Legacy',
-                        Surname => 'User',
-                        Email => 'test@example.org',
-                        CustomertStatus => 'ACTIVATED',
-                        ServiceContracts => [
-                            {
-                                EndDate => '12/12/2025 12:21',
-                                ServiceContractStatus => 'ACTIVE',
-                                UPRN => '20001',
-                                Reference => $agile_contract_id,
-                                WasteContainerQuantity => 1,
-                                Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Direct Debit' } ],
-                            },
-                        ],
-                    },
-                ],
-            };
-        });
+        mock_agile('12/12/2025 12:21', only_uprn => 20001,
+            CustomerReference => 'GWIT-LEGACY',
+            CustomerExternalReference => 'CUSTOMER_LEGACY',
+            Email => 'test@example.org',
+            PaymentMethod => 'Direct debit');
 
         my @archived_contract_ids;
         $access_mock->mock('archive_contract', sub {
@@ -2770,32 +2617,11 @@ FixMyStreet::override_config {
             }
         );
 
-        $agile_mock->mock( 'CustomerSearch', sub {
-            my ($self, $uprn) = @_;
-            return {} unless $uprn eq '20001';
-            return {
-                Customers => [
-                    {
-                        CustomerExternalReference => 'CUSTOMER_NO_ORIG',
-                        CustomerReference => 'GWIT-NO-ORIG',
-                        Firstname => 'No',
-                        Surname => 'OrigSub',
-                        Email => 'test@example.org',
-                        CustomertStatus => 'ACTIVATED',
-                        ServiceContracts => [
-                            {
-                                EndDate => '12/12/2025 12:21',
-                                ServiceContractStatus => 'ACTIVE',
-                                UPRN => '20001',
-                                Reference => 'AGILE-NO-ORIG',
-                                WasteContainerQuantity => 1,
-                                Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Direct Debit' } ],
-                            },
-                        ],
-                    },
-                ],
-            };
-        });
+        mock_agile('12/12/2025 12:21', only_uprn => 20001,
+            CustomerExternalReference => 'CUSTOMER_NO_ORIG',
+            CustomerReference => 'GWIT-NO-ORIG',
+            Email => 'test@example.org',
+            PaymentMethod => 'Direct debit');
 
         my @archived_contract_ids;
         $access_mock->mock('archive_contract', sub {
@@ -2807,7 +2633,7 @@ FixMyStreet::override_config {
         $mech->log_in_ok($staff_user->email);
 
         $mech->get_ok('/waste/20001/garden_renew');
-        $mech->content_lacks('which will renew automatically');
+        $mech->content_contains('which will renew automatically');
 
         $mech->get_ok('/waste/20001/garden_cancel');
         $mech->submit_form_ok({
@@ -2857,38 +2683,17 @@ FixMyStreet::override_config {
                 title => 'Garden Subscription - New',
                 external_id => "Agile-HOOK-TEST",
                 user => $user,
+                uprn => 20001,
             },
         );
-        $sub->uprn(20001);
         # No payment_method, should be auto-detected.
-        $sub->update;
         FixMyStreet::Script::Reports::send();
 
-        $agile_mock->mock( 'CustomerSearch', sub {
-            my ($self, $uprn) = @_;
-            return {} unless $uprn eq '20001';
-            return {
-                Customers => [
-                    {
-                        CustomerExternalReference => 'CUSTOMER_HOOK_TEST',
-                        CustomerReference => 'GWIT-HOOK',
-                        Firstname => 'Hook',
-                        Surname => 'Test',
-                        Email => 'test@example.org',
-                        CustomertStatus => 'ACTIVATED',
-                        ServiceContracts => [
-                            {
-                                EndDate => '12/12/2025 12:21',
-                                ServiceContractStatus => 'ACTIVE',
-                                UPRN => '20001',
-                                Reference => 'AGILE-HOOK-TEST',
-                                WasteContainerQuantity => 1,
-                            },
-                        ],
-                    },
-                ],
-            };
-        });
+        mock_agile('12/12/2025 12:21', only_uprn => 20001,
+            CustomerExternalReference => 'CUSTOMER_HOOK_TEST',
+            CustomerReference => 'GWIT-HOOK',
+            PaymentMethod => 'Direct debit',
+        );
 
         # Track archive_contract calls
         my @hook_archived_contract_ids;
@@ -2956,28 +2761,8 @@ FixMyStreet::override_config {
         FixMyStreet::Script::Reports::send();
 
         # Mock Agile data to show it's due for renewal
-        $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
-            Customers => [
-                {
-                    CustomerExternalReference => 'CUSTOMER_123',
-                    CustomerReference => 'GWIT-456',
-                    Firstname => 'Verity',
-                    Surname => 'Wright',
-                    CustomertStatus => 'ACTIVATED',
-                    ServiceContracts => [
-                        {
-                            # Within the 42-day renewal window
-                            EndDate => '14/03/2024 12:00',
-                            Reference => $contract_id,
-                            WasteContainerQuantity => 2,
-                            ServiceContractStatus => 'ACTIVE',
-                            UPRN => '10001',
-                            Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ],
-                        },
-                    ],
-                },
-            ],
-        } } );
+        # Within the 42-day renewal window
+        mock_agile('14/03/2024 12:00', Email => '', Phone => '');
 
         # Set up Whitespace data for the garden waste service
         $bexley_mocks{whitespace}->mock(
@@ -3170,25 +2955,7 @@ FixMyStreet::override_config {
             };
 
             subtest 'Agile data, but no Whitespace data' => sub {
-                $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
-                    Customers => [
-                        {
-                            CustomerExternalReference => 'CUSTOMER_123',
-                            CustomerReference => 'GWIT-456',
-                            CustomertStatus => 'ACTIVATED',
-                            ServiceContracts => [
-                                {
-                                    EndDate => '01/02/2025 00:00',
-                                    Reference => 'CONTRACT_123',
-                                    WasteContainerQuantity => 1,
-                                    ServiceContractStatus => 'ACTIVE',
-                                    UPRN => '10001',
-                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
-                                },
-                            ],
-                        },
-                    ],
-                } } );
+                mock_agile('01/02/2025 00:00', WasteContainerQuantity => 1);
 
                 $mech->content_unlike(
                     qr/You have a pending garden subscription\./,
@@ -3248,25 +3015,7 @@ FixMyStreet::override_config {
             };
 
             subtest 'Agile and Whitespace data' => sub {
-                $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
-                    Customers => [
-                        {
-                            CustomerExternalReference => 'CUSTOMER_123',
-                            CustomerReference => 'GWIT-456',
-                            CustomertStatus => 'ACTIVATED',
-                            ServiceContracts => [
-                                {
-                                    EndDate => '01/02/2025 00:00',
-                                    Reference => 'CONTRACT_123',
-                                    WasteContainerQuantity => 1,
-                                    ServiceContractStatus => 'ACTIVE',
-                                    UPRN => '10001',
-                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
-                                },
-                            ],
-                        },
-                    ],
-                } } );
+                mock_agile('01/02/2025 00:00', WasteContainerQuantity => 1);
 
                 $mech->get_ok('/waste/10001');
                 like $mech->text,
@@ -3338,30 +3087,7 @@ FixMyStreet::override_config {
                 direct_debit_customer_id => 'DD_CUSTOMER_123' );
             $dd_report->update;
 
-            $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
-                Customers => [
-                    {
-                        CustomerExternalReference => 'CUSTOMER_123',
-                        CustomerReference => 'GWIT-456',
-                        CustomertStatus => 'ACTIVATED',
-                        ServiceContracts => [
-                            {
-                                EndDate => '01/02/2025 00:00',
-                                Reference => 'CONTRACT_123',
-                                WasteContainerQuantity => 1,
-                                ServiceContractStatus => 'ACTIVE',
-                                UPRN => '10001',
-                                Payments => [
-                                    {   PaymentStatus => 'Paid',
-                                        Amount        => '100',
-                                        PaymentMethod => 'Direct debit',
-                                    }
-                                ]
-                            },
-                        ],
-                    },
-                ],
-            } } );
+            mock_agile('01/02/2025 00:00', WasteContainerQuantity => 1, PaymentMethod => 'Direct debit');
 
             $bexley_mocks{whitespace}->mock(
                 'GetSiteCollections',
@@ -3401,13 +3127,23 @@ FixMyStreet::override_config {
                 );
 
                 $mech->get_ok('/waste/10001');
-                $mech->content_like(
-                    qr/You have a pending garden subscription\./,
-                    'Subscription shown as pending',
+                $mech->content_contains('You have a pending garden subscription.');
+                $mech->content_contains('This property has a pending direct debit subscription');
+
+                $access_mock->unmock_all;
+            };
+
+            subtest 'DD cancelled' => sub {
+                $access_mock->mock(
+                    get_contracts => sub {
+                        is $_[1], 'DD_CUSTOMER_123', 'correct customer ID';
+                        return [ { Status => 'Inactive', StatusExplanation => 'Contract archived.' } ];
+                    },
                 );
-                like $mech->text,
-                    qr/This property has a pending direct debit subscription/,
-                    'pending DD message shown';
+
+                $mech->get_ok('/waste/10001');
+                $mech->content_lacks('You have a pending garden subscription');
+                $mech->content_lacks('This property has a pending direct debit subscription');
 
                 $access_mock->unmock_all;
             };
@@ -3479,21 +3215,7 @@ FixMyStreet::override_config {
             };
 
             # Change sub to credit card so renewal is possible in next test
-            $agile_mock->mock( 'CustomerSearch', sub { {
-                Customers => [ {
-                    CustomerExternalReference => 'CUSTOMER_123',
-                    CustomerReference => 'GWIT-456',
-                    CustomertStatus => 'ACTIVATED',
-                    ServiceContracts => [ {
-                        EndDate => '01/02/2025 00:00',
-                        Reference => 'CONTRACT_123',
-                        WasteContainerQuantity => 1,
-                        ServiceContractStatus => 'ACTIVE',
-                        UPRN => '10001',
-                        Payments => [{ PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' }],
-                    } ],
-                } ],
-            } } );
+            mock_agile('01/02/2025 00:00');
 
             subtest 'Active sub, abandoned DD set up, can still renew again' => sub {
                 set_fixed_time('2025-01-01T00:00:00Z'); # Renewal time
@@ -3713,21 +3435,7 @@ FixMyStreet::override_config {
                 RoundSchedule => 'RND-1 Mon',
             }]
         });
-        $agile_mock->mock('CustomerSearch', sub {{
-            Customers => [{
-                CustomerExternalReference => 'CUSTOMER_123',
-                CustomerReference => 'GWIT-123',
-                Firstname => 'Test',
-                Surname => 'User',
-                Email => 'test@example.org',
-                ServiceContracts => [{
-                    EndDate => '12/12/2025 12:21',
-                    ServiceContractStatus => 'ACTIVE',
-                    UPRN => '10001',
-                    Payments => [{ PaymentStatus => 'Paid', Amount => '50', PaymentMethod => 'Credit/Debit Card' }]
-                }],
-            }],
-        }});
+        mock_agile('12/12/2025 12:21');
 
         $mech->log_in_ok($staff_user->email);
 
@@ -3767,7 +3475,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/10001/garden_cancel');
         $mech->submit_form_ok({ with_fields => {
             has_reference => 'Yes',
-            customer_reference => 'GWIT-123',
+            customer_reference => 'GWIT-456',
         }});
 
         # Page 2: Reason (skips verification because customer ref matched)

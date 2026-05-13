@@ -105,4 +105,31 @@ sub waste_check_existing_dd {
     }
 }
 
+sub waste_report_extra_dd_data {
+    my ($self) = @_;
+    my $c = $self->{c};
+    my $orig_sub = $c->stash->{orig_sub};
+
+    if ($orig_sub) {
+        my $report = $c->stash->{report};
+        my $ref = $orig_sub->get_extra_metadata('payerReference');
+        $report->set_extra_metadata(payerReference => $ref) if $ref;
+        $report->update;
+    }
+}
+
+=head2 waste_dd_get_reference
+
+Used in garden subscription amendment, returns the payerReference
+stored on the original subscription report.
+
+=cut
+
+sub waste_dd_get_reference {
+    my ($self) = @_;
+    my $c = $self->{c};
+    my $orig_sub = $c->stash->{orig_sub};
+    return $orig_sub->get_extra_metadata('payerReference');
+}
+
 1;

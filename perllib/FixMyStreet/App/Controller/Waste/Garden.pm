@@ -98,12 +98,8 @@ sub modify : Chained('setup') : PathPart('garden_modify') : Args(0) {
         $c->forward('/waste/get_original_sub', ['user']);
 
         my $max_bins = $c->cobrand->waste_garden_maximum;
-        my $payment_method = 'credit_card';
-        if ( $c->stash->{orig_sub} ) {
-            my $orig_sub = $c->stash->{orig_sub};
-            my $orig_payment_method = $orig_sub->get_extra_field_value('payment_method');
-            $payment_method = $orig_payment_method if $orig_payment_method && $orig_payment_method ne 'csc';
-        }
+        my $payment_method = $c->forward('/waste/get_current_payment_method');
+        $payment_method = 'credit_card' if $payment_method eq 'csc';
 
         $c->forward('check_if_staff_can_pay', [ $payment_method ]);
 
@@ -632,9 +628,6 @@ sub direct_debit_modify : Private {
 
     my $p = $c->stash->{report};
 
-    my $ref = $c->stash->{orig_sub}->get_extra_metadata('payerReference');
-    $p->set_extra_metadata(payerReference => $ref);
-    $p->update;
     $c->cobrand->call_hook('waste_report_extra_dd_data');
 
     my $pro_rata = $p->get_extra_field_value('pro_rata') || 0;
@@ -647,23 +640,24 @@ sub direct_debit_modify : Private {
 
     # TODO Display error messages to user
 
+    my $dd_reference = $c->cobrand->waste_dd_get_reference('single');
+
     # if reducing bin count then there won't be an ad-hoc payment
     if ( $ad_hoc ) {
         my $one_off_ref = $i->one_off_payment( {
                 # this will be set when the initial payment is confirmed
-                payer_reference => $ref,
+                dd_reference => $dd_reference,
                 amount => sprintf('%.2f', $ad_hoc / 100),
-                reference => $p->id,
                 comments => '',
                 date => $c->cobrand->waste_get_next_dd_day('ad-hoc'),
-                orig_sub => $c->stash->{orig_sub},
+                report => $p,
         } );
     }
 
     my $update_ref = $i->amend_plan( {
-        payer_reference => $ref,
+        dd_reference => $dd_reference,
         amount => sprintf('%.2f', $total / 100),
-        orig_sub => $c->stash->{orig_sub},
+        report => $p,
     } );
 
     if ( $c->cobrand->moniker eq 'bexley' ) {
@@ -676,31 +670,21 @@ sub direct_debit_cancel_sub : Private {
     my ($self, $c) = @_;
 
     my $p = $c->stash->{report};
-    # Copy payer reference from original subscription if available
-    my $ref;
-    if ($c->stash->{orig_sub}) {
-        $ref = $c->stash->{orig_sub}->get_extra_metadata('payerReference');
-        if ($ref) {
-            $p->set_extra_metadata(payerReference => $ref);
-            $p->update;
-        }
-    }
     $c->cobrand->call_hook('waste_report_extra_dd_data');
 
     my $i = $c->cobrand->get_dd_integration;
 
     $c->stash->{payment_method} = 'direct_debit';
 
-    # For Bexley legacy subscriptions without stored contract ID, look up by UPRN
     my @extra_args;
-    if ($c->cobrand->moniker eq 'bexley' && !$p->get_extra_metadata('direct_debit_contract_id')) {
-        if (my $legacy_ids = $c->cobrand->waste_get_legacy_contract_ids($p)) {
-            push @extra_args, contract_ids => $legacy_ids;
-        }
+    my $dd_reference = $c->cobrand->waste_dd_get_reference('all');
+    if (ref $dd_reference eq 'ARRAY') {
+        push @extra_args, contract_ids => $dd_reference;
+        $dd_reference = undef;
     }
 
     my $update_ref = $i->cancel_plan( {
-        payer_reference => $ref,
+        dd_reference => $dd_reference,
         report => $p,
         @extra_args,
     } );

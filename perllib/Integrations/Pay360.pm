@@ -57,12 +57,12 @@ sub one_off_payment {
     my ($self, $args) = @_;
 
     my $obj = [
-        reference => $args->{payer_reference},
+        reference => $args->{dd_reference},
         amountString => $args->{amount},
         dueDateString => $args->{date}->strftime('%d-%m-%Y'),
         clientSUN => $self->config->{dd_sun},
-        yourRef => $args->{reference},
-        comments => $args->{comment}
+        yourRef => $args->{report}->id,
+        comments => $args->{comments}
     ];
 
     my $res = $self->call('CreatePayment', @$obj);
@@ -87,7 +87,7 @@ sub amend_plan {
 
     my $get_plan = [
         clientSUN => $self->config->{dd_sun},
-        reference => $args->{payer_reference},
+        reference => $args->{dd_reference},
     ];
 
     my $plan = $self->call('GetPayerPaymentPlanDetails', @$get_plan);
@@ -251,7 +251,7 @@ sub cancel_plan {
     my ($self, $args) = @_;
 
     my $obj = [
-        reference => $args->{payer_reference},
+        reference => $args->{dd_reference},
         send0CString => 'TRUE',
         clientSUN => $self->config->{dd_sun},
     ];

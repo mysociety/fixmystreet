@@ -42,11 +42,11 @@ sub lookup_subscription_for_uprn {
     my ($self, $uprn) = @_;
 
     my $sub = {
-        cost => undef,
+        garden_cost => undef,
         end_date => undef,
         customer_ref => undef,
         customer_external_ref => undef,
-        bins_count => undef,
+        garden_bins => undef,
     };
 
     my ( $customer, $contract );
@@ -112,6 +112,8 @@ sub lookup_subscription_for_uprn {
         ? 'direct_debit'
         : 'credit_card';
 
+    $sub->{payment_method} = $payment_method;
+
     if ($payment_method eq 'direct_debit') {
         # Got an active contract with a DD payment method, nothing due to renew
         $sub->{has_been_renewed} = 1;
@@ -129,7 +131,7 @@ sub lookup_subscription_for_uprn {
     $sub->{customer_email}        = Utils::trim_text( $customer->{Email} );
     $sub->{customer_phone} = Utils::trim_text( $customer->{Mobile} // $customer->{TelNumber} );
 
-    $sub->{bins_count} = $contract->{WasteContainerQuantity};
+    $sub->{garden_bins} = $contract->{WasteContainerQuantity};
 
     # Agile does not necessarily return the correct cost, so calculate instead
     my $costs = WasteWorks::Costs->new(
@@ -140,7 +142,7 @@ sub lookup_subscription_for_uprn {
                 ),
         },
     );
-    $sub->{cost} = $costs->bins( $sub->{bins_count} ) / 100;
+    $sub->{garden_cost} = $costs->bins( $sub->{garden_bins} ) / 100;
 
     return { subscription => $sub };
 }
@@ -190,26 +192,18 @@ sub garden_current_subscription {
         return undef;
     }
 
-    my $garden_due = $sub->{has_been_renewed} ? 0 : $self->waste_sub_due( $sub->{end_date} );
-    my $garden_overdue = $sub->{has_been_renewed} ? 0 : $self->waste_sub_overdue( $sub->{end_date} );
+    $sub->{garden_due} = $sub->{has_been_renewed} ? 0 : $self->waste_sub_due( $sub->{end_date} );
+    $sub->{garden_overdue} = $sub->{has_been_renewed} ? 0 : $self->waste_sub_overdue( $sub->{end_date} );
 
     # Agile says there is a subscription; now get service data from
     # Whitespace
     my $service_ids = { map { $_->{service_id} => $_ } @$services };
     for ( @{ $self->garden_service_ids } ) {
         if ( my $srv = $service_ids->{$_} ) {
-            $srv->{customer_external_ref} = $sub->{customer_external_ref};
-            $srv->{customer_ref} = $sub->{customer_ref};
-            $srv->{customer_first_name} = $sub->{customer_first_name};
-            $srv->{customer_last_name} = $sub->{customer_last_name};
-            $srv->{customer_email} = $sub->{customer_email};
-            $srv->{customer_phone} = $sub->{customer_phone};
-            $srv->{end_date} = $sub->{end_date};
-            $srv->{garden_bins} = $sub->{bins_count};
-            $srv->{garden_cost} = $sub->{cost};
-            $srv->{garden_due} = $garden_due;
-            $srv->{garden_overdue} = $garden_overdue;
-
+            # Need to modify original as variables such as garden_due are then looked up in it
+            foreach (keys %$sub) {
+                $srv->{$_} = $sub->{$_};
+            }
             return $srv;
         }
     }
@@ -219,18 +213,7 @@ sub garden_current_subscription {
     # to the list for this property so the frontend displays it.
     my $service = {
         agile_only => 1,
-        customer_external_ref => $sub->{customer_external_ref},
-        customer_ref => $sub->{customer_ref},
-        customer_first_name => $sub->{customer_first_name},
-        customer_last_name => $sub->{customer_last_name},
-        customer_email => $sub->{customer_email},
-        customer_phone => $sub->{customer_phone},
-        end_date => $sub->{end_date},
-        garden_bins => $sub->{bins_count},
-        garden_cost => $sub->{cost},
-        garden_due  => $garden_due,
-        garden_overdue => $garden_overdue,
-
+        %$sub,
         uprn => $uprn,
         garden_waste => 1,
         service_description => "Garden waste",
@@ -269,6 +252,37 @@ sub waste_report_extra_dd_data {
     }
 }
 
+=head2 waste_dd_get_reference
+
+Used in garden subscription modifying, to return the contract ID to modify;
+this could be one from the original subscription report, or a legacy entry.
+
+=cut
+
+sub waste_dd_get_reference {
+    my ($self, $type) = @_;
+
+    my $c = $self->{c};
+    my $orig_sub = $c->stash->{orig_sub};
+    my $p = $c->stash->{report};
+
+    if ($orig_sub) {
+        my $contract_id = $orig_sub->get_extra_metadata('direct_debit_contract_id');
+        return $contract_id if $contract_id;
+    }
+
+    my $legacy_ids = $c->cobrand->waste_get_legacy_contract_ids($p);
+    if ($type eq 'single') {
+        if ($legacy_ids && @$legacy_ids == 1) {
+            return $legacy_ids->[0];
+        } else {
+            return;
+        }
+    } else {
+        return $legacy_ids;
+    }
+}
+
 =head2 waste_get_legacy_contract_ids
 
 For legacy pre-WasteWorks garden subscriptions, Bexley needs to look up
@@ -291,37 +305,6 @@ sub waste_get_legacy_contract_ids {
     return undef unless @$contract_ids;
 
     return $contract_ids;
-}
-
-=head2 waste_get_current_payment_method
-
-For legacy pre-WasteWorks subscriptions without stored payment_method,
-check if there are legacy contracts in the BexleyContracts database for this UPRN.
-If legacy contracts exist, assume direct debit.
-
-This is safe because:
-- If the legacy subscription was actually direct debit, we need to cancel it via AccessPaySuite
-- If it was actually credit card, the DD cancellation will just not find anything to cancel
-
-Returns 'direct_debit' if legacy contracts found, undef otherwise.
-
-=cut
-
-sub waste_get_current_payment_method {
-    my ($self, $orig_sub) = @_;
-
-    my $property = $self->{c}->stash->{property};
-    return unless $property;
-
-    my $uprn = $property->{uprn};
-    return unless $uprn;
-
-    return unless $self->{c}->action eq 'waste/garden/cancel';
-
-    my $legacy_contract_ids = BexleyContracts::contract_ids_for_uprn($uprn);
-    if ($legacy_contract_ids && @$legacy_contract_ids) {
-        return 'direct_debit';
-    }
 }
 
 sub waste_garden_sub_params {

@@ -1231,19 +1231,19 @@ sub process_enquiry_data : Private {
 sub get_current_payment_method : Private {
     my ($self, $c) = @_;
 
-    my $payment_method;
-
-    if ($c->stash->{orig_sub}) {
-        $payment_method = $c->stash->{orig_sub}->get_extra_field_value('payment_method');
+    if ($c->cobrand->can('garden_current_subscription')) {
+        my $service = $c->cobrand->garden_current_subscription;
+        # See if the backend returned the method e.g. Agile
+        return $service->{payment_method} if $service && $service->{payment_method};
     }
 
-    # Allow cobrand to override payment method detection for legacy subscriptions
-    if (!$payment_method) {
-        $payment_method = $c->cobrand->call_hook('waste_get_current_payment_method' => $c->stash->{orig_sub});
+    my $payment_method;
+    if (my $orig_sub = $c->stash->{orig_sub}) {
+        # If not, do we have a record at our end we could use
+        $payment_method = $orig_sub->get_extra_field_value('payment_method');
     }
 
     return $payment_method || 'credit_card';
-
 }
 
 sub get_original_sub : Private {

@@ -10,7 +10,7 @@ use Exporter qw(import);
 
 # Normally don't export a variable, but this is just to
 # keep it in scope for the duration of the file
-our @EXPORT = qw(%bexley_mocks default_mocks $slots_default);
+our @EXPORT = qw(%bexley_mocks default_mocks $slots_default mock_agile);
 
 our %bexley_mocks;
 
@@ -146,6 +146,37 @@ sub default_mocks {
     $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {} } );
 };
 default_mocks();
+
+sub mock_agile {
+    my ($end_date, %params) = @_;
+    $bexley_mocks{agile}->mock('CustomerSearch', sub {
+        my ($self, $uprn) = @_;
+        return {} if $params{only_uprn} && $params{only_uprn} ne $uprn;
+        return {
+            Customers => [
+                {
+                    CustomerExternalReference => $params{CustomerExternalReference} // 'CUSTOMER_123',
+                    CustomerReference => $params{CustomerReference} // 'GWIT-456',
+                    Firstname => '  Verity  ',
+                    Surname => '  Wright  ',
+                    Email => $params{Email} // 'verity@wright.com',
+                    Mobile => $params{Phone} // '+4407222222222',
+                    CustomertStatus => $params{customer_status} // 'ACTIVATED',
+                    ServiceContracts => [
+                        {
+                            EndDate => $end_date,
+                            Reference => $params{contract_id} // 'CONTRACT_123',
+                            WasteContainerQuantity => $params{WasteContainerQuantity} // 2,
+                            ServiceContractStatus => $params{contract_status} // 'ACTIVE',
+                            UPRN => $params{only_uprn} // $params{UPRN} // '10001',
+                            Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => $params{PaymentMethod} // 'Credit/Debit Card' } ]
+                        },
+                    ],
+                },
+            ],
+        };
+    });
+}
 
 $whitespace_mock->mock(
     'GetSiteInfo',
