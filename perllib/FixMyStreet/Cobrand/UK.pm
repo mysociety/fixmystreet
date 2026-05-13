@@ -463,6 +463,7 @@ sub updates_disallowed {
     my $cfg = $self->feature('updates_allowed') || '';
 
     my $body_user = $c->user_exists && $c->user->from_body && $c->user->from_body->get_column('name') eq $self->council_name;
+    return $cfg if $c->user_exists && $c->cobrand->call_hook('updates_disallowed_for_user' => $c->user, $body_user);
     return $self->_updates_disallowed_check($cfg, $problem, $body_user);
 }
 

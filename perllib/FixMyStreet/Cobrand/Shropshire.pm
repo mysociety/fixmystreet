@@ -120,6 +120,22 @@ sub staff_ignore_form_disable_form {
         && $c->user->belongs_to_body( $self->body->id );
 }
 
+=head2 updates_disallowed_for_user
+
+Users in the Councillor role should not be able to update
+reports even though they are body members
+
+=cut
+
+sub updates_disallowed_for_user {
+    my ($self, $user, $from_body) = @_;
+
+    return unless $from_body;
+
+    my $role = $user->obj->roles->search({ name => "Shropshire Councillor" })->count;
+    return $role;
+}
+
 =head2 open311_contact_meta_override
 
 One field we pull from Confirm is for an 'Abandoned since' date. We want

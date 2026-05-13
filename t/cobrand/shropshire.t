@@ -20,6 +20,31 @@ my ($report) = $mech->create_problems_for_body(1, $body->id, 'Test Report', {
     external_id => '1309813', whensent => \'current_timestamp',
 });
 
+my ($report2) = $mech->create_problems_for_body(1, $body->id, 'Test Report for updating', {
+    category => 'Bridges', cobrand => 'shropshire',
+    latitude => 52.859331, longitude => -3.054912, areas => ',11809,129425,144013,144260,148857,2238,39904,47098,66017,95047,'
+});
+
+my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',
+                                      from_body => $body, password => 'password');
+
+my $councillor = $mech->create_user_ok('councillor@example.com', name => 'Councillor',
+                                       from_body => $body, password => 'password');
+
+my $role = FixMyStreet::DB->resultset("Role")->create({
+    body => $body,
+    name => 'Shropshire Councillor',
+    permissions => ['report_inspect'],
+    });
+$councillor->add_to_roles($role);
+
+my $role2 = FixMyStreet::DB->resultset("Role")->create({
+    body => $body,
+    name => 'General council',
+    permissions => ['report_inspect'],
+    });
+$staffuser->add_to_roles($role2);
+
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'shropshire' ],
     MAPIT_URL => 'http://mapit.uk/',
@@ -108,6 +133,26 @@ FixMyStreet::override_config {
 
 };
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'shropshire' ],
+      COBRAND_FEATURES => {
+        updates_allowed => {
+          shropshire => 'reporter/staff',
+        }
+      }
+}, sub {
+    subtest 'User in Councillor role can not update reports' => sub {
+        $mech->log_in_ok( $staffuser->email );
+        my $id = $report2->id;
+        $mech->get_ok( '/report/' . $id );
+        $mech->content_contains('Provide an update', 'Regular staff user can leave an update');
+
+        $mech->log_in_ok( $councillor->email );
+        $mech->get_ok( '/report/' . $id );
+        $mech->content_lacks('Provide an update', 'Councillor role staff user can not leave an update');
+    };
+};
+
 subtest 'check open311_contact_meta_override' => sub {
 
     my $processor = Open311::PopulateServiceList->new();
@@ -178,8 +223,6 @@ FixMyStreet::override_config {
     PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     COBRAND_FEATURES => { heatmap => { shropshire => 1 } },
 }, sub {
-    my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',
-        from_body => $body, password => 'password');
     $mech->log_in_ok( $staffuser->email );
 
     subtest 'Dashboard includes parishes' => sub {
@@ -188,7 +231,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Abdon and Heath Parish');
         $mech->submit_form_ok({ with_fields => { ward => 144013 } });
         $mech->content_contains('<option value="144013" selected>Oswestry Parish</option>');
-        $mech->content_like(qr{<th scope="row" id="total-header">Total</th>\s*<td>1</td>});
+        $mech->content_like(qr{<th scope="row" id="total-header">Total</th>\s*<td>2</td>});
 
         $mech->get_ok('/dashboard/heatmap');
         $mech->content_contains('Town/parish council');
