@@ -3109,13 +3109,23 @@ FixMyStreet::override_config {
                 );
 
                 $mech->get_ok('/waste/10001');
-                $mech->content_like(
-                    qr/You have a pending garden subscription\./,
-                    'Subscription shown as pending',
+                $mech->content_contains('You have a pending garden subscription.');
+                $mech->content_contains('This property has a pending direct debit subscription');
+
+                $access_mock->unmock_all;
+            };
+
+            subtest 'DD cancelled' => sub {
+                $access_mock->mock(
+                    get_contracts => sub {
+                        is $_[1], 'DD_CUSTOMER_123', 'correct customer ID';
+                        return [ { Status => 'Inactive', StatusExplanation => 'Contract archived.' } ];
+                    },
                 );
-                like $mech->text,
-                    qr/This property has a pending direct debit subscription/,
-                    'pending DD message shown';
+
+                $mech->get_ok('/waste/10001');
+                $mech->content_lacks('You have a pending garden subscription');
+                $mech->content_lacks('This property has a pending direct debit subscription');
 
                 $access_mock->unmock_all;
             };
