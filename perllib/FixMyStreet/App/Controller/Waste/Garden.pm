@@ -641,7 +641,7 @@ sub direct_debit_modify : Private {
     if ( $ad_hoc ) {
         my $one_off_ref = $i->one_off_payment( {
                 # this will be set when the initial payment is confirmed
-                payer_reference => $ref,
+                dd_reference => $ref,
                 amount => sprintf('%.2f', $ad_hoc / 100),
                 reference => $p->id,
                 comments => '',
@@ -651,7 +651,7 @@ sub direct_debit_modify : Private {
     }
 
     my $update_ref = $i->amend_plan( {
-        payer_reference => $ref,
+        dd_reference => $ref,
         amount => sprintf('%.2f', $total / 100),
         orig_sub => $c->stash->{orig_sub},
     } );
@@ -690,7 +690,7 @@ sub direct_debit_cancel_sub : Private {
     }
 
     my $update_ref = $i->cancel_plan( {
-        payer_reference => $ref,
+        dd_reference => $ref,
         report => $p,
         @extra_args,
     } );
