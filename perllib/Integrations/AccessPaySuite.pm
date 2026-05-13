@@ -280,7 +280,7 @@ sub _clear_dd_failure {
 sub cancel_plan {
     my ($self, $args) = @_;
     my $report = $args->{report};
-    my $contract_id = $report ? $report->get_extra_metadata('direct_debit_contract_id') : undef;
+    my $contract_id = $args->{dd_reference};
 
     if ($contract_id) {
         # Single contract from metadata - handle errors properly
@@ -312,37 +312,37 @@ sub cancel_plan {
 Amends the payment amount for an existing direct debit plan.
 
 Takes a hashref of parameters:
-- orig_sub - The original subscription report object containing the contract_id in metadata
+- dd_reference - The reference of the DD to amend, if known
 - amount - The new amount to be taken (decimal number with max 2 decimal places)
+- report - The new modification report that has been created
 
 =cut
 
 sub amend_plan {
     my ($self, $args) = @_;
 
-    my $contract_id = $args->{orig_sub}->get_extra_metadata('direct_debit_contract_id');
-    unless ($contract_id) {
-        $self->_record_dd_failure($args->{orig_sub}, 'amend',
+    unless ($args->{dd_reference}) {
+        $self->_record_dd_failure($args->{report}, 'amend',
             "No direct debit contract ID found in original subscription report metadata",
             { amount => $args->{amount} });
         return;
     }
 
-    my $path = "contract/" . $contract_id . "/amount";
+    my $path = "contract/" . $args->{dd_reference} . "/amount";
     my $data = {
         amount => $args->{amount},
-        comment => "WasteWorks: Plan amount amended for " . $args->{orig_sub}->id,
+        comment => "WasteWorks: Plan amount amended, #" . $args->{report}->id,
     };
 
     my $resp = $self->call('PATCH', $path, $data);
 
     if (ref $resp eq 'HASH' && $resp->{error}) {
-        $self->_record_dd_failure($args->{orig_sub}, 'amend', $resp->{error},
+        $self->_record_dd_failure($args->{report}, 'amend', $resp->{error},
             { amount => $args->{amount} });
         return;
     }
 
-    $self->_clear_dd_failure($args->{orig_sub}, 'amend');
+    $self->_clear_dd_failure($args->{report}, 'amend');
     return 1;
 }
 
@@ -364,31 +364,29 @@ Adds an AdHoc payment to be taken for a specified contract.
 sub one_off_payment {
     my ($self, $args) = @_;
 
-    my $orig_sub = $args->{orig_sub};
-    my $contract_id = $orig_sub->get_extra_metadata('direct_debit_contract_id');
-    unless ($contract_id) {
-        $self->_record_dd_failure($orig_sub, 'one_off',
+    unless ($args->{dd_reference}) {
+        $self->_record_dd_failure($args->{report}, 'one_off',
             "No direct debit contract ID found in original subscription report metadata",
             { amount => $args->{amount}, date => $args->{date}->iso8601 });
         return;
     }
 
     # Create the adhoc payment using the contract ID
-    my $resp = $self->create_payment($contract_id, {
+    my $resp = $self->create_payment($args->{dd_reference}, {
         amount => $args->{amount},
         date => $args->{date}->strftime('%Y-%m-%dT%H:%M:%S.000'),
-        comment => "WasteWorks: AdHoc payment for " . $orig_sub->id,
+        comment => "WasteWorks: AdHoc payment for #" . $args->{report}->id,
     });
 
     if (ref $resp eq 'HASH' && $resp->{error}) {
-        $self->_record_dd_failure($orig_sub, 'one_off', $resp->{error},
+        $self->_record_dd_failure($args->{report}, 'one_off', $resp->{error},
             { amount => $args->{amount}, date => $args->{date}->iso8601 });
         return;
     }
 
     $self->log('Unexpected response format from AccessPaySuite adhoc payment: ' . Dumper($resp))
         unless ref $resp eq 'HASH';
-    $self->_clear_dd_failure($orig_sub, 'one_off');
+    $self->_clear_dd_failure($args->{report}, 'one_off');
     return 1;
 }
 

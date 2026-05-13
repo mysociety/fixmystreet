@@ -25,6 +25,7 @@ sub mock_report {
     my %metadata = @_;
     my $stored = { %metadata };
     my $report = Test::MockObject->new;
+    $report->mock('id', sub { 135 });
     $report->mock( 'get_extra_metadata', sub {
         my ( $self, $key ) = @_;
         return $stored->{$key};
@@ -49,10 +50,10 @@ subtest 'cancel_plan uses metadata contract_id when present' => sub {
         return 1;
     });
 
-    my $report = mock_report( direct_debit_contract_id => 'METADATA-CONTRACT-123' );
-
+    my $report = mock_report();
     my $result = $integration->cancel_plan({
-        report       => $report,
+        report => $report,
+        dd_reference => 'METADATA-CONTRACT-123',
         contract_ids => ['PARAM-CONTRACT-456'],  # Should be ignored
     });
 
@@ -145,9 +146,9 @@ subtest 'cancel_plan ignores errors and returns success' => sub {
 
 subtest 'cancel_plan records success metadata' => sub {
     $mock->mock( 'call', sub { {} } );
-    my $report = mock_report( direct_debit_contract_id => 'PAYER123' );
+    my $report = mock_report();
 
-    is $integration->cancel_plan({ report => $report }), 1, 'cancel_plan returns success';
+    is $integration->cancel_plan({ dd_reference => 'PAYER123', report => $report }), 1, 'cancel_plan returns success';
 
     like $report->get_extra_metadata('direct_debit_cancellation_date'),
         qr/^\d{4}-\d{2}-\d{2}T/, 'cancellation date set';
@@ -157,9 +158,9 @@ subtest 'cancel_plan records success metadata' => sub {
 
 subtest 'cancel_plan records failure metadata' => sub {
     $mock->mock( 'call', sub { { error => 'Provider down' } } );
-    my $report = mock_report( direct_debit_contract_id => 'PAYER123' );
+    my $report = mock_report();
 
-    my $resp = $integration->cancel_plan({ report => $report });
+    my $resp = $integration->cancel_plan({ dd_reference => 'PAYER123', report => $report });
     is $resp->{error}, 'Provider down', 'error returned to caller';
 
     my $info = ($report->get_extra_metadata('direct_debit_errors') || {})->{cancellation} || {};
@@ -175,11 +176,10 @@ subtest 'cancel_plan records failure metadata' => sub {
 subtest 'cancel_plan increments failure counter on repeat' => sub {
     $mock->mock( 'call', sub { { error => 'Still down' } } );
     my $report = mock_report(
-        direct_debit_contract_id => 'PAYER123',
-        direct_debit_errors      => { cancellation => { failures => 2 } },
+        direct_debit_errors => { cancellation => { failures => 2 } },
     );
 
-    $integration->cancel_plan({ report => $report });
+    $integration->cancel_plan({ dd_reference => 'PAYER123', report => $report });
 
     is $report->get_extra_metadata('direct_debit_errors')->{cancellation}{failures}, 3,
         'failure count incremented from existing value';
@@ -189,9 +189,11 @@ subtest 'cancel_plan increments failure counter on repeat' => sub {
 
 subtest 'amend_plan records failure metadata' => sub {
     $mock->mock( 'call', sub { { error => 'Amend boom' } } );
-    my $report = mock_report( direct_debit_contract_id => 'PAYER123' );
+    my $report = mock_report();
 
-    is $integration->amend_plan({ orig_sub => $report, amount => '50.00' }),
+    is $integration->amend_plan({
+        dd_reference => 'PAYER123',
+        report => $report, amount => '50.00' }),
         undef, 'amend_plan returns undef on provider error';
 
     my $info = ($report->get_extra_metadata('direct_debit_errors') || {})->{amend} || {};
@@ -203,11 +205,13 @@ subtest 'amend_plan records failure metadata' => sub {
     $mock->unmock('call');
 };
 
-subtest 'amend_plan records failure when contract_id missing' => sub {
-    my $report = mock_report();  # no direct_debit_contract_id
+subtest 'amend_plan records failure when DD reference missing' => sub {
+    my $report = mock_report();
 
-    is $integration->amend_plan({ orig_sub => $report, amount => '50.00' }),
-        undef, 'amend_plan returns undef when contract_id missing';
+    is $integration->amend_plan({
+        # no dd_reference
+        report => $report, amount => '50.00' }),
+        undef, 'amend_plan returns undef when dd_reference missing';
 
     my $info = ($report->get_extra_metadata('direct_debit_errors') || {})->{amend} || {};
     like $info->{error}, qr/No direct debit contract ID/, 'error recorded';
@@ -216,13 +220,14 @@ subtest 'amend_plan records failure when contract_id missing' => sub {
 
 subtest 'one_off_payment records failure metadata' => sub {
     $mock->mock( 'call', sub { { error => 'Adhoc boom' } } );
-    my $report = mock_report( direct_debit_contract_id => 'PAYER123' );
+    my $report = mock_report();
     my $date = DateTime->new( year => 2026, month => 5, day => 15 );
 
     is $integration->one_off_payment({
-        orig_sub => $report,
-        amount   => '12.50',
-        date     => $date,
+        dd_reference => 'PAYER123',
+        report => $report,
+        amount => '12.50',
+        date => $date,
     }), undef, 'one_off_payment returns undef on provider error';
 
     my $info = ($report->get_extra_metadata('direct_debit_errors') || {})->{one_off} || {};
@@ -235,15 +240,16 @@ subtest 'one_off_payment records failure metadata' => sub {
     $mock->unmock('call');
 };
 
-subtest 'one_off_payment records failure when contract_id missing' => sub {
-    my $report = mock_report();  # no direct_debit_contract_id
+subtest 'one_off_payment records failure when DD reference missing' => sub {
+    my $report = mock_report();
     my $date = DateTime->new( year => 2026, month => 5, day => 15 );
 
     is $integration->one_off_payment({
-        orig_sub => $report,
-        amount   => '12.50',
-        date     => $date,
-    }), undef, 'one_off_payment returns undef when contract_id missing';
+        # no dd_reference
+        report => $report,
+        amount => '12.50',
+        date => $date,
+    }), undef, 'one_off_payment returns undef when dd_reference missing';
 
     my $info = ($report->get_extra_metadata('direct_debit_errors') || {})->{one_off} || {};
     like $info->{error}, qr/No direct debit contract ID/, 'error recorded';
@@ -254,14 +260,13 @@ subtest 'one_off_payment records failure when contract_id missing' => sub {
 subtest 'cancel_plan clears prior failure on success' => sub {
     $mock->mock( 'call', sub { {} } );
     my $report = mock_report(
-        direct_debit_contract_id => 'PAYER123',
-        direct_debit_errors      => {
+        direct_debit_errors => {
             cancellation => { error => 'old', failures => 2, last_failed_at => '...' },
             amend        => { error => 'unrelated', failures => 1, last_failed_at => '...' },
         },
     );
 
-    is $integration->cancel_plan({ report => $report }), 1, 'cancel_plan returns success';
+    is $integration->cancel_plan({ dd_reference => 'PAYER123', report => $report }), 1, 'cancel_plan returns success';
 
     my $errors = $report->get_extra_metadata('direct_debit_errors') || {};
     ok !$errors->{cancellation}, 'cancellation entry cleared on success';
@@ -273,11 +278,10 @@ subtest 'cancel_plan clears prior failure on success' => sub {
 subtest 'amend_plan clears prior failure on success' => sub {
     $mock->mock( 'call', sub { {} } );
     my $report = mock_report(
-        direct_debit_contract_id => 'PAYER123',
-        direct_debit_errors      => { amend => { error => 'old', failures => 1 } },
+        direct_debit_errors => { amend => { error => 'old', failures => 1 } },
     );
 
-    $integration->amend_plan({ orig_sub => $report, amount => '50.00' });
+    $integration->amend_plan({ dd_reference => 'PAYER123', report => $report, amount => '50.00' });
 
     ok !$report->get_extra_metadata('direct_debit_errors'),
         'direct_debit_errors fully cleared when last entry removed';
@@ -288,14 +292,14 @@ subtest 'amend_plan clears prior failure on success' => sub {
 subtest 'one_off_payment clears prior failure on success' => sub {
     $mock->mock( 'call', sub { {} } );
     my $report = mock_report(
-        direct_debit_contract_id => 'PAYER123',
-        direct_debit_errors      => { one_off => { error => 'old', failures => 1 } },
+        direct_debit_errors => { one_off => { error => 'old', failures => 1 } },
     );
 
     is $integration->one_off_payment({
-        orig_sub => $report,
-        amount   => '12.50',
-        date     => DateTime->now,
+        dd_reference => 'PAYER123',
+        report => $report,
+        amount => '12.50',
+        date => DateTime->now,
     }), 1, 'one_off_payment returns success';
 
     ok !$report->get_extra_metadata('direct_debit_errors'),
