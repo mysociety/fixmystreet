@@ -176,6 +176,17 @@ subtest 'non_public photos only viewable by correct people' => sub {
         $user->user_body_permissions->create({ body => $body, permission_type => 'report_inspect' });
         $i = '/photo/' . $report->id . '.0.jpeg';
         $mech->get_ok($i);
+        $user->user_body_permissions->delete;
+
+        $user->user_body_permissions->create({ body => $body, permission_type => 'report_view_private' });
+        $i = '/photo/' . $report->id . '.0.jpeg';
+        $mech->get_ok($i);
+        $user->user_body_permissions->delete;
+
+        $user->user_body_permissions->create({ body => $body, permission_type => 'report_mark_private' });
+        $i = '/photo/' . $report->id . '.0.jpeg';
+        $mech->get_ok($i);
+        $user->user_body_permissions->delete;
 
         $user->update({ from_body => undef, is_superuser => 1 });
         $i = '/photo/' . $report->id . '.0.jpeg';

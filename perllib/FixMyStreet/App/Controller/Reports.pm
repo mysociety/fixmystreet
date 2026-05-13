@@ -712,6 +712,7 @@ sub check_non_public_reports_permission : Private {
 
             $user_has_permission = $body && (
                 $c->user->has_permission_to('report_inspect', $body->id) ||
+                $c->user->has_permission_to('report_view_private', $body->id) ||
                 $c->user->has_permission_to('report_mark_private', $body->id)
             );
         }

@@ -31,7 +31,7 @@ my $body = $mech->create_body_ok( 2482, 'Bromley Council', {
 $mech->create_user_ok('superuser@example.com', is_superuser => 1, name => "Super User");
 my $staffuser = $mech->create_user_ok( 'staff@example.com', name => 'Staffie', from_body => $body );
 my $role = FixMyStreet::DB->resultset("Role")->create({
-    body => $body, name => 'Role A', permissions => ['moderate', 'user_edit', 'report_mark_private', 'report_inspect', 'contribute_as_body'] });
+    body => $body, name => 'Role A', permissions => ['moderate', 'user_edit', 'report_view_private', 'report_inspect', 'contribute_as_body'] });
 $staffuser->add_to_roles($role);
 
 my $pothole = $mech->create_contact_ok(

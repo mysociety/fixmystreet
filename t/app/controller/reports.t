@@ -222,7 +222,7 @@ is scalar @$problems, 4, 'only public problems are displayed';
 
 $mech->content_lacks('All reports Test 3 for ' . $body_west_id, 'non public problem is not visible');
 
-for my $permission( qw/ report_inspect report_mark_private / ) {
+for my $permission( qw/ report_inspect report_view_private report_mark_private / ) {
     subtest "user with $permission permission can see non public reports" => sub {
         my $body = FixMyStreet::DB->resultset('Body')->find( $body_west_id );
         my $body2 = FixMyStreet::DB->resultset('Body')->find( $body_edin_id );

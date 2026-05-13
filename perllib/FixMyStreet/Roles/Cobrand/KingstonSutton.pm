@@ -82,7 +82,8 @@ sub available_permissions {
     return {
         _("Problems") => {
             report_edit => _("Edit reports"),
-            report_mark_private => _("View/Mark private reports"),
+            report_view_private => _("View private reports"),
+            report_mark_private => _("Mark private reports"), # Implies permission to view
             contribute_as_another_user => _("Create reports/updates on a user's behalf"),
             contribute_as_anonymous_user => _("Create reports/updates as anonymous user"),
             contribute_as_body => _("Create reports/updates as the council"),
