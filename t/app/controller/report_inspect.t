@@ -63,6 +63,14 @@ FixMyStreet::override_config {
         $mech->content_lacks('Change asset');
         $mech->content_lacks('/admin/report_edit/'.$report_id.'">admin</a>)');
 
+        $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_view_private' });
+        $mech->get_ok("/report/$report_id");
+        $mech->content_lacks('Private');
+        $mech->content_lacks('Save changes');
+        $mech->content_lacks('Change asset');
+        $mech->content_lacks('Priority');
+        $mech->content_lacks('/admin/report_edit/'.$report_id.'">admin</a>)');
+
         $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_mark_private' });
         $mech->get_ok("/report/$report_id");
         $mech->content_contains('Private');

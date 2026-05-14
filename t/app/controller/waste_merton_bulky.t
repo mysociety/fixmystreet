@@ -30,7 +30,7 @@ my $contact = $mech->create_contact_ok(body => $body, ( category => 'Report miss
 $contact->update;
 
 my $contact_centre_user = $mech->create_user_ok('contact@example.org', from_body => $body, email_verified => 1, name => 'Contact 1');
-$contact_centre_user->user_body_permissions->create({ body => $body, permission_type => 'report_mark_private' });
+$contact_centre_user->user_body_permissions->create({ body => $body, permission_type => 'report_view_private' });
 
 for ($body) {
     add_extra_metadata($_);

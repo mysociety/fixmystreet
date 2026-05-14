@@ -14,7 +14,7 @@ my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
 my $staff_user = $mech->create_user_ok('staff@example.org', from_body => $body, name => 'Staff User');
 $staff_user->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_anonymous_user' });
 $staff_user->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_another_user' });
-$staff_user->user_body_permissions->create({ body => $body, permission_type => 'report_mark_private' });
+$staff_user->user_body_permissions->create({ body => $body, permission_type => 'report_view_private' });
 
 sub create_contact {
     my ($params, @extra) = @_;
