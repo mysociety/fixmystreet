@@ -98,6 +98,24 @@
           </optgroup>
         </select>
       </p>
+
+      <div class="admin-hint">
+        <p>
+          Use the dropdown below to optionally select a value for an old external status code.
+        </p>
+        <p>
+          E.g. if you want the template to trigger for a report that used to be set to 'Job Raised' before an update was pulled in from Alloy, select that status below.
+        </p>
+      </div>
+      <p>
+        <label for="old_external_status_code">[% loc('Old status') %]</label>
+        <select class="form-control" name="old_external_status_code" id="old_external_status_code">
+          <option value="">[% loc('-- Please select (optional) --') %]</option>
+          [% FOR item IN status_sorted %]
+            <option value="[% item.code | html %]"[% ' selected' IF rt.old_external_status_code == item.code %]>[% item.label | html %]</option>
+          [% END %]
+        </select>
+      </p>
     </div>
 
     <input type="hidden" id="external_status_code" name="external_status_code" value="[% rt.external_status_code | html %]">
@@ -193,5 +211,17 @@
     <p>
       <label for="external_status_code">[% loc('External status code') %]</label>
       <input type="text" id="external_status_code" name="external_status_code" class="form-control" size="30" value="[% rt.external_status_code | html %]">
+    </p>
+    <div class="admin-hint">
+      <p>
+        You may optionally provide an old external status code to check against.
+      </p>
+      <p>
+        E.g. setting an old external status code of <strong>5c8bdfc18ae862230019dc21</strong> will mean that the template will trigger for a report that used to be set to 'Job Raised'.
+      </p>
+    </div>
+    <p>
+      <label for="old_external_status_code">[% loc('Old external status code (optional)') %]</label>
+      <input type="text" id="old_external_status_code" name="old_external_status_code" class="form-control" size="30" value="[% rt.old_external_status_code | html %]">
     </p>
 [% END %]

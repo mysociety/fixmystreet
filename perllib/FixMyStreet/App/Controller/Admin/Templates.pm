@@ -107,6 +107,9 @@ sub edit : Path : Args(2) {
             $ext_code ||= $c->get_param('external_status_code');
             $template->external_status_code($ext_code);
 
+            my $old_ext_code = $c->get_param('old_external_status_code') // '';
+            $template->old_external_status_code($old_ext_code);
+
             $template->deleted ( $c->get_param('deleted') ? 1 : 0 );
 
             # Allow cobrands to validate the external_status_code format
@@ -125,6 +128,11 @@ sub edit : Path : Args(2) {
                 $c->stash->{errors}->{external_status_code} = _("State and external status code cannot be used simultaneously.");
             }
 
+            if ( $template->external_status_code && $template->old_external_status_code ) {
+                $c->stash->{errors}->{external_status_code} = 'Old status cannot be the same as new status'
+                    if $template->external_status_code =~ /^${\$template->old_external_status_code}:/;
+            }
+
             $template->auto_response( $c->get_param('auto_response') && ( $template->state || $template->external_status_code ) ? 1 : 0 );
             if ($template->auto_response) {
                 my @check_contact_ids = @new_contact_ids;
@@ -136,13 +144,24 @@ sub edit : Path : Args(2) {
                 }
 
                 my $state_param = { $template->state ? ('me.state' => $template->state) : () };
-                my $code_param = { $template->external_status_code ? ('me.external_status_code' => $template->external_status_code) : () };
+                # Always set a param for old_external_status_code if there is
+                # an external_status_code - for most templates/cobrands, it
+                # will be empty string
+                my $code_param = {
+                    $template->external_status_code
+                    ? ( 'me.external_status_code' =>
+                            $template->external_status_code,
+                        'me.old_external_status_code' =>
+                            $template->old_external_status_code // '',
+                    )
+                    : ()
+                };
                 my $params;
                 if ($c->cobrand->admin_templates_state_and_external_status_code) {
                     # Both can be set, if external code set need to check that alone
                     $params = $template->external_status_code ? $code_param : $state_param;
                 } else {
-                    $params = { -or => { %$state_param, %$code_param } };
+                    $params = { -or => { %$state_param, -and => $code_param } };
                 }
 
                 my $query = {

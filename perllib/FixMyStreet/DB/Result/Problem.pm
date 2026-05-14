@@ -951,11 +951,16 @@ sub response_template_for {
             )) {
                 # Use regex matching - the template's pattern is converted to a regex
                 # and matched against the update's external_status_code
+
+                my ($old_ext_code_first_part) = ($old_ext_code // '') =~ /^([^:]+)/;
+                $old_ext_code_first_part //= '';
+
                 push @$state_params, {
                     'me.state' => '',
                     'me.external_status_code' => { '!=' => '' },  # Must have a pattern
                     # Use -bool with a literal SQL ref for the regex match
                     -bool => \[$regex_match->{sql}, @{$regex_match->{bind}}],
+                    'me.old_external_status_code' => [ $old_ext_code_first_part, '' ],
                 };
                 $order = { order_by => \$regex_match->{order} };
             } else {

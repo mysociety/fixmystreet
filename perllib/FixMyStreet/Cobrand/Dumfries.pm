@@ -417,7 +417,9 @@ sub response_template_external_status_code_regex_match {
             (LENGTH(me.external_status_code) - LENGTH(REPLACE(me.external_status_code, '+', '')))
         ) ASC,
         (LENGTH(me.external_status_code) - LENGTH(REPLACE(me.external_status_code, '*', ''))) ASC,
-        me.external_status_code DESC NULLS LAST, contact.category
+        me.external_status_code DESC NULLS LAST,
+        me.old_external_status_code DESC,
+        contact.category
     };
 
     return {
