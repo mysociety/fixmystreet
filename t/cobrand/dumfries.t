@@ -406,8 +406,6 @@ FixMyStreet::override_config {
     };
 };
 
-$problem->delete;
-
 my $social = Test::MockModule->new('FixMyStreet::App::Controller::Auth::Social');
 $social->mock('generate_nonce', sub { 'MyAwesomeRandomValue' });
 
@@ -760,5 +758,24 @@ subtest 'admin template external_status_code validation' => sub {
         $mech->log_out_ok;
     };
 };
+
+subtest "check not responsible as correct text" => sub {
+    my $c = FixMyStreet::DB->resultset('Comment')->create({
+        problem => $problem, user => $problem->user, anonymous => 't', text => 'Update text',
+        problem_state => 'not responsible', state => 'confirmed', mark_fixed => 0,
+        confirmed => DateTime->now(),
+    });
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => ['dumfries'],
+    }, sub {
+        $mech->get_ok('/report/' . $problem->id);
+    };
+
+    $mech->content_contains("State changed to: not responsible", "not reponsible message contains correct text");
+    $problem->comments->delete;
+    $problem->delete;
+};
+
 
 done_testing();
