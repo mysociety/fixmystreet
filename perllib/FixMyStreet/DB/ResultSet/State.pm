@@ -86,6 +86,7 @@ sub display {
         return "not Hounslow Highways’ responsibility" if $cobrand eq 'hounslow';
         return "not Island Roads’ responsibility" if $cobrand eq 'isleofwight';
         return "not TfL’s responsibility" if $cobrand eq 'tfl';
+        return "not responsible" if $cobrand eq 'dumfries';
         return _("not the council's responsibility");
     }
     if ($cobrand && $cobrand eq 'oxfordshire' && $label eq 'unable to fix') {
