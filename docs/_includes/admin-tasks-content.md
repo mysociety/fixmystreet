@@ -693,7 +693,7 @@ that, a form by which you can create new ones (if you have lots of categories yo
 Input a title for the category, and the email address to which reports in that category should be
 forwarded. 
 
-You can also choose to assign a category to one or more parent category/ies. For example, you may group a 'Fallen tree' category under a parent caregory of 'Parks maintenance' and also under 'Public right of way', but note that the report will go to the email address provided, so if certain instances of problems need to go certain addresses, then create a seperate category. 
+You can also choose to assign a category to one or more parent category/ies. For example, you may group a 'Fallen tree' category under a parent category of 'Parks maintenance' and also under 'Public right of way', but note that the report will go to the email address provided, so if certain instances of problems need to go certain addresses, then create a separate category. 
 
 <img loading="lazy" alt="Categories can be grouped under parent categories" src="/assets/img/pro-user-guide/Adding a new category.png" class="admin-screenshot" />
 
