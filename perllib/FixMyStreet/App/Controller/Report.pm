@@ -440,7 +440,12 @@ sub inspect : Private {
     }
 
     if ($c->user->has_body_permission_to('planned_reports')) {
-        $c->stash->{post_inspect_url} = $c->req->referer;
+        my $referer = $c->req->referer;
+        # /report/update is POST-only - if the inspector form then redirects
+        # back to it as a GET, the user sees a 404 (see #4845).
+        if ($referer && $referer !~ m{/report/update$}) {
+            $c->stash->{post_inspect_url} = $referer;
+        }
     }
 
     if ($c->user->has_body_permission_to('report_edit_priority') or
