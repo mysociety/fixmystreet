@@ -367,17 +367,15 @@ DISTRIBUTIONS
       strict 0
       vars 0
       warnings 0
-  Carp-Assert-More-1.14
-    pathname: P/PE/PETDANCE/Carp-Assert-More-1.14.tar.gz
+  Carp-Assert-More-2.9.0
+    pathname: P/PE/PETDANCE/Carp-Assert-More-2.9.0.tar.gz
     provides:
-      Carp::Assert::More 1.14
+      Carp::Assert::More 2.009000
     requirements:
       Carp 0
-      Carp::Assert 0
-      ExtUtils::MakeMaker 0
+      ExtUtils::MakeMaker 6.64
       Scalar::Util 0
-      Test::Exception 0
-      Test::More 0.18
+      perl 5.010001
   Carp-Clan-6.04
     pathname: S/ST/STBEY/Carp-Clan-6.04.tar.gz
     provides:
@@ -1012,13 +1010,12 @@ DISTRIBUTIONS
       Time::HiRes 0
       XSLoader 0
       perl 5.008
-  Clone-0.34
-    pathname: G/GA/GARU/Clone-0.34.tar.gz
+  Clone-0.50
+    pathname: A/AT/ATOOMIC/Clone-0.50.tar.gz
     provides:
-      Clone 0.34
+      Clone 0.50
     requirements:
       ExtUtils::MakeMaker 0
-      Test::More 0
   Config-Any-0.23
     pathname: B/BR/BRICAS/Config-Any-0.23.tar.gz
     provides:
@@ -3452,26 +3449,30 @@ DISTRIBUTIONS
       Guard 1.023
     requirements:
       ExtUtils::MakeMaker 0
-  HTML-Form-6.03
-    pathname: G/GA/GAAS/HTML-Form-6.03.tar.gz
+  HTML-Form-6.13
+    pathname: O/OA/OALDERS/HTML-Form-6.13.tar.gz
     provides:
-      HTML::Form 6.03
-      HTML::Form::FileInput 6.03
-      HTML::Form::IgnoreInput 6.03
-      HTML::Form::ImageInput 6.03
-      HTML::Form::Input 6.03
-      HTML::Form::KeygenInput 6.03
-      HTML::Form::ListInput 6.03
-      HTML::Form::SubmitInput 6.03
-      HTML::Form::TextInput 6.03
+      HTML::Form 6.13
+      HTML::Form::FileInput 6.13
+      HTML::Form::IgnoreInput 6.13
+      HTML::Form::ImageInput 6.13
+      HTML::Form::Input 6.13
+      HTML::Form::KeygenInput 6.13
+      HTML::Form::ListInput 6.13
+      HTML::Form::SubmitInput 6.13
+      HTML::Form::TextInput 6.13
     requirements:
+      Carp 0
       Encode 2
       ExtUtils::MakeMaker 0
       HTML::TokeParser 0
-      HTTP::Request 6
+      HTTP::Request 7.01
       HTTP::Request::Common 6.03
+      Test::More 0.96
       URI 1.10
+      parent 0
       perl 5.008001
+      strict 0
   HTML-FormHandler-0.40068
     pathname: G/GS/GSHANK/HTML-FormHandler-0.40068.tar.gz
     provides:
@@ -3840,22 +3841,24 @@ DISTRIBUTIONS
       HTTP::Date 0
       Module::Build::Tiny 0.035
       perl 5.008001
-  HTTP-Message-6.36
-    pathname: O/OA/OALDERS/HTTP-Message-6.36.tar.gz
+  HTTP-Message-7.01
+    pathname: O/OA/OALDERS/HTTP-Message-7.01.tar.gz
     provides:
-      HTTP::Config 6.36
-      HTTP::Headers 6.36
-      HTTP::Headers::Auth 6.36
-      HTTP::Headers::ETag 6.36
-      HTTP::Headers::Util 6.36
-      HTTP::Message 6.36
-      HTTP::Request 6.36
-      HTTP::Request::Common 6.36
-      HTTP::Response 6.36
-      HTTP::Status 6.36
+      HTTP::Config 7.01
+      HTTP::Headers 7.01
+      HTTP::Headers::Auth 7.01
+      HTTP::Headers::ETag 7.01
+      HTTP::Headers::Util 7.01
+      HTTP::Message 7.01
+      HTTP::Request 7.01
+      HTTP::Request::Common 7.01
+      HTTP::Response 7.01
+      HTTP::Status 7.01
     requirements:
       Carp 0
-      Compress::Raw::Zlib 0
+      Clone 0.46
+      Compress::Raw::Bzip2 0
+      Compress::Raw::Zlib 2.062
       Encode 3.01
       Encode::Locale 1
       Exporter 5.57
@@ -3866,15 +3869,13 @@ DISTRIBUTIONS
       IO::Compress::Deflate 0
       IO::Compress::Gzip 0
       IO::HTML 0
-      IO::Uncompress::Bunzip2 2.021
-      IO::Uncompress::Gunzip 0
       IO::Uncompress::Inflate 0
       IO::Uncompress::RawInflate 0
       LWP::MediaTypes 6
       MIME::Base64 2.1
       MIME::QuotedPrint 0
       URI 1.10
-      base 0
+      parent 0
       perl 5.008001
       strict 0
       warnings 0
@@ -8111,23 +8112,23 @@ DISTRIBUTIONS
       ExtUtils::Manifest 0
       Test::Builder 0.30
       Test::More 0.60
-  Test-WWW-Mechanize-1.44
-    pathname: P/PE/PETDANCE/Test-WWW-Mechanize-1.44.tar.gz
+  Test-WWW-Mechanize-1.60
+    pathname: P/PE/PETDANCE/Test-WWW-Mechanize-1.60.tar.gz
     provides:
-      Test::WWW::Mechanize 1.44
+      Test::WWW::Mechanize 1.60
     requirements:
-      Carp::Assert::More 0
+      Carp 0
+      Carp::Assert::More 1.16
       ExtUtils::MakeMaker 0
-      HTML::TreeBuilder 0
-      HTTP::Server::Simple 0.42
-      HTTP::Server::Simple::CGI 0
+      HTML::Form 0
+      HTML::TokeParser 0
+      HTTP::Message 6.29
       LWP 6.02
-      Test::Builder::Tester 1.09
+      Test::Builder 0
       Test::LongString 0.15
-      Test::More 0.96
-      URI::file 0
       WWW::Mechanize 1.68
-      perl 5.008
+      parent 0
+      perl 5.010
   Test-WWW-Mechanize-Catalyst-0.62
     pathname: M/MS/MSTROUT/Test-WWW-Mechanize-Catalyst-0.62.tar.gz
     provides:
@@ -8617,37 +8618,33 @@ DISTRIBUTIONS
       Exporter 0
       Module::Build 0.4005
       perl 5.008001
-  WWW-Mechanize-1.72
-    pathname: J/JE/JESSE/WWW-Mechanize-1.72.tar.gz
+  WWW-Mechanize-2.20
+    pathname: O/OA/OALDERS/WWW-Mechanize-2.20.tar.gz
     provides:
-      WWW::Mechanize 1.72
-      WWW::Mechanize::Image undef
-      WWW::Mechanize::Link undef
+      WWW::Mechanize 2.20
+      WWW::Mechanize::Image 2.20
+      WWW::Mechanize::Link 2.20
     requirements:
       Carp 0
       ExtUtils::MakeMaker 0
-      File::Temp 0
-      FindBin 0
       Getopt::Long 0
-      HTML::Form 6
+      HTML::Form 6.08
       HTML::HeadParser 0
-      HTML::Parser 3.33
-      HTML::TokeParser 2.28
-      HTML::TreeBuilder 0
-      HTTP::Daemon 0
-      HTTP::Request 1.3
-      HTTP::Server::Simple 0.35
-      HTTP::Server::Simple::CGI 0
-      HTTP::Status 0
-      LWP 5.829
-      LWP::UserAgent 5.829
+      HTML::TokeParser 0
+      HTML::TreeBuilder 5
+      HTTP::Cookies 0
+      HTTP::Message 7.01
+      HTTP::Request 1.30
+      HTTP::Request::Common 0
+      LWP::UserAgent 0
       Pod::Usage 0
-      Test::More 0.34
-      Test::Warn 0.11
-      URI 1.36
+      Tie::RefHash 0
       URI::URL 0
       URI::file 0
+      parent 0
       perl 5.008
+      strict 0
+      warnings 0
   WWW-RobotRules-6.02
     pathname: G/GA/GAAS/WWW-RobotRules-6.02.tar.gz
     provides:

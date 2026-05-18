@@ -201,9 +201,11 @@ requires 'Test::More', '0.88';
 requires 'Test::Output';
 requires 'Test::Trap';
 requires 'Test::Warn';
+requires 'Test::WWW::Mechanize', '1.60';
 requires 'Test::WWW::Mechanize::Catalyst', '0.62';
 requires 'Web::Scraper';
 requires 'Web::Simple';
+requires 'WWW::Mechanize', '2.20';
 
 # Default root certificates used by LWP::UserAgent
 requires 'Mozilla::CA', '20211001';

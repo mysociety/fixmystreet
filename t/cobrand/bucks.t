@@ -683,7 +683,7 @@ subtest 'sending of updates and address' => sub {
     FixMyStreet::Script::Reports::send();
     my $req = Open311->test_req_used;
     my $c = CGI::Simple->new($req->content);
-    is $c->param('attribute[closest_address]'), "Studio 1\r\n29 Buckingham Road\r\n\r\nLondon\r\nNW10 4RP";
+    is $c->param('attribute[closest_address]'), "Studio 1\n29 Buckingham Road\n\nLondon\nNW10 4RP";
 
     my ($report2) = $mech->create_problems_for_body(1, $body->id, 'Title update', {
         cobrand => 'buckinghamshire',
