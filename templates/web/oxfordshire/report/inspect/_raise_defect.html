@@ -49,6 +49,12 @@ END;
 
 <div id="js-inspect-action-scheduled" class="[% "hidden" UNLESS problem.state == 'action scheduled' %]">
 
+  [% UNLESS problem.is_open %]
+
+  <p>[% loc('This enquiry has been closed, so a defect cannot be raised.') %]</p>
+
+  [% ELSE %]
+
   <p>[% loc('Do you want to automatically raise a defect?') %]</p>
   <p class="segmented-control segmented-control--radio">
       <input type="radio" name="raise_defect" id="raise_defect_yes" value="1" data-show=".js-inspect-defect-yes">
@@ -208,6 +214,8 @@ END;
         </select>
 
     </div>
+
+  [% END %]
 
 </div>
 
