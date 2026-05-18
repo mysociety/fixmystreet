@@ -46,8 +46,9 @@ my @kinds = (
         retry => sub {
             my ($p, $info) = @_;
             my $amount = $info->{context}{amount} or return;
+            my $ref = $info->{context}{ref} or return;
             my $id = $p->id;
-            return qq{bin/cron-wrapper perl -MFixMyStreet::DB -MFixMyStreet::Cobrand -e 'my \$r = FixMyStreet::DB->resultset("Problem")->find($id); my \$i = FixMyStreet::Cobrand->get_class_for_moniker("bexley")->new->get_dd_integration; \$i->amend_plan({ orig_sub => \$r, amount => "$amount" });'};
+            return qq{bin/cron-wrapper perl -MFixMyStreet::DB -MFixMyStreet::Cobrand -e 'my \$r = FixMyStreet::DB->resultset("Problem")->find($id); my \$i = FixMyStreet::Cobrand->get_class_for_moniker("bexley")->new->get_dd_integration; \$i->amend_plan({ dd_reference => "$ref", report => \$r, amount => "$amount" });'};
         },
     },
     {
@@ -56,16 +57,16 @@ my @kinds = (
             my ($p, $info) = @_;
             my $amount = $info->{context}{amount} or return;
             my $date   = $info->{context}{date}   or return;
+            my $ref = $info->{context}{ref} or return;
             my $id = $p->id;
-            return qq{bin/cron-wrapper perl -MDateTime::Format::ISO8601 -MFixMyStreet::DB -MFixMyStreet::Cobrand -e 'my \$r = FixMyStreet::DB->resultset("Problem")->find($id); my \$i = FixMyStreet::Cobrand->get_class_for_moniker("bexley")->new->get_dd_integration; \$i->one_off_payment({ orig_sub => \$r, amount => "$amount", date => DateTime::Format::ISO8601->parse_datetime("$date") });'};
+            return qq{bin/cron-wrapper perl -MDateTime::Format::ISO8601 -MFixMyStreet::DB -MFixMyStreet::Cobrand -e 'my \$r = FixMyStreet::DB->resultset("Problem")->find($id); my \$i = FixMyStreet::Cobrand->get_class_for_moniker("bexley")->new->get_dd_integration; \$i->one_off_payment({ dd_reference => "$ref", report => \$r, amount => "$amount", date => DateTime::Format::ISO8601->parse_datetime("$date") });'};
         },
     },
 );
 
 my $reports = $cobrand->problems->search({
     category => 'Garden Subscription',
-    title => ['Garden Subscription - New', 'Garden Subscription - Renew'],
-    state => { '!=' => 'hidden' },
+    state => { -not_in => ['unconfirmed','hidden','partial'] },
     -bool => \"extra->'direct_debit_errors' IS NOT NULL",
 });
 

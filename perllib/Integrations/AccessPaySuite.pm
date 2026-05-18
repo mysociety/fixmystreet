@@ -338,7 +338,7 @@ sub amend_plan {
 
     if (ref $resp eq 'HASH' && $resp->{error}) {
         $self->_record_dd_failure($args->{report}, 'amend', $resp->{error},
-            { amount => $args->{amount} });
+            { amount => $args->{amount}, ref => $args->{dd_reference} });
         return;
     }
 
@@ -380,7 +380,7 @@ sub one_off_payment {
 
     if (ref $resp eq 'HASH' && $resp->{error}) {
         $self->_record_dd_failure($args->{report}, 'one_off', $resp->{error},
-            { amount => $args->{amount}, date => $args->{date}->iso8601 });
+            { amount => $args->{amount}, date => $args->{date}->iso8601, ref => $args->{dd_reference} });
         return;
     }
 
