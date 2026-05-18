@@ -15,7 +15,7 @@ END { FixMyStreet::App->log->enable('info'); }
 
 my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council', { cobrand => 'oxfordshire' });
 my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $oxon);
-my $role = FixMyStreet::DB->resultset("Role")->create({ body => $oxon, name => 'Role', permissions => [] });
+my $role = FixMyStreet::DB->resultset("Role")->create({ body => $oxon, name => 'Role', permissions => ['report_inspect', 'report_instruct'] });
 $counciluser->add_to_roles($role);
 my $user = $mech->create_user_ok( 'user@example.com', name => 'Test User' );
 my $user2 = $mech->create_user_ok( 'user2@example.com', name => 'Test User2' );
@@ -125,6 +125,30 @@ subtest "check /reports/Oxfordshire?ajax doesn't get extra pins from wfs at zoom
 };
 
 $oxfordshire_cobrand->mock('defect_wfs_query', sub { return { features => [] }; });
+
+subtest 'Can’t raise defects on closed reports' => sub {
+    my ($report) = $mech->create_problems_for_body( 1, $oxon->id, 'Closed report', {
+        cobrand => 'oxfordshire',
+        category => 'Fences',
+        state => 'unable to fix',
+    });
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'oxfordshire',
+    }, sub {
+        $mech->log_in_ok($counciluser->email);
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_contains('This enquiry has been closed, so a defect cannot be raised.');
+        $mech->content_lacks('Do you want to automatically raise a defect?');
+
+        $report->update({state => 'confirmed'});
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_lacks('This enquiry has been closed, so a defect cannot be raised.');
+        $mech->content_contains('Do you want to automatically raise a defect?');
+    };
+
+    $mech->delete_problems_for_body($oxon->id);
+};
 
 subtest 'check /around?ajax defaults to open reports only' => sub {
     my $categories = [ 'Bridges', 'Fences', 'Manhole' ];
