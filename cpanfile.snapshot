@@ -2791,44 +2791,45 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       Test::More 0.47
       Time::Local 0
-  Email-MIME-1.946
-    pathname: R/RJ/RJBS/Email-MIME-1.946.tar.gz
+  Email-MIME-1.954
+    pathname: R/RJ/RJBS/Email-MIME-1.954.tar.gz
     provides:
-      Email::MIME 1.946
-      Email::MIME::Creator 1.946
-      Email::MIME::Encode 1.946
-      Email::MIME::Header 1.946
-      Email::MIME::Header::AddressList 1.946
-      Email::MIME::Modifier 1.946
+      Email::MIME 1.954
+      Email::MIME::Creator 1.954
+      Email::MIME::Encode 1.954
+      Email::MIME::Header 1.954
+      Email::MIME::Header::AddressList 1.954
+      Email::MIME::Modifier 1.954
     requirements:
       Carp 0
       Email::Address::XS 0
-      Email::MIME::ContentType 1.022
+      Email::MIME::ContentType 1.023
       Email::MIME::Encodings 1.314
       Email::MessageID 0
       Email::Simple 2.212
       Email::Simple::Creator 0
       Email::Simple::Header 0
       Encode 1.9801
-      ExtUtils::MakeMaker 0
+      ExtUtils::MakeMaker 6.78
       MIME::Base64 0
       MIME::Types 1.13
       Module::Runtime 0
       Scalar::Util 0
       parent 0
-      perl 5.008001
+      perl 5.012
       strict 0
       warnings 0
-  Email-MIME-ContentType-1.022
-    pathname: R/RJ/RJBS/Email-MIME-ContentType-1.022.tar.gz
+  Email-MIME-ContentType-1.028
+    pathname: R/RJ/RJBS/Email-MIME-ContentType-1.028.tar.gz
     provides:
-      Email::MIME::ContentType 1.022
+      Email::MIME::ContentType 1.028
     requirements:
       Carp 0
       Encode 2.87
       Exporter 5.57
-      ExtUtils::MakeMaker 0
-      strict 0
+      ExtUtils::MakeMaker 6.78
+      Text::Unidecode 0
+      perl 5.012
       warnings 0
   Email-MIME-Encodings-1.315
     pathname: R/RJ/RJBS/Email-MIME-Encodings-1.315.tar.gz

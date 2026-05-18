@@ -1,13 +1,13 @@
 MIME-Version: 1.0
 Subject: =?UTF-8?B?dGVzdCBlbWFpbCDimLo=?=
-Content-Type: multipart/mixed; boundary="BOUNDARY"
+Content-Type: multipart/mixed; boundary=BOUNDARY
 To: test@recipient.com
 Content-Transfer-Encoding: 7bit
 From: CONTACT_EMAIL
 
 
 --BOUNDARY
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 
 Hello,
@@ -31,16 +31,16 @@ Yours,
 FixMyStreet.=
 
 --BOUNDARY
-Content-Type: image/gif; name="foo.gif"
-Content-Disposition: inline; filename="foo.gif"
+Content-Type: image/gif; name=foo.gif
+Content-Disposition: inline; filename=foo.gif
 Content-Transfer-Encoding: quoted-printable
 
 GIF89a=01=00=01=00=80=00=00=00=00=00=CC=CC=CC,=00=00=00=00=01=00=01=00=00=
 =02=01L=00;=
 
 --BOUNDARY
-Content-Type: image/gif; name="bar.gif"
-Content-Disposition: inline; filename="bar.gif"
+Content-Type: image/gif; name=bar.gif
+Content-Disposition: inline; filename=bar.gif
 Content-Transfer-Encoding: quoted-printable
 
 GIF89a=01=00=01=00=80=00=00=00=00=00=CC=CC=CC,=00=00=00=00=01=00=01=00=00=

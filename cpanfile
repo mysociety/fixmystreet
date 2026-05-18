@@ -88,7 +88,7 @@ requires 'DBIx::Class::Schema::Loader';
 requires 'Digest::MD5';
 requires 'Digest::SHA';
 requires 'Email::Address', '1.912';
-requires 'Email::MIME', '1.946';
+requires 'Email::MIME', '1.954';
 requires 'Email::Sender', '1.300035';
 requires 'Email::Valid';
 requires 'Error';

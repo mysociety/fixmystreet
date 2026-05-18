@@ -1083,7 +1083,7 @@ subtest 'email images to external partners' => sub {
 
     my @emails = $mech->get_email;
     my $email_as_string = $mech->get_first_email(@emails);
-    my ($boundary) = $email_as_string =~ /boundary="([A-Za-z0-9.]*)"/ms;
+    my ($boundary) = $email_as_string =~ /boundary=([A-Za-z0-9.]*)/ms;
     my $email = Email::MIME->new($email_as_string);
 
     my $expected_email_content = path(__FILE__)->parent->child('zurich_attachments.txt')->slurp;
