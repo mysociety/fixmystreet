@@ -1,11 +1,11 @@
-<div class="pin-legend pin-legend--desktop" tabindex="0" aria-labelledby="pin-legend-heading-desktop">
-    <div class="pin-legend__preview" aria-hidden="true">
-        <img src="/i/pins/yellow/pin.png" alt="">
-        <img src="/i/pins/green/pin.png" alt="">
-        <img src="/i/pins/bromley/green/pin.png" alt="">
-    </div>
-    <div class="pin-legend__panel">
-        <h2 id="pin-legend-heading-desktop" class="pin-legend__heading">[% loc('Map pin key') %]</h2>
+<div class="pin-legend pin-legend--mobile">
+    <button type="button" class="js-pin-legend-toggle btn btn--primary has-inline-svg" aria-expanded="false" aria-controls="pin-legend-panel-mobile">
+        [% INCLUDE 'icons/pin.html' width='1.5em' height='1.5em' %]
+        <span>[% loc('Display map legend') %]</span>
+    </button>
+
+    <div id="pin-legend-panel-mobile" class="pin-legend__panel" hidden>
+        <h2 id="pin-legend-heading-mobile" class="pin-legend__heading">[% loc('Map pin key') %]</h2>
         <ul class="pin-legend__list">
             <li class="pin-legend__item">
                 <img src="/i/pins/yellow/pin.png" alt="">
