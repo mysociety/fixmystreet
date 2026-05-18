@@ -10,12 +10,12 @@ my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super Us
 
 my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', {cobrand => 'oxfordshire'});
 my $user3 = $mech->create_user_ok('body_user@example.com', name => 'Body User', from_body => $oxfordshire);
-my $oxfordshirecontact = $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Potholes', email => 'potholes@example.com', extra => { group => 'Road' } );
 $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Traffic lights', email => 'lights@example.com' );
 $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Yellow lines', email => 'yellow@example.com', extra => { group => 'Road' } );
 $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Refuse', email => 'refuse@example.com', extra => { display_name => 'Bins' } );
 $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Vegetation', email => 'vegetation@example.com', extra => { display_name => 'Greenery' } );
-
+$mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Other', email => 'other@example.com', extra => { display_name => 'Other' } );
+$mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Potholes', email => 'potholes@example.com', extra => { display_name => 'Potholes' } );
 
 my $oxford = $mech->create_body_ok(2421, 'Oxford City Council');
 $mech->create_contact_ok( body_id => $oxford->id, category => 'Graffiti', email => 'graffiti@example.net' );
@@ -29,30 +29,19 @@ my $dt = DateTime->new(
     second => 23
 );
 
-my $report = FixMyStreet::DB->resultset('Problem')->find_or_create(
-    {
-        postcode           => 'SW1A 1AA',
-        bodies_str         => '2504',
-        areas              => ',105255,11806,11828,2247,2504,',
-        category           => 'Other',
-        title              => 'Report to Edit',
-        detail             => 'Detail for Report to Edit',
-        used_map           => 't',
-        name               => 'Test User',
-        anonymous          => 'f',
-        external_id        => '13',
-        state              => 'confirmed',
-        confirmed          => $dt->ymd . ' ' . $dt->hms,
-        lang               => 'en-gb',
-        service            => '',
-        cobrand            => '',
-        cobrand_data       => '',
-        send_questionnaire => 't',
-        latitude           => '51.5016605453401',
-        longitude          => '-0.142497580865087',
-        user_id            => $user->id,
-        whensent           => $dt->ymd . ' ' . $dt->hms,
-    }
+my ($report) = $mech->create_problems_for_body(
+    1,
+    $oxfordshire->id,
+    'Title',
+    {   category    => 'Other',
+        title       => 'Report to Edit',
+        detail      => 'Detail for Report to Edit',
+        cobrand     => 'oxfordshire',
+        areas       => '2237',
+        external_id => '13',
+        whensent    => $dt->ymd . ' ' . $dt->hms,
+        photo       => undef,
+    },
 );
 
 $mech->log_in_ok( $superuser->email );
@@ -454,26 +443,102 @@ FixMyStreet::override_config {
 }, sub {
 
 subtest 'change report category' => sub {
+    note 'Test category that is under multiple groups';
+
+    my $litter_contact = $mech->create_contact_ok(
+        body_id  => $oxfordshire->id,
+        category => 'Litter',
+        email    => 'litter@example.com',
+        extra    => { group => [ 'Road', 'Highways' ] }
+    );
+
     my ($ox_report) = $mech->create_problems_for_body(1, $oxfordshire->id, 'Unsure', {
-        category => 'Potholes',
+        category => 'Litter',
         areas => ',2237,2421,', # Cached used by categories_for_point...
         latitude => 51.7549262252,
         longitude => -1.25617899435,
         whensent => \'current_timestamp',
+        extra => { group => 'Road' },
     });
+
     $mech->get_ok("/admin/report_edit/" . $ox_report->id);
     $mech->content_contains('<optgroup label="Road">');
+    $mech->content_contains('<option value="Road__Litter" selected>', 'group/category selected');
+    $mech->content_contains('<optgroup label="Highways">');
+    $mech->content_contains('<option value="Highways__Litter">');
     $mech->content_lacks('<option value="group-Road"');
+    $mech->content_like(qr/group.*: Road/, 'correct group under Extra Data');
+
+    note '  Set to new group but same category';
+    $mech->submit_form_ok( { with_fields => { category => 'Highways__Litter' } }, 'form_submitted' );
+    $ox_report->discard_changes;
+    is $ox_report->category, 'Litter';
+    is $ox_report->get_extra_metadata('group'), 'Highways';
+    is $ox_report->comments->order_by('-id')->first->text, '*Category group changed from ‘Road’ to ‘Highways’*', 'Comment text correct';
+    isnt $ox_report->whensent, undef;
+    $mech->content_unlike(qr/group.*: Road/);
+    $mech->content_like(qr/group.*: Highways/, 'correct group updated under Extra Data before getting page again');
+
+    $mech->get_ok("/admin/report_edit/" . $ox_report->id);
+    $mech->content_contains('<optgroup label="Road">');
+    $mech->content_contains('<option value="Road__Litter">');
+    $mech->content_contains('<optgroup label="Highways">');
+    $mech->content_contains('<option value="Highways__Litter" selected>', 'new group selected');
+    $mech->content_like(qr/group.*: Highways/, 'correct group under Extra Data after getting page again');
+
+    note '  Change group name';
+    $litter_contact->set_extra_metadata( group => [ 'Road', 'HIGHWAYS' ] );
+    $litter_contact->update;
+    $mech->get_ok("/admin/report_edit/" . $ox_report->id);
+    $mech->content_contains('<optgroup label="Road">');
+    $mech->content_contains('<option value="Road__Litter">');
+    $mech->content_lacks('<optgroup label="Highways">');
+    $mech->content_contains('<optgroup label="HIGHWAYS">');
+    $mech->content_contains('<option value="HIGHWAYS__Litter">', 'renamed group not selected');
+
+    note '  Set contact back to single group';
+    $litter_contact->set_extra_metadata( group => [ 'Road' ] );
+    $litter_contact->update;
+    $mech->get_ok("/admin/report_edit/" . $ox_report->id);
+    $mech->content_contains('<optgroup label="Road">');
+    $mech->content_contains('<option value="Road__Litter">', 'remaining group/category is not selected');
+    $mech->content_lacks('<optgroup label="Highways">');
+    $mech->content_lacks('<optgroup label="HIGHWAYS">');
+
+    note '  Submit form with remaining group/category';
+    $mech->submit_form_ok( { with_fields => { category => 'Road__Litter' } }, 'submit with remaining group/category' );
+    $ox_report->discard_changes;
+    is $ox_report->category, 'Litter';
+    is $ox_report->get_extra_metadata('group'), 'Road';
+    is $ox_report->comments->order_by('-id')->first->text, '*Category group changed from ‘Highways’ to ‘Road’*', 'Comment text correct';
+    $mech->content_contains('<option value="Road__Litter" selected>', 'group/category selected');
+
+    note '  Set category to deleted';
+    $litter_contact->update( { state => 'deleted' } );
+    $mech->get_ok("/admin/report_edit/" . $ox_report->id);
+    $mech->content_contains('<optgroup label="Existing category">', '"Existing category" selection is displayed');
+    $mech->content_contains('<option selected value="Litter">');
+    $mech->submit_form_ok( { with_fields => { category => 'Litter' } }, 'submit with deleted category' );
+    $ox_report->discard_changes;
+    is $ox_report->category, 'Litter', 'category does not change';
+    is $ox_report->get_extra_metadata('group'), 'Road', 'group does not change';
+    is $ox_report->bodies_str, $oxfordshire->id, 'bodies_str is not unset if deleted category submitted';
+    isnt $ox_report->whensent, undef;
+
+    note 'Test categories with one or no groups';
+
     $mech->submit_form_ok( { with_fields => { category => 'Traffic lights' } }, 'form_submitted' );
     $ox_report->discard_changes;
     is $ox_report->category, 'Traffic lights';
+    is $ox_report->get_extra_metadata('group'), undef;
+    is $ox_report->bodies_str, $oxfordshire->id, 'bodies_str unchanged';
     isnt $ox_report->whensent, undef;
-    is $ox_report->comments->count, 1, "Comment created for update";
-    is $ox_report->comments->first->text, '*Category changed from ‘Potholes’ to ‘Traffic lights’*', 'Comment text correct';
+    is $ox_report->comments->order_by('-id')->first->text, '*Category changed from ‘Litter’ to ‘Traffic lights’*', 'Comment text correct';
 
     $mech->submit_form_ok( { with_fields => { category => 'Graffiti' } }, 'form_submitted' );
     $ox_report->discard_changes;
     is $ox_report->category, 'Graffiti';
+    is $ox_report->bodies_str, $oxford->id, 'bodies_str changed';
     is $ox_report->whensent, undef;
 
     $mech->submit_form_ok( { with_fields => { category => 'Refuse' } }, 'form_submitted' );
@@ -483,6 +548,8 @@ subtest 'change report category' => sub {
     $mech->submit_form_ok( { with_fields => { category => 'Vegetation' } }, 'form_submitted' );
     $ox_report->discard_changes;
     is $ox_report->comments->order_by('-id')->first->text, "*Category changed from ‘Bins’ to ‘Greenery’*";
+
+    $litter_contact->delete;
 };
 
 };
