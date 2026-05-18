@@ -32,6 +32,7 @@ create_contact({ category => 'Garden Subscription', email => 'garden@example.com
     { code => 'new_containers', required => 1, automated => 'hidden_field' },
     { code => 'total_containers', required => 1, automated => 'hidden_field' },
     { code => 'customer_external_ref', required => 1, automated => 'hidden_field' },
+    { code => 'verified_by', required => 0, automated => 'hidden_field' },
     { code => 'type', required => 1, automated => 'hidden_field' },
     { code => 'payment', required => 1, automated => 'hidden_field' },
     { code => 'payment_method', required => 1, automated => 'hidden_field' },
@@ -41,6 +42,7 @@ create_contact({ category => 'Garden Subscription', email => 'garden@example.com
 create_contact(
     { category => 'Cancel Garden Subscription', email => 'garden_cancel@example.com' },
     { code => 'customer_external_ref', required => 1, automated => 'hidden_field' },
+    { code => 'verified_by', required => 0, automated => 'hidden_field' },
     { code => 'due_date', required => 1, automated => 'hidden_field' },
     { code => 'reason', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'server' },
@@ -613,6 +615,7 @@ FixMyStreet::override_config {
                         new_bins     => 2,
                         bins_wanted  => 4,
                         customer_external_ref => 'CUSTOMER_123',
+                        verified_by => 'name',
                     );
                     is $modify_report->get_extra_field_value('type'), 'amend',
                         'correct report type';
@@ -685,6 +688,7 @@ FixMyStreet::override_config {
                         bins_wanted  => 1,
                         state => 'confirmed',
                         customer_external_ref => 'CUSTOMER_123',
+                        verified_by => 'reference',
                     );
                     is $modify_report->get_extra_field_value('type'), 'amend',
                         'correct report type';
@@ -828,6 +832,7 @@ FixMyStreet::override_config {
                 is $modify_report->get_extra_field_value('total_containers'), 3, 'Amend report: correct total_containers';
                 is $modify_report->get_extra_field_value('type'), 'amend', 'Amend report: correct type';
                 is $modify_report->get_extra_field_value('customer_external_ref'), 'CUSTOMER_123', 'Amend report: correct customer_external_ref';
+                is $modify_report->get_extra_field_value('verified_by'), 'reference';
                 is $modify_report->state, 'confirmed',
                     'Amend report: state correct (confirmed for DD amend)';
 
@@ -1174,6 +1179,7 @@ FixMyStreet::override_config {
                         new_bins     => 1,
                         bins_wanted  => 3,
                         customer_external_ref => 'CUSTOMER_123',
+                        verified_by => 'name',
                     );
                     is $renew_report->uprn, $uprn;
                     is $renew_report->get_extra_field_value('payment'), $ggw_cost_first + 2 * $ggw_cost;
@@ -1243,6 +1249,7 @@ FixMyStreet::override_config {
                         new_bins     => -1,
                         bins_wanted  => 1,
                         customer_external_ref => 'CUSTOMER_123',
+                        verified_by => 'reference',
                     );
                     is $renew_report->name, 'Ferrety Wright';
                     is $renew_report->user->email, 'hmm@example.org';
@@ -1313,6 +1320,7 @@ FixMyStreet::override_config {
                         new_bins     => 0,
                         bins_wanted  => 2,
                         customer_external_ref => 'CUSTOMER_123',
+                        verified_by => 'reference',
                         ref_type => 'apn',
                     );
                     is $renew_report->name, 'Ferrety Wright';
@@ -1426,6 +1434,7 @@ FixMyStreet::override_config {
                         new_bins     => -1,
                         bins_wanted  => 1,
                         customer_external_ref => 'CUSTOMER_123',
+                        verified_by => 'reference',
                         renew_as_new_subscription => '',
                     );
                     is $renew_report->uprn, $uprn;
@@ -1600,6 +1609,7 @@ FixMyStreet::override_config {
                             new_bins     => 0,
                             bins_wanted  => 2,
                             customer_external_ref => 'CUSTOMER_123',
+                            verified_by => 'reference',
                             renew_as_new_subscription => 1,
                         );
 
@@ -1649,6 +1659,7 @@ FixMyStreet::override_config {
                             new_bins     => 0,
                             bins_wanted  => 2,
                             customer_external_ref => 'CUSTOMER_123',
+                            verified_by => 'name',
                             renew_as_new_subscription => 1,
                         );
 
@@ -2191,6 +2202,7 @@ FixMyStreet::override_config {
                 'cancellation report auto-confirmed';
             is $report->get_extra_field_value('customer_external_ref'),
                 'CUSTOMER_123';
+            is $report->get_extra_field_value('verified_by'), 'name';
             is $report->get_extra_field_value('due_date'),
                 $tomorrow;
             is $report->get_extra_field_value('reason'),
@@ -2262,6 +2274,7 @@ FixMyStreet::override_config {
                 'cancellation report auto-confirmed';
             is $report->get_extra_field_value('customer_external_ref'),
                 'CUSTOMER_123';
+            is $report->get_extra_field_value('verified_by'), 'reference';
             is $report->get_extra_field_value('due_date'),
                 $tomorrow;
             is $report->get_extra_field_value('reason'),
@@ -2478,6 +2491,7 @@ FixMyStreet::override_config {
         # Verify the report details
         ok $cancel_report, 'Cancellation report created';
         is $cancel_report->get_extra_field_value('customer_external_ref'), 'CUSTOMER_123', 'Customer reference set correctly';
+        is $cancel_report->get_extra_field_value('verified_by'), 'reference';
         is $cancel_report->get_extra_field_value('reason'), 'Other: No longer needed', 'Reason set correctly';
 
         # Verify the archive_contract was called with the right parameters
@@ -2870,6 +2884,7 @@ FixMyStreet::override_config {
         is $report->category, "Garden Subscription", "Correct category";
         is $report->get_extra_field_value('payment_method'), 'direct_debit', "Correct payment method";
         is $report->get_extra_field_value('customer_external_ref'), 'CUSTOMER_123', "Customer reference preserved";
+        is $report->get_extra_field_value('verified_by'), 'reference';
         is $report->get_extra_field_value('type'), 'renew', "Marked as renewal";
 
         is $report->get_extra_metadata('direct_debit_customer_id'), 'CUSTOMER123', 'Correct customer ID';
@@ -3407,6 +3422,7 @@ sub check_extra_data_pre_confirm {
         state => 'unconfirmed',
         type => 'New',
         customer_external_ref => '',
+        verified_by => '',
         renew_as_new_subscription => '',
 
         # Quantities
@@ -3426,6 +3442,7 @@ sub check_extra_data_pre_confirm {
     is $report->get_extra_field_value('new_containers'), $params{new_bins}, 'correct new_containers';
     is $report->get_extra_field_value('total_containers'), $params{bins_wanted}, 'correct total_containers';
     is $report->get_extra_field_value('customer_external_ref'), $params{customer_external_ref}, 'correct customer ref';
+    is $report->get_extra_field_value('verified_by'), $params{verified_by}, 'correct verified_by';
     is $report->get_extra_field_value('renew_as_new_subscription'), $params{renew_as_new_subscription}, 'correct renew_as_new_subscription flag';
 
     is $report->state, $params{state}, 'report state correct';
