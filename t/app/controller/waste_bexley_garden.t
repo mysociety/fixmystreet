@@ -1375,9 +1375,9 @@ FixMyStreet::override_config {
                     unlike $mech->content,
                         qr/Change your brown wheelie bin subscription/,
                         'cannot amend subscription';
-                    unlike $mech->content,
+                    like $mech->content,
                         qr/Cancel your brown wheelie bin subscription/,
-                        'cannot cancel';
+                        'can still cancel';
                     unlike $mech->content, qr/Renew subscription today/,
                         '"Renew today" notification box not shown';
                     like $mech->content, qr/18 January 2024, subscription overdue. \(Do not contact us to cancel. Your subscription will automatically cancel unless you renew\)/,
@@ -1554,9 +1554,9 @@ FixMyStreet::override_config {
                     unlike $mech->content,
                         qr/Change your brown wheelie bin subscription/,
                         'cannot amend subscription';
-                    unlike $mech->content,
+                    like $mech->content,
                         qr/Cancel your brown wheelie bin subscription/,
-                        'cannot cancel';
+                        'can still cancel';
                     unlike $mech->content, qr/Renew subscription today/,
                         '"Renew today" notification box not shown';
                     like $mech->content, qr/1 November 2023, subscription overdue. \(Do not contact us to cancel. Your subscription will automatically cancel unless you renew\)/,
