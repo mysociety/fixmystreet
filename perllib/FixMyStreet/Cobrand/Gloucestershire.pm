@@ -234,6 +234,29 @@ sub is_defect {
     return $p->external_id && $p->external_id =~ /^JOB_/;
 }
 
+=head2 updates_disallowed
+
+Don't allow updates on defects fetched from Confirm
+
+=cut
+
+around updates_disallowed => sub {
+    my ($orig, $self, $problem) = @_;
+    my $result = $self->$orig($problem);
+    return $self->updates_disallowed_override($problem, $result);
+};
+
+
+sub updates_disallowed_override {
+    my ($self, $problem, $result) = @_;
+
+    # Disallow updates on defects imported from Confirm.
+    return 1 if $self->is_defect($problem);
+
+    return $result;
+
+}
+
 =head2 pin_colour
 
 Green for anything completed or closed, yellow for the rest,

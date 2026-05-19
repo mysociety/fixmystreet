@@ -455,6 +455,9 @@ around updates_disallowed => sub {
     if ($problem->to_body_named('Oxfordshire')) {
         return FixMyStreet::Cobrand::Oxfordshire->new({ c => $self->{c} })->updates_disallowed_override($problem, $result);
     }
+    if ($problem->to_body_named('Gloucestershire')) {
+        return FixMyStreet::Cobrand::Gloucestershire->new({ c => $self->{c} })->updates_disallowed_override($problem, $result);
+    }
     return $result
 };
 
