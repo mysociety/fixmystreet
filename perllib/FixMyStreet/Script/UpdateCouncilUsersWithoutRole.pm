@@ -37,16 +37,14 @@ sub update {
 
     if ($opts->{with_permission}) {
         my $permission = Utils::trim_text($opts->{with_permission});
-				$users = $users->search(
-					id => {
-						-in => FixMyStreet::DB->resultset('UserBodyPermission')->search(
-              {
-                permission_type => { in => [$permission]}
-							},
-              {
-                  columns => ['user_id']
-              }
-            )->as_query
+        $users = $users->search({
+            id => {
+                -in => FixMyStreet::DB->resultset('UserBodyPermission')->search({
+                    permission_type => { in => [$permission]}
+                }, {
+                    columns => ['user_id']
+                })->as_query
+            }
         });
     }
 
@@ -76,7 +74,7 @@ sub update {
                     }
                 }
             }
-            say "updated permissions for user id " . $user->id . " from " . $user->from_body->name unless $opts->{verbose};
+            say "updated permissions for user id " . $user->id . " from " . $user->from_body->name if $opts->{verbose};
         }
     }
 

@@ -37,6 +37,7 @@ my $other_body = $mech->create_body_ok(1234, 'Aylesbury Vale District Council');
 my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body);
 $counciluser->user_body_permissions->create({ body => $body, permission_type => 'triage' });
 $counciluser->user_body_permissions->create({ body => $body, permission_type => 'template_edit' });
+$counciluser->user_body_permissions->create({ body => $body, permission_type => 'view_dashboard' });
 my $publicuser = $mech->create_user_ok('fmsuser@example.org', name => 'Simon Neil');
 
 my $contact = $mech->create_contact_ok(body_id => $body->id, category => 'Flytipping', email => "FLY");

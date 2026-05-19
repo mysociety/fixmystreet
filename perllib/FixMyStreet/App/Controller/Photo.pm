@@ -83,6 +83,7 @@ sub index :LocalRegex('^(c/)?([1-9]\d*)(?:\.(\d+))?(?:\.(full|tn|fp|og))?\.(?:jp
         $c->detach('no_photo') unless $c->user->is_superuser
             || $c->user->id == $problem->user->id
             || $c->user->has_permission_to('report_inspect', $body_ids)
+            || $c->user->has_permission_to('report_view_private', $body_ids)
             || $c->user->has_permission_to('report_mark_private', $body_ids);
     }
 

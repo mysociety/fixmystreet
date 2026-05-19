@@ -858,7 +858,8 @@ sub available_permissions {
             report_edit => _("Edit reports"),
             report_edit_category => _("Edit report category"), # future use
             report_edit_priority => _("Edit report priority"), # future use
-            report_mark_private => _("View/Mark private reports"),
+            report_view_private => _("View private reports"),
+            report_mark_private => _("Mark private reports"), # Implies permission to view
             report_inspect => _("Markup problem details"),
             report_instruct => _("Instruct contractors to fix problems"), # future use
             report_prefill => _("Automatically populate report subject/detail"),
@@ -881,6 +882,9 @@ sub available_permissions {
             template_edit => _("Add/edit response templates"),
             responsepriority_edit => _("Add/edit response priorities"),
             emergency_message_edit => _("Add/edit site message"),
+        },
+        _("Dashboard") => {
+            view_dashboard => _("View the dashboard"),
         },
     };
 }

@@ -313,6 +313,8 @@ sub waste_garden_sub_params {
     my $c = $self->{c};
     my $srv = $self->garden_current_subscription;
 
+    $c->set_param('verified_by', $data->{verified_by}) if $data->{verified_by};
+
     if ( $data->{category} eq 'Cancel Garden Subscription' ) {
         my $parser = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y' );
         my $due_date_str = $parser->format_datetime( DateTime->now->add(days => 1) );

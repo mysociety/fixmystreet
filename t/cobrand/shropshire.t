@@ -27,6 +27,7 @@ my ($report2) = $mech->create_problems_for_body(1, $body->id, 'Test Report for u
 
 my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',
                                       from_body => $body, password => 'password');
+$staffuser->user_body_permissions->create({ body => $body, permission_type => 'view_dashboard' });
 
 my $councillor = $mech->create_user_ok('councillor@example.com', name => 'Councillor',
                                        from_body => $body, password => 'password');

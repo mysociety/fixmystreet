@@ -589,6 +589,7 @@ FixMyStreet Pro permissions include:
 | Moderate report details | Allow the user to moderate details within a report, such as removing accidental user-generated PII or redacting images (<a href="https://www.fixmystreet.com/pro-manual/admin-tasks/#deal-undesirable-content">go to the Dealing with undesirable content section</a>) |
 | See user detail for reports created as [Council/Authority] | Allow the user to see the user details for reports made by members of staff on behalf of the council/authority (<a href="https://www.fixmystreet.com/pro-manual/admin-tasks/#create-reports-behalf-user">go to the Creating reports section</a>) |
 | View/Mark private reports | Allow the user to view private reports and mark reports as private (<a href="https://www.fixmystreet.com/pro-manual/admin-tasks/#creatingviewing-private-reports">go to the Creating and viewing private reports section</a>) |
+| View Dashboard | Allow the user to view the dashboard (<a href="https://www.fixmystreet.com/pro-manual/admin-tasks/#view-statistics">go to the Viewing statistics section</a>) |
 
 By not assigning a permission to a role or to an indivudal user, they will not be able to complete the associated admin task. Users cannot edit their own permissions.
 
@@ -1039,7 +1040,8 @@ be useful for a quick snapshot of activity.
 
 For a more detailed breakdown, visit the stats dashboard. This can be accessed
 by going to "Summary statistics" from the admin stats page, or by typing
-‘/dashboard’ on the end of your FixMyStreet url.
+‘/dashboard’ on the end of your FixMyStreet url. You will need the View Dashboard
+permission to access this.
 
 <img loading="lazy" alt="Navigating to the 'Summary statistics' page will give you a more detailed view" src="/assets/img/pro-user-guide/Viewing statistics.png" class="admin-screenshot"/>
 

@@ -31,7 +31,7 @@ my $body = $mech->create_body_ok( 2482, 'Bromley Council', {
 $mech->create_user_ok('superuser@example.com', is_superuser => 1, name => "Super User");
 my $staffuser = $mech->create_user_ok( 'staff@example.com', name => 'Staffie', from_body => $body );
 my $role = FixMyStreet::DB->resultset("Role")->create({
-    body => $body, name => 'Role A', permissions => ['moderate', 'user_edit', 'report_mark_private', 'report_inspect', 'contribute_as_body'] });
+    body => $body, name => 'Role A', permissions => ['moderate', 'user_edit', 'report_view_private', 'report_inspect', 'contribute_as_body', 'view_dashboard'] });
 $staffuser->add_to_roles($role);
 
 my $pothole = $mech->create_contact_ok(
@@ -269,6 +269,7 @@ subtest 'check heatmap page' => sub {
         COBRAND_FEATURES => { category_groups => { bromley => 1 }, heatmap => { bromley => 1 } },
     }, sub {
         $user->update({ from_body => $body->id });
+        $user->user_body_permissions->create({ body => $body, permission_type => 'view_dashboard' });
         $mech->log_in_ok($user->email);
         $mech->get_ok('/dashboard/heatmap?end_date=2018-12-31');
         $mech->content_contains('Report missed collection');

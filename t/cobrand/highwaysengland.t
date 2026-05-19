@@ -70,7 +70,7 @@ FixMyStreet::DB->resultset("Role")->create({
 my $role_admin = FixMyStreet::DB->resultset("Role")->create({
     body => $highways,
     name => 'Admin',
-    permissions => ['moderate', 'user_edit'],
+    permissions => ['moderate', 'user_edit', 'view_dashboard'],
 });
 $staffuser->add_to_roles($role_admin);
 

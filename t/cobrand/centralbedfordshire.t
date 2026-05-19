@@ -51,6 +51,7 @@ $mech->create_contact_ok(body_id => $body->id, category => 'Fly Tipping', email 
 my $normal_user = $mech->create_user_ok('test@example.net', name => 'Normal User');
 my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',
     from_body => $body, password => 'password');
+$staffuser->user_body_permissions->create({ body => $body, permission_type => 'view_dashboard' });
 $body->update({ comment_user_id => $staffuser->id });
 
 my ($report) = $mech->create_problems_for_body(1, $body->id, 'Test Report', {

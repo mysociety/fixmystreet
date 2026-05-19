@@ -200,7 +200,10 @@ sub load_problem_or_display_error : Private {
         my $allowed = 0;
         $allowed = 1 if $from_email;
         $allowed = 1 if $c->user_exists && $c->user->id == $problem->user->id;
-        $allowed = 1 if $permissions->{report_inspect} || $permissions->{report_mark_private};
+
+        $allowed = 1 if $permissions->{report_inspect}
+            || $permissions->{report_view_private}
+            || $permissions->{report_mark_private};
 
         unless  ($allowed) {
             my $url = '/auth?r=report/' . $problem->id;

@@ -40,6 +40,8 @@ my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Coun
 my $normaluser = $mech->create_user_ok('normaluser@example.com', name => 'Normal User');
 $normaluser->update({ phone => "+447123456789" });
 
+$counciluser->user_body_permissions->create({ body => $body, permission_type => 'view_dashboard' });
+
 my ($problem) = $mech->create_problems_for_body(1, $body->id, 'Title', {
     areas => ",2651,", category => 'Potholes', cobrand => 'fixmystreet',
     user => $normaluser, service => 'iOS', extra => {
@@ -150,7 +152,7 @@ subtest 'extra CSV columns are absent if permission not granted' => sub {
 subtest "Custom CSV fields permission can be granted" => sub {
     $mech->log_in_ok( $superuser->email );
 
-    is $counciluser->user_body_permissions->count, 0, 'counciluser has no permissions';
+    is $counciluser->user_body_permissions->count, 1, 'counciluser has one permission';
 
     $mech->get_ok("/admin/users/" . $counciluser->id);
     $mech->content_contains('Extra columns in CSV export');
@@ -165,6 +167,7 @@ subtest "Custom CSV fields permission can be granted" => sub {
     } } );
 
     ok $counciluser->has_body_permission_to("export_extra_columns"), "counciluser has been granted CSV extra fields permission";
+    ok $counciluser->has_body_permission_to("view_dashboard"), 'counciluser has permission to view dashboard';
 };
 
 subtest 'extra CSV columns are present if permission granted' => sub {

@@ -18,7 +18,7 @@ $mech->create_contact_ok(body_id => $body->id, category => 'Flytipping', email =
 $mech->create_contact_ok(body_id => $body->id, category => 'Trees', email => 'foo@northumberland');
 
 my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body, password => 'password');
-my $role = FixMyStreet::DB->resultset("Role")->create({ name => 'Role 1', body => $body, permissions => [], });
+my $role = FixMyStreet::DB->resultset("Role")->create({ name => 'Role 1', body => $body, permissions => ['view_dashboard'], });
 $staffuser->add_to_roles($role);
 
 my ($problem1, $problem2) = $mech->create_problems_for_body(2, $body->id, 'Test', {

@@ -397,12 +397,16 @@ sub munge_reports_category_list {
     my ($self, $categories) = @_;
     my $c = $self->{c};
     return if $c->action eq 'dashboard/heatmap';
-
-    unless ( $c->user_exists && $c->user->from_body && $c->user->has_permission_to('report_mark_private', $self->body->id) ) {
+    unless ( $c->user_exists
+        && $c->user->from_body
+        && (
+            $c->user->has_permission_to('report_view_private', $self->body->id) ||
+            $c->user->has_permission_to('report_mark_private', $self->body->id)
+        )
+    ) {
         @$categories = grep { $_->get_extra_metadata('type', '') ne 'waste' } @$categories;
     }
 }
-
 
 sub munge_report_new_bodies {
     my ($self, $bodies) = @_;

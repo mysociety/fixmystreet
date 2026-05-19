@@ -81,7 +81,10 @@ sub check_page_allowed : Private {
         } else {
             return $cobrand_body;
         }
-    } elsif ($c->user->from_body && (!$cobrand_body || $cobrand_body->id == $c->user->from_body->id)) {
+    } elsif (
+        $c->user->from_body
+        && (!$cobrand_body || $c->user->has_permission_to('view_dashboard', $cobrand_body->id))
+    ) {
         $body = $c->user->from_body;
 
         my @extra_bodies = $c->cobrand->call_hook('dashboard_extra_bodies');

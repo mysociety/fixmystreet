@@ -142,7 +142,7 @@ my $user1 = $mech->create_user_ok(
 my $role = FixMyStreet::DB->resultset("Role")->create({
     body => $brent,
     name => 'Role',
-    permissions => ['moderate', 'user_edit'],
+    permissions => ['moderate', 'user_edit', 'view_dashboard'],
 });
 my $staff_user = $mech->create_user_ok('staff@example.org', from_body => $brent, name => 'Staff User');
 $staff_user->user_roles->find_or_create({ role_id => $role->id });

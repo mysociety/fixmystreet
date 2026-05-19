@@ -17,20 +17,19 @@ my $nameless_user = $mech->create_user_ok('nameless@example.net', name => '');
 my $staff_user = $mech->create_user_ok('staff@example.org', from_body => $body, name => 'Staff User');
 $staff_user->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_anonymous_user' });
 $staff_user->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_another_user' });
-$staff_user->user_body_permissions->create({ body => $body, permission_type => 'report_mark_private' });
+$staff_user->user_body_permissions->create({ body => $body, permission_type => 'report_view_private' });
 $staff_user->user_body_permissions->create({ body => $body, permission_type => 'can_pay_with_csc' });
 $staff_user->user_body_permissions->create({ body => $body, permission_type => 'report_edit' });
 
 my $staff_non_payuser = $mech->create_user_ok('staff_no_pay@example.org', from_body => $body, name => 'Staff No Pay User');
 $staff_non_payuser->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_anonymous_user' });
 $staff_non_payuser->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_another_user' });
-$staff_non_payuser->user_body_permissions->create({ body => $body, permission_type => 'report_mark_private' });
 
 my $csc_user = $mech->create_user_ok('csc_staff@example.org', from_body => $body, name => 'CSC User');
 my $role = FixMyStreet::DB->resultset("Role")->create({
     body => $body,
     name => 'Contact Centre Agent',
-    permissions => ['contribute_as_another_user', 'contribute_as_anonymous_user', 'report_mark_private', 'can_pay_with_csc']
+    permissions => ['contribute_as_another_user', 'contribute_as_anonymous_user', 'can_pay_with_csc']
 });
 $csc_user->add_to_roles($role);
 

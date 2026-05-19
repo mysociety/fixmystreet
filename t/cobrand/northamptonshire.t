@@ -389,6 +389,7 @@ subtest 'Dashboard CSV extra columns' => sub {
     my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
     my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',
         from_body => $nh, password => 'password');
+    $staffuser->user_body_permissions->create({ body => $nh, permission_type => 'view_dashboard' });
     $mech->log_in_ok( $staffuser->email );
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',

@@ -16,6 +16,7 @@ use_ok 'FixMyStreet::Cobrand::Surrey';
 my $comment_user = $mech->create_user_ok('systemuser@surrey.example.com');
 my $surrey = $mech->create_body_ok(2242, 'Surrey County Council', { cobrand => 'surrey', comment_user => $comment_user });
 my $surrey_staff_user = $mech->create_user_ok( 'staff@example.com', name => 'Staff User', from_body => $surrey );
+$surrey_staff_user->user_body_permissions->create({ body => $surrey, permission_type => 'view_dashboard' });
 $mech->create_contact_ok(body_id => $surrey->id, category => 'Potholes', email => 'potholes@example.org');
 (my $report) = $mech->create_problems_for_body(1, $surrey->id, 'Pothole', {
             category => 'Potholes', cobrand => 'surrey',

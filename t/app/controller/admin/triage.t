@@ -82,6 +82,12 @@ FixMyStreet::override_config {
         $mech->get_ok('/admin/triage');
         $mech->content_lacks($report->title);
 
+        $user->user_body_permissions->create( { body => $iow, permission_type => 'report_view_private' } );
+        $mech->get_ok('/admin/triage');
+        $mech->content_contains($report->title);
+
+        $user->user_body_permissions->delete;
+        $user->user_body_permissions->create( { body => $iow, permission_type => 'triage' } );
         $user->user_body_permissions->create( { body => $iow, permission_type => 'report_mark_private' } );
         $mech->get_ok('/admin/triage');
         $mech->content_contains($report->title);

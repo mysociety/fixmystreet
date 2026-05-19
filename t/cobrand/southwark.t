@@ -33,6 +33,7 @@ my $southwark = $mech->create_body_ok(
 );
 
 my $staffuser = $mech->create_user_ok( 'staff@example.com', name => 'Staffer', from_body => $southwark );
+$staffuser->user_body_permissions->create({ body => $southwark, permission_type => 'view_dashboard' });
 
 $mech->create_contact_ok(
     body_id  => $southwark->id,

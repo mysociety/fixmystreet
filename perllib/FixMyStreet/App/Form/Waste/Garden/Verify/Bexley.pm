@@ -25,6 +25,7 @@ sub customer_reference {
                 if ( $ref eq $current_subscription->{customer_ref} ) {
                     $form->saved_data->{customer_external_ref}
                         = $current_subscription->{customer_external_ref};
+                    $form->saved_data->{verified_by} = 'reference';
 
                     $form->saved_data->{name}
                         = $current_subscription->{customer_first_name} . ' '
@@ -116,6 +117,7 @@ sub about_you {
 
                 $form->saved_data->{customer_external_ref}
                     = $current_subscription->{customer_external_ref};
+                $form->saved_data->{verified_by} = 'name';
 
                 return $args{next_page};
 

@@ -12,6 +12,7 @@ my $south_kesteven = $mech->create_body_ok(2380, 'South Kesteven District Counci
 my $contact = $mech->create_contact_ok( body_id => $south_kesteven->id, category => 'Graffiti', email => 'graffiti@example.org' );
 my $standard_user = $mech->create_user_ok( 'user@example.com', name => 'User' );
 my $staff_user = $mech->create_user_ok( 'staff@example.com', name => 'Staff', from_body => $south_kesteven->id );
+$staff_user->user_body_permissions->create({ body => $south_kesteven, permission_type => 'view_dashboard' });
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'southkesteven',

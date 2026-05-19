@@ -15,6 +15,10 @@ use_ok 'FixMyStreet::Cobrand::Aberdeenshire';
 
 my $aberdeenshire = $mech->create_body_ok(2648, 'Aberdeenshire Council', { cobrand => 'aberdeenshire' });
 my $staff_user = $mech->create_user_ok( 'staff@example.com', name => 'Staff User', from_body => $aberdeenshire );
+my $role = FixMyStreet::DB->resultset("Role")->create({
+    body => $aberdeenshire, name => 'Role A', permissions => ['view_dashboard']
+});
+$staff_user->add_to_roles($role);
 $aberdeenshire->update({ comment_user_id => $staff_user->id });
 $mech->create_contact_ok(body_id => $aberdeenshire->id, category => 'Pothole', email => 'potholes@example.org');
 $mech->create_contact_ok(body_id => $aberdeenshire->id, category => 'Surface Issue', email => 'surface_issue@example.org');

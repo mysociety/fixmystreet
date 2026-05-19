@@ -25,7 +25,6 @@ my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
 my $user2 = $mech->create_user_ok('test2@example.net', name => 'Very Normal User');
 my $staff = $mech->create_user_ok('staff@example.net', name => 'Staff User', from_body => $body->id);
 $staff->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_another_user' });
-$staff->user_body_permissions->create({ body => $body, permission_type => 'report_mark_private' });
 $staff->user_body_permissions->create({ body => $body, permission_type => 'planned_reports' });
 $staff->user_body_permissions->create({ body => $body, permission_type => 'report_edit' });
 my $super = $mech->create_user_ok('super@example.net', name => 'Super User', is_superuser => 1);

@@ -609,9 +609,9 @@ FixMyStreet site.
      queries directly on the database.
     </p>
     <p>
-      <a href="{{ "/glossary#staff-user" | relative_url }}" class="glossary__link">Staff users</a> can see
-      the <a href="{{ "/glossary#dashboard" | relative_url }}" class="glossary__link">dashboard</a> for
-      their own body by going to <code>/dashboard</code> when they are logged
+      <a href="{{ "/glossary#staff-user" | relative_url }}" class="glossary__link">Staff users</a> with
+      the View Dashboard permission can see the <a href="{{ "/glossary#dashboard" | relative_url }}" class="glossary__link">dashboard</a>
+      for their own body by going to <code>/dashboard</code> when they are logged
       into the public site. If they don't have a staff user set up, offer to
       do this for them: see <a href="{{ "/running/users/" | relative_url }}">managing users</a>.
     </p>

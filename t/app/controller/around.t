@@ -167,11 +167,25 @@ subtest 'check lookup by reference does not show non_public reports' => sub {
 subtest '...unless staff' => sub {
     my $user = $mech->log_in_ok( 'test@example.com' );
     $user->update({ from_body => $body_edin });
-    $user->user_body_permissions->find_or_create({ body => $body_edin, permission_type => 'report_mark_private' });
-    my $id = $edinburgh_problems[0]->id;
-    $mech->get_ok('/');
-    $mech->submit_form_ok( { with_fields => { pc => $id } }, 'non_public ref');
-    is $mech->uri->path, "/report/$id", "redirects to correct report";
+
+    subtest 'with view permissions' => sub {
+        $user->user_body_permissions->find_or_create({ body => $body_edin, permission_type => 'report_view_private' });
+        my $id = $edinburgh_problems[0]->id;
+        $mech->get_ok('/');
+        $mech->submit_form_ok( { with_fields => { pc => $id } }, 'non_public ref');
+        is $mech->uri->path, "/report/$id", "redirects to correct report";
+        $user->user_body_permissions->delete;
+    };
+
+    subtest 'with edit permissions' => sub {
+        $user->user_body_permissions->find_or_create({ body => $body_edin, permission_type => 'report_mark_private' });
+        my $id = $edinburgh_problems[0]->id;
+        $mech->get_ok('/');
+        $mech->submit_form_ok( { with_fields => { pc => $id } }, 'non_public ref');
+        is $mech->uri->path, "/report/$id", "redirects to correct report";
+        $user->user_body_permissions->delete;
+    };
+
     $mech->log_out_ok;
 };
 
@@ -199,7 +213,7 @@ subtest 'check missing body message not shown when it does not need to be' => su
     $mech->content_lacks('yet have details for the other councils that cover this location');
 };
 
-for my $permission ( qw/ report_inspect report_mark_private/ ) {
+for my $permission ( qw/report_inspect report_view_private report_mark_private/ ) {
     subtest "check non public reports are displayed on around page with $permission permission" => sub {
         my $user = $mech->log_in_ok( 'test@example.com' );
         $user->user_body_permissions->delete();
@@ -403,10 +417,19 @@ subtest 'check staff categories shown appropriately in filter' => sub {
         $mech->content_lacks('<option value="Needles county">');
         my $user = $mech->log_in_ok( 'test@example.com' );
         $user->update({ from_body => $district });
+
+        $user->user_body_permissions->find_or_create({ body => $district, permission_type => 'report_view_private' });
+        $mech->get_ok( '/around?bbox=' . $bbox );
+        $mech->content_contains('<option value="Needles district">');
+        $mech->content_lacks('<option value="Needles county">');
+        $user->user_body_permissions->delete;
+
         $user->user_body_permissions->find_or_create({ body => $district, permission_type => 'report_mark_private' });
         $mech->get_ok( '/around?bbox=' . $bbox );
         $mech->content_contains('<option value="Needles district">');
         $mech->content_lacks('<option value="Needles county">');
+        $user->user_body_permissions->delete;
+
         $mech->log_out_ok;
     };
 };
