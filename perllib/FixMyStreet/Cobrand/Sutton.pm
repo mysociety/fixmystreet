@@ -114,13 +114,15 @@ sub skip_alert_state_changed_to {
 
 If it's before 6pm on the day of collection, treat an Outstanding/Allocated
 task as if it's the next collection and in progress, do not allow missed
-collection reporting, and do not show the collected time.
+collection reporting, and do not show the collected time. Do allow disputes.
 
 =cut
 
 sub waste_on_the_day_criteria {
     my ($self, $completed, $state, $now, $row) = @_;
 
+    # allowed to dispute incomplete as soon as it has happened
+    return if ($state eq 'Not Completed');
     return unless $now->hour < 18;
     if ($state eq 'Outstanding' || $state eq 'Allocated') {
         $row->{next} = $row->{last};
@@ -238,8 +240,8 @@ sub _check_date_within_dispute_window {
     my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
     # And two working days (from 6pm) have passed
     my $wd = FixMyStreet::WorkingDays->new();
-    my $start = $wd->add_days($date, 0)->set_hour(18);
-    my $end = $wd->add_days($start, 3)->set_hour(0);
+    my $start = $date;
+    my $end = $wd->add_days($start, 3)->set_hour(0)->set_minute(0)->set_second(0);
 
     if ($now >= $start && $now < $end) {
         return 1;
@@ -269,21 +271,68 @@ sub _setup_container_request_disputes_for_service {
     my ($self, $row) = @_;
     my $events = $row->{events};
 
-    my $dispute_event;
+    my $property = $self->{c}->stash->{property};
+    my ($dispute_event, $missed_event);
     if ($events) {
         $dispute_event = ($events->filter({ event_type => 3143 })->list)[0];
     }
-    # check if a dispute is allowed on reports that have been marked as unable to be collected
-    if ($row->{last}->{completed} && $row->{report_locked_out} && !$dispute_event) {
-        # and then check if we can open a dispute for this resolution
-        if ( $self->waste_check_can_raise_dispute($row->{service_id}, $row->{last}->{resolution}) ) {
-            if ( $self->_check_date_within_dispute_window($row->{last}->{completed}) ) {
-                $row->{dispute_allowed} = 1;
+    if (!$dispute_event) {
+           if ($row->{last}->{completed} && $row->{report_locked_out}) {
+            # and then check if we can open a dispute for this resolution
+            if ( $self->waste_check_can_raise_dispute($row->{service_id}, $row->{last}->{resolution}) ) {
+                if ( $self->_check_date_within_dispute_window($row->{last}->{completed}) ) {
+                    $row->{dispute_allowed} = 1;
+                }
             }
         }
-    }
-    if ($dispute_event) {
+    } else {
         $row->{dispute_open} = 1;
+    }
+}
+
+sub _setup_missed_collection_disputes_for_service {
+    my ($self, $row) = @_;
+    my $events = $row->{events} or return;
+
+    my $c = $self->{c};
+    my $property = $c->stash->{property};
+
+    my $missed_event = ($events->filter({ type => 'missed' })->list)[0];
+    my $dispute_event = ($events->filter({ event_type => 3143 })->list)[0];
+    if (
+        # If there's a missed bin report
+        $missed_event
+        # And report is still closed
+        && $missed_event->{closed}
+        # And the event source is the same as the current property (for communal)
+        && ($missed_event->{source} || 0) == $property->{id}
+        # And no existing dispute since last collection
+        && !$dispute_event
+    ) {
+        if ( $self->_check_date_within_dispute_window($missed_event->{date}) ) {
+            $row->{event_id} = $missed_event->{id};
+            $row->{dispute_allowed} = 1;
+        }
+    } elsif ($dispute_event) {
+        $row->{dispute_open} = $dispute_event;
+    }
+}
+
+sub parse_event_missed {
+    my ($self, $orig_event, $event, $events) = @_;
+
+    $event->{resolution} = $orig_event->{ResolutionCodeId};
+    my $missed_codes = $self->waste_bulky_missed_blocked_codes;
+    if ($missed_codes
+        && $event->{resolution}
+        && $missed_codes->{$orig_event->{EventStateId}}
+        && $missed_codes->{$orig_event->{EventStateId}}->{$event->{resolution}}
+    ) {
+        $event->{resolution_reason} = $missed_codes->{$orig_event->{EventStateId}}->{$event->{resolution}};
+    }
+    if ($event->{closed}) {
+        $event->{date} = Integrations::Echo::Events::construct_bin_date($orig_event->{ResolvedDate});
+        $event->{state} = $orig_event->{EventStateId};
     }
 }
 

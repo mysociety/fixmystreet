@@ -195,12 +195,15 @@ around booked_check_missed_collection => sub {
 
     my $escalations = $events->filter({ event_type => 3134, service => $service_id });
     my $disputes = $events->filter({ event_type => 3143, service => $service_id });
+    my $missed_events = $events->filter({ type => 'missed', service => $service_id });
     my $missed = $self->{c}->stash->{booked_missed};
     foreach my $guid (keys %$missed) {
         my $missed_event = $missed->{$guid}{report_open};
         my $locked_out = $missed->{$guid}{report_locked_out};
 
-        if ($missed_event) {
+        # we have initially reported a missed collection, no second attempt has happened
+        # so we can open an escalation
+        if ($missed_event && !$missed_event->{closed}) {
             my $open_escalation = 0;
             foreach ($escalations->list) {
                 next unless $_->{report};
@@ -212,12 +215,8 @@ around booked_check_missed_collection => sub {
                 }
             }
 
-            if (
-                # Report is still open
-                !$missed_event->{closed}
-                # And no existing escalation since last collection
-                && !$open_escalation
-            ) {
+            # no existing escalation since last collection
+            if (!$open_escalation) {
                 my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
                 # And two working days (from 6pm) have passed
                 my $wd = FixMyStreet::WorkingDays->new();
@@ -227,16 +226,30 @@ around booked_check_missed_collection => sub {
                     $missed->{$guid}{escalations}{missed} = $missed_event;
                 }
             }
-        } elsif ($locked_out) {
-            my $open_dispute = 0;
-            foreach ($disputes->list) {
-                next unless $_->{report};
-                my $original_guid = $_->{report}->get_extra_field_value('original_guid');
-                next unless $original_guid;
-                if ($original_guid eq $guid) {
-                    $open_dispute = 1;
-                }
+        # we have reported a missed collection, the second collection has not been picked up
+        # because of a problem so we can open a dispute about the second collection
+        } elsif ($missed_event && $missed_event->{closed}) {
+            my $open_dispute = $self->_check_for_open_disputes($disputes, $missed_event->{report}->external_id);
+
+            my $within_window = $self->_check_date_within_dispute_window(
+                $missed_event->{date}
+            );
+            my $resolution_valid = $self->waste_check_can_raise_dispute(
+                $missed_event->{service_id},
+                $missed_event->{ResolutionCodeId}
+            );
+
+            if ($open_dispute){
+                $missed->{$guid}{dispute_open} = 1;
+            } elsif ($within_window && $resolution_valid) {
+                $missed->{$guid}{dispute_allowed} = 1;
+                $missed->{$guid}{event_id} = $missed_event->{id};
+                $missed->{$guid}{report_id} = $missed_event->{report}->id;
             }
+        # our original collection was not picked up because of a problem so we
+        # can open a dispute about the original collection
+        } elsif ($locked_out) {
+            my $open_dispute = $self->_check_for_open_disputes($disputes, $guid);
             my $within_window = $self->_check_date_within_dispute_window(
                 $missed->{$guid}{report_locked_out_date}
             );
@@ -244,14 +257,39 @@ around booked_check_missed_collection => sub {
                 $missed->{$guid}{service_id},
                 $missed->{$guid}{report_locked_out_reason}
             );
-            if ($open_dispute){
-                $missed->{$guid}{open_dispute} = 1;
+            if ($open_dispute) {
+                $missed->{$guid}{dispute_open} = 1;
             } elsif ($within_window && $resolution_valid) {
-                $missed->{$guid}{dispute_allowed} = 1
+                $missed->{$guid}{dispute_allowed} = 1;
             }
         }
     }
+
+    # store all the missed events which we need for checking details
+    # of incomplete missed collection re-attempts when clicking through
+    # from a link in an alert email
+    my %missed;
+    foreach my $event ($missed_events->list) {
+        $missed{$event->{guid}} = $event;
+    }
+    $self->{c}->stash->{missed_events} = \%missed;
 };
+
+sub _check_for_open_disputes {
+    my ($self, $disputes, $guid) = @_;
+
+    my $open_dispute = 0;
+    foreach ($disputes->list) {
+        next unless $_->{report};
+        my $original_guid = $_->{report}->get_extra_field_value('original_guid');
+        next unless $original_guid;
+        if ($original_guid eq $guid) {
+            $open_dispute = $_;
+        }
+    }
+
+    return $open_dispute;
+}
 
 # default to never allowing disputes
 sub _check_date_within_dispute_window { 0; }
@@ -267,6 +305,7 @@ sub munge_bin_services_for_address {
     foreach (@$rows) {
         $self->_setup_missed_collection_escalations_for_service($_);
         $self->_setup_container_request_escalations_for_service($_);
+        $self->_setup_missed_collection_disputes_for_service($_);
         $self->_setup_container_request_disputes_for_service($_);
     }
 }
@@ -304,6 +343,8 @@ sub _setup_missed_collection_escalations_for_service {
         $row->{escalations}{missed_open} = $escalation_event;
     }
 }
+
+sub _setup_missed_collection_disputes_for_service {}
 
 sub _setup_container_request_escalations_for_service {
     my ($self, $row) = @_;
@@ -439,9 +480,9 @@ sub waste_munge_enquiry_form_pages {
         # so it might be clicked outside the window so re-check if
         # disputes are allowed
         if ($guid) {
-            my $dispute_allowed = $self->_check_date_within_dispute_window(
-                $c->stash->{booked_missed}{$guid}{report_locked_out_date}
-            );
+            my $date = $c->stash->{booked_missed}{$guid}{report_locked_out_date}
+                       || $c->stash->{missed_events}{$guid}{date};
+            my $dispute_allowed = $self->_check_date_within_dispute_window( $date );
             unless ($dispute_allowed) {
                 $c->stash->{first_page} = 'window_expired';
                 @$pages = (window_expired => {
@@ -513,6 +554,13 @@ sub waste_munge_enquiry_data {
         if (my $booking_id = $c->get_param('booking_id')) {
             my $report = $c->cobrand->problems->find($booking_id);
             $data->{extra_original_guid} = $report->external_id;
+        }
+        if (my $report_id = $c->get_param('report_id')) {
+            my $report = $c->cobrand->problems->find($report_id);
+            $data->{extra_original_guid} = $report->external_id;
+        }
+        if (my $event_id = $c->get_param('event_id')) {
+            $data->{extra_Notes} = "Originally Echo Event #$event_id\n\n" . ($data->{extra_Notes} || '');
         }
     }
     $detail .= $self->service_name_override({ ServiceId => $data->{service_id} }) . "\n\n";

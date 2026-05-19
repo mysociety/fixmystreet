@@ -74,6 +74,7 @@ create_contact({ category => 'Complaint against time', email => '3134' }, 'Waste
     { code => 'Notes', required => 1, automated => 'hidden_field' },
     { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
+    { code => 'property_id', required => 1, automated => 'hidden_field' },
     { code => 'original_ref', required => 1, automated => 'hidden_field' },
 );
 create_contact({ category => 'Failure to Deliver Bags/Containers', email => '3141' }, 'Waste',
@@ -778,6 +779,7 @@ FixMyStreet::override_config {
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
 
+    # this is a dispute for when a scheduled collection has been marked as not complete
     subtest 'Dispute of missed collections' => sub {
         subtest 'No missed collection' => sub {
             set_fixed_time('2022-09-10T19:00:00Z');
@@ -806,7 +808,7 @@ FixMyStreet::override_config {
         } ] });
 
         subtest 'Raising a dispute only available within window' => sub {
-            set_fixed_time('2022-09-09T17:30:00Z');
+            set_fixed_time('2022-09-09T15:30:00Z');
             $mech->get_ok('/waste/12345');
             $mech->content_lacks('Report a problem with this missed collection', 'not allowed before window opens');
 
@@ -822,7 +824,7 @@ FixMyStreet::override_config {
             $mech->get_ok('/waste/12345');
             $mech->content_contains('Report a problem with this missed collection', 'allowed just before window closes');
 
-            set_fixed_time('2022-09-09T18:01:00Z');
+            set_fixed_time('2022-09-09T16:01:00Z');
             $mech->get_ok('/waste/12345');
             $mech->content_contains('Report a problem with this missed collection', 'allowed just after window opens');
 
@@ -880,6 +882,8 @@ FixMyStreet::override_config {
 
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
+
+    my $missed_report;
 
     subtest 'Escalations of missed collections' => sub {
         subtest 'No missed collection' => sub {
@@ -943,6 +947,8 @@ FixMyStreet::override_config {
                 $mech->content_contains('Return to property details');
                 $mech->content_contains('/waste/12345"');
                 my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+                # save this for later
+                $missed_report = $report;
                 is $report->category, 'Complaint against time', "Correct category";
                 is $report->title, 'Issue with collection';
                 is $report->detail, "Non-Recyclable Refuse\n\n2 Example Street, Sutton, SM1 1AA", "Details of report contain information about problem";
@@ -1039,6 +1045,167 @@ FixMyStreet::override_config {
             $mech->get_ok('/waste/12345');
             $mech->content_lacks('please report the problem here');
             $mech->content_contains('Thank you for reporting an issue with this collection; we are investigating.');
+        };
+
+        $e->mock('GetEventsForObject', sub { [] }); # reset
+    };
+
+    # this is when a collection has been missed, a missed bin report made and then
+    # marked as not complete
+    subtest 'Dispute of non completed missed bin report' => sub {
+        subtest 'Check link availability' => sub {
+            $e->mock('GetEventsForObject', sub { [ {
+                Id => '112112321',
+                EventTypeId => 3145, # Missed collection
+                EventStateId => 19242, # Not Completed
+                ResolvedDate => { DateTime => "2022-09-10T17:00:00Z" },
+                ServiceId => 940, # Refuse
+                EventDate => { DateTime => "2022-09-10T17:00:00Z" },
+                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
+            } ] });
+
+            set_fixed_time('2022-09-10T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('please report the problem here');
+
+            set_fixed_time('2022-09-13T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('please report the problem here');
+
+            set_fixed_time('2022-09-15T17:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('please report the problem here');
+
+            set_fixed_time('2022-09-15T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('please report the problem here');
+        };
+
+        my $comment = FixMyStreet::DB->resultset('Comment')->create(
+            {
+                user          => $body_user,
+                problem_id    => $missed_report->id,
+                text          => 'Contaminated builder waste',
+                confirmed     => DateTime->now - DateTime::Duration->new( minutes => 15 ),
+                problem_state => 'unable to fix',
+                anonymous     => 0,
+                mark_open     => 0,
+                mark_fixed    => 0,
+                state         => 'confirmed',
+                photo         => $sample_file->slurp,
+            }
+        );
+
+        restore_time();
+        $comment->confirmed( DateTime->now ); # - DateTime::Duration->new( minutes => 15 ) );
+        $comment->update;
+
+        my $email;
+        set_fixed_time('2022-09-11T18:01:00Z');
+        subtest 'Open collection dispute from email' => sub {
+            $mech->clear_emails_ok;
+            FixMyStreet::Script::Alerts::send_updates();
+            $mech->email_count_is(1);
+            $email = $mech->get_email;
+            my $email_text = $mech->get_text_body_from_email($email);
+            my $email_html = $mech->get_html_body_from_email($email);
+            like $email_text, qr/Contaminated builder waste/, 'Reason pulled from comment';
+            like $email_text, qr/report a problem with this missed collection/, 'Report a problem text in text email';
+            like $email_html, qr/Contaminated builder waste/, 'Reason pulled from comment';
+            like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
+            like $email_html, qr{waste/12345/enquiry}, 'HTML alert contains report link';
+
+            # we only want the HTML link as the text version does not contain the link
+            my @links = $email_html =~ m{https?://[^"]+}g;
+            my @enq_links = grep( /enquiry/, @links );
+            # need to strip the host otherwise we're not logged in
+            my $l = URI->new($enq_links[0]);
+            $mech->get_ok($l->path_query);
+            $mech->content_contains('Contaminated builder waste', 'details of missed bin collection displayed');
+            $mech->content_contains('This photo provides the evidence', 'Has resolution photo text');
+        };
+
+        subtest 'Create dispute for non complete missed bin report' => sub {
+            FixMyStreet::Script::Reports::send();
+            $mech->clear_emails_ok;
+            set_fixed_time('2022-09-11T18:01:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
+            $mech->content_contains('Contaminated builder waste', 'details of missed bin collection displayed');
+            $mech->content_lacks('This photo provides the evidence', 'No resolution photo text');
+            $mech->submit_form_ok( { with_fields => { 'extra_Notes' => 'There was no problem with the bin' } }, 'submitted reasons');
+            $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } }, 'sumitted name and email');
+            $mech->submit_form_ok( { with_fields => { submit => '1' } }, 'submitted confirmation');
+            $mech->content_contains('Your enquiry has been submitted');
+            $mech->content_contains('Return to property details');
+            $mech->content_contains('/waste/12345"');
+            my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+            is $report->category, 'Missed collection dispute', "Correct category";
+            is $report->title, 'Missed collection dispute';
+            is $report->detail, "Non-Recyclable Refuse\n\n2 Example Street, Sutton, SM1 1AA", "Details of report contain information about problem";
+            is $report->user->email, 'schmoe@example.org', 'User details added to report';
+            is $report->name, 'Joe Schmoe', 'User details added to report';
+            like $report->get_extra_field_value('Notes'), qr"There was no problem with the bin";
+            like $report->get_extra_field_value('Notes'), qr"Originally Echo Event #112112321";
+            FixMyStreet::Script::Reports::send();
+            $mech->email_count_is(1);
+            my $email = $mech->get_email;
+            my $text_email = $mech->get_text_body_from_email($email);
+            my $html_email = $mech->get_html_body_from_email($email);
+            like $text_email, qr/respond in the next two working days/, 'Correct text email next steps';
+            like $html_email, qr/respond in the next two working days/, 'Correct text email next steps';
+        };
+
+        subtest 'Existing dispute event' => sub {
+            # Now mock there is an existing dispute
+            $e->mock('GetEventsForObject', sub { [ {
+                Id => '112112321',
+                EventTypeId => 3145, # Missed collection
+                EventStateId => 19241, # Completed
+                ResolvedDate => { DateTime => "2022-09-10T17:00:00Z" },
+                ServiceId => 940, # Refuse
+                EventDate => { DateTime => "2022-09-10T17:00:00Z" },
+                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
+            },
+            {
+                Id => '112112321',
+                EventTypeId => 3143,
+                EventStateId => 0,
+                ServiceId => 940, # Refuse
+                EventDate => { DateTime => "2022-09-11T18:03:00Z" },
+                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
+            } ] });
+
+            set_fixed_time('2022-09-14T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with this missed collection');
+            $mech->content_contains('We are investigating the problem with this collection.');
+        };
+
+        subtest 'Complete missed collection' => sub {
+            # Now mock there is an existing dispute
+            $e->mock('GetEventsForObject', sub { [ {
+                Id => '112112321',
+                EventTypeId => 3145, # Missed collection
+                EventStateId => 19242, # Not Completed
+                ResolvedDate => { DateTime => "2022-09-10T17:00:00Z" },
+                ServiceId => 940, # Refuse
+                EventDate => { DateTime => "2022-09-10T17:00:00Z" },
+                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
+            },
+            {
+                Id => '112112321',
+                EventTypeId => 3143, # dispute
+                EventStateId => 0,
+                ServiceId => 940, # Refuse
+                EventDate => { DateTime => "2022-09-11T18:03:00Z" },
+                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
+            } ] });
+
+            set_fixed_time('2022-09-14T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with this missed collection');
+            $mech->content_contains('We are investigating the problem with this collection.');
         };
 
         $e->mock('GetEventsForObject', sub { [] }); # reset

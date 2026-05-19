@@ -1218,7 +1218,7 @@ FixMyStreet::override_config {
             EventTypeId => 3130, # Bulky collection
             EventStateId => 19185, # Not Completed
             EventDate => { DateTime => '2025-04-01T00:00:00Z' },
-            ResolvedDate => { DateTime => '2025-04-08T00:00:00Z' },
+            ResolvedDate => { DateTime => '2025-04-08T15:00:00Z' },
             ResolutionCodeId => 466, # No access - Gate locked
         } ] });
 
@@ -1231,7 +1231,7 @@ FixMyStreet::override_config {
             $mech->get_ok('/waste/12345');
             $mech->content_lacks('Report a problem with this missed collection', 'cannot report after window closed');
 
-            set_fixed_time('2025-04-08T17:59:00Z');
+            set_fixed_time('2025-04-08T14:59:00Z');
             $mech->get_ok('/waste/12345');
             $mech->content_lacks('Report a problem with this missed collection', 'cannot report just before window opens');
 
@@ -1243,7 +1243,7 @@ FixMyStreet::override_config {
             $mech->get_ok('/waste/12345');
             $mech->content_contains('Report a problem with this missed collection', 'can report just before window closes');
 
-            set_fixed_time('2025-04-08T18:01:00Z');
+            set_fixed_time('2025-04-08T15:01:00Z');
             $mech->get_ok('/waste/12345');
             $mech->content_contains('Report a problem with this missed collection', 'can report just after window opens');
         };
@@ -1461,6 +1461,170 @@ FixMyStreet::override_config {
             $mech->content_contains('44 07 111 111 111', 'phone shown');
         };
         add_extra_metadata($sutton);
+    };
+
+    # this is disputing an attempt to collect after a missed collection report
+    subtest 'Dispute of missed collections' => sub {
+        my $missed = FixMyStreet::DB->resultset("Problem")->search({ category => 'Report missed collection' })->order_by('-id')->first;
+        $missed->update({ external_id => 'missed-guid', cobrand => 'sutton', bodies_str => $sutton->id });
+
+        my $dispute;
+        subtest 'Open missed collection' => sub {
+            $echo->mock('GetEventsForObject', sub { [ {
+                Id => '8004',
+                ClientReference => 'LBS-123',
+                Guid => 'booking-guid',
+                ServiceId => 960, # Bulky
+                EventTypeId => 3130, # Bulky collection
+                EventStateId => 19184, # Completed
+                EventDate => { DateTime => '2025-04-01T00:00:00Z' },
+                ResolvedDate => { DateTime => '2025-04-08T00:00:00Z' },
+                ResolutionCodeId => 232, # Completed on Scheduled Day (dunno if used, doesn't matter)
+            }, {
+                Id => '315530',
+                ClientReference => 'LBS-456',
+                Guid => 'missed-guid',
+                ServiceId => 960, # Bulky
+                EventTypeId => 3145, # Missed collection
+                EventStateId => 19242, # Not Completed
+                ResolvedDate => { DateTime => "2025-04-08T17:00:00Z" },
+                EventDate => { DateTime => "2025-04-08T17:00:00Z" },
+                ResolutionCodeId => 617, # No access - Parked vehicle
+            } ] });
+
+                set_fixed_time('2025-04-08T16:59:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with this missed collection', "no link before window opens");
+
+            set_fixed_time('2025-04-12T17:01:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with this missed collection', "no link after window closes");
+
+            my $comment = FixMyStreet::DB->resultset('Comment')->create(
+                {
+                    user          => $sutton_user,
+                    problem_id    => $missed->id,
+                    text          => 'No access - Parked vehicle',
+                    confirmed     => DateTime->now - DateTime::Duration->new( minutes => 15 ),
+                    problem_state => 'unable to fix',
+                    anonymous     => 0,
+                    mark_open     => 0,
+                    mark_fixed    => 0,
+                    state         => 'confirmed',
+                    photo         => $sample_file->slurp,
+                }
+            );
+
+            my $alert = FixMyStreet::DB->resultset('Alert')->find({parameter => $missed->id});
+            $alert->update({cobrand => 'sutton'});
+
+            restore_time();
+            $comment->confirmed( DateTime->now ); # - DateTime::Duration->new( minutes => 15 ) );
+            $comment->update;
+
+            my $email;
+            set_fixed_time('2025-04-10T19:00:00Z');
+            subtest 'Open collection dispute from email' => sub {
+                $mech->clear_emails_ok;
+                FixMyStreet::Script::Alerts::send_updates();
+                $mech->email_count_is(1);
+                $email = $mech->get_email;
+                my $email_text = $mech->get_text_body_from_email($email);
+                my $email_html = $mech->get_html_body_from_email($email);
+                like $email_text, qr/No access - Parked vehicle/, 'Reason pulled from comment';
+                like $email_text, qr/report a problem with this missed collection/, 'Report a problem text in text email';
+                like $email_html, qr/No access - Parked vehicle/, 'Reason pulled from comment';
+                like $email_html, qr/Our crews reported your collection was not made/, 'extra collection text included';
+                like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
+                like $email_html, qr{waste/12345/enquiry}, 'HTML alert contains report link';
+
+                my $link_part = "booking_id=" . $missed->id;
+                # we only want the HTML link as the text version does not contain the link
+                my @links = $email_html =~ m{https?://[^"]+}g;
+                my @enq_links = grep( /enquiry/, @links );
+                # need to strip the host otherwise we're not logged in
+                my $l = URI->new($enq_links[0]);
+                like $l->path_query, qr/$link_part/, 'link has correct booking_id';
+                $mech->get_ok($l->path_query);
+                $mech->content_contains('No access - Parked vehicle', 'details of missed bin collection displayed');
+                $mech->content_contains('This photo provides the evidence', 'Has resolution photo text');
+            };
+
+            set_fixed_time('2025-04-11T19:00:00Z');
+            subtest 'Cannot open collection dispute from email outside window' => sub {
+                my $email_html = $mech->get_html_body_from_email($email);
+                like $email_html, qr/No access - Parked vehicle/, 'Got correct update in html email';
+                like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
+                like $email_html, qr{waste/12345/enquiry}, 'HTML alert contains report link';
+
+                # we only want the HTML link as the text version does not contain the link
+                my @links = $email_html =~ m{https?://[^"]+}g;
+                my @enq_links = grep( /enquiry/, @links );
+                my $l = URI->new($enq_links[0]);
+                $mech->get_ok($l->path_query);
+                $mech->content_lacks('Our crews reported that your collection was not made', 'details of missed bin collection displayed');
+                $mech->content_contains('Missed collections can only be disputed');
+            };
+
+            set_fixed_time('2025-04-10T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
+
+            subtest 'actually make the report' => sub {
+                $mech->submit_form_ok( { with_fields => { 'extra_Notes' => 'There was no problem with the bin' } }, 'submitted reasons');
+                $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
+                $mech->submit_form_ok( { with_fields => { submit => '1' } });
+                $mech->content_contains('Your enquiry has been submitted');
+                $mech->content_contains('Return to property details');
+                $mech->content_contains('/waste/12345"');
+                $dispute = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+                is $dispute->category, 'Missed collection dispute', "Correct category";
+                is $dispute->detail, "2/3 Example Street, Sutton, SM2 5HF", "Details of report contain information about problem";
+                is $dispute->user->email, 'schmoe@example.org', 'User details added to report';
+                is $dispute->name, 'Joe Schmoe', 'User details added to report';
+                like $dispute->get_extra_field_value('Notes'), qr"There was no problem with the bin";
+                like $dispute->get_extra_field_value('Notes'), qr"Originally Echo Event #315530";
+                is $dispute->get_extra_field_value('original_guid'), "missed-guid";
+            };
+        };
+
+        $dispute->update({ external_id => 'second-dispute-guid' });
+
+        subtest 'Existing dispute event' => sub {
+            # Now mock there is an existing escalation
+            $echo->mock('GetEventsForObject', sub { [ {
+                Id => '8004',
+                Guid => 'booking-guid',
+                ServiceId => 960, # Bulky
+                EventTypeId => 3130, # Bulky collection
+                EventStateId => 19184, # Completed
+                EventDate => { DateTime => '2025-04-01T00:00:00Z' },
+                ResolvedDate => { DateTime => '2025-04-08T00:00:00Z' },
+                ResolutionCodeId => 232, # Completed on Scheduled Day (dunno if used, doesn't matter)
+            }, {
+                Id => '315530',
+                Guid => 'missed-guid',
+                ServiceId => 960, # Bulky
+                EventTypeId => 3145, # Missed collection
+                EventStateId => 19242, # Not Completed
+                ResolvedDate => { DateTime => "2025-04-08T17:00:00Z" },
+                EventDate => { DateTime => "2025-04-08T17:00:00Z" },
+            }, {
+                Id => '112112321',
+                Guid => 'second-dispute-guid',
+                EventTypeId => 3143, # Missed collection dispute
+                EventStateId => 0,
+                ServiceId => 960, # Bulky
+                EventDate => { DateTime => "2025-04-11T19:00:00Z" },
+            } ] });
+
+            set_fixed_time('2025-04-12T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('We are investigating the problem with this collection');
+            $mech->content_lacks('Report a problem with this missed collection');
+        };
+
+        $echo->mock('GetEventsForObject', sub { [] }); # reset
     };
 
 };
