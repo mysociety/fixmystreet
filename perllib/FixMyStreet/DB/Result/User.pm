@@ -399,7 +399,7 @@ sub moderating_user_name {
 
     $belongs_to_body = $user->belongs_to_body( $bodies );
 
-Returns true if the user belongs to the arrayref or comma seperated list of body ids passed in
+Returns true if the user belongs to the arrayref or comma separated list of body ids passed in
 
 =cut
 

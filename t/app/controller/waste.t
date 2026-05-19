@@ -1912,7 +1912,7 @@ FixMyStreet::override_config {
         $mech->content_contains('£20.00');
 
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $mech->uri->path, '/waste/12345/garden', 'no redirect occured';
+        is $mech->uri->path, '/waste/12345/garden', 'no redirect occurred';
         $mech->content_contains('Payment failed: ERROR');
 
         $pay->mock(pay => sub {

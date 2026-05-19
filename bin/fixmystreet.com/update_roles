@@ -1,0 +1,34 @@
+#!/usr/bin/env perl
+#
+# script to add/remove a list of permissions to all roles, or optionally to roles belonging to a body.
+
+use warnings;
+use v5.14;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use FixMyStreet::Script::UpdateRoles;
+
+use Getopt::Long::Descriptive;
+
+my ($opts, $usage) = describe_options(
+    '%c %o',
+    ['commit', 'whether to commit changes to the database'],
+    ['permissions=s', 'comma seperated list of permissions to add/delete', { required => 1 }],
+    ['council=s', 'name of council to update (updates all roles if omitted)'],
+    ['mode' => 'hidden' => { one_of => [
+        ['add', 'add permissions to roles'],
+        ['remove', 'remove permissions from roles'],
+    ], required => 1 }],
+    ['with_permission=s', 'only update roles that already have this permission'],
+    ['verbose', 'output a list of everything done'],
+    ['help|h', 'print usage message and exit']
+);
+$usage->die if $opts->help;
+
+FixMyStreet::Script::UpdateRoles::update($opts);
