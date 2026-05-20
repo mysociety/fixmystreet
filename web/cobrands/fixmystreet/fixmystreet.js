@@ -897,8 +897,12 @@ $.extend(fixmystreet.set_up, {
             label.htmlFor = 'js-filter-' + label.htmlFor;
         });
 
-        // Insert the copy just after the category option these are the subcategories for
+        // Insert the copy just after the category option these are the subcategories for.
+        // Even if they are selected (ie from a filter_subcategory query param) ensure
+        // they are hidden at this stage - we are going to move onto the subcategory
+        // page regardless of whether it is already selected at this point
         var category_div = category_fieldset.querySelector('#category_' + group_id).parentNode;
+        copy.classList.add('hidden-js');
         category_fieldset.insertBefore(copy, category_div.nextSibling);
     });
 
