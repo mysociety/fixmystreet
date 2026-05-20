@@ -307,11 +307,19 @@ sub is_scotland { 1 }
 
 sub state_groups_inspect {
     my $rs = FixMyStreet::DB->resultset("State");
+
+    my @open = grep { $_ !~ /^(action scheduled|for triage|twin)$/ }
+        FixMyStreet::DB::Result::Problem->open_states;
+
     my @fixed = FixMyStreet::DB::Result::Problem->fixed_states;
+
+    my @closed = grep { $_ !~ /^(internal referral)$/ }
+        FixMyStreet::DB::Result::Problem->closed_states;
+
     [
-        [ $rs->display('confirmed'), [ FixMyStreet::DB::Result::Problem->open_states ] ],
+        [ $rs->display('confirmed'), \@open ],
         @fixed ? [ $rs->display('fixed'), [ 'fixed - council' ] ] : (),
-        [ $rs->display('closed'), [ FixMyStreet::DB::Result::Problem->closed_states ] ],
+        [ $rs->display('closed'), \@closed ],
     ]
 }
 
