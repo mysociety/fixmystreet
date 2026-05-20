@@ -4,6 +4,18 @@
 (function(){
 
 const FIELDS = {
+    'buckinghamshire': {
+        'block': false,
+        'group': 'Abandoned vehicle',
+        'reg': 'VEHICLE_REGISTRATION',
+        'taxed': 'ABANDONED_VEHICLE_TAXED',
+        'type': 'ABANDONED_SELECT_TYPE',
+        'make_and_colour': 'MAKE_/_COLOUR_OF_THE_VEHI',
+        'tax': {
+            'yes': 'Yes',
+            'no': 'No'
+        }
+    },
     'bristol': {
         'block': true,
         'categories': [
@@ -24,6 +36,12 @@ const FIELDS = {
 };
 
 const TYPES = {
+    'buckinghamshire': {
+        'Motorbike': 'Motorbike',
+        'Van': 'Van',
+        'Car': 'Car',
+        'Other': 'Other',
+    },
     'bristol': {
         'Motorbike': 'MM',
         'Van': 'V',
@@ -32,7 +50,22 @@ const TYPES = {
     }
 };
 
-const REASONS = {};
+const REASONS = {
+    'buckinghamshire': {
+        'fn': function(data) {
+            const reasons = [];
+            if (data.taxStatus == 'Taxed') {
+                reasons.push('are taxed');
+            } else if (data.taxStatus == 'SORN') {
+                reasons.push('have SORN status');
+            }
+            if (data.motStatus == 'Valid') {
+                reasons.push('have a valid MOT');
+            }
+            return reasons.join(' or ');
+        },
+    }
+};
 
 function title_case(str) {
     return str.replace(/\w\S*/g, text => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase());
