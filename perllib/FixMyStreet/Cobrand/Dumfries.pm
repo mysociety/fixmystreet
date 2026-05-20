@@ -308,7 +308,7 @@ sub is_scotland { 1 }
 sub state_groups_inspect {
     my $rs = FixMyStreet::DB->resultset("State");
 
-    my @open = grep { $_ !~ /^(action scheduled|for triage|twin)$/ }
+    my @open = grep { $_ !~ /^(action scheduled|for triage)$/ }
         FixMyStreet::DB::Result::Problem->open_states;
 
     my @fixed = FixMyStreet::DB::Result::Problem->fixed_states;
