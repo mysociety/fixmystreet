@@ -742,7 +742,7 @@ around 'munge_sendreport_params' => sub {
         my $mime_types = MIME::Types->new;
         # Any field beginning upload_ is perhaps a file
         my $extra = $row->get_extra_metadata;
-        my @files = grep { $_ } map { $extra->{$_} } grep { /^upload_/ } keys %$extra;
+        my @files = grep { $_ } map { $extra->{$_} } sort grep { /^upload_/ } keys %$extra;
         foreach (@files) {
             my $filename = $_->{filenames}[0];
             my $id = $_->{files};

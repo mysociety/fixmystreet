@@ -104,7 +104,7 @@ my $plain = $mech->get_text_body_from_email($email, 1);
 like $plain->body, qr/fill in our short questionnaire/i, "got questionnaire email";
 
 like $plain->body_str, qr/Testing \x{2013} Detail/, 'email contains encoded character';
-is $plain->header('Content-Type'), 'text/plain; charset="utf-8"', 'in the right character set';
+is $plain->header('Content-Type'), 'text/plain; charset=utf-8', 'in the right character set';
 
 my $url = $mech->get_link_from_email($email, 0, 1);
 my ($token) = $url =~ m{/Q/(\S+)};
@@ -526,7 +526,7 @@ FixMyStreet::override_config {
     my $plain = $mech->get_text_body_from_email($email, 1);
     like $plain->body_str, qr/Testing \x{2013} Detail/, 'email contains encoded character from user';
     like $plain->body_str, qr/sak p\xe5 FiksGataMi/, 'email contains encoded character from template';
-    is $plain->header('Content-Type'), 'text/plain; charset="utf-8"', 'email is in right encoding';
+    is $plain->header('Content-Type'), 'text/plain; charset=utf-8', 'email is in right encoding';
 };
 
 done_testing();

@@ -2,6 +2,7 @@ use FixMyStreet::TestMech;
 use File::Temp 'tempdir';
 use Path::Tiny;
 use DateTime;
+use Encode;
 use FixMyStreet::Script::Reports;
 
 my $sample_pdf = path(__FILE__)->parent->parent->child("sample.pdf");
@@ -124,7 +125,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
 
         # Uploads page
         $mech->submit_form_ok({ with_fields => {
-            upload_insurance => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
+            upload_insurance => [ $sample_pdf, encode_utf8('“insurance”.pdf'), Content_Type => 'application/pdf' ],
             insurance_validity => 'all year',
             upload_rams => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
             upload_scaffold_drawing => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
@@ -205,7 +206,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
             like $email_parts[6][0]{'Content-Type'}, qr{application/pdf};
             like $email_parts[6][0]{'Content-Disposition'}, qr{scaffold-licence-application-$id.pdf};
             like $email_parts[7][0]{'Content-Type'}, qr{application/pdf};
-            like $email_parts[7][0]{'Content-Disposition'}, qr{sample.pdf};
+            like $email_parts[7][0]{'Content-Disposition'}, qr{inline; filename\*=UTF-8''%E2%80%9Cinsurance%E2%80%9D\.pdf; filename="\\\"insurance\\\"\.pdf"};
             like $email_parts[8][0]{'Content-Type'}, qr{application/pdf};
             like $email_parts[8][0]{'Content-Disposition'}, qr{sample.pdf};
             like $email_parts[9][0]{'Content-Type'}, qr{application/pdf};

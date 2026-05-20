@@ -214,7 +214,7 @@ FixMyStreet::override_config {
             token => $csrf,
         });
         $mech->get_ok('/');
-        $mech->content_contains("<p>Test <strong>HTML</strong> message</p>\r\n\r\n<ul>\r\n<li>Item 1</li>\r\n<li>Item 2</li>\r\n</ul>");
+        $mech->content_contains("<p>Test <strong>HTML</strong> message</p>\n\n<ul>\n<li>Item 1</li>\n<li>Item 2</li>\n</ul>");
     };
 };
 

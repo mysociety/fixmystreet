@@ -1,6 +1,7 @@
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 use Path::Tiny;
+use Test::LongString;
 use Test::MockModule;
 use Test::MockTime 'set_fixed_time';
 
@@ -166,7 +167,7 @@ Please provide receipted invoices for repairs: sample.pdf
 Are you claiming for tyre damage?: Yes
 Mileage of the tyre(s) at the time of the incident: 20
 EOF
-        is $report->detail, $expected_detail;
+        is_string_nows $report->detail, $expected_detail;
         is $report->latitude, 51.81386;
         is $report->comments->count, 0, 'No updates added to report';
         FixMyStreet::Script::Reports::send();

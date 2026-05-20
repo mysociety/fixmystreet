@@ -409,7 +409,7 @@ FixMyStreet::override_config {
         subtest 'staff user added to title attribute' => sub {
             my $req = Open311->test_req_used;
             my $cgi = CGI::Simple->new($req->content);
-            is $cgi->param('attribute[title]'), "Staff User - Role\r\n\r\nTitle Test 1 for " . $bristol->id;
+            is $cgi->param('attribute[title]'), "Staff User - Role\n\nTitle Test 1 for " . $bristol->id;
         };
 
         $p->discard_changes;

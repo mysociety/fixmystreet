@@ -532,7 +532,7 @@ FixMyStreet::override_config {
             $mech->submit_form_ok( {form_number  => 2 });
             $mech->content_contains('Booking Summary', "On booking confirmation page");
             $mech->content_contains('action="http://localhost/waste/12345/small_items/amend/' . $report->id);
-            $mech->submit_form_ok({form_number => 5, with_fields => { tandc => 1} });
+            $mech->submit_form_ok({form_number => 4, with_fields => { tandc => 1 } });
         };
     };
 

@@ -1,10 +1,10 @@
 $(function(){
     var $table_with_zero_reports = $('table tr.is-zero').closest('table');
-    var $toggle_zeroes_btn = $("<input type='submit' class='btn' value='Show categories with zero reports' id='toggle-zeroes-btn' style='margin:1em 0;'/>");
 
     // hide/show categories with zero reports
     if ($table_with_zero_reports.length == 1) {
-        $table_with_zero_reports.before($toggle_zeroes_btn);
+        var $toggle_zeroes_btn = $("<input type='submit' class='btn btn--small' value='Show categories with zero reports' id='toggle-zeroes-btn'>");
+        $table_with_zero_reports.find('th').first().append($toggle_zeroes_btn);
         $toggle_zeroes_btn.on('click', function(e){
             e.preventDefault();
             var $cols = $table_with_zero_reports.find('tr.is-zero');
@@ -21,11 +21,11 @@ $(function(){
     }
 
     var $table_with_deleted_contacts = $('table tr.is-deleted').closest('table');
-    var $toggle_deleted_btn = $("<input type='submit' class='btn' value='Show deleted categories' id='toggle-deleted-contacts-btn' style='margin:1em 0;'/>");
 
     // hide/show deleted contact categories
     if ($table_with_deleted_contacts.length == 1) {
-        $table_with_deleted_contacts.before($toggle_deleted_btn);
+        var $toggle_deleted_btn = $("<input type='submit' class='btn btn--small' value='Show deleted categories' id='toggle-deleted-contacts-btn'>");
+        $table_with_deleted_contacts.find('th').first().append($toggle_deleted_btn);
         $toggle_deleted_btn.on('click', function(e){
             e.preventDefault();
             var $cols = $table_with_deleted_contacts.find('tr.is-deleted');

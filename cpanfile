@@ -88,7 +88,7 @@ requires 'DBIx::Class::Schema::Loader';
 requires 'Digest::MD5';
 requires 'Digest::SHA';
 requires 'Email::Address', '1.912';
-requires 'Email::MIME', '1.946';
+requires 'Email::MIME', '1.954';
 requires 'Email::Sender', '1.300035';
 requires 'Email::Valid';
 requires 'Error';
@@ -201,9 +201,11 @@ requires 'Test::More', '0.88';
 requires 'Test::Output';
 requires 'Test::Trap';
 requires 'Test::Warn';
+requires 'Test::WWW::Mechanize', '1.60';
 requires 'Test::WWW::Mechanize::Catalyst', '0.62';
 requires 'Web::Scraper';
 requires 'Web::Simple';
+requires 'WWW::Mechanize', '2.20';
 
 # Default root certificates used by LWP::UserAgent
 requires 'Mozilla::CA', '20211001';

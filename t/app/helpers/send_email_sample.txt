@@ -1,6 +1,6 @@
 MIME-Version: 1.0
 Subject: =?UTF-8?B?dGVzdCBlbWFpbCDimLo=?=
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
 To: test@recipient.com
 Content-Transfer-Encoding: quoted-printable
 From: CONTACT_EMAIL

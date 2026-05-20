@@ -33,7 +33,7 @@ subtest 'Check special Open311 request handling', sub {
 
     my $req = Open311->test_req_used;
     my $c = CGI::Simple->new($req->content);
-    my $expected = join "\r\n", $p->title, '', $p->detail, '',
+    my $expected = join "\n", $p->title, '', $p->detail, '',
         'Is it urgent?', 'no', '', "https://www.fixmystreet.com" . $p->url, '';
     is $c->param('description'), $expected, 'Correct description, with extra question and no notice text';
 };
