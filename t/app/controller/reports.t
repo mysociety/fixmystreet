@@ -429,6 +429,7 @@ subtest "it allows body users to filter by subtypes" => sub {
         $mech->content_contains('<option value="not responsible">Not responsible</option>');
         $mech->content_contains('<option value="internal referral">Internal referral</option>');
         $mech->content_contains('<option value="duplicate">Duplicate</option>');
+        $mech->content_lacks('<option value="twin">Twin</option>');
 
         $mech->get_ok('/reports/City+of+Edinburgh+Council?status=investigating');
 
