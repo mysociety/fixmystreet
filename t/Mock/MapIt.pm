@@ -23,9 +23,11 @@ sub output {
 }
 
 my @PLACES = (
+    [ 'L2 3SW', 53.387404, -2.943998, 2527, 'Liverpool City Council', 'MTD' ],
     [ '?', 53.387402, -2.943997, 2527, 'Liverpool City Council', 'MTD' ],
     [ 'EH1 1BB', 55.952055, -3.189579, 2651, 'Edinburgh City Council', 'UTA', 20728, 'City Centre', 'UTE' ],
     [ 'BS10 5EE', 51.494885, -2.602237, 2561, 'Bristol City Council', 'UTA', 148646, 'Bedminster', 'UTW' ],
+    [ '?', 51.494645, -2.601293, 2561, 'Bristol City Council', 'UTA' ],
     [ '?', 51.444878, -2.641142, 2642, 'North Somerset Council', 'UTA' ],
     [ '?', 51.452340, -2.654832, 2642, 'North Somerset Council', 'UTA' ],
     [ '?', 51.495216, -2.551191, 2608, 'South Gloucestershire Council', 'UTA' ],
