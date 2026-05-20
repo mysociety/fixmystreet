@@ -292,7 +292,7 @@ use List::Util qw/any uniq/;
 use LWP::Simple qw($ua);
 use URI;
 use URI::QueryParam;
-use Digest::HMAC_SHA1 qw(hmac_sha1);
+use Digest::SHA qw(hmac_sha1_base64);
 use MIME::Base64;
 
 my $IM = eval {
@@ -1519,8 +1519,7 @@ sub confirmation_token {
         $self = FixMyStreet::DB->resultset('Problem')->find({ id => $self->id });
     }
     my $time = $self->created->epoch;
-    my $hash = hmac_sha1("$time-" . $self->id, FixMyStreet::DB->resultset('Secret')->get);
-    $hash = encode_base64($hash, "");
+    my $hash = hmac_sha1_base64("$time-" . $self->id, FixMyStreet::DB->resultset('Secret')->get);
     $hash =~ s/\W//g; # don't want + / = in URL params
     return $hash;
 }

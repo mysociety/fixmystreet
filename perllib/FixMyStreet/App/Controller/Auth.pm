@@ -6,7 +6,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 
 use Email::Valid;
 use Data::Password::Common 'found';
-use Digest::HMAC_SHA1 qw(hmac_sha1);
+use Digest::SHA qw(hmac_sha1_base64);
 use JSON::MaybeXS;
 use MIME::Base64;
 use FixMyStreet::SMS;
@@ -448,9 +448,7 @@ sub get_csrf_token : Private {
     my ( $self, $c ) = @_;
 
     my $time = $c->stash->{csrf_time} || time();
-    my $hash = hmac_sha1("$time-" . ($c->sessionid || ""), $c->model('DB::Secret')->get);
-    $hash = encode_base64($hash, "");
-    $hash =~ s/=$//;
+    my $hash = hmac_sha1_base64("$time-" . ($c->sessionid || ""), $c->model('DB::Secret')->get);
     my $token = "$time-$hash";
     $c->stash->{csrf_token} = $token unless $c->stash->{csrf_time};
     return $token;
