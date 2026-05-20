@@ -777,5 +777,25 @@ subtest "check not responsible as correct text" => sub {
     $problem->delete;
 };
 
+subtest 'state_groups_inspect' => sub {
+    my $state_groups = FixMyStreet::Cobrand::Dumfries->state_groups_inspect;
+
+    is_deeply $state_groups->[0][1], [
+        'confirmed',
+        'in progress',
+        'investigating',
+        'planned'
+    ];
+    is_deeply $state_groups->[1][1], [
+        'fixed - council'
+    ];
+    is_deeply $state_groups->[2][1], [
+        'closed',
+        'cancelled',
+        'duplicate',
+        'not responsible',
+        'unable to fix'
+    ];
+};
 
 done_testing();
