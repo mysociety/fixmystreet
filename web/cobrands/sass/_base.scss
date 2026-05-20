@@ -961,7 +961,7 @@ html.mobile.js-nav-open #js-menu-open-modal {
 
 #key-tools {
   @include list-reset-soft;
-  margin-bottom: 1em;
+  margin: 1em 0;
   padding: 0 1em;
   display: flex;
   flex-direction: row;

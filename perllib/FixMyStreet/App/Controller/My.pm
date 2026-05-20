@@ -349,24 +349,24 @@ sub anonymize : Path('anonymize') {
     } elsif ($id = $c->get_param('update')) {
         $c->stash->{update} = $object = $c->model('DB::Comment')->find({ id => $id });
         unless ($object) {
-            $c->stash->{internal_error} = "No update found for ID $id";
+            $c->stash->{internal_message} = "No update found for ID $id";
             $c->detach('/page_error_400_bad_request');
         }
     } else {
         $c->detach('/page_error_404_not_found');
     }
     unless ($c->user->id == $object->user_id) {
-        $c->stash->{internal_error} = "User " . $c->user->id . " does not own this object with ID " . $object->id;
+        $c->stash->{internal_message} = "User " . $c->user->id . " does not own this object with ID " . $object->id;
         $c->detach('/page_error_400_bad_request');
     }
     if ($object->anonymous) {
-        $c->stash->{internal_error} = "Object " . $object->id . " is already anonymous";
+        $c->stash->{internal_message} = "Object " . $object->id . " is already anonymous";
         $c->detach('/page_error_400_bad_request');
     }
 
     if ($c->get_param('hide') || $c->get_param('hide_everywhere')) {
         unless ($c->req->method eq 'POST') {
-            $c->stash->{internal_error} = "Not a POST request: " . $c->req->method;
+            $c->stash->{internal_message} = "Not a POST request: " . $c->req->method;
             $c->detach('/page_error_400_bad_request');
         }
         $c->forward('/auth/check_csrf_token');

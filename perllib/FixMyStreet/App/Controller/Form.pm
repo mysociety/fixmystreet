@@ -71,7 +71,7 @@ sub load_form {
     }
 
     my $form_class = $c->stash->{form_class} || $self->form_class;
-    my $form = $form_class->new(
+    my $form = eval { $form_class->new(
         page_list => $c->stash->{page_list} || [],
         $c->stash->{field_list} ? (field_list => $c->stash->{field_list}) : (),
         page_name => $page,
@@ -82,10 +82,13 @@ sub load_form {
         no_preload => 1,
         unique_id_session => $c->session->{form_unique_id},
         unique_id_form => $c->get_param('unique_id'),
-    );
+    ) };
+    if ($@) {
+        $c->detach('/page_error_400_bad_request', [ $@ ]);
+    }
 
     if (!$form->has_current_page) {
-        $c->stash->{internal_error} = "Form doesn't have current page";
+        $c->stash->{internal_message} = "Form doesn't have current page";
         $c->detach('/page_error_400_bad_request', [ 'Bad request' ]);
     }
 
@@ -180,7 +183,7 @@ sub get_page : Private {
     my $process = $c->get_param('process') || '';
     $goto = $self->first_page($c) unless $goto || $process;
     if ($goto && $process) {
-        $c->stash->{internal_error} = "Both goto and process parameters set";
+        $c->stash->{internal_message} = "Both goto and process parameters set";
         $c->detach('/page_error_400_bad_request', [ 'Bad request' ]);
     }
 

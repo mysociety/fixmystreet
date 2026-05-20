@@ -3,6 +3,7 @@ package FixMyStreet::App::Form::Field::JSON;
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler::Field::Hidden';
 
+use Digest::SHA qw(hmac_sha1_hex);
 use JSON::MaybeXS;
 use MIME::Base64;
 
@@ -18,15 +19,26 @@ has json => (
 sub inflate_json {
     my ($self, $value) = @_;
     return $value unless $value;
-    $value = $self->json->decode(decode_base64($value));
+    my $signature;
+    ($signature, $value) = split /:/, $value;
+    $value = decode_base64($value);
+    die "Signature mismatch\n" unless $signature eq _hmac($value);
+    $value = $self->json->decode($value);
     return $value;
 }
 
 sub deflate_json {
     my ($self, $value) = @_;
     return $value unless $value;
-    $value = encode_base64($self->json->encode($value), "");
+    $value = $self->json->encode($value);
+    $value = join ':', _hmac($value), encode_base64($value, "");
     return $value;
+}
+
+sub _hmac {
+    my $value = shift;
+    my $signature = hmac_sha1_hex($value, FixMyStreet::DB->resultset('Secret')->get);
+    return $signature;
 }
 
 # this is required to make sure that it inflates correctly as the form

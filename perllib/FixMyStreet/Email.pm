@@ -14,7 +14,7 @@ use Encode;
 use File::Spec;
 use POSIX qw();
 use FixMyStreet::Template;
-use Digest::HMAC_SHA1 qw(hmac_sha1_hex);
+use Digest::SHA qw(hmac_sha1_hex);
 use mySociety::Locale;
 use mySociety::Random qw(random_bytes);
 use Utils::Email;

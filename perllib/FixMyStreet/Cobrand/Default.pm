@@ -14,7 +14,6 @@ use Path::Tiny;
 use Try::Tiny;
 use List::MoreUtils 'none';
 use URI;
-use Digest::MD5 qw(md5_hex);
 
 use Carp;
 use mySociety::PostcodeUtil;

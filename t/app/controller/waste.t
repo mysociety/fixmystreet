@@ -2,6 +2,8 @@ use Test::MockModule;
 use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
+use MIME::Base64;
+use JSON::MaybeXS;
 
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
@@ -1138,6 +1140,17 @@ FixMyStreet::override_config {
         } });
         $mech->content_contains('Test McTest');
         $mech->content_contains('£20.00');
+
+        my $form = $mech->form_with_fields('tandc');
+        my $sd = $form->find_input('saved_data');
+        my ($sig, $val) = split /:/, $sd->value;
+        $val = decode_json(decode_base64($val));
+        $val->{name} = 'Changed';
+        $val = encode_base64(encode_json($val));
+        $sd->value("$sig:$val");
+        $mech->submit_form(with_fields => { tandc => 1 });
+        is $mech->response->code, 400;
+        $mech->back;
 
         $mech->waste_submit_check({ with_fields => { tandc => 1 } });
 
