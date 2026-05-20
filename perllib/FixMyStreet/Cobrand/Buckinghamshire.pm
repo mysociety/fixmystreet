@@ -377,7 +377,7 @@ sub open311_contact_meta_override {
             { key => 'road', name => 'The road' },
             { key => 'off-road', name => 'Off the road/on a verge' },
         ],
-    } if $service->{service_name} eq 'Flytipping';
+    } if $service->{service_name} eq 'Flytipping on Public land';
 }
 
 sub open311_get_update_munging {
@@ -437,7 +437,7 @@ sub report_new_munge_before_insert {
         my $is_flag = $report->get_extra_field_value('is_flag') || '';
         $report->non_public(1) if $is_flag eq 'yes';
 
-    } elsif ( $report->category eq 'Flytipping' ) {
+    } elsif ( $report->category eq 'Flytipping on Public land' ) {
         my $placement = $self->{c}->get_param('road-placement');
         return unless $placement && $placement eq 'off-road';
 

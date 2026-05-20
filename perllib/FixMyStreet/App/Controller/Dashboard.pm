@@ -11,6 +11,7 @@ use FixMyStreet::DateRange;
 use FixMyStreet::Reporting;
 use List::Util qw(uniq);
 use List::MoreUtils qw(part);
+use File::Basename qw(fileparse);
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -387,6 +388,11 @@ sub status : Local : Args(0) {
 
 sub csv : Local : Args(1) {
     my ($self, $c, $filename) = @_;
+
+    my ($name) = fileparse($filename);
+    if ($filename ne $name) {
+        $c->detach( '/page_error_404_not_found', [] );
+    }
 
     $c->authenticate(undef, "access_token");
 

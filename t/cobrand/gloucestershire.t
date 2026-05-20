@@ -416,6 +416,36 @@ FixMyStreet::override_config {
                 );
             }
         };
+
+        subtest 'For defects imported from Confirm' => sub {
+            my ($job_report) = $mech->create_problems_for_body(
+                1,
+                $body->id,
+                'Confirm job report',
+                {   cobrand     => 'gloucestershire',
+                    user        => $standard_user_1,
+                    state       => 'confirmed',
+                    external_id => 'JOB_12345',
+                },
+            );
+
+            note 'Original reporter';
+            $mech->log_in_ok( $standard_user_1->email );
+            $mech->get( '/report/' . $job_report->id );
+            $mech->content_lacks(
+                'name="update" class="form-control" id="form_update"',
+                'Update textbox not shown for original reporter',
+            );
+
+            note 'Staff';
+            $mech->log_in_ok( $staff_user->email );
+            $mech->get( '/report/' . $job_report->id );
+            $mech->content_lacks(
+                'name="update" class="form-control" id="form_update"',
+                'Update textbox not shown for staff',
+            );
+        };
+
     }
 };
 
