@@ -96,7 +96,7 @@ describe('Clicking the "big green banner" on a map page', function() {
         cy.server();
         cy.route('/around\?ajax*').as('update-results');
         cy.visit('/');
-        cy.get('[name=pc]').type(Cypress.env('postcode'));
+        cy.get('[name=pc]').type('L2 3SW');
         cy.get('[name=pc]').parents('form').submit();
         cy.wait('@update-results');
         cy.get('.big-green-banner').click();
