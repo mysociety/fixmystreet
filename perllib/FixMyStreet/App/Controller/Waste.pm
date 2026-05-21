@@ -235,8 +235,13 @@ sub pay_retry : Path('pay_retry') : Args(0) {
 }
 
 sub pay_process : Private {
-    my ($self, $c, $type, $payment_method, $data, $dd_flow) = @_;
-    $payment_method ||= '';
+    my ($self, $c, $type, $data, $form) = @_;
+
+    my $payment_method = $data->{payment_method};
+    die 'Missing payment method' unless $payment_method;
+    my @options = FixMyStreet::App::Form::Waste::Billing::options_payment_method($form);
+    my $match = grep { $payment_method eq $_ } map { $_->{value} } @options;
+    die 'Payment method mismatch' unless $match;
 
     if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
         $c->forward('pay_skip', []);
@@ -245,7 +250,7 @@ sub pay_process : Private {
     } elsif ($payment_method eq 'waived' || $payment_method eq 'cash') {
         $c->forward('pay_skip', [ undef, $data->{payment_explanation} ]);
     } else {
-        if ($dd_flow) { # Garden only
+        if ($payment_method eq 'direct_debit') { # Garden only
             if ($c->cobrand->direct_debit_collection_method eq 'internal') {
                 $c->stash->{form_data} = $data;
                 $c->forward('/waste/garden/direct_debit_internal');
@@ -782,13 +787,13 @@ sub process_request_data : Private {
     push @reports, @$reports if $reports;
 
     my $payment = $data->{payment};
-    my $payment_method = $data->{payment_method} || 'credit_card';
+    $data->{payment_method} ||= 'credit_card';
     foreach (@services) {
         my ($id) = /container-(.*)/;
         $c->cobrand->waste_munge_request_data($id, $data, $form);
         if ($payment) {
             # "payment" param must be set in the munge function above with the cost for this entry
-            $c->set_param('payment_method', $payment_method);
+            $c->set_param('payment_method', $data->{payment_method});
         }
         $c->forward('add_report', [ $data, $unconfirmed || $payment ? 1 : 0 ]) or return;
         push @reports, $c->stash->{report};
@@ -796,7 +801,7 @@ sub process_request_data : Private {
     group_reports($c, @reports);
 
     if ($payment) {
-        $c->forward('/waste/pay_process', [ 'request', $payment_method, $data ]);
+        $c->forward('/waste/pay_process', [ 'request', $data, $form ]);
     }
 
     return 1;
@@ -1239,7 +1244,8 @@ sub get_current_payment_method : Private {
     my $payment_method;
     if (my $orig_sub = $c->stash->{orig_sub}) {
         # If not, do we have a record at our end we could use
-        $payment_method = $orig_sub->get_extra_field_value('payment_method');
+        $payment_method = $orig_sub->get_extra_field_value('payment_method') || '';
+        $payment_method = 'credit_card' if $payment_method eq 'csc';
     }
 
     return $payment_method || 'credit_card';
