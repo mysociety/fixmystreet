@@ -204,7 +204,7 @@ around booked_check_missed_collection => sub {
                 my $missed_guid = $_->{report}->get_extra_field_value('missed_guid');
                 next unless $missed_guid;
                 if ($missed_guid eq $missed_event->{guid}) {
-                    $missed->{$guid}{escalations}{missed_open} = $_;
+                    $missed->{$guid}{escalations}{missed}{open} = $_;
                     $open_escalation = 1;
                 }
             }
@@ -221,7 +221,7 @@ around booked_check_missed_collection => sub {
                 my $start = $wd->add_days($missed_event->{date}, 2)->set_hour(18);
                 my $end = $wd->add_days($start, 2);
                 if ($now >= $start && $now < $end) {
-                    $missed->{$guid}{escalations}{missed} = $missed_event;
+                    $missed->{$guid}{escalations}{missed}{event} = $missed_event;
                 }
             }
         }
@@ -267,10 +267,12 @@ sub _setup_missed_collection_escalations_for_service {
         my $window = $row->{schedule} =~ /every other/i ? 2 : 1;
         my $end = $wd->add_days($start, $window);
         if ($now >= $start && $now < $end) {
-            $row->{escalations}{missed} = $missed_event;
+            $row->{escalations}{missed}{event} = $missed_event;
+        } elsif ($now >= $end) {
+            $row->{escalations}{missed}{too_late} = 1;
         }
     } elsif ($escalation_event) {
-        $row->{escalations}{missed_open} = $escalation_event;
+        $row->{escalations}{missed}{open} = $escalation_event;
     }
 }
 
@@ -430,17 +432,23 @@ sub waste_munge_enquiry_data {
     } elsif ($data->{category} eq 'Waste spillage') {
         $detail = "$data->{extra_Notes}\n\n";
     } elsif ($data->{category} eq 'Complaint against time') {
-        my $event_id = $c->get_param('event_id');
-        my ($echo, $ww) = split /:/, $event_id;
-        $data->{extra_Notes} = "Originally Echo Event #$echo";
-        $data->{extra_original_ref} = $ww;
-        $data->{extra_missed_guid} = $c->get_param('event_guid');
+        my $service;
+        if ($c->stash->{original_booking_report}) {
+            my $booking_guid = $c->stash->{original_booking_report}->external_id;
+            $service = $c->stash->{booked_missed}{$booking_guid};
+        } else {
+            $service = $c->stash->{services}{$data->{service_id}};
+        }
+        my $original = $service->{escalations}{missed}{event};
+        $data->{extra_Notes} = "Originally Echo Event #$original->{id}";
+        $data->{extra_original_ref} = $original->{ref};
+        $data->{extra_missed_guid} = $original->{guid};
     } elsif ($data->{category} eq 'Failure to Deliver Bags/Containers') {
-        my $event_id = $c->get_param('event_id');
-        my ($echo, $guid, $ww) = split /:/, $event_id;
-        $data->{extra_Notes} = "Originally Echo Event #$echo";
-        $data->{extra_original_ref} = $ww;
-        $data->{extra_container_request_guid} = $guid;
+        my $service = $c->stash->{services}{$data->{service_id}};
+        my $original = $service->{escalations}{container};
+        $data->{extra_Notes} = "Originally Echo Event #$original->{id}";
+        $data->{extra_original_ref} = $original->{ref};
+        $data->{extra_container_request_guid} = $original->{guid};
     }
     $detail .= $self->service_name_override({ ServiceId => $data->{service_id} }) . "\n\n";
     $detail .= $address;
