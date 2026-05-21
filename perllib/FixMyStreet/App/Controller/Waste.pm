@@ -588,6 +588,7 @@ sub property : Chained('property_id') : PathPart('') : CaptureArgs(0) {
 
 sub bin_days : Chained('property') : PathPart('') : Args(0) {
     my ($self, $c) = @_;
+    #use DDP; warn p $c->stash->{service_data};
 
     # To try and work out whether to show a renewal path or not
     $c->forward('get_original_sub', ['any']);

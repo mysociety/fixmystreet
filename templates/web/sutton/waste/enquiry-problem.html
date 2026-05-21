@@ -1,24 +1,58 @@
 [%
 
 f = [];
+
 service_id = c.req.params.service_id;
 service = services.$service_id;
 
-IF service.report_allowed AND (property.domestic_refuse_bin OR communal_property);
-    SET field = { value = 'Bin not returned', label = 'My wheelie bin, box or caddy was not returned correctly after collection' };
+
+SET field = { value = 'Bin not returned', label = 'My wheelie bin, box or caddy was not returned correctly after collection' };
+  IF service.report_allowed AND (property.domestic_refuse_bin OR communal_property);
     IF service.events.filter(event_type = 3135);
+        field.label = 'Collectors have said they returned the container correctly';
         field.disabled = 1;
     END;
-    f.push(field);
-END;
+  ELSE;
+    field.label = 'You can not report a not returned container';
+    field.disabled = 1;
+  END;
+  f.push(field);
 
 IF service.report_allowed AND property.domestic_refuse_bin;
-    SET field = { value = 'Waste spillage', label = 'Spillage during collection' };
+    SET field = { value = 'Waste spillage', label = '', disabled = 0 };
     IF service.events.filter(event_type = 3227);
-        field.disabled = 1;
+    field.label = 'You have reported a waste spillage';
+    field.disabled = 1;
+    ELSE;
+      field.label = 'Report a waste spillage during collection';
+    END;
+ELSIF !service.report_allowed AND property.domestic_refuse_bin;
+    field.label = 'Please note that waste spillages can only be reported within two days of collection';
+    field.disabled = 1;
+END;
+f.push(field);
+
+SET field = { value = 'redirect-missed', label = '', disabled => 1 };
+    IF service.report_open;
+       field.label = 'You have reported this collection as missed';
+    ELSIF service.report_allowed;
+       field.label = 'Report a missed collection';
+       field.disabled = 0;
+    ELSE;
+       field.label = 'Please note that missed collections can only be reported within two days of collection';
     END;
     f.push(field);
-END;
+
+SET field = { value = 'Complaint against time', label = '', disabled = 0 };
+    IF service.escalations.missed AND NOT service.escalations.missed_open;
+       field.label = 'please report the problem here';
+       c.set_param.container_id('banana');
+    ELSIF service.escalations.container AND NOT service.escalations.container_open;
+       field.label = 'please report the problem here';
+    END;
+    IF field.label;
+       f.push(field);
+    END;
 
 PROCESS waste/enquiry.html
     title = 'Report a problem'
