@@ -96,7 +96,11 @@ sub allow_photo_display {
 
     my $category;
     if (blessed $object_or_hash) {
-        $category = $object_or_hash->category;
+        if (ref $object_or_hash eq 'FixMyStreet::DB::Result::Comment') {
+            $category = $object_or_hash->problem->category;
+        } else {
+            $category = $object_or_hash->category;
+        }
     } else {
         $category = $object_or_hash->{category};
     }
