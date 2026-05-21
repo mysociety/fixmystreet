@@ -588,9 +588,9 @@ FixMyStreet::override_config {
         );
 
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('Report a small items collection as missed');
-        $mech->submit_form_ok( { form_number => 1 },
-            "Follow link for reporting a missed collection" );
+        $mech->follow_link_ok( { url_regex => qr/service_id=952/}, 'Follow "Report a problem" link for the assisted collection' );
+        $mech->content_contains('Report a missed collection');
+        $mech->submit_form_ok({ with_fields => { category => 'redirect-missed' }});
         $mech->content_contains('Select your missed collection');
         $mech->submit_form_ok( { with_fields => { 'service-952' => 1 } } );
         $mech->content_contains('Please supply any additional information');
@@ -640,9 +640,9 @@ FixMyStreet::override_config {
         );
 
         $mech->get_ok('/waste/12345');
-        $mech->text_contains(
+        $mech->text_lacks(
             'A small items collection was reported as missed on Monday, 11 August'
-        );
+        , 'Standard reporting link/message removed');
 
         # subtest 'Assisted collection' => sub {};
     };
