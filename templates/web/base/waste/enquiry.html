@@ -27,10 +27,12 @@
 
   <input type="hidden" name="service_id" value="[% service_id %]">
 
+[% IF original_booking_report %]
+  <input type="hidden" name="original_booking_id" value="[% original_booking_report.id %]">
+[% END %]
 [% IF event_id %]
   <input type="hidden" name="event_id" value="[% event_id %]">
 [% END %]
-
 </form>
 
 [% INCLUDE footer.html %]

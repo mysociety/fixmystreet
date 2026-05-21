@@ -431,16 +431,38 @@ sub waste_munge_enquiry_data {
         $detail = "$data->{extra_Notes}\n\n";
     } elsif ($data->{category} eq 'Complaint against time') {
         my $event_id = $c->get_param('event_id');
-        my ($echo, $ww) = split /:/, $event_id;
-        $data->{extra_Notes} = "Originally Echo Event #$echo";
-        $data->{extra_original_ref} = $ww;
-        $data->{extra_missed_guid} = $c->get_param('event_guid');
+        if (!$event_id) {
+            my $service;
+            if ($c->stash->{original_booking_report}) {
+                my $booking_guid = $c->stash->{original_booking_report}->external_id;
+                $service = $c->stash->{booked_missed}{$booking_guid};
+            } else {
+                $service = $c->stash->{services}{$data->{service_id}};
+            }
+            my $original = $service->{escalations}{missed};
+            $data->{extra_Notes} = "Originally Echo Event #$original->{id}";
+            $data->{extra_original_ref} = $original->{ref};
+            $data->{extra_missed_guid} = $original->{guid};
+        } else {
+            my ($echo, $ww) = split /:/, $event_id;
+            $data->{extra_Notes} = "Originally Echo Event #$echo";
+            $data->{extra_original_ref} = $ww;
+            $data->{extra_missed_guid} = $c->get_param('event_guid');
+        };
     } elsif ($data->{category} eq 'Failure to Deliver Bags/Containers') {
         my $event_id = $c->get_param('event_id');
-        my ($echo, $guid, $ww) = split /:/, $event_id;
-        $data->{extra_Notes} = "Originally Echo Event #$echo";
-        $data->{extra_original_ref} = $ww;
-        $data->{extra_container_request_guid} = $guid;
+        if (!$event_id) {
+            my $service = $c->stash->{services}{$data->{service_id}};
+            my $original = $service->{escalations}{container};
+            $data->{extra_Notes} = "Originally Echo Event #$original->{id}";
+            $data->{extra_original_ref} = $original->{ref};
+            $data->{extra_container_request_guid} = $original->{guid};
+        } else {
+            my ($echo, $guid, $ww) = split /:/, $event_id;
+            $data->{extra_Notes} = "Originally Echo Event #$echo";
+            $data->{extra_original_ref} = $ww;
+            $data->{extra_container_request_guid} = $guid;
+        };
     }
     $detail .= $self->service_name_override({ ServiceId => $data->{service_id} }) . "\n\n";
     $detail .= $address;

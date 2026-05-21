@@ -1095,16 +1095,37 @@ FixMyStreet::override_config {
         like $email->header('Subject'), qr/Your bulky waste collection - reference LBS/, "Confirmation booking email sent after staff payment process";
     };
 
+    subtest 'Missed collections' => sub {
+        # Update the bulky collection to have been done (at right time)
+        $report->update_extra_field({ name => 'Collection_Date_-_Bulky_Items', value => '2025-04-08T00:00:00' });
+        $report->set_extra_metadata(payment_reference => 'payref');
+        $report->update({ external_id => 'booking-guid', state => 'fixed - council' });
+
+            $echo->mock('GetEventsForObject', sub { [ {
+                Id => '8004',
+                ClientReference => 'LBS-123',
+                Guid => 'booking-guid',
+                ServiceId => 960, # Bulky
+                EventTypeId => 3130, # Bulky collection
+                EventStateId => 19184, # Completed
+                EventDate => { DateTime => '2025-04-01T00:00:00Z' },
+                ResolvedDate => { DateTime => '2025-04-08T00:00:00Z' },
+                ResolutionCodeId => 232, # Completed on Scheduled Day (dunno if used, doesn't matter)
+            } ] });
+
+        set_fixed_time('2025-04-08T19:00:00Z');
+        $mech->get_ok('/waste/12345');
+        $mech->follow_link_ok( { url_regex => qr/service_id=960/}, 'Follow "Report a problem" link for bulky waste' );
+
+        $mech->submit_form_ok({ with_fields => { category => 'redirect-missed' } });
+        is $mech->uri->path_query, '/waste/12345/report?original_booking_id=' . $report->id;
+    };
+
     subtest 'Escalations of missed collections' => sub {
         # Update Kingston missed report above to be Sutton
         my $missed = FixMyStreet::DB->resultset("Problem")->search({ category => 'Report missed collection' })->order_by('-id')->first;
         $missed->update_extra_field({ name => 'Original_Event_ID', value => 'booking-guid' });
         $missed->update({ external_id => 'missed-guid', cobrand => 'sutton', bodies_str => $sutton->id });
-
-        # Update the bulky collection to have been done (at right time)
-        $report->update_extra_field({ name => 'Collection_Date_-_Bulky_Items', value => '2025-04-08T00:00:00' });
-        $report->set_extra_metadata(payment_reference => 'payref');
-        $report->update({ external_id => 'booking-guid', state => 'fixed - council' });
 
         my $escalation;
         subtest 'Open missed collection' => sub {
@@ -1130,12 +1151,15 @@ FixMyStreet::override_config {
 
             set_fixed_time('2025-04-08T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('please report the problem here');;
+            $mech->follow_link_ok( { url_regex => qr/service_id=960/}, 'Follow "Report a problem" link for bulky waste' );
 
+            $mech->content_like(qr/redirect-missed" aria-describedby="category-item-hint"\s+disabled/s, 'You have reported this collection as missed');
             set_fixed_time('2025-04-10T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->follow_link_ok({ text => 'please report the problem here' });
+            $mech->follow_link_ok( { url_regex => qr/service_id=960/}, 'Follow "Report a problem" link for bulky waste' );
 
+            $mech->content_like(qr/Report no action on complaint/);
+            $mech->submit_form_ok({ with_fields => { category => 'Complaint against time' }});
             subtest 'actually make the report' => sub {
                 $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
                 $mech->submit_form_ok( { with_fields => { submit => '1' } });
@@ -1151,15 +1175,17 @@ FixMyStreet::override_config {
                 is $escalation->get_extra_field_value('missed_guid'), 'missed-guid';
                 is $escalation->get_extra_field_value('original_ref'), 'LBS-456';
             };
-
             set_fixed_time('2025-04-12T19:00:00Z');
             $mech->get_ok('/waste/12345');
+            $mech->follow_link_ok( { url_regex => qr/service_id=960/}, 'Follow "Report a problem" link for bulky waste' );
             $mech->content_contains('please report the problem here');
             set_fixed_time('2025-04-14T17:00:00Z');
             $mech->get_ok('/waste/12345');
+            $mech->follow_link_ok( { url_regex => qr/service_id=960/}, 'Follow "Report a problem" link for bulky waste' );
             $mech->content_contains('please report the problem here');
             set_fixed_time('2025-04-14T19:00:00Z');
             $mech->get_ok('/waste/12345');
+            $mech->follow_link_ok( { url_regex => qr/service_id=960/}, 'Follow "Report a problem" link for bulky waste' );
             $mech->content_lacks('please report the problem here');
         };
 
@@ -1194,6 +1220,7 @@ FixMyStreet::override_config {
 
             set_fixed_time('2025-04-12T19:00:00Z');
             $mech->get_ok('/waste/12345');
+            $mech->follow_link_ok( { url_regex => qr/service_id=960/}, 'Follow "Report a problem" link for bulky waste' );
             $mech->content_contains('Thank you for reporting an issue with this collection; we are investigating.');
             $mech->content_lacks('please report the problem here');
         };

@@ -2,23 +2,72 @@
 
 f = [];
 service_id = c.req.params.service_id;
-service = services.$service_id;
 
-IF service.report_allowed AND (property.domestic_refuse_bin OR communal_property);
+IF original_booking_report;
+    SET booking_guid = original_booking_report.external_id;
+    SET service = booked_missed.$booking_guid;
+ELSE;
+    SET service = services.$service_id;
+END;
+
+IF NOT original_booking_report;
+
     SET field = { value = 'Bin not returned', label = 'My wheelie bin, box or caddy was not returned correctly after collection' };
-    IF service.events.filter(event_type = 3135);
+      IF service.report_allowed AND (property.domestic_refuse_bin OR communal_property);
+        IF service.events.filter(event_type = 3135);
+            field.hint = 'Collectors have said they returned the container correctly';
+            field.disabled = 1;
+        END;
+      ELSE;
+        field.hint = 'Please note that non-returned containers can only be reported within two days of collection';
+        field.disabled = 1;
+      END;
+    f.push(field);
+
+    SET field = { value = 'Waste spillage', label = 'Report a waste spillage during collection' };
+    IF service.report_allowed AND property.domestic_refuse_bin;
+          IF service.events.filter(event_type = 3227);
+            field.hint = 'You have already reported a waste spillage';
+            field.disabled = 1;
+          END;
+    ELSIF !service.report_allowed;
+        field.hint = 'Please note that waste spillages can only be reported within two days of collection';
         field.disabled = 1;
     END;
     f.push(field);
+
 END;
 
-IF service.report_allowed AND property.domestic_refuse_bin;
-    SET field = { value = 'Waste spillage', label = 'Spillage during collection' };
-    IF service.events.filter(event_type = 3227);
-        field.disabled = 1;
+SET field = { value = 'redirect-missed', label = 'Report a collection as missed' };
+    IF service.report_open;
+      field.hint = 'You have reported this collection as missed';
+      field.disabled = 1;
+    ELSIF !service.report_allowed;
+       field.hint = 'Please note that missed collections can only be reported within two days of collection';
+       field.disabled = 1;
     END;
     f.push(field);
-END;
+
+SET field = { label = 'Report no action on complaint', value = 'Complaint against time' };
+    IF service.escalations.missed OR service.escalations.missed_open;
+       IF NOT service.escalations.missed_open;
+         field.hint = 'please report the problem here';
+       ELSE;
+         field.hint = 'Thank you for reporting an issue with this collection; we are investigating.';
+         field.disabled = 1;
+       END;
+       f.push(field);
+    END;
+
+SET field = { value = 'Failure to Deliver Bags/Containers', label = 'My container / bags have not been delivered' };
+    IF service.escalations.container_open;
+         field.hint = 'Thank you for reporting an issue with this delivery; we are investigating.';
+         field.disabled = 1;
+         f.push(field);
+    ELSIF service.escalations.container;
+         field.hint = 'please report the problem here';
+         f.push(field);
+    END;
 
 PROCESS waste/enquiry.html
     title = 'Report a problem'
