@@ -8,6 +8,7 @@ FixMyStreet::Roles::Cobrand::SLWP2 - shared code for Kingston and Sutton WasteWo
 
 package FixMyStreet::Roles::Cobrand::SLWP2;
 
+use utf8;
 use Moo::Role;
 with 'FixMyStreet::Roles::Cobrand::Echo';
 with 'FixMyStreet::Roles::Cobrand::BulkyWaste';
@@ -173,6 +174,53 @@ lock_hash(%GARDEN_CONTAINER_IDS);
 my %GARDEN_QUANTITIES = (
     sack => 11,
 );
+
+my %RESOLUTION_CODES = (
+    50 => 'Unable to find the location',
+    200 => 'Damaged bin',
+    1135 => 'Contaminated (builder’s waste)',
+    1134 => 'Contaminated (commercial waste)',
+    1368 => 'Contaminated (electrical items)',
+    1366 => 'Contaminated (food waste)',
+    1374 => 'Contaminated (garden waste)',
+    1373 => 'Contaminated (glass)',
+    1372 => 'Contaminated (hazardous waste)',
+    1376 => 'Contaminated (mixed)',
+    1369 => 'Contaminated (nappies)',
+    1371 => 'Contaminated (other)',
+    1365 => 'Contaminated (paper/card)',
+    1375 => 'Contaminated (plastic)',
+    1364 => 'Contaminated (refuse)',
+    1370 => 'Contaminated (rigid plastic)',
+    1377 => 'Contaminated (tetrapak)',
+    1367 => 'Contaminated (textiles)',
+    606 => 'Excess waste left',
+    1361 => 'Health and safety reasons',
+    1359 => 'Health and safety reasons (damaged bin)',
+    1358 => 'Health and safety reasons',
+    1378 => 'Health and safety reasons',
+    1362 => 'Health and safety reasons',
+    1360 => 'Health and safety reasons',
+    1146 => 'Health and safety reasons',
+    516 => 'Incorrect waste',
+    55 => 'Insufficient information',
+    913 => 'No access due to key or access code not working',
+    615 => 'No access due to dog outside',
+    466 => 'No access due to gate locked',
+    616 => 'No access due to weather conditions',
+    617 => 'No access due to parked vehicle',
+    614 => 'No access due to police incident',
+    613 => 'No access due to road works',
+    66 => 'Bin not presented',
+    646 => 'Various',
+);
+lock_hash(%RESOLUTION_CODES);
+
+sub resolution_text {
+    my ($self, $resolution_id) = @_;
+    return $RESOLUTION_CODES{$resolution_id} if exists $RESOLUTION_CODES{$resolution_id};
+    return '';
+}
 
 sub garden_service_id { $SERVICE_IDS{$_[0]->moniker}{garden} }
 
@@ -745,25 +793,7 @@ property types allowed to book collections.
 sub waste_bulky_missed_blocked_codes {
     return {
         # Not Completed
-        19185 => {
-            50 => 'Address incorrect',
-            1361 => 'H&S - Aggression / Violence',
-            1359 => 'H&S - Damaged container',
-            1358 => 'H&S - Heavy bin / bag',
-            1378 => 'H&S - Other',
-            1362 => 'H&S - Unsafe equipment',
-            1360 => 'H&S - Unsafe surroundings',
-            1146 => 'H&S - Vermin',
-            913 => 'No access - Changed key',
-            615 => 'No access - Dog out',
-            466 => 'No access - Gate locked',
-            616 => 'No access - Weather',
-            617 => 'No access - Parked vehicle',
-            614 => 'No access - Police incident',
-            613 => 'No access - Road works',
-            66 => 'Not presented',
-            646 => 'Various',
-        },
+        19185 => \%RESOLUTION_CODES,
         # Partially Completed
         19186 => {
             all => 'Partially Completed',
