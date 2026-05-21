@@ -1,26 +1,131 @@
+[% USE date(format = c.cobrand.bin_day_format) %]
+
+[%
+
+service_id = c.req.params.service_id;
+IF original_booking_report;
+    SET booking_guid = original_booking_report.external_id;
+    SET service = booked_missed.$booking_guid;
+    SET resolution = service.report_locked_out_reason;
+ELSE;
+    SET service = services.$service_id;
+    SET resolution = service.last.resolution || service.report_open.resolution_reason;
+END;
+
+%]
+
+[% enquiry_message = BLOCK %]
+    [% IF service.escalations.missed.event %]
+        <p>A [% service.service_name FILTER lower %] collection was reported as missed
+        [% IF communal_property %]
+            by yourself, a neighbour, or your Managing Agent
+        [% END %]
+        on [% date.format(service.report_open.date, '%A, %-d %B') %].
+        Our crews should have returned to collect within 2 working days of the report;
+        if they have not returned you can escalate the report.
+        </p>
+    [% ELSIF service.report_open %]
+        <p>A [% service.service_name FILTER lower %] collection was reported as missed
+        [% IF communal_property %]
+            by yourself, a neighbour, or your Managing Agent
+        [% END %]
+        on [% date.format(service.report_open.date, '%A, %-d %B') %].
+        We aim to resolve missed collection reports within 2 working days (Monday to Friday).
+        </p>
+    [% ELSIF service.report_locked_out %]
+        <p>The crew have closed your collection task as not collected[%
+            IF resolution %]: [% resolution | staff_html_markup({ is_body_user => 1 }) %]
+            [% END %]
+    [% ELSIF service.report_allowed %]
+        <p>Our records show this collection took place
+        on [% date.format(service.last.date) | replace('~~~', service.last.ordinal) %].
+        If it has not been collected, you can report it as missed and we will return within 2 working days to collect it.
+        </p>
+    [% END %]
+[% END %]
 [%
 
 f = [];
-service_id = c.req.params.service_id;
-service = services.$service_id;
 
-IF service.report_allowed AND (property.domestic_refuse_bin OR communal_property);
-    SET field = { value = 'Bin not returned', label = 'My wheelie bin, box or caddy was not returned correctly after collection' };
-    IF service.events.filter(event_type = 3135);
+SET field = { label = 'Escalate my missed collection report', value = 'Complaint against time' };
+IF service.escalations.missed;
+    IF service.escalations.missed.too_late;
+        IF original_booking_report;
+            field.hint = 'You cannot escalate the reported missed collection as the 2 working day escalation window has closed.';
+        ELSE;
+            field.hint = 'We apologise for not returning to collect your bin after your missed collection report. Your bin will be collected on your next scheduled date.';
+        END;
+        field.disabled = 1;
+    ELSIF service.escalations.missed.open;
+        field.hint = 'Thank you for reporting an issue with this collection; we are investigating.';
         field.disabled = 1;
     END;
     f.push(field);
 END;
 
-IF service.report_allowed AND property.domestic_refuse_bin;
-    SET field = { value = 'Waste spillage', label = 'Spillage during collection' };
-    IF service.events.filter(event_type = 3227);
+IF NOT service.escalations.missed;
+    SET field = { value = 'redirect-missed', label = 'Report a missed collection' };
+    IF service.report_open;
+        field.disabled = 1;
+    ELSIF service.report_locked_out;
+        field.disabled = 1;
+    ELSIF service.next AND service.next.state == 'In progress';
+        field.hint = 'Please wait until after 6pm to report a missed collection. Our crews may still be working in your area.';
+        field.disabled = 1;
+    ELSIF !service.report_allowed;
+        field.hint = 'The 2 working day window for reporting a missed collection has closed.';
+        IF NOT original_booking_report;
+            field.hint = field.hint _ ' Your bin will be collected on your next scheduled date.';
+        END;
         field.disabled = 1;
     END;
+    f.push(field);
+END;
+
+IF NOT original_booking_report; # Not a bulky booking
+
+    SET field = { value = 'Bin not returned', label = 'Report a bin, box or caddy not returned to the correct location' };
+    IF service.report_allowed;
+        IF service.events.filter(event_type = 3135);
+            field.hint = 'You have already reported a bin not returned';
+            field.disabled = 1;
+        END;
+    ELSE;
+        field.hint = 'You can only report a bin not returned to the correct location within 2 working days of the scheduled collection.';
+        field.disabled = 1;
+    END;
+    f.push(field);
+
+    SET field = { value = 'Waste spillage', label = 'Report a spillage by the crew' };
+    IF service.report_allowed;
+        IF service.events.filter(event_type = 3227);
+            field.hint = 'You have already reported a spillage';
+            field.disabled = 1;
+        END;
+    ELSE;
+        field.hint = 'You can only report a spillage by the crew within 2 working days of the scheduled collection.';
+        field.disabled = 1;
+    END;
+    f.push(field);
+
+END;
+
+SET field = { value = 'Failure to Deliver Bags/Containers', label = 'My container / bags have not been delivered' };
+IF service.escalations.container_open;
+    field.hint = 'Thank you for reporting an issue with this delivery; we are investigating.';
+    field.disabled = 1;
+    f.push(field);
+ELSIF service.escalations.container;
+    field.hint = 'If your bin has not been delivered you can report this delivery as not completed.';
+    f.push(field);
+ELSIF service.requests_open.size;
+    field.hint = 'It can take up to 10 working days for us to deliver your container, please wait until 10 working days have passed to report this delivery as not completed.';
+    field.disabled = 1;
     f.push(field);
 END;
 
 PROCESS waste/enquiry.html
     title = 'Report a problem'
-    field_options = f;
+    field_options = f
+    field_label = 'What would you like to do?'
 %]
