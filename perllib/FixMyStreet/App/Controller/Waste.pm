@@ -1058,8 +1058,7 @@ sub report : Chained('property') : Args(0) {
     my ($self, $c) = @_;
 
     $c->stash->{original_booking_report}
-        = FixMyStreet::DB->resultset("Problem")
-        ->find( { id => $c->get_param('original_booking_id') } )
+        = $c->cobrand->problems->find( { id => $c->get_param('original_booking_id') } )
         if $c->get_param('original_booking_id');
 
     my $field_list = construct_bin_report_form($c);
@@ -1121,6 +1120,10 @@ sub process_report_data : Private {
 sub enquiry : Chained('property') : Args(0) {
     my ($self, $c) = @_;
 
+    $c->stash->{original_booking_report}
+        = $c->cobrand->problems->find( { id => $c->get_param('original_booking_id') } )
+        if $c->get_param('original_booking_id');
+
     if (my $template = $c->get_param('template')) {
         $c->stash->{template} = "waste/enquiry-$template.html";
         $c->detach;
@@ -1134,7 +1137,10 @@ sub enquiry : Chained('property') : Args(0) {
 
     if ($category eq 'redirect-missed') {
         my $id = $c->stash->{property}->{id};
-        $c->res->redirect($c->uri_for_action('waste/report', [ $id ]));
+        my $uri = $c->uri_for_action('waste/report', [ $id ]);
+        $uri .= '?original_booking_id=' . $c->stash->{original_booking_report}->id
+            if $c->stash->{original_booking_report};
+        $c->res->redirect($uri);
         $c->detach;
     }
 

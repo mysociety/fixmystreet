@@ -99,7 +99,7 @@ FixMyStreet::override_config {
         $mech->content_contains('2 Example Street, Kingston');
         $mech->content_contains('Every other Friday');
         $mech->content_contains('Friday, 2nd September');
-        $mech->content_contains('Report a mixed recycling collection as missed');
+        $mech->content_contains('Report a problem with a mixed recycling collection');
     };
     subtest 'In progress collection' => sub {
         $e->mock('GetTasks', sub { [ {
@@ -115,16 +115,23 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345');
         $mech->content_like(qr/Friday, 9th September\s+\(this collection has been adjusted from its usual time\)\s+\(In progress\)/);
         $mech->content_like(qr/, at  4:00p\.?m\.?/);
-        $mech->content_lacks('Report a mixed recycling collection as missed');
-        $mech->content_contains('Report a non-recyclable refuse collection as missed');
+        $mech->follow_link_ok({ text => 'Report a problem with a mixed recycling collection' });
+        $mech->content_contains('Please wait until after 6pm to report a missed collection');
+        $mech->back;
+        $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable refuse collection' });
+        $mech->content_contains('you can report it as missed');
         set_fixed_time('2022-09-09T19:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_like(qr/, at  4:00p\.?m\.?/);
-        $mech->content_contains('Report a mixed recycling collection as missed');
-        $mech->content_contains('Report a non-recyclable refuse collection as missed');
+        $mech->content_contains('Report a problem with a non-recyclable refuse collection');
+        $mech->follow_link_ok({ text => 'Report a problem with a mixed recycling collection' });
+        $mech->content_contains('you can report it as missed');
+        $mech->back;
+        $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable refuse collection' });
+        $mech->content_contains('you can report it as missed');
         set_fixed_time('2022-09-13T19:00:00Z');
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('Report a non-recyclable refuse collection as missed');
+        $mech->content_contains('Report a problem with a non-recyclable refuse collection');
         $e->mock('GetTasks', sub { [] });
     };
 
@@ -357,7 +364,7 @@ FixMyStreet::override_config {
 
     subtest 'Request bins from front page' => sub {
         $mech->get_ok('/waste/12345');
-        $mech->submit_form_ok({ form_number => 7 });
+        $mech->submit_form_ok({ form_number => 4 });
         $mech->content_contains('name="container-3" value="1"');
         $mech->content_contains('Blue lid paper and cardboard bin');
         $mech->content_contains('Green recycling box');
@@ -391,8 +398,9 @@ FixMyStreet::override_config {
 
     subtest 'No reporting/requesting if open request' => sub {
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('Report a mixed recycling collection as missed');
         $mech->content_contains('Request a mixed recycling container');
+        $mech->follow_link_ok({ text => 'Report a problem with a mixed recycling collection' });
+        $mech->content_contains('you can report it as missed');
 
         $e->mock('GetEventsForObject', sub { [ {
             # Request
@@ -409,7 +417,8 @@ FixMyStreet::override_config {
         } ] });
         $mech->get_ok('/waste/12345');
         $mech->content_contains('A mixed recycling container request has been made');
-        $mech->content_contains('Report a mixed recycling collection as missed');
+        $mech->follow_link_ok({ text => 'Report a problem with a mixed recycling collection' });
+        $mech->content_contains('you can report it as missed');
         $mech->get_ok('/waste/12345/request');
         $mech->content_like(qr/name="container-12" value="1"[^>]+disabled/s); # green
 
@@ -439,8 +448,9 @@ FixMyStreet::override_config {
             ServiceId => 970,
         } ] });
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('A mixed recycling collection has been reported as missed');
         $mech->content_contains('Request a mixed recycling container');
+        $mech->follow_link_ok({ text => 'Report a problem with a mixed recycling collection' });
+        $mech->content_contains('A mixed recycling collection was reported as missed');
 
         $e->mock('GetEventsForObject', sub { [ {
             EventTypeId => 3145,
@@ -449,7 +459,8 @@ FixMyStreet::override_config {
             ServiceId => 974,
         } ] });
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('A paper and card collection has been reported as missed');
+        $mech->follow_link_ok({ text => 'Report a problem with a paper and card collection' });
+        $mech->content_contains('A paper and card collection was reported as missed');
 
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
