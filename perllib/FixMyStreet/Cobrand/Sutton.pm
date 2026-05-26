@@ -251,34 +251,6 @@ sub waste_check_can_raise_dispute {
 
 =cut
 
-sub _setup_missed_collection_disputes_for_service {
-    my ($self, $row) = @_;
-    my $events = $row->{events} or return;
-
-    my $c = $self->{c};
-    my $property = $c->stash->{property};
-
-    my $missed_event = ($events->filter({ type => 'missed' })->list)[0];
-    my $dispute_event = ($events->filter({ event_type => 3143 })->list)[0];
-    if (
-        # If there's a missed bin report
-        $missed_event
-        # And report is still closed
-        && $missed_event->{closed}
-        # And the event source is the same as the current property (for communal)
-        && ($missed_event->{source} || 0) == $property->{id}
-        # And no existing dispute since last collection
-        && !$dispute_event
-    ) {
-        if ( $self->_check_date_within_dispute_window($missed_event->{date}) ) {
-            $row->{event_id} = $missed_event->{id};
-            $row->{dispute_allowed} = 1;
-        }
-    } elsif ($dispute_event) {
-        $row->{dispute_open} = $dispute_event;
-    }
-}
-
 sub parse_event_missed {
     my ($self, $orig_event, $event, $events) = @_;
 

@@ -315,9 +315,9 @@ sub munge_bin_services_for_address {
         if ( $self->moniker eq 'sutton' ) {
             $self->_setup_missed_collection_escalations_for_service($_);
             $self->_setup_container_request_escalations_for_service($_);
-            $self->_setup_missed_collection_disputes_for_service($_);
         }
 
+        $self->_setup_missed_collection_disputes_for_service($_);
         $self->_setup_container_request_disputes_for_service($_);
     }
 }
@@ -356,27 +356,31 @@ sub _setup_missed_collection_escalations_for_service {
     }
 }
 
-sub _setup_container_request_disputes_for_service {
+sub _setup_missed_collection_disputes_for_service {
     my ($self, $row) = @_;
+    my $events = $row->{events} or return;
 
-    my $events = $row->{events};
+    my $c = $self->{c};
+    my $property = $c->stash->{property};
 
-    my $property = $self->{c}->stash->{property};
-    my ($dispute_event, $missed_event);
-    if ($events) {
-        $dispute_event = ($events->filter({ event_type => 3143 })->list)[0];
-    }
-    if (!$dispute_event) {
-        if ($row->{last}->{completed} && $row->{report_locked_out}) {
-            # and then check if we can open a dispute for this resolution
-            if ( $self->waste_check_can_raise_dispute($row->{service_id}, $row->{last}->{resolution}) ) {
-                if ( $self->_check_date_within_dispute_window($row->{last}->{completed}) ) {
-                    $row->{dispute_allowed} = 1;
-                }
-            }
+    my $missed_event = ($events->filter({ type => 'missed' })->list)[0];
+    my $dispute_event = ($events->filter({ event_type => 3143 })->list)[0];
+    if (
+        # If there's a missed bin report
+        $missed_event
+        # And report is still closed
+        && $missed_event->{closed}
+        # And the event source is the same as the current property (for communal)
+        && ($missed_event->{source} || 0) == $property->{id}
+        # And no existing dispute since last collection
+        && !$dispute_event
+    ) {
+        if ( $self->_check_date_within_dispute_window($missed_event->{date}) ) {
+            $row->{event_id} = $missed_event->{id};
+            $row->{dispute_allowed} = 1;
         }
-    } else {
-        $row->{dispute_open} = 1;
+    } elsif ($dispute_event) {
+        $row->{dispute_open} = $dispute_event;
     }
 }
 
@@ -421,6 +425,30 @@ sub _setup_container_request_escalations_for_service {
 
     if ($now >= $start && $now < $end) {
         $row->{escalations}{container} = $open_request_event;
+    }
+}
+
+sub _setup_container_request_disputes_for_service {
+    my ($self, $row) = @_;
+
+    my $events = $row->{events};
+
+    my $property = $self->{c}->stash->{property};
+    my ($dispute_event, $missed_event);
+    if ($events) {
+        $dispute_event = ($events->filter({ event_type => 3143 })->list)[0];
+    }
+    if (!$dispute_event) {
+        if ($row->{last}->{completed} && $row->{report_locked_out}) {
+            # and then check if we can open a dispute for this resolution
+            if ( $self->waste_check_can_raise_dispute($row->{service_id}, $row->{last}->{resolution}) ) {
+                if ( $self->_check_date_within_dispute_window($row->{last}->{completed}) ) {
+                    $row->{dispute_allowed} = 1;
+                }
+            }
+        }
+    } else {
+        $row->{dispute_open} = 1;
     }
 }
 
