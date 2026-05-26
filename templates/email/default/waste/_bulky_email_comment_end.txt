@@ -2,7 +2,7 @@
 
 [% email_summary %]
 
-[% IF row.item_problem_state == 'unable to fix' %]
+[% IF cobrand.moniker == 'sutton' OR cobrand.moniker == 'kingston' %]
 To report a problem with this missed collection visit your bin page
 [% END %]
 
