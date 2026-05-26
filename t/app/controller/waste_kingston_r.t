@@ -49,6 +49,10 @@ create_contact({ category => 'Request new container', email => '3129' }, 'Waste'
     { code => 'payment_method', required => 0, automated => 'hidden_field' },
     { code => 'payment', required => 0, automated => 'hidden_field' },
 );
+create_contact({ category => 'Missed collection dispute', email => '3143' }, 'Waste',
+    { code => 'Image', description => 'Image', required => 0, datatype => 'image' },
+    { code => 'Notes', description => 'Reason for dispute', required => 1, datatype => 'text' },
+);
 
 # Merton also covers Kingston because of an out-of-area park which is their responsibility
 my $merton = $mech->create_body_ok(2500, 'Merton Council');
@@ -452,6 +456,72 @@ FixMyStreet::override_config {
         $mech->content_contains('A paper and card collection has been reported as missed');
 
         $e->mock('GetEventsForObject', sub { [] }); # reset
+    };
+
+    subtest 'Dispute of collection crew marked as missed' => sub {
+        subtest 'No collection marked as missed' => sub {
+            # Mirrors within-window test below
+            set_fixed_time('2022-09-09T16:01:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with this missed collection');
+        };
+
+        # Mock a 'Not Completed' task for domestic refuse
+        $e->mock('GetTasks', sub { [ {
+            Ref => { Value => { anyType => [ 17430692, 8287 ] } },
+            State => { Name => 'Not Completed' },
+            Resolution => { Name => 'Contaminated builder waste', Ref => { Value => { 'anyType' => 1135 } } },
+            CompletedDate => { DateTime => '2022-09-09T16:00:00Z' }
+        } ] });
+
+        subtest 'Raising a dispute only available within window' => sub {
+            set_fixed_time('2022-09-09T15:30:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with this missed collection', 'not allowed before window opens');
+
+            set_fixed_time('2022-09-09T16:01:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('Report a problem with this missed collection', 'allowed just after window opens');
+
+            set_fixed_time('2022-09-13T23:59:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('Report a problem with this missed collection', 'allowed just before window closes');
+
+            set_fixed_time('2022-09-14T00:01:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with this missed collection', 'not allowed just after window closes');
+        };
+
+        subtest 'Correct dispute link' => sub {
+            set_fixed_time('2022-09-11T16:00:00Z');
+
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains(
+                '/Raise_a_waste_dispute_in_Kingston?uprn=1000000002&service_id=966'
+            );
+        };
+
+        subtest 'Existing dispute event' => sub {
+            set_fixed_time('2022-09-11T16:00:00Z');
+
+            # Now mock out an existing dispute
+            $e->mock('GetEventsForObject', sub { [ {
+                Id => '112112321',
+                EventTypeId => 3143,
+                EventStateId => 0,
+                ServiceId => 966, # Domestic Refuse
+                EventDate => { DateTime => "2022-09-10T16:00:00Z" },
+                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
+            } ] });
+
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with this missed collection');
+            $mech->content_contains('We are investigating the problem with this collection.');
+        };
+
+        # Reset
+        $e->mock('GetTasks', sub { [] });
+        $e->mock('GetEventsForObject', sub { [] });
     };
 
     $e->mock('GetServiceUnitsForObject', sub { $kerbside_bag_data });

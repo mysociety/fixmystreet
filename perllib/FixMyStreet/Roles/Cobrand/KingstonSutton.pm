@@ -291,21 +291,33 @@ sub _check_for_open_disputes {
     return $open_dispute;
 }
 
-# default to never allowing disputes
-sub _check_date_within_dispute_window { 0; }
-sub waste_check_can_raise_dispute { 0; }
-sub _setup_container_request_disputes_for_service {}
+sub _check_date_within_dispute_window {
+    my ($self, $date) = @_;
+
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    # And two working days (from 6pm) have passed
+    my $wd = FixMyStreet::WorkingDays->new();
+    my $start = $date;
+    my $end = $wd->add_days($start, 3)->set_hour(0)->set_minute(0)->set_second(0);
+
+    if ($now >= $start && $now < $end) {
+        return 1;
+    }
+
+    return 0;
+}
 
 sub munge_bin_services_for_address {
     my ($self, $rows) = @_;
 
-    return unless $self->moniker eq 'sutton'; # Sutton only for now
-
-    # Escalations
+    # Escalations & disputes
     foreach (@$rows) {
-        $self->_setup_missed_collection_escalations_for_service($_);
-        $self->_setup_container_request_escalations_for_service($_);
-        $self->_setup_missed_collection_disputes_for_service($_);
+        if ( $self->moniker eq 'sutton' ) {
+            $self->_setup_missed_collection_escalations_for_service($_);
+            $self->_setup_container_request_escalations_for_service($_);
+            $self->_setup_missed_collection_disputes_for_service($_);
+        }
+
         $self->_setup_container_request_disputes_for_service($_);
     }
 }
@@ -344,7 +356,29 @@ sub _setup_missed_collection_escalations_for_service {
     }
 }
 
-sub _setup_missed_collection_disputes_for_service {}
+sub _setup_container_request_disputes_for_service {
+    my ($self, $row) = @_;
+
+    my $events = $row->{events};
+
+    my $property = $self->{c}->stash->{property};
+    my ($dispute_event, $missed_event);
+    if ($events) {
+        $dispute_event = ($events->filter({ event_type => 3143 })->list)[0];
+    }
+    if (!$dispute_event) {
+        if ($row->{last}->{completed} && $row->{report_locked_out}) {
+            # and then check if we can open a dispute for this resolution
+            if ( $self->waste_check_can_raise_dispute($row->{service_id}, $row->{last}->{resolution}) ) {
+                if ( $self->_check_date_within_dispute_window($row->{last}->{completed}) ) {
+                    $row->{dispute_allowed} = 1;
+                }
+            }
+        }
+    } else {
+        $row->{dispute_open} = 1;
+    }
+}
 
 sub _setup_container_request_escalations_for_service {
     my ($self, $row) = @_;
