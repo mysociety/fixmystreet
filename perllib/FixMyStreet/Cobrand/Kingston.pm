@@ -772,4 +772,49 @@ sub bulky_show_location_field_mandatory { 0 }
 
 sub bulky_disabled_location_photo { 1 }
 
+sub bulky_dispute_window_days { 20 }
+
+# Earliest date to look back to for recent bulky collections - 20 working days
+sub bulky_recent_date {
+    my $today = DateTime->now( time_zone => FixMyStreet->local_time_zone )
+        ->truncate( to => 'day' );
+
+    my $wd = FixMyStreet::WorkingDays->new();
+
+    my $start = $wd->sub_days( $today, bulky_dispute_window_days() );
+
+    return $start;
+}
+
+=head2 Disputes
+
+=cut
+
+=head2 waste_check_can_raise_dispute
+
+Checks if disputes can be raised for the service and resolution text.
+
+=cut
+
+sub waste_check_can_raise_dispute {
+    my ($self, %args) = @_;
+
+    %args = (
+        resolution_key => '',
+        type => '',
+        %args,
+    );
+
+    # Can raise dispute against any resolution of a missed collection report
+    if ( $args{type} eq 'missed_collection_report' ) {
+        return 1;
+    }
+
+    # Can only raise dispute against original collection if the reason
+    # crew gave is 'Not presented'
+    if ( $args{resolution_key} eq 66 ) {
+        return 1;
+    }
+}
+
 1;
