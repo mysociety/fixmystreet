@@ -21,16 +21,26 @@
         [% '(' _ cobrand.prettify_dt(update.confirmed) _ ') ' IF cobrand.include_time_in_update_alerts -%]
       </p>
       [% END %]
-      [% IF cobrand.moniker == 'sutton' AND (report.category == 'Report missed collection' OR report.category == 'Complaint against time') AND (update.item_problem_state == 'closed' OR update.item_problem_state == 'unable to fix') %]
-      [% IF report.category == 'Report missed collection' %]
-      <p>
-        Our crews reported your collection was not made for the reason above.
-      </p>
-      [% END %]
+      [% IF (cobrand.moniker == 'sutton' OR cobrand.moniker == 'kingston') AND (report.category == 'Report missed collection' OR report.category == 'Complaint against time') AND (update.item_problem_state == 'closed' OR update.item_problem_state == 'unable to fix' OR update.item_problem_state == 'fixed') %]
+        [% IF report.category == 'Report missed collection' && update.item_problem_state != 'fixed' %]
+          <p>
+            Our crews reported your collection was not made for the reason above.
+          </p>
+        [% END %]
 
-      <p>
-      <a href="[% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') %]/enquiry?category=Missed+collection+dispute&service_id=[% report.get_extra_field_value('service_id') %]&original_booking_id=[% report.id %]">Report a problem with this missed collection</a>
-      </p>
+        [%
+          # NOTE Sutton may use 'original_booking_id' to refer to a missed collection
+          # report associated with a standard collection, not just bookings
+          # and their associated missed collection reports.
+        %]
+        [%
+          SET include_report_id = cobrand.moniker == 'sutton'
+            OR report.get_extra_field_value('service_id') == cobrand.feature('echo').small_items_service_id
+            OR report.get_extra_field_value('service_id') == cobrand.feature('echo').bulky_service_id
+        %]
+        <p>
+          <a href="[% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') %]/enquiry?category=Missed+collection+dispute&service_id=[% report.get_extra_field_value('service_id') %][% IF include_report_id %]&original_booking_id=[% report.id %][% END %]">Report a problem with this missed collection</a>
+        </p>
       [% END %]
     [% END %]
     </div>
