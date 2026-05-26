@@ -852,13 +852,15 @@ FixMyStreet::override_config {
             Guid => 'a-guid',
             EventTypeId => 3130,
             ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
-            ResolutionCodeId => 466,
+            ResolutionCodeId => 66,
             EventStateId => 19185,
         } ] } );
         $mech->get_ok('/waste/12345');
+
         $mech->follow_link_ok({ text => 'Report a problem with a bulky waste collection' }, 'In time, normal completion');
         $mech->content_contains('The crew have closed your collection task as not collected', 'Not completed');
-        $mech->content_contains('Gate locked');
+        $mech->content_contains('Not presented');
+
         $mech->get_ok('/waste/12345/report');
         $mech->content_lacks('Bulky waste collection');
         $echo->mock( 'GetEventsForObject', sub { [ {
