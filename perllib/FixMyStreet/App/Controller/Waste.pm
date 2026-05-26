@@ -1160,16 +1160,31 @@ sub enquiry : Chained('property') : Args(0) {
         if (my $guid = $c->stash->{original_container_request}) {
             my $original = $service->{disputes}{container}{$guid}{event};
             $event_id = $original->{id};
-        } elsif (my $report = $c->stash->{original_booking_report}) {
-            my $booking_guid = $report->external_id;
-            my $original_booking_event = $c->stash->{booked_missed}{$booking_guid};
-            if (my $original = $original_booking_event->{dispute}{missed_event}) {
-                $event_id = $original->{id};
-            }
-        } else {
-            if (my $original = $service->{dispute}{missed_event}) {
-                $event_id = $original->{id};
-            }
+
+            # TODO Return if no event?
+
+        } elsif ( my $report = $c->stash->{original_booking_report} ) {
+            # NOTE!
+            # original_booking_report may actually be missed collection report
+            # against an original booking, so check against that too
+            my $original_booking_event
+                = $c->stash->{booked_missed}{ $report->external_id }
+                || $c->stash->{booked_missed}{ $report->get_extra_field_value
+                    ('Original_Event_ID') };
+
+            $c->detach('property_redirect')
+                unless $original_booking_event->{dispute}{allowed};
+
+            # Check missed collection report for event ID first
+            $event_id
+                = $original_booking_event->{dispute}{missed_event}{id}
+                || $original_booking_event->{event_id};
+
+        } elsif ( $service ) {
+            $c->detach('property_redirect')
+                unless $service->{dispute}{allowed};
+
+            $event_id = $service->{report_open}{id} if $service->{report_open};
         }
 
         my $uri = $c->cobrand->feature('waste_features')->{dispute_url};
