@@ -1625,6 +1625,8 @@ sub waste_confirm_payment {
 
     return if $self->waste_check_payment_state;
 
+    $self->discard_changes; # Make sure e.g. confirmed timestamp picked up
+
     my $already_confirmed;
     if ($self->category eq 'Bulky collection' || $self->category eq 'Small items collection') {
         $already_confirmed = $cobrand->bulky_send_before_payment;
