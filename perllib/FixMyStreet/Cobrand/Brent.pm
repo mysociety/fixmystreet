@@ -489,40 +489,50 @@ Brent have various additional columns for extra report data.
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
 
+    my @contacts = $csv->body->contacts->order_by('category')->all;
+    my %extra_columns;
+    foreach my $contact (@contacts) {
+        foreach (@{$contact->get_metadata_for_storage}) {
+            $extra_columns{$_->{code}} = $_->{description} || $_->{code};
+        }
+    }
+
+    my $ft_did_you_see = 'Did_you_see_the_Flytip_take_place?_';
+    my $ft_statement = 'Are_you_willing_to_be_a_WItness?_';
+    my @columns = (
+        street_name => 'Street Name',
+        location_name => 'Location Name',
+        name => 'Created By',
+        user_email => 'Email',
+        usrn => 'USRN',
+        uprn => 'UPRN',
+        external_id => 'External ID',
+        image_included => 'Does the report have an image?',
+        extra_details => 'Extra details',
+
+        $ft_did_you_see => 'Did you see the fly-tipping take place',
+        $ft_statement => "If 'Yes', are you willing to provide a statement?",
+        Flytip_Size => 'How much waste is there',
+        Flytip_Type => 'Type of waste',
+
+        Container_Request_Action => 'Container Request Action',
+        Container_Request_Container_Type => 'Container Request Container Type',
+        Container_Request_Reason => 'Container Request Reason',
+
+        email_renewal_reminders_opt_in => 'Email Renewal Reminders Opt-In',
+        service_id => 'Service ID',
+        staff_role => 'Staff Role',
+    );
+
+    # Remove any extra already present in list
+    my %columns = @columns;
+    my @extra_columns = grep { !$columns{$_} } sort keys %extra_columns;
+    @extra_columns = map { $_ => $extra_columns{$_} } @extra_columns;
+
     $csv->add_csv_columns(
-        (
-            street_name => 'Street Name',
-            location_name => 'Location Name',
-            name => 'Created By',
-            user_email => 'Email',
-            usrn => 'USRN',
-            uprn => 'UPRN',
-            external_id => 'External ID',
-            image_included => 'Does the report have an image?',
-            extra_details => 'Extra details',
-
-            InspectionDate => "Inspection date",
-            GradeLitter => "Grade for Litter",
-            GradeDetritus => "Grade for Detritus",
-            GradeGraffiti => "Grade for Graffiti",
-            GradeFlyPosting => "Grade for Fly-posting",
-            GradeWeeds => "Grade for Weeds",
-            GradeOverall => "Overall Grade",
-
-            flytipping_did_you_see => 'Did you see the fly-tipping take place',
-            flytipping_statement => "If 'Yes', are you willing to provide a statement?",
-            flytipping_quantity => 'How much waste is there',
-            flytipping_type => 'Type of waste',
-
-            container_req_action => 'Container Request Action',
-            container_req_type => 'Container Request Container Type',
-            container_req_reason => 'Container Request Reason',
-
-            email_renewal_reminders_opt_in => 'Email Renewal Reminders Opt-In',
-            missed_collection_id => 'Service ID',
-            staff_role => 'Staff Role',
-            map { "item_" . $_ => "Small Item $_" } (1..11),
-        )
+        @columns,
+        (map { "item_" . $_ => "Small Item $_" } (1..11)),
+        @extra_columns,
     );
 
     my $values;
@@ -535,10 +545,11 @@ sub dashboard_export_problems_add_columns {
         }
     }
 
-    my $flytipping_lookup = sub {
-        my ($report, $field) = @_;
-        my $v = $csv->_extra_field($report, $field) // return '';
-        return $values->{$field}{$v} || '';
+    my $LOOKUP = sub {
+        my ($report, $field, $lookup) = @_;
+        my $id = $csv->_extra_field($report, $field) // return '';
+        my $result = $lookup->{$id} // $id;
+        return $result;
     };
 
     my $request_lookups = echo_ids_to_strings();
@@ -546,13 +557,9 @@ sub dashboard_export_problems_add_columns {
     $csv->csv_extra_data(sub {
         my $report = shift;
 
-        my $id;
-        $id = $csv->_extra_field($report, 'Container_Request_Action') || '';
-        my $container_req_action = $request_lookups->{action}{$id} || $id;
-        $id = $csv->_extra_field($report, 'Container_Request_Container_Type') || '';
-        my $container_req_type = $request_lookups->{type}{$id} || $id;
-        $id = $csv->_extra_field($report, 'Container_Request_Reason') || '';
-        my $container_req_reason = $request_lookups->{reason}{$id} || $id;
+        my $container_req_action = $LOOKUP->($report, 'Container_Request_Action', $request_lookups->{action});
+        my $container_req_type = $LOOKUP->($report, 'Container_Request_Container_Type', $request_lookups->{type});
+        my $container_req_reason = $LOOKUP->($report, 'Container_Request_Reason', $request_lookups->{reason});
 
         my ($by, $userroles, $staff_role);
         if (!$csv->dbi) {
@@ -563,7 +570,6 @@ sub dashboard_export_problems_add_columns {
         }
 
         my $data = {
-            location_name => $csv->_extra_field($report, 'location_name'),
             extra_details => $csv->_extra_metadata($report, 'detailed_information') || '',
             $csv->dbi ? (
                 street_name => FixMyStreet::Geocode::Address->new($report->{geocode})->parts->{street},
@@ -577,24 +583,18 @@ sub dashboard_export_problems_add_columns {
                 staff_role => $staff_role || '',
                 uprn => $report->uprn,
             ),
-            usrn => $csv->_extra_field($report, 'usrn'),
-            InspectionDate => $csv->_extra_field($report, 'InspectionDate'),
-            GradeLitter => $csv->_extra_field($report, 'GradeLitter'),
-            GradeDetritus => $csv->_extra_field($report, 'GradeDetritus'),
-            GradeGraffiti => $csv->_extra_field($report, 'GradeGraffiti'),
-            GradeFlyPosting =>$csv->_extra_field($report, 'GradeFlyPosting'),
-            GradeWeeds => $csv->_extra_field($report, 'GradeWeeds'),
-            GradeOverall => $csv->_extra_field($report, 'GradeOverall'),
-            flytipping_did_you_see => $flytipping_lookup->($report, 'Did_you_see_the_Flytip_take_place?_'),
-            flytipping_statement => $flytipping_lookup->($report, 'Are_you_willing_to_be_a_WItness?_'),
-            flytipping_quantity => $flytipping_lookup->($report, 'Flytip_Size'),
-            flytipping_type => $flytipping_lookup->($report, 'Flytip_Type'),
-            container_req_action => $container_req_action,
-            container_req_type => $container_req_type,
-            container_req_reason => $container_req_reason,
-            email_renewal_reminders_opt_in => $csv->_extra_field($report, 'email_renewal_reminders_opt_in'),
-            missed_collection_id => $csv->_extra_field($report, 'service_id'),
+            $ft_did_you_see => $LOOKUP->($report, $ft_did_you_see, $values->{$ft_did_you_see}),
+            $ft_statement => $LOOKUP->($report, $ft_statement, $values->{$ft_statement}),
+            Flytip_Size => $LOOKUP->($report, 'Flytip_Size', $values->{Flytip_Size}),
+            Flytip_Type => $LOOKUP->($report, 'Flytip_Type', $values->{Flytip_Type}),
+            Container_Request_Action => $container_req_action,
+            Container_Request_Container_Type => $container_req_type,
+            Container_Request_Reason => $container_req_reason,
         };
+
+        foreach (@{$csv->_extra_field($report)}) {
+            $data->{$_->{name}} = $_->{value} unless exists $data->{$_->{name}};
+        }
 
         my $extra = $csv->_extra_metadata($report);
         %$data = (%$data, map {$_ => $extra->{$_} || ''} grep { $_ =~ /^(item_\d+)$/ } keys %$extra);
