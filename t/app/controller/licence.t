@@ -9,6 +9,9 @@ my $mech = FixMyStreet::TestMech->new;
 # Create TfL body (using 2482 like other TfL tests)
 my $body = $mech->create_body_ok(2482, 'TfL', { cobrand => 'tfl' });
 
+my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body, password => 'password');
+$staffuser->user_body_permissions->create({ body => $body, permission_type => 'report_inspect' });
+
 # Create the category for scaffold licences
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
@@ -157,12 +160,22 @@ subtest 'Reporting does not include category' => sub {
         ALLOWED_COBRANDS => 'tfl',
         MAPIT_URL => 'http://mapit.uk/',
         COBRAND_FEATURES => {
+            internal_ips => { tfl => [ '127.0.0.1' ] },
             licencing_forms => { tfl => 0 },
         },
     }, sub {
         $mech->get_ok('/report/new?latitude=51.4039&longitude=0.018697');
         $mech->content_contains('Graffiti');
         $mech->content_lacks('Scaffold licence');
+
+        my ($report) = $mech->create_problems_for_body(1, $body, 'Licence', {
+            category => 'Scaffold licence',
+            areas => ',2482,'
+        });
+        $mech->log_in_ok( $staffuser->email );
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_contains('Graffiti');
+        $mech->content_like(qr/Existing category">\s*<option selected value="Scaffold licence"/);
     };
 };
 
