@@ -23,6 +23,9 @@ use LWP::UserAgent;
 use Moo;
 
 with 'FixMyStreet::Roles::BoroughEmails';
+with 'FixMyStreet::Roles::Syslog';
+
+has log_ident => ( is => 'ro', default => 'nationalhighways' );
 
 sub council_name { 'National Highways' }
 
@@ -316,7 +319,14 @@ sub user_from_oidc {
             Authorization => 'Bearer ' . $access_token,
         );
         my $user = decode_json($response->decoded_content);
-        $payload->{roles} = [ $user->{department} ] if $user->{department};
+        my $department = $user->{department};
+
+        my $conf = $self->feature('oidc_login');
+        if ($conf->{log_department_lookup}) {
+            $self->log('Email ' . $email . ' Department: ' . ($department || 'None'));
+        }
+
+        $payload->{roles} = [ $department ] if $department;
     }
 
     return ($name, $email);

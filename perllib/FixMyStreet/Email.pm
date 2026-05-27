@@ -22,6 +22,8 @@ use FixMyStreet;
 use FixMyStreet::DB;
 use FixMyStreet::Email::Sender;
 
+$Email::MIME::MAX_PARTS = 10000;
+
 sub test_dmarc {
     my $email = shift;
     return if FixMyStreet->test_mode;

@@ -424,6 +424,12 @@ sub process_bulky_data : Private {
         $c->forward('/waste/pay_process', [ 'bulky', $payment_method, $data ]);
     } else {
         $c->forward('/waste/add_report', [ $data ]) or return;
+        # If we auto confirm reports, and we're not amending (which does its own confirmation)
+        # then we want to call confirm_subscription to e.g. add a 'payment confirmed' update
+        my $report = $c->stash->{report};
+        if ($c->cobrand->call_hook('waste_auto_confirm_report', $report) && !$c->stash->{amending_booking}) {
+            $c->forward('/waste/confirm_subscription', ['free'])
+        }
     }
     return 1;
 }

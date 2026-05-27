@@ -1217,6 +1217,48 @@ FixMyStreet::override_config {
         $echo->mock( 'GetEventsForObject', sub { [] } );
     };
 
+    subtest 'Bulky goods booking with zero payment' => sub {
+        FixMyStreet::Script::Reports::send();
+        $mech->clear_emails_ok;
+
+        my $extra = $body->get_extra_metadata('wasteworks_config');
+        $extra->{base_price} = 0;
+        $extra->{band1_price} = 0;
+        $body->set_extra_metadata(wasteworks_config => $extra);
+        $body->update;
+
+        $mech->get_ok('/waste/12345/bulky');
+        $mech->submit_form_ok;
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
+        $mech->submit_form_ok({ with_fields => { chosen_date => '2023-07-01T00:00:00;reserveA==;2023-06-25T10:10:00' } });
+        $mech->submit_form_ok({ form_number => 1, fields => { 'item_1' => 'BBQ', 'item_2' => 'Bicycle', 'item_3' => 'Bath' } });
+        $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
+        $mech->content_contains('3 items requested for collection');
+        $mech->content_contains('£0.00');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+
+        $mech->content_contains('Bulky collection booking confirmed');
+        $mech->content_lacks('payment reference');
+
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->category, 'Bulky collection', 'correct category on report';
+        is $report->get_extra_field_value('payment'), '';
+        is $report->state, 'confirmed', 'report confirmed';
+
+        is $report->comments->count, 1;
+        my $update = $report->comments->first;
+        is $update->state, 'confirmed';
+        is $update->text, 'Payment confirmed, reference free, amount £0.00';
+        is $update->get_extra_metadata('fms_extra_payments'), 'free|0.00';
+
+        my $confirmation_email_html = $mech->get_html_body_from_email();
+        unlike $confirmation_email_html, qr/Total cost/;
+
+        FixMyStreet::Script::Reports::send();
+        $mech->email_count_is(1); # Only email is 'email' to council
+        $mech->clear_emails_ok;
+    };
+
     # subtest 'Bulky goods cheque payment by contact centre' => sub {
     #     $mech->log_in_ok($contact_centre_user->email);
     #     $mech->get_ok('/waste/12345/bulky');

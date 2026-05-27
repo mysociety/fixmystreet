@@ -9,7 +9,7 @@
        <li><a href="[% c.uri_for_action('waste/report', [ property.id ]) %]">Report a missed collection</a></li>
     [% END %]
     [% IF any_request_allowed %]
-      <li><a href="[% c.uri_for_action('waste/request', [ property.id ]) %]">Request a new/replacement container</a></li>
+      <li><a href="https://self.kingston.gov.uk/service/Waste_container_enquiry_in_Kingston">Order bins, boxes or sacks</a></li>
     [% END %]
     [% IF services.966 %]
       <li><a href="[% c.uri_for_action('waste/request', [ property.id ]) %]?exchange=1">Request a larger/smaller refuse container</a></li>
