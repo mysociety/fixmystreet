@@ -1468,6 +1468,23 @@ $.extend(fixmystreet.set_up, {
     });
   },
 
+  pin_legend_toggle: function() {
+    $(document).on('click', '.js-pin-legend-toggle', function() {
+        var $btn = $(this);
+        var $panel = $('#' + $btn.attr('aria-controls'));
+        var is_open = $btn.attr('aria-expanded') === 'true';
+        var is_map_view = $('html').hasClass('only-map');
+
+        $btn.attr('aria-expanded', !is_open);
+
+        if (is_map_view) {
+            $panel.stop(true, true).fadeToggle(200);
+        } else {
+            $panel.stop(true, true).slideToggle(200);
+        }
+    });
+  },
+
   ward_select_multiple: function() {
     $(".js-ward-select-multiple").on('click', function(e) {
         e.preventDefault();
