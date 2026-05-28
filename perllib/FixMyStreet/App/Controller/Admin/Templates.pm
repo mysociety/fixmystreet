@@ -126,6 +126,15 @@ sub edit : Path : Args(2) {
             }
 
             $template->auto_response( $c->get_param('auto_response') && ( $template->state || $template->external_status_code ) ? 1 : 0 );
+
+            if ($body_cobrand) {
+                my $errors = $body_cobrand->call_hook(validate_response_template => $template);
+                if ($errors && ref $errors eq 'HASH') {
+                    $c->stash->{errors} ||= {};
+                    %{ $c->stash->{errors} } = (%{ $c->stash->{errors} }, %$errors);
+                }
+            }
+
             if ($template->auto_response) {
                 my @check_contact_ids = @new_contact_ids;
                 # If the new template has not specific categories (i.e. it
