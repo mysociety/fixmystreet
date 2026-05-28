@@ -48,7 +48,7 @@ sub options_payment_method {
     if ($c->cobrand->waste_cheque_payments && $cheque_cobrand) {
         push @options, { label => 'Cheque payment', value => 'cheque', data_show => '#form-cheque_reference-row', data_hide => '#form-payment_explanation-row' };
     }
-    if ($cobrand eq 'merton') {
+    if ($cobrand eq 'merton' && $c->cobrand->waste_cheque_payments) {
         push @options, { label => 'Cash payment', value => 'cash', data_show => '#form-payment_explanation-row', data_hide => '#form-cheque_reference-row' };
         push @options, { label => 'No payment to be taken', value => 'waived', data_show => '#form-payment_explanation-row', data_hide => '#form-cheque_reference-row' };
     }

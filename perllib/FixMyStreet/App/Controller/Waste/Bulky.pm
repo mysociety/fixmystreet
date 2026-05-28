@@ -383,11 +383,11 @@ sub process_bulky_data : Private {
     my ($self, $c, $form) = @_;
     my $data = $form->saved_data;
 
-    my $payment_method = $data->{payment_method} || 'credit_card';
+    $data->{payment_method} ||= 'credit_card';
     if (!$c->cobrand->bulky_free_collection_available) {
         # Either was picked in the form, or if not present will be card
-        $c->set_param('payment_method', $payment_method);
-        if ($payment_method eq 'credit_card' && $c->stash->{staff_payments_allowed} eq 'paye') {
+        $c->set_param('payment_method', $data->{payment_method});
+        if ($data->{payment_method} eq 'credit_card' && $c->stash->{staff_payments_allowed} eq 'paye') {
             $c->set_param('payment_method', 'csc');
         }
     }
@@ -421,7 +421,7 @@ sub process_bulky_data : Private {
             $p->detail($p->detail . " | Previously submitted as " . $amending->external_id);
             $p->update;
         }
-        $c->forward('/waste/pay_process', [ 'bulky', $payment_method, $data ]);
+        $c->forward('/waste/pay_process', [ 'bulky', $data, $form ]);
     } else {
         $c->forward('/waste/add_report', [ $data ]) or return;
         # If we auto confirm reports, and we're not amending (which does its own confirmation)
@@ -497,7 +497,7 @@ sub process_bulky_amend : Private {
                 $p->update_extra_field({ name => 'payment', value => $c->stash->{payment} });
                 # XXX Store old payment reference and payment somewhere else?!
                 $p->update;
-                $c->forward('/waste/pay_process', [ 'bulky', $data->{payment_method}, $data ]);
+                $c->forward('/waste/pay_process', [ 'bulky', $data, $form ]);
             } else {
                 my $update = add_amendment_update($c, $p, $data, 'immediate');
                 $p->waste_amend_extra_data($c->cobrand, $c->stash->{booking_maximum}, $data);

@@ -99,7 +99,6 @@ sub modify : Chained('setup') : PathPart('garden_modify') : Args(0) {
 
         my $max_bins = $c->cobrand->waste_garden_maximum;
         my $payment_method = $c->forward('/waste/get_current_payment_method');
-        $payment_method = 'credit_card' if $payment_method eq 'csc';
 
         $c->forward('check_if_staff_can_pay', [ $payment_method ]);
 
@@ -287,7 +286,8 @@ sub setup_garden_sub_params : Private {
     $c->set_param('current_containers', $data->{current_bins});
     $c->set_param('new_containers', $data->{new_bins});
     # Either the user picked in the form, or it was staff and so will be credit card (or overridden to csc if that used)
-    $c->set_param('payment_method', $data->{payment_method} || 'credit_card');
+    $data->{payment_method} ||= 'credit_card';
+    $c->set_param('payment_method', $data->{payment_method});
     $c->cobrand->call_hook(waste_garden_sub_params => $data, $type);
 }
 
@@ -366,9 +366,8 @@ sub process_garden_modification : Private {
 sub process_garden_data : Private {
     my ($self, $c, $form) = @_;
     my $data = $form->saved_data;
-    my $dd_flow = $data->{payment_method} && $data->{payment_method} eq 'direct_debit';
     my $type = $c->cobrand->waste_subscription_types->{New};
-    $c->forward('process_garden_new_or_renew', [ $data, 'new', $type, $dd_flow ]);
+    $c->forward('process_garden_new_or_renew', [ $form, $data, 'new', $type ]);
 }
 
 sub process_garden_renew : Private {
@@ -389,15 +388,13 @@ sub process_garden_renew : Private {
     my $type = $new ? $c->cobrand->waste_subscription_types->{New} : $c->cobrand->waste_subscription_types->{Renew};
 
     # Get the payment method from the form data or the existing subscription
-    my $payment_method = $data->{payment_method}
-        || $c->forward('/waste/get_current_payment_method');
+    $data->{payment_method} ||= $c->forward('/waste/get_current_payment_method');
 
-    my $dd_flow = $payment_method eq 'direct_debit';
-    $c->forward('process_garden_new_or_renew', [ $data, 'renew', $type, $dd_flow ]);
+    $c->forward('process_garden_new_or_renew', [ $form, $data, 'renew', $type ]);
 }
 
 sub process_garden_new_or_renew : Private {
-    my ($self, $c, $data, $calc_type, $cat_type, $dd_flow) = @_;
+    my ($self, $c, $form, $data, $calc_type, $cat_type) = @_;
 
     if ($cat_type eq $c->cobrand->waste_subscription_types->{New}) {
         $data->{category} = 'Garden Subscription';
@@ -447,7 +444,7 @@ sub process_garden_new_or_renew : Private {
 
     $c->forward('/waste/pay_process', [
         $calc_type eq 'renew' ? 'garden/renew' : 'garden/subscribe',
-        $data->{payment_method}, $data, $dd_flow ]);
+        $data, $form ]);
 
     return 1;
 }
