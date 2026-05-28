@@ -186,8 +186,6 @@ around booked_check_missed_collection => sub {
 
     $self->$orig($type, $events, $blocked_codes);
 
-    return unless $self->moniker eq 'sutton'; # Sutton only for now
-
     # Now check for any old open missed collections that can be escalated
 
     my $cfg = $self->feature('echo');
@@ -275,8 +273,29 @@ around booked_check_missed_collection => sub {
     $self->{c}->stash->{missed_events} = \%missed;
 };
 
+sub parse_event_missed {
+    my ($self, $orig_event, $event, $events) = @_;
+
+    $event->{resolution} = $orig_event->{ResolutionCodeId};
+    my $missed_codes = $self->waste_bulky_missed_blocked_codes;
+    if ($missed_codes
+        && $event->{resolution}
+        && $missed_codes->{$orig_event->{EventStateId}}
+        && $missed_codes->{$orig_event->{EventStateId}}->{$event->{resolution}}
+    ) {
+        $event->{resolution_reason} = $missed_codes->{$orig_event->{EventStateId}}->{$event->{resolution}};
+    }
+    if ($event->{closed}) {
+        $event->{date} = Integrations::Echo::Events::construct_bin_date($orig_event->{ResolvedDate});
+        $event->{state} = $orig_event->{EventStateId};
+    }
+}
+
 sub _check_for_open_disputes {
     my ($self, $disputes, $guid) = @_;
+
+    # Kingston does not have dispute reports stored our end
+    return ($disputes->list)[0] if $self->moniker eq 'kingston';
 
     my $open_dispute = 0;
     foreach ($disputes->list) {
