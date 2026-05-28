@@ -323,6 +323,59 @@ sub state_groups_inspect {
     ]
 }
 
+=head2 response_template_override
+
+When an update moves a report from planned to confirmed, use the first
+matching response template whose title starts with "Cancelled Job".
+
+=cut
+
+sub response_template_override {
+    my ($self, $problem, $state, $old_state) = @_;
+
+    return unless $old_state eq 'planned' && $state eq 'confirmed';
+
+    return $problem->response_templates->search({
+        'me.title' => { -like => 'Cancelled Job%' },
+    }, {
+        order_by => 'me.title',
+    })->first;
+}
+
+
+=head2 validate_response_template
+
+Performs some custom validation for templates whose title start with 'Cancelled Job':
+can't be auto-response; can't be for an external status code; must be for 'confirmed' state.
+
+=cut
+
+sub validate_response_template {
+    my ($self, $template) = @_;
+
+    return unless ($template->title || '') =~ /^Cancelled Job/;
+
+    my %errors;
+
+    my $prefix = 'Templates whose title starts with "Cancelled Job" are reserved for cancelled job handling and';
+
+    if (($template->state || '') ne 'confirmed') {
+        $errors{state} =
+            "$prefix must use the Open state.";
+    }
+
+    if ($template->external_status_code) {
+        $errors{external_status_code} =
+            "$prefix cannot use an external status code.";
+    }
+
+    if ($template->auto_response) {
+        $errors{auto_response} =
+            "$prefix cannot be set as auto-response.";
+    }
+
+    return %errors ? \%errors : undef;
+}
 
 =head2 validate_response_template_external_status_code
 

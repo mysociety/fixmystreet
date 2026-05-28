@@ -8,6 +8,8 @@ use Test::More;
 use Test::MockModule;
 use Test::MockTime qw(:all);
 use LWP::Protocol::PSGI;
+use Open311;
+use Open311::GetUpdates;
 use t::Mock::MyGovScotOIDC;
 
 my $mech = FixMyStreet::TestMech->new;
@@ -754,6 +756,172 @@ subtest 'admin template external_status_code validation' => sub {
                 }
             };
         }
+
+        $mech->log_out_ok;
+    };
+};
+
+subtest 'planned->confirmed uses Cancelled Job template override' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['dumfries'],
+    }, sub {
+        my $test_problem = FixMyStreet::DB->resultset('Problem')->create({
+            postcode           => 'DG1 1AA',
+            bodies_str         => $body->id,
+            areas              => ',2656,',
+            category           => 'Potholes',
+            title              => 'Cancelled Job override test problem',
+            detail             => 'Test detail',
+            used_map           => 1,
+            name               => 'Reporter',
+            anonymous          => 0,
+            state              => 'planned',
+            confirmed          => DateTime->now->subtract(days => 1),
+            lastupdate         => DateTime->now->subtract(days => 1),
+            latitude           => 55.0706,
+            longitude          => -3.9568,
+            user_id            => $reporter->id,
+            cobrand            => 'dumfries',
+            external_id        => 'dumfries-open311-cancelled-job-1',
+        });
+
+        my $normal_template = FixMyStreet::DB->resultset('ResponseTemplate')->create({
+            body_id => $body->id,
+            title => 'Normal Confirmed Auto Template',
+            text => 'Normal confirmed template text',
+            auto_response => 1,
+            state => 'confirmed',
+            external_status_code => '',
+        });
+
+        my $cancelled_job_template = FixMyStreet::DB->resultset('ResponseTemplate')->create({
+            body_id => $body->id,
+            title => 'Cancelled Job - Planned to Confirmed',
+            text => 'Cancelled job template text',
+            auto_response => 0,
+            state => 'confirmed',
+            external_status_code => '',
+        });
+
+        my $open311 = Open311->new(endpoint => 'http://example.com', jurisdiction => 'dumfries');
+        my $updates = Open311::GetUpdates->new(
+            current_open311 => $open311,
+            current_body => $body,
+            system_user => $staff_user,
+        );
+
+        subtest 'override applies for planned->confirmed transition via update processing' => sub {
+            my $request = {
+                comment_time => DateTime->now,
+                status => 'OPEN',
+                description => '',
+                update_id => 'cancelled-job-override-1',
+                external_status_code => '',
+            };
+
+            my $comment = $updates->process_update($request, $test_problem);
+            ok $comment, 'Update comment created';
+            is $comment->text, 'Cancelled job template text',
+                'Cancelled Job template text used for planned->confirmed';
+            is $comment->problem_state, 'confirmed',
+                'Comment state is confirmed';
+
+            $test_problem->discard_changes;
+            is $test_problem->state, 'confirmed',
+                'Problem moved to confirmed';
+        };
+
+        subtest 'override does not apply outside planned->confirmed transition' => sub {
+            $test_problem->update({
+                state => 'investigating',
+                lastupdate => DateTime->now->subtract(hours => 1),
+            });
+            $test_problem->discard_changes;
+
+            my $request = {
+                comment_time => DateTime->now,
+                status => 'OPEN',
+                description => '',
+                update_id => 'cancelled-job-override-2',
+                external_status_code => '',
+            };
+
+            my $comment = $updates->process_update($request, $test_problem);
+            ok $comment, 'Second update comment created';
+            is $comment->text, 'Normal confirmed template text',
+                'Normal template used when transition is not planned->confirmed';
+        };
+
+        $test_problem->comments->delete;
+        $normal_template->delete;
+        $cancelled_job_template->delete;
+        $test_problem->delete;
+    };
+};
+
+subtest 'admin validates reserved Cancelled Job templates' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['dumfries'],
+    }, sub {
+        $mech->log_in_ok($superuser->email);
+
+        subtest 'auto-response set on Cancelled Job title is rejected' => sub {
+            $mech->get_ok('/admin/templates/' . $body->id . '/new');
+            $mech->submit_form_ok({ with_fields => {
+                title => 'Cancelled Job - Reserved Template',
+                text => 'Template text',
+                state => 'confirmed',
+                auto_response => 'on',
+            } });
+
+            is $mech->uri->path, '/admin/templates/' . $body->id . '/new',
+                'Not redirected when reserved template is set as auto-response';
+            $mech->content_contains('reserved for cancelled job handling and cannot be set as auto-response',
+                'Reserved-template validation message shown');
+        };
+
+        subtest 'Cancelled Job title must use Open state' => sub {
+            $mech->get_ok('/admin/templates/' . $body->id . '/new');
+            $mech->submit_form_ok({ with_fields => {
+                title => 'Cancelled Job - Wrong State',
+                text => 'Template text',
+                state => 'investigating',
+            } });
+
+            is $mech->uri->path, '/admin/templates/' . $body->id . '/new',
+                'Not redirected when reserved template uses non-open state';
+            $mech->content_contains('reserved for cancelled job handling and must use the Open state',
+                'Open-state validation message shown');
+        };
+
+        subtest 'Cancelled Job title cannot use external status code' => sub {
+            $mech->get_ok('/admin/templates/' . $body->id . '/new');
+            $mech->submit_form_ok({ with_fields => {
+                title => 'Cancelled Job - External Code',
+                text => 'Template text',
+                state => 'confirmed',
+                external_status_code => 'status1:outcome1:priority1',
+            } });
+
+            is $mech->uri->path, '/admin/templates/' . $body->id . '/new',
+                'Not redirected when reserved template uses external status code';
+            $mech->content_contains('reserved for cancelled job handling and cannot use an external status code',
+                'External status code validation message shown');
+        };
+
+        subtest 'Cancelled Job title without auto-response is allowed' => sub {
+            $mech->get_ok('/admin/templates/' . $body->id . '/new');
+            $mech->submit_form_ok({ with_fields => {
+                title => 'Cancelled Job - Manual Template',
+                text => 'Template text',
+                state => 'confirmed',
+            } });
+
+            is $mech->uri->path, '/admin/templates/' . $body->id,
+                'Redirected when Cancelled Job template is not auto-response';
+            $mech->delete_response_template($_)
+                for $body->response_templates->search({ title => 'Cancelled Job - Manual Template' });
+        };
 
         $mech->log_out_ok;
     };
