@@ -12,7 +12,11 @@
 [% ELSIF unit.report_locked_out %]
   [% IF c.cobrand.moniker == 'sutton' AND unit.dispute_allowed %]
     <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Missed+collection+dispute&amp;service_id=[% unit.service_id %][% '&amp;booking_id=' _ original_booking IF original_booking %][% '&amp;report_id=' _ unit.report_id IF unit.report_id %][% '&amp;event_id=' _ unit.event_id IF unit.event_id %]" class="waste-service-link waste-service-descriptor">Report a problem with this missed collection</a>
-  [% ELSIF c.cobrand.moniker == 'sutton' AND unit.dispute_open %]
+  [% ELSIF c.cobrand.moniker == 'kingston' AND unit.dispute_allowed %]
+    [% # Link to Granicus form %]
+    [% # XXX Will need a live version for live site %]
+    <a href="https://kingston-self.test.achieveservice.com/service/Raise_a_waste_dispute_in_Kingston?uprn=[% property.uprn %]&service_id=[% unit.service_id %][% IF unit.event_id %]&event_id=[% unit.event_id %][% END %]">Report a problem with this missed collection</a>
+  [% ELSIF ( c.cobrand.moniker == 'sutton' || c.cobrand.moniker == 'kingston' ) AND unit.dispute_open %]
     We are investigating the problem with this collection.
   [% ELSE %]
   <span class="waste-service-descriptor">A missed collection cannot be reported;
@@ -30,4 +34,3 @@
       [% PROCESS 'waste/_service_missed_fallback.html' %]
   </span>
 [% END %]
-

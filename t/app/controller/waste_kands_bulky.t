@@ -848,8 +848,7 @@ FixMyStreet::override_config {
             EventStateId => 19185,
         } ] } );
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('A missed collection cannot be reported', 'Not completed');
-        $mech->content_contains('Gate locked');
+        $mech->content_contains('Report a problem with this missed collection', 'Not completed - can raise dispute');
         $mech->get_ok('/waste/12345/report');
         $mech->content_lacks('Bulky waste collection');
         $echo->mock( 'GetEventsForObject', sub { [ {

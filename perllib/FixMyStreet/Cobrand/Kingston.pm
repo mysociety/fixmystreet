@@ -686,4 +686,21 @@ sub bulky_show_location_field_mandatory { 0 }
 
 sub bulky_disabled_location_photo { 1 }
 
+=head2 Disputes
+
+=cut
+
+=head2 waste_check_can_raise_dispute
+
+Checks if disputes can be raised for the service and resolution text.
+
+=cut
+
+sub waste_check_can_raise_dispute {
+    my ($self, $service_id, $resolution) = @_;
+
+    # XXX Kingston only allows disputes against certain resolution codes
+    return 1;
+}
+
 1;

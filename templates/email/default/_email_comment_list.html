@@ -21,16 +21,22 @@
         [% '(' _ cobrand.prettify_dt(update.confirmed) _ ') ' IF cobrand.include_time_in_update_alerts -%]
       </p>
       [% END %]
-      [% IF cobrand.moniker == 'sutton' AND (report.category == 'Report missed collection' OR report.category == 'Complaint against time') AND (update.item_problem_state == 'closed' OR update.item_problem_state == 'unable to fix') %]
-      [% IF report.category == 'Report missed collection' %]
-      <p>
-        Our crews reported your collection was not made for the reason above.
-      </p>
-      [% END %]
+      [% IF ( cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston' ) AND (report.category == 'Report missed collection' OR report.category == 'Complaint against time') AND (update.item_problem_state == 'closed' OR update.item_problem_state == 'unable to fix') %]
+        [% IF report.category == 'Report missed collection' %]
+          <p>
+            Our crews reported your collection was not made for the reason above.
+          </p>
+        [% END %]
 
-      <p>
-      <a href="[% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') %]/enquiry?category=Missed+collection+dispute&service_id=[% report.get_extra_field_value('service_id') %]&booking_id=[% report.id %]">Report a problem with this missed collection</a>
-      </p>
+        <p>
+        [% IF cobrand.moniker == 'kingston' %]
+          [% # Link to Granicus form %]
+          [% # XXX Will need a live version for live site %]
+          <a href="https://kingston-self.test.achieveservice.com/service/Raise_a_waste_dispute_in_Kingston?uprn=[% report.uprn %]&service_id=[% report.get_extra_field_value('service_id') %]">Report a problem with this missed collection</a>
+        [% ELSE %]
+          <a href="[% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') %]/enquiry?category=Missed+collection+dispute&service_id=[% report.get_extra_field_value('service_id') %]&booking_id=[% report.id %]">Report a problem with this missed collection</a>
+        [% END %]
+        </p>
       [% END %]
     [% END %]
     </div>
