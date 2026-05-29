@@ -98,18 +98,14 @@ sub item_list : Private {
     my $max_items = $c->stash->{booking_maximum};
     my $field_list = [];
 
-    my $hint = $c->cobrand->moniker eq 'merton'
-      ? 'Describe the item to help our crew pick up the right thing. <b>Do not</b> include personal details or location information'
-      : 'Describe the item to help our crew pick up the right thing';
-
     my $notes_field = {
         type => 'TextArea',
         label => 'Item note',
         maxlength => 100,
-        tags => { hint => FixMyStreet::Template::SafeString->new($hint) },
+        tags => { hint => 'Describe the item to help our crew pick up the right thing' },
     };
     $notes_field->{maxlength} = 255 if $c->cobrand->moniker eq 'merton';
-    if (!$c->cobrand->bulky_item_notes_field_mandatory && $c->cobrand->moniker ne 'merton') {
+    if (!$c->cobrand->bulky_item_notes_field_mandatory) {
         $notes_field->{label} .= ' (optional)';
     }
 

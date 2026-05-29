@@ -212,11 +212,8 @@ FixMyStreet::override_config {
         subtest 'Intro page' => sub {
             $mech->content_contains('Book a bulky waste collection');
             $mech->content_contains('Before you book');
-            $mech->content_contains('There are <strong>six</strong> stages you need to complete to make a booking');
-            for my $subheading ('Your details', 'Choose date for collection', 'Add items for collection', 'Add location details', 'Booking Summary', 'Make payment') {
-                $mech->content_contains($subheading . ':', "Merton specific sections appear");
-            }
-            $mech->content_contains('The price depends on how many items you would like collected');
+            $mech->content_contains('You can request up to <strong>six items per collection');
+            $mech->content_contains('The price depends on how many items you would like collected:');
             $mech->content_contains('1 to 3 items cost £37.00');
             $mech->content_contains('4 to 6 items cost £60.75');
             $mech->submit_form_ok;
@@ -260,7 +257,7 @@ FixMyStreet::override_config {
                 },
             },
         );
-        $mech->content_contains('<strong>Items must be out for collection by 6am on the collection day</strong>. Our crew will not enter your home or collect items from your back garden or inside a bin store.');
+        $mech->content_contains('Items must be out for collection by 6am on the collection day.');
         $mech->submit_form_ok({ with_fields => { location => '' } }, 'Will error with a blank location');
         $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
 
