@@ -54,31 +54,43 @@
     <li>You can request up to <strong>[% c.stash.booking_maximum | numwords %] items per collection</strong></li>
   [% END %]
 
-  [% IF cfg.band1_price %]
-    [%
-        SET band1_items = cfg.band1_max;
-        SET max_items = cfg.items_per_collection_max;
-        SET base_price = cfg.base_price / 100;
-        SET band1_price = cfg.band1_price / 100;
-        SET base_pop_price = (cfg.base_pop_price OR 0) / 100;
-        SET band1_pop_price = (cfg.band1_pop_price OR 0) / 100;
-    %]
-    <li>The price depends on how many items you would like collected:
-        <ul class="bulky-intro-pricing">
-            <li class="bulky-intro-pricing">
-                1 to [% band1_items %] items cost £[% pounds(band1_price) %]
-                [% IF cfg.pop_costs %]
-                    (£[% pounds(band1_pop_price) %] if any item contains POPs)
-                [% END %]
-            </li>
-            <li class="bulky-intro-pricing">
-                [% band1_items+1 %] to [% max_items %] items cost £[% pounds(base_price) %]
-                [% IF cfg.pop_costs %]
-                    (£[% pounds(base_pop_price) %] if any item contains POPs)
-                [% END %]
-            </li>
-        </ul>
-    </li>
+  [% IF c.cobrand.moniker != 'merton' %]
+    [% IF cfg.band1_price %]
+      [%
+          SET band1_items = cfg.band1_max;
+          SET max_items = cfg.items_per_collection_max;
+          SET base_price = cfg.base_price / 100;
+          SET band1_price = cfg.band1_price / 100;
+          SET base_pop_price = (cfg.base_pop_price OR 0) / 100;
+          SET band1_pop_price = (cfg.band1_pop_price OR 0) / 100;
+      %]
+      <li>The price depends on how many items you would like collected:
+          <ul class="bulky-intro-pricing">
+              <li class="bulky-intro-pricing">
+                  1 to [% band1_items %] items cost £[% pounds(band1_price) %]
+                  [% IF cfg.pop_costs %]
+                      (£[% pounds(band1_pop_price) %] if any item contains POPs)
+                  [% END %]
+              </li>
+              <li class="bulky-intro-pricing">
+                  [% band1_items+1 %] to [% max_items %] items cost £[% pounds(base_price) %]
+                  [% IF cfg.pop_costs %]
+                      (£[% pounds(base_pop_price) %] if any item contains POPs)
+                  [% END %]
+              </li>
+          </ul>
+      </li>
+    [% END %]
+  [% ELSE %]
+    <li>Bulky waste collections are currently free of charge for households in Merton</li>
+  [% END %]
+
+  [% IF c.cobrand.moniker == 'merton' %]
+    <li>Every Merton household can book one free bulky waste collection of up to 3 items each year</li>
+    <li>Paid-for collections will be available later this year</li>
+    <li>If you book more than one free collection in the same year, only your first booking can be honoured</li>
+    <li>Once you confirm your booking it cannot be amended or cancelled. If you do not use it, you cannot book another free collection that year.</li>
+    <li>You must be up-to-date with Council Tax payments to use this service</li>
   [% END %]
 
   [% IF c.cobrand.moniker != 'bromley' AND c.cobrand.moniker != 'kingston' AND c.cobrand.moniker != 'sutton' %]
@@ -95,8 +107,12 @@
 
     <li>Before confirming your booking, please check all the information provided is correct</li>
 
-    [% IF cobrand.moniker == 'kingston' || cobrand.moniker == 'sutton' || cobrand.moniker == 'merton' %]
+    [% IF cobrand.moniker == 'kingston' || cobrand.moniker == 'sutton' %]
     <li>Bookings are final and non refundable</li>
+    [% END %]
+
+    [% IF c.cobrand.moniker == 'merton' %]
+      <li>The bulky waste service will open for second and larger collections during October 2026</li>
     [% END %]
 
   [% END %] [% # End of not-Bexley %]
