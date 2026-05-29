@@ -116,7 +116,12 @@ has_page summary => (
         my $data = $form->saved_data;
         my $new = _renumber_items($data, $form->c->stash->{booking_maximum});
         %$data = %$new;
-        return {};
+
+        my $fields = {};
+        my $c = $form->c;
+        $fields->{submit}{tags}{hint} = '' if $c->cobrand->moniker eq 'merton';
+        $fields->{submit}{value} = 'Continue' if $c->cobrand->moniker eq 'merton';
+        return $fields;
     },
     # Return to 'Choose date' page if slot has been taken in the meantime.
     # Otherwise, proceed to payment.

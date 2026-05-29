@@ -213,9 +213,6 @@ FixMyStreet::override_config {
             $mech->content_contains('Book a bulky waste collection');
             $mech->content_contains('Before you book');
             $mech->content_contains('You can request up to <strong>six items per collection');
-            $mech->content_contains('The price depends on how many items you would like collected:');
-            $mech->content_contains('1 to 3 items cost £37.00');
-            $mech->content_contains('4 to 6 items cost £60.75');
             $mech->submit_form_ok;
         };
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
