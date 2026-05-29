@@ -928,6 +928,7 @@ sub response_templates {
 
 sub response_template_for {
     my ($self, $body, $state, $old_state, $ext_code, $old_ext_code) = @_;
+    my $cobrand = $body->get_cobrand_handler;
 
     # Response templates are only triggered if the state/external status has changed.
     # And treat any fixed state as fixed.
@@ -943,8 +944,6 @@ sub response_template_for {
             push @$state_params, { 'me.state' => $state, 'me.external_status_code' => ["", undef] };
         }
         if ($ext_code_changed) {
-            my $cobrand = $body->get_cobrand_handler;
-
             # Allow cobrands to use regex matching for wildcard patterns in templates
             if (my $regex_match = $cobrand && $cobrand->call_hook(
                 response_template_external_status_code_regex_match => $ext_code
@@ -972,6 +971,14 @@ sub response_template_for {
             auto_response => 1,
             -or => $state_params,
         }, $order )->first;
+
+        if ($cobrand) {
+            $template = $cobrand->call_hook(
+                response_template_override => $self,
+                $state,
+                $old_state,
+            ) || $template;
+        }
     }
     return $template;
 }

@@ -623,11 +623,9 @@ sub munge_reports_area_list {
 sub munge_report_new_contacts {
     my ($self, $contacts) = @_;
 
-    if ($self->{c}->stash->{categories_for_point}) {
-        # Have come from an admin tool
-    } else {
-        @$contacts = grep { !$_->get_extra_metadata('type') } @$contacts;
-    }
+    # Ignore contacts with a special type (i.e. form types here)
+    # Even if we're on an admin page, to prevent miscategorising
+    @$contacts = grep { !$_->get_extra_metadata('type') } @$contacts;
 }
 
 sub disable_login_for_email {
