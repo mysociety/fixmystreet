@@ -682,7 +682,9 @@ Do not try and send updates to the ATAK or Symology backends.
 sub should_skip_sending_update {
     my ($self, $update) = @_;
 
-    my $code = $update->problem->contact->email;
+    my $code = $update->problem->contact;
+    return 1 unless $code; # No category found
+    $code = $code->email;
     return 1 if $code =~ /^(ATAK|Symology)/;
     return 0;
 }
