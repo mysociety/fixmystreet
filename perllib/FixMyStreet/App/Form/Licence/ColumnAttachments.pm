@@ -49,41 +49,11 @@ has_page location_1 => (
     },
 );
 
-foreach my $page (2..5) {
-    my $next = 'dates';
-    my $fields = ["building_name_number_$page", "street_name_$page", "borough_$page", "postcode_$page", 'continue'];
-    if ($page < 5) {
-        $next = sub { $_[1]->{add_another} ? 'location_' . ($page+1) : 'dates' };
-        push @$fields, 'add_another';
-    }
-    has_page "location_$page" => (
-        step_number => 1,
-        fields => $fields,
-        update_field_list => sub {
-            my $data = $_[0]->saved_data;
-            return {
-                "street_name_$page" => { default => $data->{street_name} },
-                "borough_$page" => { default => $data->{borough} },
-            }
-        },
-        title => "Location of the Column Attachments ($page)",
-        intro => 'column-attachments/location.html',
-        next => $next,
-        tags => { hide => sub { !$_[0]->form->saved_data->{"building_name_number_$page"} } },
-    );
-    has_field "building_name_number_$page" => ( type => 'Text', label => 'Building name / number', required => 1 );
-    has_field "street_name_$page" => ( type => 'Text', label => 'Street name', disabled => 1 );
-    has_field "borough_$page" => ( type => 'Text', label => 'Borough', disabled => 1 );
-    has_field "postcode_$page" => ( type => 'Text', label => 'Postcode', required => 1 );
-}
-
-has_field 'add_another' => (
-    type => 'Submit',
-    value => 'Add another',
-    element_attr => {
-        class => 'govuk-button govuk-button--secondary',
-    },
-);
+with 'FixMyStreet::App::Form::Licence::Fields::MultipleLocations' => {
+    pages => 5,
+    title => 'Location of the Column Attachments',
+    template => 'column-attachments/location.html',
+};
 
 # ==========================================================================
 # Column Attachments activity
