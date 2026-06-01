@@ -629,7 +629,7 @@ sub bulky_allowed_property {
     my ( $self, $property ) = @_;
     return 1 if $self->bulky_enabled && $property->{has_bulky_service};
 }
-sub bulky_collection_window_days { 28 }
+sub bulky_collection_window_days { 56 }
 
 =item bulky_open_overdue
 
