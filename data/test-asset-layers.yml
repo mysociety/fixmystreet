@@ -474,6 +474,20 @@ peterborough:
     template: 'pcc_property_leased_out'
     message_template: '#js-abandoned-vehicles-message'
 
+  - asset_group: ['Street cleansing']
+    template: 'pcc_property_combined'
+    message_template: '#js-street-cleansing-message'
+  - asset_group: ['Street cleansing']
+    template: 'pcc_property_leased_out'
+    message_template: '#js-street-cleansing-message'
+
+  - asset_group: ['Ground maintenance']
+    template: 'pcc_property_combined'
+    message_template: '#js-grounds-maintenance-message'
+  - asset_group: ['Ground maintenance']
+    template: 'pcc_property_leased_out'
+    message_template: '#js-grounds-maintenance-message'
+
 shropshire:
   - http_wfs_url: "https://tilma.mysociety.org/mapserver/shropshire"
     asset_type: 'spot'
