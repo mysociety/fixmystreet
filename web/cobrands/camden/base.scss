@@ -367,6 +367,7 @@ body:not(.admin, .mappage.with-actions) {
   font-size: $nav-font-size-mobile;
   text-decoration: none;
   line-height: 100%;
+  right: 6.5rem;
 
   &:hover {
     border-color: $nav_colour;
