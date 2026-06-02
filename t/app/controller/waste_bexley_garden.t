@@ -1706,9 +1706,9 @@ FixMyStreet::override_config {
                     unlike $mech->content,
                         qr/Change your brown wheelie bin subscription/,
                         'cannot amend subscription';
-                    unlike $mech->content,
+                    like $mech->content,
                         qr/Cancel your brown wheelie bin subscription/,
-                        'cannot cancel';
+                        'can still cancel';
                 };
             };
         };
