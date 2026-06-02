@@ -47,34 +47,11 @@ has_page location_1 => (
     },
 );
 
-for my $page (2..10) {
-    my $next = 'dates';
-    my $fields = ["building_name_number_$page", "street_name_$page", "borough_$page", "postcode_$page", 'continue'];
-    if ($page < 10) {
-        $next = sub { $_[1]->{add_another} ? 'location_' . ($page+1) : 'dates' };
-        push @$fields, 'add_another';
-    }
-    has_page "location_$page" => (
-        step_number => 1,
-        fields => $fields,
-        title => "Location of the temporary traffic signs ($page)",
-        intro => 'location.html',
-        next => $next,
-        tags => { hide => sub { !$_[0]->form->saved_data->{"building_name_number_$page"} } },
-    );
-    has_field "building_name_number_$page" => ( type => 'Text', label => 'Building name / number', required => 1 );
-    has_field "street_name_$page" => ( type => 'Text', label => 'Street name', required => 1 );
-    has_field "borough_$page" => ( type => 'Text', label => 'Borough', required => 1 );
-    has_field "postcode_$page" => ( type => 'Text', label => 'Postcode', required => 1 );
-}
-
-has_field 'add_another' => (
-    type => 'Submit',
-    value => 'Add another',
-    element_attr => {
-        class => 'govuk-button govuk-button--secondary',
-    },
-);
+with 'FixMyStreet::App::Form::Licence::Fields::MultipleLocations' => {
+    pages => 10,
+    title => 'Location of the temporary traffic signs',
+    template => 'temporary-traffic-signs/location.html',
+};
 
 # ==========================================================================
 # Activity/Sign Contents
