@@ -24,6 +24,15 @@
     padding: 2em 0;
 }
 
+.front-main-message {
+    width: 100%;
+
+    svg {
+        height: 1.9rem;
+        width: 1.9rem;
+    }
+}
+
 body:not(.mappage) {
 
     #site-logo {

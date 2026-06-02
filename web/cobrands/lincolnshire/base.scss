@@ -101,6 +101,30 @@ body.mappage .big-green-banner {
     border-bottom: solid 5px $lincs-pop;
     margin: 0 1em;
     padding: 0 0 2em;
+
+    h1 {
+      line-height: 120%;
+    }
+  }
+}
+
+.front-main-message {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: mix($lincs-highlight,#fff, 15%);
+  margin: 1em 0 0;
+  padding: 1em;
+  box-sizing: border-box;
+
+  p {
+    margin-bottom: 0.75rem;
+  }
+
+  svg {
+    height: 1.75rem;
+    width: 1.75rem;
+    vertical-align: middle;
   }
 }
 
