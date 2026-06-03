@@ -460,10 +460,10 @@ sub dashboard_export_problems_add_columns {
         return;
     }
 
+    my $problems_to_user = $self->csv_active_planned_reports;
+
     $csv->csv_extra_data(sub {
         my $report = shift;
-
-        my $agent = $report->shortlisted_user;
 
         my $change = $report->admin_log_entries->search(
             { action => 'category_change' },
@@ -489,7 +489,7 @@ sub dashboard_export_problems_add_columns {
         ) if $closure_email_at;
         my $fields = {
             acknowledged => $report->whensent,
-            assigned_to => $agent ? $agent->name : '',
+            assigned_to => $problems_to_user->{$report->id} || '',
             user_name_display => $user_name_display,
             safety_critical => $safety_critical,
             delivered_to => join(',', @$delivered_to),
