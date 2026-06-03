@@ -2348,7 +2348,7 @@ FixMyStreet::override_config {
             );
             $mech->submit_form_ok(
                 {   with_fields => {
-                        verifications_first_name => 'Verity',
+                        verifications_first_name => 'V', # Test just first letter enough
                         verifications_last_name => 'Wright',
                         email => 'test@example.org',
                     },
