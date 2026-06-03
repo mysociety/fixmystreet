@@ -1,3 +1,4 @@
+use utf8;
 use JSON::MaybeXS;
 use Path::Tiny;
 use Storable qw(dclone);
@@ -238,6 +239,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/request');
         $mech->content_lacks('Other containers', 'Does not contain "other" section if not staff');
         $mech->content_lacks('Blue lid paper and cardboard bin (360L)', 'Container not associated with service not available ');
+        $mech->content_contains('A £18 delivery fee applies for a non-recyclable waste bin (one per property).');
         $mech->submit_form_ok({ with_fields => { 'container-3' => 1 } });
         $mech->content_lacks('request_reason_text', 'Staff only field for extra information absent');
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'new_build' }});
@@ -278,6 +280,7 @@ FixMyStreet::override_config {
             } ] };
         $e->mock('GetServiceUnitsForObject', sub { $dupe });
         $mech->get_ok('/waste/12345/request');
+        $mech->content_contains('There is a £18 cost for this container');
         $mech->submit_form_ok({ with_fields => { 'container-39' => 1 } });
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'new_build' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
