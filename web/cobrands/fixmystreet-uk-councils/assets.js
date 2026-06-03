@@ -1268,6 +1268,25 @@ fixmystreet.assets.lincolnshire.light_not_found = function() {
     }
 };
 
+fixmystreet.assets.lincolnshire.drains_construct_selected_asset_message = function(asset) {
+    var freq = asset.attributes.Cleanse_Frequency.toLowerCase();
+    var last = asset.attributes.Last_Inspection.substring(0, 10);
+    if (last.substring(0, 4) == 'None') {
+        return '';
+    }
+    var out = ['This drain was last cleaned on', last];
+    if (freq != 'not assigned' && freq != 'not for cyclic cleanse') {
+        if (/biennial/.test(freq)) {
+            freq = 'biennial'; // Remove y1/y2
+        }
+        out.push('and is cleaned on');
+        out.push(freq == 'annual' ? 'an' : 'a');
+        out.push(freq, 'basis');
+    }
+    out = out.join(' ') + '.';
+    return out;
+};
+
 /* Merton */
 
 fixmystreet.assets.merton = {};
