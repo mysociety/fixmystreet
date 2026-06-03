@@ -384,6 +384,9 @@ sub waste_munge_request_form_fields {
         if ($cost) {
             my $price = sprintf("£%.2f", $cost / 100);
             $price =~ s/\.00$//;
+            if ($container_to_service{$id} == $SERVICE_IDS{domestic_refuse}) {
+                $value->{option_hint} ||= "A $price delivery fee applies for a non-recyclable waste bin (one per property). Requests are only valid for missing or damaged bins (damaged bins will be collected on delivery). If an undamaged bin is found on site, a new bin will not be delivered, and the fee will not be refunded.";
+            }
             $value->{option_hint} ||= "There is a $price cost for this container";
         }
     }
