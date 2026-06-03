@@ -99,6 +99,12 @@ sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
 
+    # These two roads pass briefly through BANES, but the
+    # geocoder returns a result outside the boundary
+    if ($string =~ /\b(kingdown\s+road|long\s+lane)\b/i) {
+        $string = 'BS40 5AW';
+    }
+
     my $town = 'Bath and North East Somerset';
 
     # The council have provided a list of common typos which we should correct:
