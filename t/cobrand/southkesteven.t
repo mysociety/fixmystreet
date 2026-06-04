@@ -76,6 +76,7 @@ subtest 'Dashboard CSV extra columns' => sub {
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         my ($problem) = $mech->create_problems_for_body(1, $south_kesteven->id, 'Problem', {
+            confirmed => \"current_timestamp - '1 week'::interval",
             areas => "2488", category => 'Flytipping', cobrand => 'southkesteven', state => 'confirmed'});
         $problem->set_extra_fields(
             {name => 'type_of_waste', value => 'garden'},
@@ -83,10 +84,12 @@ subtest 'Dashboard CSV extra columns' => sub {
             {name => 'location', value => 'highway'},
         );
         $problem->update;
+        $staff_user->add_to_planned_reports($problem);
+
         $mech->log_in_ok($staff_user->email);
         $mech->get_ok('/dashboard?export=1');
-        $mech->content_contains('"Reported As","Type of waste","How much waste",Location');
-        ok $mech->content_contains('southkesteven,,garden,small_van,highway');
+        $mech->content_contains('"Reported As","Type of waste","How much waste",Location,"Assigned to"');
+        ok $mech->content_contains('southkesteven,,garden,small_van,highway,Staff');
     };
 };
 
@@ -99,8 +102,8 @@ subtest 'Dashboard CSV pre-generation' => sub {
     }, sub {
         FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
         $mech->get_ok('/dashboard?export=1');
-        $mech->content_contains('"Reported As","Type of waste","How much waste",Location');
-        ok $mech->content_contains('southkesteven,,garden,small_van,highway');
+        $mech->content_contains('"Reported As","Type of waste","How much waste",Location,"Assigned to"');
+        ok $mech->content_contains('southkesteven,,garden,small_van,highway,Staff');
     };
 };
 

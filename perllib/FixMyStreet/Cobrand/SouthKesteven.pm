@@ -108,14 +108,23 @@ sub dashboard_export_problems_add_columns {
         type_of_waste => 'Type of waste',
         how_much => 'How much waste',
         location => 'Location',
+        assigned_to => "Assigned to",
     );
+
+    # Pre-gen export will already be calculating this
+    my $problems_to_user;
+    if (!$csv->dbi) {
+        $problems_to_user = $self->csv_active_planned_reports;
+    }
 
     $csv->csv_extra_data(sub {
         my $report = shift;
+
         my $data = {
             type_of_waste => $csv->_extra_field($report, 'type_of_waste'),
             how_much => $csv->_extra_field($report, 'how_much'),
             location => $csv->_extra_field($report, 'location'),
+            $csv->dbi ? () : (assigned_to => $problems_to_user->{$report->id} || ''),
         };
         return $data;
     });
