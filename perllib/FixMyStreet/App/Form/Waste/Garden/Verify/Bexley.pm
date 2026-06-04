@@ -108,8 +108,10 @@ sub about_you {
                 return $args{next_page};
             }
 
+            my $first_letter = substr(uc($first_name), 0, 1);
+            my $current_first_letter = substr(uc($current_subscription->{customer_first_name}), 0, 1);
             my $name_verified
-                = uc($first_name) eq uc( $current_subscription->{customer_first_name} )
+                = $first_letter eq $current_first_letter
                 && uc($last_name) eq uc( $current_subscription->{customer_last_name} );
 
             if ($name_verified) {
