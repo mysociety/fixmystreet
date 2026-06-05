@@ -161,7 +161,6 @@ sub mock_agile {
                     Surname => '  Wright  ',
                     Email => $params{Email} // 'verity@wright.com',
                     Mobile => $params{Phone} // '+4407222222222',
-                    CustomertStatus => $params{customer_status} // 'ACTIVATED',
                     ServiceContracts => [
                         {
                             EndDate => $end_date,

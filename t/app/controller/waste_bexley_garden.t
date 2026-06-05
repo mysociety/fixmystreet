@@ -1540,7 +1540,6 @@ FixMyStreet::override_config {
                                 Firstname => 'Verity',
                                 Surname => 'Wright',
                                 Email => 'test@example.org',
-                                CustomertStatus => 'INACTIVE',
                                 ServiceContracts => [
                                     {
                                         # Just over 3 months ago - should get ignored
@@ -1685,7 +1684,7 @@ FixMyStreet::override_config {
 
                 subtest 'Ended more than 3 months ago - no renewal option' => sub {
                     # Just over 3 months ago
-                    mock_agile('31/10/2023 12:00', contract_id => 'CONTRACT_OLD', contract_status => 'NOACTIVE', customer_status => 'INACTIVE');
+                    mock_agile('31/10/2023 12:00', contract_id => 'CONTRACT_OLD', contract_status => 'NOACTIVE');
 
                     $mech->get_ok("/waste/$uprn");
                     unlike $mech->content,
@@ -1716,15 +1715,15 @@ FixMyStreet::override_config {
                     $new_sub_report->update;
 
                     # 14 days ago
-                    mock_agile('18/01/2024 12:00', PaymentMethod => 'Direct debit', contract_status => 'NOACTIVE', customer_status => 'INACTIVE');
+                    mock_agile('18/01/2024 12:00', PaymentMethod => 'Direct debit', contract_status => 'NOACTIVE');
 
                     $mech->get_ok("/waste/$uprn");
                     unlike $mech->content,
                         qr/Change your brown wheelie bin subscription/,
                         'cannot amend subscription';
-                    unlike $mech->content,
+                    like $mech->content,
                         qr/Cancel your brown wheelie bin subscription/,
-                        'cannot cancel';
+                        'can still cancel';
                 };
             };
         };
@@ -2099,7 +2098,6 @@ FixMyStreet::override_config {
                         {
                             CustomerExternalReference => 'CUSTOMER_123',
                             CustomerReference => 'GWIT-456',
-                            CustomertStatus => 'ACTIVATED',
                             ServiceContracts => [
                                 {
                                     EndDate => '12/12/2024 12:21',

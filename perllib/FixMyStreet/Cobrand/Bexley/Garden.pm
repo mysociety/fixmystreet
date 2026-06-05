@@ -84,19 +84,6 @@ sub lookup_subscription_for_uprn {
         $customer = $_;
         for ( @$contracts ) {
             next unless $_->{UPRN} == $uprn;
-
-            # NB Options for ServiceContractStatus seem to be
-            # ACTIVE/NOACTIVE/PRECONTRACT/RENEWALDUE.
-            # We only do a check for ServiceContractStatus if payment type
-            # is direct debit, as we otherwise want to continue offering a
-            # renewal option to contracts that were cancelled or expired in
-            # the past 3 months.
-            #
-            # TODO Can we always rely on the first payment type?
-            next
-                if $_->{ServiceContractStatus} eq 'NOACTIVE'
-                && ( $_->{Payments} // [] )->[0]{PaymentMethod} eq 'Direct debit';
-
             # use the first matching customer/contract
             $contract = $_;
             last OUTER if $customer && $contract;
@@ -114,7 +101,10 @@ sub lookup_subscription_for_uprn {
 
     $sub->{payment_method} = $payment_method;
 
-    if ($payment_method eq 'direct_debit') {
+    # NB Options for ServiceContractStatus seem to be
+    # ACTIVE/NOACTIVE/PRECONTRACT/RENEWALDUE.
+
+    if ($payment_method eq 'direct_debit' && $contract->{ServiceContractStatus} ne 'NOACTIVE') {
         # Got an active contract with a DD payment method, nothing due to renew
         $sub->{has_been_renewed} = 1;
     }
