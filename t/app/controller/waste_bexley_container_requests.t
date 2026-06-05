@@ -15,7 +15,6 @@ sub agile_mock_populated {
         Customers => [
             {
                 CustomerExternalReference => 'CUSTOMER_123',
-                CustomertStatus => 'ACTIVATED',
                 ServiceContracts => [
                     {
                         EndDate => '01/02/2025 00:00',
