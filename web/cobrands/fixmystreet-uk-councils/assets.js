@@ -554,6 +554,27 @@ fixmystreet.assets.buckinghamshire.drains_construct_selected_asset_message = fun
     return 'This gulley was last cleaned on ' + bucks_format_date(asset.attributes.last_cleaned_date);
 };
 
+fixmystreet.assets.buckinghamshire.verge_found = function(layer, feature) {
+    fixmystreet.assets.named_select_action_found.call(layer, feature);
+};
+fixmystreet.assets.buckinghamshire.verge_not_found = function(layer) {
+    fixmystreet.assets.named_select_action_not_found.call(layer);
+};
+fixmystreet.assets.buckinghamshire.verge_construct_selected_asset_message = function(asset) {
+    if (!asset.attributes.start_time) {
+        return '';
+    }
+    var regExDate = /([0-9]{4})-([0-9]{2})-([0-9]{2})/;
+    var myMatch = regExDate.exec(asset.attributes.start_time);
+    if (!myMatch) {
+        return '';
+    }
+    var months = [ "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December" ];
+    var month = months[myMatch[2]-1];
+    return 'This grass is due to be cut in ' + month + ' ' + myMatch[1];
+};
+
 fixmystreet.assets.buckinghamshire.street_found = function(layer, feature) {
     var map = {
         "HE": '#js-not-council-road-he',
