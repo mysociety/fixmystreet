@@ -554,6 +554,19 @@ fixmystreet.assets.buckinghamshire.drains_construct_selected_asset_message = fun
     return 'This gulley was last cleaned on ' + bucks_format_date(asset.attributes.last_cleaned_date);
 };
 
+fixmystreet.assets.buckinghamshire.verge_found = function(layer, feature) {
+    fixmystreet.assets.named_select_action_found.call(layer, feature);
+};
+fixmystreet.assets.buckinghamshire.verge_not_found = function(layer) {
+    fixmystreet.assets.named_select_action_not_found.call(layer);
+};
+fixmystreet.assets.buckinghamshire.verge_construct_selected_asset_message = function(asset) {
+    if (!asset.attributes.start_time) {
+        return '';
+    }
+    return 'This grass is due to be cut on ' + bucks_format_date(asset.attributes.start_time);
+};
+
 fixmystreet.assets.buckinghamshire.street_found = function(layer, feature) {
     var map = {
         "HE": '#js-not-council-road-he',
