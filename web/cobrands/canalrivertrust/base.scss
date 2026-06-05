@@ -1,0 +1,296 @@
+@import "../sass/h5bp";
+@import "_variables";
+@import "_fonts";
+@import "../sass/mixins";
+
+@import "../sass/base";
+
+/*TYPOGRAPHY */
+h1 {
+  font-size: 1.9rem;
+}
+
+h1, .h1,
+h2, .h2,
+h3, .h3, 
+.item-list__heading {
+    font-weight: 500;
+    color: $cobrand_black_headings;
+}
+
+body {
+  p {
+    font-weight: 300;
+  }
+}
+
+/* INPUT */
+.govuk-label {
+  font-size: 1rem;
+}
+
+.govuk-small .govuk-multi-select__label {
+  font-size: 0.9rem;
+}
+
+
+/* BUTTONS */
+
+// The button size for their buttons in their website is
+// 1.275rem but that makes the button quite which might cause conflicts.
+
+.btn-crt, .btn {
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
+  border-radius: 50px;
+  text-decoration: none;
+}
+
+.postcode-form-box input#sub:focus {
+  &:focus {
+    background-color: $cobrand_blue_800;
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+a#geolocate_link {
+  @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text,$focus-bg-bottom: $button-primary-focus-bg-bottom, $focus-bg-top: $button-primary-focus-bg-top, $focus-border: $button-primary-focus-border, $focus-text: $button-primary-focus-text);
+  text-decoration: none;
+  @extend .btn-crt;
+}
+
+#report-cta {
+  @include button-variant($bg-top: $button-secondary-bg-top, $bg-bottom: $button-secondary-bg-bottom, $border: $button-secondary-border, $text: $button-secondary-text, $hover-bg-bottom: $button-secondary-hover-bg-bottom, $hover-bg-top: $button-secondary-hover-bg-top, $hover-border: $button-secondary-hover-border, $hover-text: $button-secondary-hover-text,$focus-bg-bottom: $button-secondary-focus-bg-bottom, $focus-bg-top: $button-secondary-focus-bg-top, $focus-border: $button-secondary-focus-border, $focus-text: $button-secondary-focus-text);
+  padding: 1em 1em;
+  font-weight: 500;
+  @extend .btn-crt;
+}
+
+a,
+.fake-link {
+  &:focus-visible {
+    outline: 3px solid $cobrand_yellow;
+  }
+}
+
+/* NAVBAR */
+#site-logo {
+  background-image: url("/cobrands/canalrivertrust/images/logo.svg");
+  background-size: auto 4rem;
+  height: 5rem;
+}
+
+.nav-menu--main {
+  a {
+    background-color: $cobrand_white;
+    color: $primary;
+    text-decoration: none;
+
+    &:visited {
+      color: $primary;
+    }
+  }
+
+  span {
+    background-color: $primary;
+    color: $primary_text;
+  }
+}
+
+/* FRONTPAGE */
+#front-main {
+  margin: 2em 0;
+}
+
+#front-main-container {
+  border-radius: 0.375rem;
+}
+
+.postcode-form-box {
+  input#sub {
+    font-family: $body-font;
+    background-color: $button-primary-bg-top;
+
+    &:hover {
+      background-color: $button-primary-hover-bg-top;
+      color: $button-primary-text;
+    }
+  }
+}
+
+/* OTHERS */
+.item-list__item {
+  a {
+    text-decoration: none;
+  }
+}
+
+/* SITE MESSAGE */
+.site-message {
+  // Took from https://www.figma.com/design/pgFRt1j7ayP0C7UKV7Tm46/CRT-Design-System--1-?node-id=6340-3505&m=dev
+  background-color: $cobrand_blue_800;
+  color: $primary_text;
+  padding: 1.5rem;
+  border: none;
+  word-wrap: break-word;
+
+  a {
+    color: $primary_text;
+    text-decoration: underline;
+
+    &:hover, &:focus {
+      text-decoration: none;
+      color: $primary_text;
+    }
+  }
+}
+
+/* DARK THEME */
+@media (prefers-color-scheme: dark) {
+  // General
+  body,
+  .pagination,
+  #front-main-container,
+  #front-main-container .report-forms-wrapper,
+  .frontpage .content {
+    @include true-black();
+  }
+
+  // Typography 
+  h1, .h1, h2, .h2, h3, .h3,
+  .meta-2,
+  #front-main-container h1,
+  .frontpage h2,
+  .item-list__heading {
+    color: $cobrand_white;
+  }
+
+  .form-hint,
+  .form-section-description,
+  .confirmation-header p,
+  #front-main-container h2,
+  #front-main-container .report-forms-wrapper .form-hint,
+  .item-list__description,
+  .item-list--reports__item small,
+  .item-list--reports__item .small-print,
+  .item-list__item small,
+  .item-list__item .small-print,
+  .item-list__item--indented h3 {
+    color: rgba($cobrand_white, 0.8);
+  }
+
+  // Buttons
+  .btn {
+    color: #000 !important; // Overrides .btn in _base
+    &:hover { color: $primary !important; }
+  }
+
+  .btn-primary,
+  .btn--primary,
+  a#geolocate_link {
+    border-color: $cobrand_white !important;
+    color: $cobrand_white !important; // Overrides .btn
+    &:hover { color: $cobrand_white !important; } // Overrides .btn
+  }
+
+  // Forms & inputs
+  .govuk-input,
+  .form-control {
+    background-color: $cobrand_white;
+    color: #000;
+  }
+
+  .multi-select-menu,
+  .govuk-select,
+  .sort-select {
+    color: #000;
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #000 !important;
+    -webkit-box-shadow: 0 0 0px 1000px #fff inset !important;
+  }
+
+  .js #photoForm {
+    border: 1px solid $cobrand_white;
+    z-index: 4;
+  }
+
+  .postcode-form-box div {
+    border-color: $cobrand_white;
+  }
+
+  .problem-back:link, .problem-back:visited, .problem-back:hover {
+    color: rgba($cobrand_white, 0.8);
+  }
+
+  // Components
+  .description_tips {
+    background: white;
+    padding: 0.5rem;
+    border-radius: 4px;
+  }
+
+  .floating-button {
+    background-color: #000;
+    box-shadow: 0 0 2em 2em #000;
+  }
+
+  html.js .form-section-preview {
+    background-color: #000;
+  }
+
+  .item-list--reports__item,
+  .item-list__item {
+    background-color: #000;
+
+    &:hover, &:focus, &:focus-within {
+      a { background: #5A5A5A; }
+    }
+  }
+
+  .item-list__item__shortlist-add {
+    background-image: url(/cobrands/fixmystreet/images/icon-shortlist-inactive-dark-theme.svg);
+  }
+
+  .dropzone {
+    background: $cobrand_white;
+    color: #000;
+
+    &:hover { background-color: #D2D4FD; }
+    &:focus {
+      background-color: #D2D4FD;
+      outline: 3px solid $cobrand_yellow;
+    }
+  }
+
+  // Admin
+  .box-warning,
+  .fms-admin-warning,
+  .admin table tr.is-deleted {
+    background-color: #7b0505;
+  }
+
+  .box-warning {
+    background-color: #010775;
+  }
+
+  .fms-admin-info {
+    background-color: #005f00;
+  }
+}
+
+.olMapViewport {
+    background-color: #fff;
+}
+
+.olLayerGrid, .olBackBuffer {
+    opacity: 0.3;
+}
+
+@import "../fixmystreet-uk-councils/societyworks-footer";
