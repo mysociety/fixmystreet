@@ -144,6 +144,12 @@ sub waste_munge_bin_services_open_requests {
     if ($open_requests->{$CONTAINERS{paper_140}}) {
         $open_requests->{$CONTAINERS{paper_240}} = $open_requests->{$CONTAINERS{paper_140}};
     }
+
+    my $wd = FixMyStreet::WorkingDays->new();
+    for my $req (values %$open_requests) {
+        next unless $req;
+        $req->{expected_date} = $wd->add_days($req->{date}, $self->wasteworks_config->{request_timeframe_raw})->set_hour(0);
+    }
 }
 
 sub image_for_unit {
@@ -601,6 +607,56 @@ sub waste_munge_request_data {
         }
         $c->set_param('payment', $cost || undef); # Want to undefine it if free
     }
+}
+
+=head2 waste_target_days
+
+Configure the number of days a waste event is expected to be resolved in.
+
+=cut
+
+sub waste_target_days {
+    {
+        container_escalation => 5,
+        missed => 2,
+        missed_escalation => 1,
+        missed_bulky => 2,
+        missed_bulky_escalation => 2,
+    }
+}
+
+=head2 waste_day_end_hour
+
+Time that the day ends for the purposes of calculating things like escalation windows
+
+=cut
+
+sub waste_day_end_hour { 0; }
+
+=head2 waste_escalation_window
+
+Configure when the escalation window for waste complaints starts/ends.
+
+=cut
+
+sub waste_escalation_window {
+    my $lengths = {
+        missed_start => 3, # 2 days, plus 1 because time is from 00:00 on missed report day
+        missed_length_weekly => 1,
+        missed_length_fortnightly => 1,
+        container_start => 10,
+        container_length => 10,
+        bulky_start => 3, # 2 days, plus 1 because time is from 00:00 on missed report day
+        bulky_length => 2,
+    };
+    # use smaller windows on staging for testing
+    if (FixMyStreet->config('STAGING_SITE') && !FixMyStreet->test_mode) {
+        for (keys %$lengths) {
+            $lengths->{$_} = 1;
+        }
+    }
+
+    return $lengths;
 }
 
 =head2 container_cost / admin_fee_cost

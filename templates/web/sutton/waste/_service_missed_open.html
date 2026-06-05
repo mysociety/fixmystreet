@@ -3,7 +3,11 @@ A [% unit.service_name FILTER lower %] collection was reported as missed
     by yourself, a neighbour, or your Managing Agent
 [% END %]
 on [% date.format(unit.report_open.date, '%A, %-d %B') %].
-We aim to resolve missed collection reports within 2 working days (Monday to Friday).
+[% IF booked_missed AND NOT unit.escalations.missed_open %]
+We aim to resolve this by [% date.format(booked_missed.target, '%A, %-d %B') %].
+[% ELSIF unit.report_open AND NOT unit.escalations.missed_open %]
+We aim to resolve this by [% date.format(unit.report_open.target, '%A, %-d %B') %].
+[% END %]
 
 [% IF unit.escalations.missed AND NOT unit.escalations.missed_open %]
     <br>
