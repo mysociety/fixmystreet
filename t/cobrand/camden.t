@@ -265,4 +265,18 @@ FixMyStreet::override_config {
     };
 };
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'camden', 'tfl', 'canalrivertrust' ],
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+    subtest 'cobrand does not show Canal and River trust categories' => sub {
+        my $canalsandriver = $mech->create_body_ok(CAMDEN_MAPIT_ID, 'Canal & River Trust');
+        my $canal_contact = $mech->create_contact_ok(body_id => $canalsandriver->id, category => 'Polluted water', email => 'water@example.com');
+        my $tree_contact = $mech->create_contact_ok(body_id => $camden->id, category => 'Trees', email => 'foo@camden');
+        $mech->get_ok("/report/new/ajax?latitude=51.529432&longitude=-0.124514");
+        $mech->content_contains('Trees');
+        $mech->content_lacks('Polluted water');
+    };
+};
+
 done_testing;
