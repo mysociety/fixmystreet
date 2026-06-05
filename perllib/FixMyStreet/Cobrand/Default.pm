@@ -270,7 +270,7 @@ Base URL for the admin interface.
 
 sub admin_base_url {
     my $self = shift;
-    return FixMyStreet->config('ADMIN_BASE_URL') || $self->base_url . "/admin";
+    $self->base_url . "/admin";
 }
 
 =item base_url
