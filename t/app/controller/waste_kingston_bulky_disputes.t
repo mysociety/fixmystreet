@@ -542,8 +542,7 @@ FixMyStreet::override_config {
                 );
                 $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
                 $mech->content_contains('Missed collection dispute');
-# XXX
-# $mech->content_contains('your Bulky waste collection was completed');
+                $mech->content_contains('your Bulky waste collection was completed');
                 $mech->content_contains(
                     '/Raise_a_waste_dispute_in_Kingston?uprn=1000000002&service_id=986&event_id=112112321'
                 );

@@ -1,4 +1,3 @@
-
 [%
     SET service_id = c.req.params.service_id;
     SET event_id = c.req.params.event_id;
@@ -7,22 +6,17 @@
     IF services.$service_id;
         SET service = services.$service_id;
         SET service_name = service.service_name;
-        SET resolution = service.last.resolution;
+        SET resolution = service.last.resolution || service.report_open.resolution_reason;
         SET dispute_permission = service.dispute_permission;
+        SET completed = service.report_open.completed;
     END;
 
-    IF missed_events.$guid;
-        SET missed = missed_events.$guid;
-        SET service_name = missed.service_name;
-        SET resolution = missed.resolution_reason;
-        SET dispute_permission = missed.dispute_permission;
-        SET completed = missed.completed;
-    ELSIF booked_missed.$guid;
-        SET booked = 1;
+    IF booked_missed.$guid;
         SET missed = booked_missed.$guid;
         SET service_name = missed.service_name;
         SET resolution = missed.report_locked_out_reason || missed.report_open.resolution_reason;
         SET dispute_permission = missed.dispute_permission;
+        SET completed = missed.report_open.completed;
     END
 %]
 

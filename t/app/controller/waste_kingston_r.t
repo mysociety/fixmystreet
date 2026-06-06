@@ -731,8 +731,7 @@ FixMyStreet::override_config {
                 $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
                 $mech->content_contains('Missed collection dispute');
                 $mech->content_contains('your Non-recyclable Refuse collection was not made');
-                # XXX Why is this not picked up?
-                # $mech->content_contains('Contaminated builder waste');
+                $mech->content_contains('Contaminated builder waste');
                 $mech->content_contains('cannot raise dispute');
             };
 
@@ -807,8 +806,7 @@ FixMyStreet::override_config {
 
                 $mech->content_contains('Missed collection dispute');
                 $mech->content_contains('your Non-recyclable Refuse collection was not made');
-                # XXX Why is this not picked up?
-                # $mech->content_contains('H&S - Damaged Container');
+                $mech->content_contains("H\&S - Damaged container");
                 $mech->content_contains(
                     '/Raise_a_waste_dispute_in_Kingston?uprn=1000000002&service_id=966&event_id=112112321'
                 );
@@ -883,8 +881,7 @@ FixMyStreet::override_config {
                 $mech->content_lacks('report_id');
                 $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
                 $mech->content_contains('Missed collection dispute');
-                # XXX
-                # $mech->content_contains('your Non-recyclable Refuse collection was completed');
+                $mech->content_contains('your Non-recyclable Refuse collection was completed');
                 $mech->content_contains(
                     '/Raise_a_waste_dispute_in_Kingston?uprn=1000000002&service_id=966&event_id=112112321'
                 );
