@@ -1,0 +1,58 @@
+
+[%
+    SET service_id = c.req.params.service_id;
+    SET event_id = c.req.params.event_id;
+    SET category = c.req.params.category;
+
+    IF services.$service_id;
+        SET service = services.$service_id;
+        SET service_name = service.service_name;
+        SET resolution = service.last.resolution;
+        SET dispute_permission = service.dispute_permission;
+    END;
+
+    IF missed_events.$guid;
+        SET missed = missed_events.$guid;
+        SET service_name = missed.service_name;
+        SET resolution = missed.resolution_reason;
+        SET dispute_permission = missed.dispute_permission;
+        SET completed = missed.completed;
+    ELSIF booked_missed.$guid;
+        SET booked = 1;
+        SET missed = booked_missed.$guid;
+        SET service_name = missed.service_name;
+        SET resolution = missed.report_locked_out_reason || missed.report_open.resolution_reason;
+        SET dispute_permission = missed.dispute_permission;
+    END
+%]
+
+[% IF service_name %]
+    <dl class="waste__address">
+        <dt class="waste__address__title">Service</dt>
+        <dd class="waste__address__property">[% service_name %]</dd>
+    </dl>
+[% END %]
+
+[% IF completed %]
+    [% IF service_name %]
+        <p>Our crews reported that your [% service_name %] collection was completed.</p>
+    [% ELSE %]
+        <p>Our crews reported that your collection was completed.</p>
+    [% END %]
+[% ELSE  %]
+    [% IF service_name %]
+        <p>Our crews reported that your [% service_name %] collection was not made:</p>
+    [% ELSE %]
+        <p>Our crews reported that your collection was not made:</p>
+    [% END %]
+    [% IF resolution %]
+        [% resolution | staff_html_markup({ is_body_user => 1 }) %]
+    [% END %]
+[% END %]
+
+[% IF dispute_permission == 'allow' %]
+    [% # XXX Will need different link for live %]
+    <p>Please raise a dispute <a href="https://kingston-self.test.achieveservice.com/service/Raise_a_waste_dispute_in_Kingston?uprn=[% property.uprn %]&service_id=[% service_id %][% IF event_id %]&event_id=[% event_id %][% END %]">here</a>.</p>
+[% ELSE %]
+    <p>TODO Message about cannot raise dispute</p>
+[% END %]

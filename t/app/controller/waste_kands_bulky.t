@@ -1280,7 +1280,6 @@ FixMyStreet::override_config {
             like $mech->content, qr#name="r"[^>]*waste/12345/enquiry[^ ]*booking_id=$report_id#, 'login page contains correct redirect'
         };
 
-
         $mech->log_in_ok($report->user->email);
         set_fixed_time('2025-04-10T19:00:00Z');
         $report->update_extra_field( { name => 'GUID', value => 'booking-guid'} );

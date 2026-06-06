@@ -741,9 +741,11 @@ sub waste_bulky_missed_blocked_codes {
             66 => 'Not presented',
             646 => 'Various',
         },
-        # missed colection not completed
+        # missed collection not completed
+        # XXX Is this list complete?
         19242 => {
             50 => 'Address incorrect',
+            1135 => 'Contaminated builder waste',
             1361 => 'H&S - Aggression / Violence',
             1359 => 'H&S - Damaged container',
             1358 => 'H&S - Heavy bin / bag',

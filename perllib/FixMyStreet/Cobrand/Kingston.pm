@@ -697,10 +697,59 @@ Checks if disputes can be raised for the service and resolution text.
 =cut
 
 sub waste_check_can_raise_dispute {
-    my ($self, $service_id, $resolution) = @_;
+    my ($self, %args) = @_;
 
-    # XXX Kingston only allows disputes against certain resolution codes
-    return 1;
+    # $args{type} can be:
+    #   original_standard
+    #   missed_report_standard
+    #   original_bulky
+    #   missed_report_bulky
+
+    # XXX Special cases
+    # No access - Changed key
+    #   913
+    #   No dispute (link to Waste Follow up form)
+    # Bin damaged
+    #   200
+    #   Display link to bin damaged by crew or request new container, no disputes
+
+    # Resolution codes that do not appear mean that disputes cannot be made
+    # against them
+    my %res;
+
+    if ( $args{type} eq 'original_standard' ) {
+        %res = (
+            # Contaminated builder waste
+            1135 => 'message',
+
+            # H&S - Damaged container
+            1359 => 'allow',
+        );
+    } elsif ( $args{type} eq 'missed_report_standard' ) {
+        %res = (
+            # Contaminated builder waste
+            1135 => 'message',
+
+            # H&S - Damaged container
+            1359 => 'allow',
+
+            complete => 'allow',
+        );
+    } elsif ( $args{type} eq 'original_bulky' ) {
+        %res = (
+            # No access - Gate locked
+            466 => 'allow',
+        );
+    } elsif ( $args{type} eq 'missed_report_bulky' ) {
+        %res = (
+            # No access - Parked vehicle
+            617 => 'allow',
+
+            complete => 'allow',
+        );
+    }
+
+    return $res{ $args{resolution_key} // '' };
 }
 
 1;

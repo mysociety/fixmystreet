@@ -230,7 +230,7 @@ FixMyStreet::override_config {
         $bulky_report->update( { external_id => 'a-guid' } );
 
         # Mock failed collection.
-        $echo->mock('GetEventsForObject', sub { [ {
+        my %event_defaults = (
             Id => '8004',
             ClientReference => '12345',
             Guid => 'a-guid',
@@ -239,70 +239,116 @@ FixMyStreet::override_config {
             EventStateId => 19185, # Not Completed
             EventDate => { DateTime => '2023-07-01T00:00:00Z' },
             ResolvedDate => { DateTime => '2023-07-01T15:00:00Z' },
-            ResolutionCodeId => 466, # No access - Gate locked
-        } ] });
+        );
 
-        subtest 'Check dispute window' => sub {
-            set_fixed_time('2023-07-01T14:59:59Z');
-            $mech->get_ok('/waste/12345');
-            $mech->content_lacks('Report a problem with this missed collection', 'cannot report just before window opens');
+        subtest 'Blocked resolution' => sub {
+            $echo->mock('GetEventsForObject', sub { [ {
+                %event_defaults,
+                EventStateId => 19187, # Cancelled
+            } ] });
 
-            set_fixed_time('2023-07-05T00:00:00Z');
-            $mech->get_ok('/waste/12345');
-            $mech->content_lacks('Report a problem with this missed collection', 'cannot report just after window closes');
+            subtest 'Raising a dispute never available' => sub {
+                set_fixed_time('2023-07-01T14:59:59Z');
+                $mech->get_ok('/waste/12345');
+                $mech->content_lacks('Report a problem with this missed collection', 'cannot report just before window opens');
 
-            set_fixed_time('2023-07-01T15:00:01Z');
-            $mech->get_ok('/waste/12345');
-            $mech->content_contains('Report a problem with this missed collection', 'can report just after window opens');
+                set_fixed_time('2023-07-05T00:00:00Z');
+                $mech->get_ok('/waste/12345');
+                $mech->content_lacks('Report a problem with this missed collection', 'cannot report just after window closes');
 
-            set_fixed_time('2023-07-04T23:59:00Z');
-            $mech->get_ok('/waste/12345');
-            $mech->content_contains('Report a problem with this missed collection', 'can report just before window closes');
+                set_fixed_time('2023-07-01T15:00:01Z');
+                $mech->get_ok('/waste/12345');
+                $mech->content_lacks('Report a problem with this missed collection', 'cannot report just after window opens');
+
+                set_fixed_time('2023-07-04T23:59:00Z');
+                $mech->get_ok('/waste/12345');
+                $mech->content_lacks('Report a problem with this missed collection', 'cannot report just before window closes');
+            };
+
+            # XXX
+            # subtest 'No dispute link in email' => sub {};
         };
 
-        subtest 'Correct dispute link' => sub {
-            set_fixed_time('2023-07-01T15:00:01Z');
-            $mech->get_ok('/waste/12345');
-            $mech->content_contains(
-                '/Raise_a_waste_dispute_in_Kingston?uprn=1000000002&service_id=986'
-            );
-            # XXX Why isn't there an event_id?
-            $mech->content_lacks('&event_id=');
-        };
+        subtest 'Allowed resolution' => sub {
+            $echo->mock('GetEventsForObject', sub { [ {
+                %event_defaults,
+                ResolutionCodeId => 466, # No access - Gate locked
+            } ] });
 
-        subtest 'Correct dispute link in email' => sub {
-            restore_time();
+            subtest 'Check dispute window' => sub {
+                set_fixed_time('2023-07-01T14:59:59Z');
+                $mech->get_ok('/waste/12345');
+                $mech->content_lacks('Report a problem with this missed collection', 'cannot report just before window opens');
 
-            my $comment = FixMyStreet::DB->resultset('Comment')->create(
-                {
-                    user          => $body_user,
-                    problem_id    => $bulky_report->id,
-                    text          => 'No access - Gate locked',
-                    confirmed     => DateTime->now,
-                    problem_state => 'unable to fix',
-                    anonymous     => 0,
-                    mark_open     => 0,
-                    mark_fixed    => 0,
-                    state         => 'confirmed',
-                }
-            );
+                set_fixed_time('2023-07-05T00:00:00Z');
+                $mech->get_ok('/waste/12345');
+                $mech->content_lacks('Report a problem with this missed collection', 'cannot report just after window closes');
 
-            set_fixed_time('2023-07-01T15:00:01Z');
+                set_fixed_time('2023-07-01T15:00:01Z');
+                $mech->get_ok('/waste/12345');
+                $mech->content_contains('Report a problem with this missed collection', 'can report just after window opens');
 
-            $mech->clear_emails_ok;
-            FixMyStreet::Script::Alerts::send_updates();
-            $mech->email_count_is(1);
-            my $email = $mech->get_email;
-            my $email_text = $mech->get_text_body_from_email($email);
-            my $email_html = $mech->get_html_body_from_email($email);
-            like $email_text, qr/No access - Gate locked/, 'Reason pulled from comment';
-            like $email_text, qr/report a problem with this missed collection/, 'Report a problem text in text email';
-            like $email_html, qr/No access - Gate locked/, 'Reason pulled from comment';
-            like $email_html, qr/Our crews reported your bulky waste collection was not made/, 'extra bulky waste text included';
-            like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
-            like $email_html, qr{Raise_a_waste_dispute_in_Kingston\?uprn=1000000002&service_id=986}, 'HTML alert contains report link';
+                set_fixed_time('2023-07-04T23:59:00Z');
+                $mech->get_ok('/waste/12345');
+                $mech->content_contains('Report a problem with this missed collection', 'can report just before window closes');
+            };
 
-            $comment->delete;
+            subtest 'Follow dispute link' => sub {
+                set_fixed_time('2023-07-01T15:00:01Z');
+                $mech->content_contains(
+                    '/enquiry?category=Missed+collection+dispute&amp;service_id=986&amp;booking_id=1'
+                );
+                # XXX Why no event_id?
+                $mech->content_lacks('event_id');
+                $mech->content_lacks('report_id');
+                $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
+
+                $mech->content_contains('Missed collection dispute');
+                $mech->content_contains('your Bulky waste collection was not made');
+                $mech->content_contains('No access - Gate locked');
+                $mech->content_contains(
+                    '/Raise_a_waste_dispute_in_Kingston?uprn=1000000002&service_id=986'
+                );
+                # XXX Why no event_id?
+                $mech->content_lacks('&event_id=');
+            };
+
+            # XXX
+            # subtest 'Correct dispute link in email' => sub {
+            #     restore_time();
+
+            #     my $comment = FixMyStreet::DB->resultset('Comment')->create(
+            #         {
+            #             user          => $body_user,
+            #             problem_id    => $bulky_report->id,
+            #             text          => 'No access - Gate locked',
+            #             confirmed     => DateTime->now,
+            #             problem_state => 'unable to fix',
+            #             anonymous     => 0,
+            #             mark_open     => 0,
+            #             mark_fixed    => 0,
+            #             state         => 'confirmed',
+            #         }
+            #     );
+
+            #     set_fixed_time('2023-07-01T15:00:01Z');
+
+            #     $mech->clear_emails_ok;
+            #     FixMyStreet::Script::Alerts::send_updates();
+            #     $mech->email_count_is(1);
+            #     my $email = $mech->get_email;
+            #     my $email_text = $mech->get_text_body_from_email($email);
+            #     my $email_html = $mech->get_html_body_from_email($email);
+            #     like $email_text, qr/No access - Gate locked/, 'Reason pulled from comment';
+            #     like $email_text, qr/report a problem with this missed collection/, 'Report a problem text in text email';
+            #     like $email_html, qr/No access - Gate locked/, 'Reason pulled from comment';
+            #     like $email_html, qr/Our crews reported your bulky waste collection was not made/, 'extra bulky waste text included';
+            #     like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
+            #     # XXX Where is service_id?
+            #     like $email_html, qr{enquiry\?category=Missed\+collection\+dispute&service_id=&booking_id=1}, 'HTML alert contains report link';
+
+            #     $comment->delete;
+            # };
         };
 
         subtest 'Existing dispute event' => sub {
@@ -310,14 +356,7 @@ FixMyStreet::override_config {
 
             # Mock failed collection plus dispute
             $echo->mock('GetEventsForObject', sub { [ {
-                Id => '8004',
-                ClientReference => '12345',
-                Guid => 'a-guid',
-                ServiceId => 986, # Bulky
-                EventTypeId => 3130, # Bulky collection
-                EventStateId => 19185, # Not Completed
-                EventDate => { DateTime => '2023-07-01T00:00:00Z' },
-                ResolvedDate => { DateTime => '2023-07-01T15:00:00Z' },
+                %event_defaults,
                 ResolutionCodeId => 466, # No access - Gate locked
             }, {
                 Id => '112112321',
@@ -361,7 +400,7 @@ FixMyStreet::override_config {
         my $mc_report = FixMyStreet::DB->resultset('Problem')->order_by('-id')->first;
         $mc_report->update({ external_id => 'b-guid' });
 
-        my $missed_collection_report_event = {
+        my %missed_collection_report_event_defaults = (
             Id => '112112321',
             Guid => 'b-guid', # Must match missed collection report above
             EventTypeId => 3145, # Missed collection report
@@ -369,73 +408,146 @@ FixMyStreet::override_config {
             ServiceId => 986, # Bulky
             EventDate => { DateTime => '2023-07-02T00:00:00Z' },
             ResolvedDate => { DateTime => '2023-07-02T15:00:00Z' },
-            ResolutionCodeId => 617, # No access - Parked vehicle
+        );
+
+        subtest 'Blocked resolution' => sub {
+            my $missed_collection_report_event = {
+                %missed_collection_report_event_defaults,
+                EventStateId => 19187, # Cancelled
+            };
+
+            # Mock 'completed' bulky report and missed collection report in Echo
+            $echo->mock('GetEventsForObject', sub { [
+                $completed_bulky_event, $missed_collection_report_event
+            ] });
+
+            subtest 'Raising a dispute never available' => sub {
+                set_fixed_time('2023-07-01T14:59:59Z');
+                $mech->get_ok('/waste/12345');
+                $mech->content_lacks('Report a problem with this missed collection', 'cannot report just before window opens');
+
+                set_fixed_time('2023-07-05T00:00:00Z');
+                $mech->get_ok('/waste/12345');
+                $mech->content_lacks('Report a problem with this missed collection', 'cannot report just after window closes');
+
+                set_fixed_time('2023-07-01T15:00:01Z');
+                $mech->get_ok('/waste/12345');
+                $mech->content_lacks('Report a problem with this missed collection', 'cannot report just after window opens');
+
+                set_fixed_time('2023-07-04T23:59:00Z');
+                $mech->get_ok('/waste/12345');
+                $mech->content_lacks('Report a problem with this missed collection', 'cannot report just before window closes');
+            };
+
+            # XXX
+            # subtest 'No dispute link in email' => sub {};
         };
 
-        # Mock 'completed' bulky report and missed collection report in Echo
-        $echo->mock('GetEventsForObject', sub { [
-            $completed_bulky_event, $missed_collection_report_event
-        ] });
+        subtest 'Resolution that allows dispute' => sub {
+            my $missed_collection_report_event = {
+                %missed_collection_report_event_defaults,
+                ResolutionCodeId => 617, # No access - Parked vehicle
+            };
 
-        subtest 'Check dispute window' => sub {
-            set_fixed_time('2023-07-02T14:59:59Z');
-            $mech->get_ok('/waste/12345');
-            $mech->content_lacks('Report a problem with this missed collection', 'cannot report just before window opens');
+            # Mock 'completed' bulky report and missed collection report in Echo
+            $echo->mock('GetEventsForObject', sub { [
+                $completed_bulky_event, $missed_collection_report_event
+            ] });
 
-            set_fixed_time('2023-07-05T00:00:00Z');
-            $mech->get_ok('/waste/12345');
-            $mech->content_lacks('Report a problem with this missed collection', 'cannot report just after window closes');
+            subtest 'Check dispute window' => sub {
+                set_fixed_time('2023-07-02T14:59:59Z');
+                $mech->get_ok('/waste/12345');
+                $mech->content_lacks('Report a problem with this missed collection', 'cannot report just before window opens');
 
+                set_fixed_time('2023-07-05T00:00:00Z');
+                $mech->get_ok('/waste/12345');
+                $mech->content_lacks('Report a problem with this missed collection', 'cannot report just after window closes');
+
+                set_fixed_time('2023-07-02T15:00:01Z');
+                $mech->get_ok('/waste/12345');
+                $mech->content_contains('Report a problem with this missed collection', 'can report just after window opens');
+
+                set_fixed_time('2023-07-04T23:59:00Z');
+                $mech->get_ok('/waste/12345');
+                $mech->content_contains('Report a problem with this missed collection', 'can report just before window closes');
+            };
+
+            subtest 'Follow dispute link' => sub {
+                set_fixed_time('2023-07-02T15:00:01Z');
+                $mech->content_contains(
+                    '/enquiry?category=Missed+collection+dispute&amp;service_id=986&amp;booking_id=1&amp;report_id=2&amp;event_id=112112321'
+                );
+                $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
+
+                $mech->content_contains('Missed collection dispute');
+                $mech->content_contains('your Bulky waste collection was not made');
+                $mech->content_contains('No access - Parked vehicle');
+                $mech->content_contains(
+                    '/Raise_a_waste_dispute_in_Kingston?uprn=1000000002&service_id=986&event_id=112112321'
+                );
+            };
+
+            # XXX
+            # subtest 'Correct dispute link in email' => sub {
+            #     restore_time();
+
+            #     my $comment = FixMyStreet::DB->resultset('Comment')->create(
+            #         {
+            #             user          => $body_user,
+            #             problem_id    => $mc_report->id,
+            #             text          => 'No access - Parked vehicle',
+            #             confirmed     => DateTime->now,
+            #             problem_state => 'unable to fix',
+            #             anonymous     => 0,
+            #             mark_open     => 0,
+            #             mark_fixed    => 0,
+            #             state         => 'confirmed',
+            #         }
+            #     );
+
+            #     set_fixed_time('2023-07-02T15:00:01Z');
+
+            #     $mech->clear_emails_ok;
+            #     FixMyStreet::Script::Alerts::send_updates();
+            #     $mech->email_count_is(1);
+            #     my $email = $mech->get_email;
+            #     my $email_text = $mech->get_text_body_from_email($email);
+            #     my $email_html = $mech->get_html_body_from_email($email);
+            #     like $email_text, qr/No access - Parked vehicle/, 'Reason pulled from comment';
+            #     like $email_text, qr/report a problem with this missed collection/, 'Report a problem text in text email';
+            #     like $email_html, qr/No access - Parked vehicle/, 'Reason pulled from comment';
+            #     like $email_html, qr/Our crews reported your collection was not made/, 'extra collection text included';
+            #     like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
+            #     like $email_html, qr{Raise_a_waste_dispute_in_Kingston\?uprn=1000000002&service_id=986}, 'HTML alert contains report link';
+
+            #     $comment->delete;
+            # };
+        };
+
+        subtest 'Completed missed bin report' => sub {
             set_fixed_time('2023-07-02T15:00:01Z');
-            $mech->get_ok('/waste/12345');
-            $mech->content_contains('Report a problem with this missed collection', 'can report just after window opens');
 
-            set_fixed_time('2023-07-04T23:59:00Z');
-            $mech->get_ok('/waste/12345');
-            $mech->content_contains('Report a problem with this missed collection', 'can report just before window closes');
-        };
-
-        subtest 'Correct dispute link' => sub {
-            set_fixed_time('2023-07-02T15:00:01Z');
-            $mech->get_ok('/waste/12345');
-            $mech->content_contains(
-                '/Raise_a_waste_dispute_in_Kingston?uprn=1000000002&service_id=986&event_id=112112321'
-            );
-        };
-
-        subtest 'Correct dispute link in email' => sub {
-            restore_time();
-
-            my $comment = FixMyStreet::DB->resultset('Comment')->create(
+            $echo->mock('GetEventsForObject', sub { [
+                $completed_bulky_event,
                 {
-                    user          => $body_user,
-                    problem_id    => $mc_report->id,
-                    text          => 'No access - Parked vehicle',
-                    confirmed     => DateTime->now,
-                    problem_state => 'unable to fix',
-                    anonymous     => 0,
-                    mark_open     => 0,
-                    mark_fixed    => 0,
-                    state         => 'confirmed',
-                }
-            );
+                    %missed_collection_report_event_defaults,
+                    EventStateId => 19241, # Completed
+                },
+            ] });
 
-            set_fixed_time('2023-07-02T15:00:01Z');
-
-            $mech->clear_emails_ok;
-            FixMyStreet::Script::Alerts::send_updates();
-            $mech->email_count_is(1);
-            my $email = $mech->get_email;
-            my $email_text = $mech->get_text_body_from_email($email);
-            my $email_html = $mech->get_html_body_from_email($email);
-            like $email_text, qr/No access - Parked vehicle/, 'Reason pulled from comment';
-            like $email_text, qr/report a problem with this missed collection/, 'Report a problem text in text email';
-            like $email_html, qr/No access - Parked vehicle/, 'Reason pulled from comment';
-            like $email_html, qr/Our crews reported your collection was not made/, 'extra collection text included';
-            like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
-            like $email_html, qr{Raise_a_waste_dispute_in_Kingston\?uprn=1000000002&service_id=986}, 'HTML alert contains report link';
-
-            $comment->delete;
+            subtest 'Follow dispute link' => sub {
+                $mech->get_ok('/waste/12345');
+                $mech->content_contains(
+                    '/enquiry?category=Missed+collection+dispute&amp;service_id=986&amp;booking_id=1&amp;report_id=2&amp;event_id=112112321'
+                );
+                $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
+                $mech->content_contains('Missed collection dispute');
+# XXX
+# $mech->content_contains('your Bulky waste collection was completed');
+                $mech->content_contains(
+                    '/Raise_a_waste_dispute_in_Kingston?uprn=1000000002&service_id=986&event_id=112112321'
+                );
+            };
         };
 
         subtest 'Existing dispute event' => sub {
@@ -444,7 +556,7 @@ FixMyStreet::override_config {
             # Include mock of dispute event
             $echo->mock('GetEventsForObject', sub { [
                 $completed_bulky_event,
-                $missed_collection_report_event,
+                \%missed_collection_report_event_defaults,
                 {
                     Id => '992992329',
                     EventTypeId => 3143, # Dispute

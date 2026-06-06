@@ -232,14 +232,14 @@ around booked_check_missed_collection => sub {
             my $within_window = $self->_check_date_within_dispute_window(
                 $missed_event->{date}
             );
-            my $resolution_valid = $self->waste_check_can_raise_dispute(
-                $missed_event->{service_id},
-                $missed_event->{ResolutionCodeId}
+            $missed->{$guid}{dispute_permission} = $self->waste_check_can_raise_dispute(
+                type => 'missed_report_bulky',
+                resolution_key => $missed_event->{completed} ? 'complete' : $missed_event->{resolution},
             );
 
             if ($open_dispute){
                 $missed->{$guid}{dispute_open} = 1;
-            } elsif ($within_window && $resolution_valid) {
+            } elsif ($within_window && $missed->{$guid}{dispute_permission}) {
                 $missed->{$guid}{dispute_allowed} = 1;
                 $missed->{$guid}{event_id} = $missed_event->{id};
                 $missed->{$guid}{report_id} = $missed_event->{report}->id;
@@ -251,13 +251,13 @@ around booked_check_missed_collection => sub {
             my $within_window = $self->_check_date_within_dispute_window(
                 $missed->{$guid}{report_locked_out_date}
             );
-            my $resolution_valid = $self->waste_check_can_raise_dispute(
-                $missed->{$guid}{service_id},
-                $missed->{$guid}{report_locked_out_reason}
+            $missed->{$guid}{dispute_permission} = $self->waste_check_can_raise_dispute(
+                type => 'original_bulky',
+                resolution_key => $missed->{$guid}{resolution_id},
             );
             if ($open_dispute) {
                 $missed->{$guid}{dispute_open} = 1;
-            } elsif ($within_window && $resolution_valid) {
+            } elsif ($within_window && $missed->{$guid}{dispute_permission}) {
                 $missed->{$guid}{dispute_allowed} = 1;
             }
         }
@@ -394,8 +394,16 @@ sub _setup_missed_collection_disputes_for_service {
         # And no existing dispute since last collection
         && !$dispute_event
     ) {
-        if ( $self->_check_date_within_dispute_window($missed_event->{date}) ) {
-            $row->{event_id} = $missed_event->{id};
+        $row->{dispute_permission}
+            = $self->waste_check_can_raise_dispute(
+                type => 'missed_report_standard',
+                resolution_key => $missed_event->{completed} ? 'complete' : $missed_event->{resolution},
+            );
+
+        if ( $row->{dispute_permission}
+            && $self->_check_date_within_dispute_window( $missed_event->{date} )
+        ) {
+            $row->{event_id}        = $missed_event->{id};
             $row->{dispute_allowed} = 1;
         }
     } elsif ($dispute_event) {
@@ -460,10 +468,16 @@ sub _setup_container_request_disputes_for_service {
     if (!$dispute_event) {
         if ($row->{last}->{completed} && $row->{report_locked_out}) {
             # and then check if we can open a dispute for this resolution
-            if ( $self->waste_check_can_raise_dispute($row->{service_id}, $row->{last}->{resolution}) ) {
-                if ( $self->_check_date_within_dispute_window($row->{last}->{completed}) ) {
-                    $row->{dispute_allowed} = 1;
-                }
+            $row->{dispute_permission}
+                = $self->waste_check_can_raise_dispute(
+                    type => 'original_standard',
+                    resolution_key => $row->{last}{resolution_id},
+                );
+
+            if ( $row->{dispute_permission}
+                && $self->_check_date_within_dispute_window( $row->{last}->{completed} )
+            ) {
+                $row->{dispute_allowed} = 1;
             }
         }
     } else {
@@ -561,9 +575,11 @@ sub waste_munge_enquiry_form_pages {
         # so it might be clicked outside the window so re-check if
         # disputes are allowed
         if ($guid) {
-            my $date = $c->stash->{booked_missed}{$guid}{report_locked_out_date}
-                       || $c->stash->{missed_events}{$guid}{date};
-            my $dispute_allowed = $self->_check_date_within_dispute_window( $date );
+            my $date = $c->stash->{booked_missed}{$guid}{report_locked_out_date} # Bulky etc. collection that was not collected
+                    || $c->stash->{booked_missed}{$guid}{report_open}{date} # Missed collection report made against a bulky etc. collection
+                    || $c->stash->{missed_events}{$guid}{date};
+
+            my $dispute_allowed = $date && $self->_check_date_within_dispute_window( $date );
             unless ($dispute_allowed) {
                 $c->stash->{first_page} = 'window_expired';
                 @$pages = (window_expired => {

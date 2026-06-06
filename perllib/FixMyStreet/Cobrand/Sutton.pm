@@ -241,10 +241,10 @@ Checks if disputes can be raised for the service and resolution text.
 =cut
 
 sub waste_check_can_raise_dispute {
-    my ($self, $service_id, $resolution) = @_;
+    my ($self, %args) = @_;
 
     # currently we allow disputes on all resolution codes
-    return 1;
+    return 'allow';
 }
 
 =head2 image_for_unit
