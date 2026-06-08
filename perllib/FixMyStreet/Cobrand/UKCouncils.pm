@@ -442,6 +442,12 @@ sub munge_report_new_bodies {
         %$bodies = map { $_->id => $_ } grep { $_->name ne 'Environment Agency' } values %$bodies;
     }
 
+    # Remove Canals and Rivers Trust from showing on Cobrands during development work
+    # Canals & River Trust overrides this function
+    if ( $bodies{'Canal & River Trust'} ) {
+        %$bodies = map { $_->id => $_ } grep { $_->name ne 'Canal & River Trust' } values %$bodies;
+    }
+
     if ( $bodies{'Thamesmead'} ) {
         my $thamesmead = FixMyStreet::Cobrand::Thamesmead->new({ c => $self->{c} });
         $thamesmead->munge_thamesmead_body($bodies);
