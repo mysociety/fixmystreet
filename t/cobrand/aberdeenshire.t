@@ -120,6 +120,16 @@ FixMyStreet::override_config {
             ], 'Open311 report is initially in Aberdeenshire cobrand');
         };
 
+        subtest 'Duplicate reports are not shown when reporting' => sub {
+            (my $report) = $mech->create_problems_for_body(1, $aberdeenshire->id, 'Another pothole', {
+                category => 'Pothole', cobrand => 'aberdeenshire',
+                latitude => 57.27126, longitude => -2.43012, areas => '2648',
+                state => 'duplicate',
+            });
+            my $json = $mech->get_ok_json('/around?ajax=1&bbox=-2.43112,57.27026,-2.42912,57.27226');
+            is_deeply($json->{pins}, [], 'No duplicate problem included');
+        };
+
         subtest 'Category changes are passed to Open311' => sub {
             my $cobrand = FixMyStreet::Cobrand::Aberdeenshire->new;
 
