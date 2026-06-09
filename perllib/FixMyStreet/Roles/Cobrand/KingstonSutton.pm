@@ -239,10 +239,15 @@ around booked_check_missed_collection => sub {
 
             if ($open_dispute){
                 $missed->{$guid}{dispute_open} = 1;
-            } elsif ($within_window && $missed->{$guid}{dispute_permission}) {
-                $missed->{$guid}{dispute_allowed} = 1;
-                $missed->{$guid}{event_id} = $missed_event->{id};
-                $missed->{$guid}{report_id} = $missed_event->{report}->id;
+            } elsif ($within_window) {
+                if ( $missed->{$guid}{dispute_permission} eq 'follow_up' ) {
+                    $missed->{$guid}{dispute_follow_up_link} = 1;
+                } elsif ( $missed->{$guid}{dispute_permission} ) {
+                    # allow or message
+                    $missed->{$guid}{dispute_allowed} = 1;
+                    $missed->{$guid}{event_id} = $missed_event->{id};
+                    $missed->{$guid}{report_id} = $missed_event->{report}->id;
+                }
             }
         # our original collection was not picked up because of a problem so we
         # can open a dispute about the original collection
@@ -257,8 +262,13 @@ around booked_check_missed_collection => sub {
             );
             if ($open_dispute) {
                 $missed->{$guid}{dispute_open} = 1;
-            } elsif ($within_window && $missed->{$guid}{dispute_permission}) {
-                $missed->{$guid}{dispute_allowed} = 1;
+            } elsif ($within_window) {
+                if ( $missed->{$guid}{dispute_permission} eq 'follow_up' ) {
+                    $missed->{$guid}{dispute_follow_up_link} = 1;
+                } elsif ( $missed->{$guid}{dispute_permission} ) {
+                    # allow or message
+                    $missed->{$guid}{dispute_allowed} = 1;
+                }
             }
         }
     }
@@ -400,12 +410,17 @@ sub _setup_missed_collection_disputes_for_service {
                 resolution_key => $missed_event->{completed} ? 'complete' : $missed_event->{resolution},
             );
 
-        if ( $row->{dispute_permission}
-            && $self->_check_date_within_dispute_window( $missed_event->{date} )
-        ) {
-            $row->{event_id}        = $missed_event->{id};
-            $row->{dispute_allowed} = 1;
+        if ( $self->_check_date_within_dispute_window( $missed_event->{date} ) ) {
+            $row->{event_id}  = $missed_event->{id};
+
+            if ( $row->{dispute_permission} eq 'follow_up' ) {
+                $row->{dispute_follow_up_link} = 1;
+            } elsif ( $row->{dispute_permission} ) {
+                # allow or message
+                $row->{dispute_allowed} = 1;
+            }
         }
+
     } elsif ($dispute_event) {
         $row->{dispute_open} = $dispute_event;
     }
@@ -474,10 +489,13 @@ sub _setup_container_request_disputes_for_service {
                     resolution_key => $row->{last}{resolution_id},
                 );
 
-            if ( $row->{dispute_permission}
-                && $self->_check_date_within_dispute_window( $row->{last}->{completed} )
-            ) {
-                $row->{dispute_allowed} = 1;
+            if ( $self->_check_date_within_dispute_window( $row->{last}->{completed} ) ) {
+                if ( $row->{dispute_permission} eq 'follow_up' ) {
+                    $row->{dispute_follow_up_link} = 1;
+                } elsif ( $row->{dispute_permission} ) {
+                    # allow or message
+                    $row->{dispute_allowed} = 1;
+                }
             }
         }
     } else {

@@ -9,6 +9,8 @@
 [% IF unit.dispute_allowed %]
 report id is [% unit.report_id %]
     <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Missed+collection+dispute&amp;service_id=[% unit.service_id %][% '&amp;booking_id=' _ original_booking IF original_booking %][% '&amp;report_id=' _ unit.report_id IF unit.report_id %][% '&amp;event_id=' _ unit.event_id IF unit.event_id %]" class="waste-service-link waste-service-descriptor">Report a problem with this missed collection</a>
+[% ELSIF unit.dispute_follow_up_link %]
+    <a href="https://self.kingston.gov.uk/service/Update_my_waste_information_in_Kingston">Update my waste information</a>
 [% ELSIF unit.dispute_open %]
     We are investigating the problem with this collection.
 [% END %]

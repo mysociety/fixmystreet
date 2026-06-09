@@ -502,6 +502,23 @@ FixMyStreet::override_config {
             };
         };
 
+        subtest '"No access - Changed key" - provides follow-up link' => sub {
+            $e->mock('GetTasks', sub { [ {
+                %get_task_defaults,
+                Resolution => { Name => 'No access - Changed key', Ref => { Value => { 'anyType' => 913 } } },
+            } ] });
+
+            set_fixed_time('2022-09-09T15:30:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with this missed collection', 'no dispute link');
+            $mech->content_lacks('Update_my_waste_information_in_Kingston', 'no follow-up link');
+
+            set_fixed_time('2022-09-09T16:01:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with this missed collection', 'no dispute link');
+            $mech->content_contains('Update_my_waste_information_in_Kingston', 'has follow-up link');
+        };
+
         subtest 'Resolution that allows message only' => sub {
             $e->mock('GetTasks', sub { [ {
                 %get_task_defaults,
@@ -693,6 +710,23 @@ FixMyStreet::override_config {
             #     like $email_html, qr/Resolution text/, 'Reason pulled from comment';
             #     unlike $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
             # };
+        };
+
+        subtest '"No access - Changed key" - provides follow-up link' => sub {
+            $e->mock('GetEventsForObject', sub { [ {
+                %event_defaults,
+                ResolutionCodeId => 913, # No access - Changed key
+            } ] });
+
+            set_fixed_time('2022-09-09T15:30:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with this missed collection', 'no dispute link');
+            $mech->content_lacks('Update_my_waste_information_in_Kingston', 'no follow-up link');
+
+            set_fixed_time('2022-09-09T16:01:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with this missed collection', 'no dispute link');
+            $mech->content_contains('Update_my_waste_information_in_Kingston', 'has follow-up link');
         };
 
         subtest 'Resolution that allows message only' => sub {

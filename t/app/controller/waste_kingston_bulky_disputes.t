@@ -269,6 +269,23 @@ FixMyStreet::override_config {
             # subtest 'No dispute link in email' => sub {};
         };
 
+        subtest '"No access - Changed key" - provides follow-up link' => sub {
+            $echo->mock('GetEventsForObject', sub { [ {
+                %event_defaults,
+                ResolutionCodeId => 913, # No access - Changed key
+            } ] });
+
+            set_fixed_time('2023-07-01T14:59:59Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with this missed collection', 'no dispute link');
+            $mech->content_lacks('Update_my_waste_information_in_Kingston', 'no follow-up link');
+
+            set_fixed_time('2023-07-01T15:00:01Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with this missed collection', 'no dispute link');
+            $mech->content_contains('Update_my_waste_information_in_Kingston', 'has follow-up link');
+        };
+
         subtest 'Allowed resolution' => sub {
             $echo->mock('GetEventsForObject', sub { [ {
                 %event_defaults,
@@ -441,6 +458,28 @@ FixMyStreet::override_config {
 
             # XXX
             # subtest 'No dispute link in email' => sub {};
+        };
+
+        subtest '"No access - Changed key" - provides follow-up link' => sub {
+            my $missed_collection_report_event = {
+                %missed_collection_report_event_defaults,
+                ResolutionCodeId => 913, # No access - Changed key
+            };
+
+            # Mock 'completed' bulky report and missed collection report in Echo
+            $echo->mock('GetEventsForObject', sub { [
+                $completed_bulky_event, $missed_collection_report_event
+            ] });
+
+            set_fixed_time('2023-07-01T14:59:59Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with this missed collection', 'no dispute link');
+            $mech->content_lacks('Update_my_waste_information_in_Kingston', 'no follow-up link');
+
+            set_fixed_time('2023-07-02T15:00:01Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with this missed collection', 'no dispute link');
+            $mech->content_contains('Update_my_waste_information_in_Kingston', 'has follow-up link');
         };
 
         subtest 'Resolution that allows dispute' => sub {
