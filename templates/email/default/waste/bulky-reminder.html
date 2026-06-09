@@ -64,7 +64,7 @@ cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel
   [% END %]
 </p>
 
-[% IF cobrand.moniker == 'peterborough' %]
+[% IF cobrand.moniker == 'peterborough' OR cobrand.moniker == 'bromley' %]
    [% INCLUDE 'waste/_bulky_extra_text.html' %]
 [% END %]
 

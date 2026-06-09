@@ -56,7 +56,7 @@ You may still be able to cancel your booking.
 
 [% END ~%]
 
-[% IF cobrand.moniker == 'peterborough' %]
+[% IF cobrand.moniker == 'peterborough' OR cobrand.moniker == 'bromley' %]
 [% INCLUDE 'waste/_bulky_extra_text.txt' %]
 [% END %]
 

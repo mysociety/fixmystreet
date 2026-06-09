@@ -865,7 +865,10 @@ $.extend(fixmystreet.set_up, {
         var group_id = copy.id.replace('subcategory_', '');
         copy.id = 'js-filter-' + copy.id;
         copy.classList.remove('js-subcategory');
-        copy.classList.add('js-filter-subcategory');
+        // Even if they are selected (ie from a filter_subcategory query param) ensure
+        // they are hidden at this stage - we are going to move onto the subcategory
+        // page regardless of whether it is already selected at this point
+        copy.classList.add('js-filter-subcategory', 'hidden-js');
 
         copy.addEventListener('change', function(evt) {
             // A subcategory has been picked in this copy. Update the actual entry
