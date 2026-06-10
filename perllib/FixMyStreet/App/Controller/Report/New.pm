@@ -2061,7 +2061,7 @@ sub redirect_to_around : Private {
         lat => $c->stash->{latitude},
         lon => $c->stash->{longitude},
     };
-    foreach (qw(pc zoom)) {
+    foreach (qw(pc zoom show_old_reports)) {
         $params->{$_} = $c->get_param($_);
     }
 
