@@ -558,8 +558,10 @@ sub visible_form_values {
           unless $form;
     }
     else {
+        # ignore overrides and no-JS map form
         my @forms =
-          grep { ( $_->attr('name') || '' ) ne 'overrides_form' } # ignore overrides
+          grep { ( $_->attr('name') || '' ) ne 'overrides_form'
+              && ( $_->attr('id') || '' ) ne 'nojs-map-controls-form' }
           $mech->forms;
 
         croak "Found no forms - can't continue..."
