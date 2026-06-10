@@ -226,6 +226,8 @@ FixMyStreet::override_config {
     $bulky_report->discard_changes;
     is $bulky_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
 
+    my $booking_id = $bulky_report->id;
+
     subtest 'Dispute about failed bulky collection' => sub {
         $bulky_report->update( { external_id => 'a-guid' } );
 
@@ -313,7 +315,7 @@ FixMyStreet::override_config {
             subtest 'Follow dispute link' => sub {
                 set_fixed_time('2023-07-01T15:00:01Z');
                 $mech->content_contains(
-                    '/enquiry?category=Missed+collection+dispute&amp;service_id=986&amp;booking_id=1'
+                    '/enquiry?category=Missed+collection+dispute&amp;service_id=986&amp;booking_id=' . $booking_id
                 );
                 # XXX Why no event_id?
                 $mech->content_lacks('event_id');
@@ -416,6 +418,7 @@ FixMyStreet::override_config {
 
         my $mc_report = FixMyStreet::DB->resultset('Problem')->order_by('-id')->first;
         $mc_report->update({ external_id => 'b-guid' });
+        my $report_id = $mc_report->id;
 
         my %missed_collection_report_event_defaults = (
             Id => '112112321',
@@ -514,7 +517,7 @@ FixMyStreet::override_config {
             subtest 'Follow dispute link' => sub {
                 set_fixed_time('2023-07-02T15:00:01Z');
                 $mech->content_contains(
-                    '/enquiry?category=Missed+collection+dispute&amp;service_id=986&amp;booking_id=1&amp;report_id=2&amp;event_id=112112321'
+                    '/enquiry?category=Missed+collection+dispute&amp;service_id=986&amp;booking_id=' . $booking_id .'&amp;report_id=' . $report_id . '&amp;event_id=112112321'
                 );
                 $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
 
@@ -577,7 +580,7 @@ FixMyStreet::override_config {
             subtest 'Follow dispute link' => sub {
                 $mech->get_ok('/waste/12345');
                 $mech->content_contains(
-                    '/enquiry?category=Missed+collection+dispute&amp;service_id=986&amp;booking_id=1&amp;report_id=2&amp;event_id=112112321'
+                    '/enquiry?category=Missed+collection+dispute&amp;service_id=986&amp;booking_id=' . $booking_id . '&amp;report_id=' . $report_id . '&amp;event_id=112112321'
                 );
                 $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
                 $mech->content_contains('Missed collection dispute');
