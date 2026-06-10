@@ -593,6 +593,7 @@ sub waste_task_resolutions {
         $row->{last}{state} = $state unless $state eq 'Completed' || $state eq 'Not Completed' || $state eq 'Outstanding' || $state eq 'Allocated';
         $row->{last}{completed} = $completed;
         $row->{last}{resolution} = $resolution;
+        $row->{last}{resolution_id} = $resolution_id;
         $row->{last}{image} = $media if $media;
 
         # Special handling if last instance is today e.g. if it's before a
