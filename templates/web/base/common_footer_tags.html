@@ -18,3 +18,7 @@ FOR script IN scripts;
         [%~ FOR attr IN script.1 %] [% attr.key %]="[% attr.value %]"[% END ~%]
         ></script>
 [% END %]
+
+[% IF map %]
+<form method="post" id="nojs-map-controls-form"></form>
+[% END %]
