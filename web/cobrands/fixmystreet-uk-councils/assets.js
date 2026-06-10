@@ -564,7 +564,15 @@ fixmystreet.assets.buckinghamshire.verge_construct_selected_asset_message = func
     if (!asset.attributes.start_time) {
         return '';
     }
-    return 'This grass is due to be cut on ' + bucks_format_date(asset.attributes.start_time);
+    var regExDate = /([0-9]{4})-([0-9]{2})-([0-9]{2})/;
+    var myMatch = regExDate.exec(asset.attributes.start_time);
+    if (!myMatch) {
+        return '';
+    }
+    var months = [ "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December" ];
+    var month = months[myMatch[2]-1];
+    return 'This grass is due to be cut in ' + month + ' ' + myMatch[1];
 };
 
 fixmystreet.assets.buckinghamshire.street_found = function(layer, feature) {
