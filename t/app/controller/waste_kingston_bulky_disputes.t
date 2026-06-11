@@ -45,7 +45,7 @@ my $bulky_contact = $mech->create_contact_ok(
 );
 $bulky_contact->set_extra_fields(
     { code => 'property_id', required => 1, automated => 'hidden_field' },
-    { code => 'service_id', required => 0, automated => 'hidden_field' },
+    { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'payment' },
     { code => 'payment_method' },
     { code => 'Collection_Date_-_Bulky_Items' },
@@ -267,8 +267,44 @@ FixMyStreet::override_config {
                 $mech->content_lacks('Report a problem with this missed collection', 'cannot report just before window closes');
             };
 
-            # XXX
-            # subtest 'No dispute link in email' => sub {};
+            subtest 'No dispute link in email' => sub {
+                # So comment->confirmed is greater than alert->whensubscribed
+                restore_time();
+
+                my $comment = FixMyStreet::DB->resultset('Comment')->create(
+                    {
+                        user          => $body_user,
+                        problem_id    => $bulky_report->id,
+                        text          => 'Resolution text',
+                        confirmed     => DateTime->now,
+                        problem_state => 'cancelled',
+                        anonymous     => 0,
+                        mark_open     => 0,
+                        mark_fixed    => 0,
+                        state         => 'confirmed',
+                    }
+                );
+                $comment->set_extra_metadata('event_id', 8004);
+                $comment->update;
+
+                set_fixed_time('2023-07-01T15:00:01Z');
+
+                $mech->clear_emails_ok;
+                FixMyStreet::Script::Alerts::send_updates();
+                $mech->email_count_is(1);
+                my $email = $mech->get_email;
+                my $email_text = $mech->get_text_body_from_email($email);
+                my $email_html = $mech->get_html_body_from_email($email);
+                like $email_text, qr/Resolution text/, 'Reason pulled from comment';
+                unlike $email_text, qr/report a problem with this missed collection/, 'Report a problem text in text email';
+                like $email_html, qr/Resolution text/, 'Reason pulled from comment';
+                unlike $email_html, qr/Report a problem with this missed collection/, 'Report a problem text not in html email';
+                unlike $email_html,
+                    qr{/12345/enquiry\?category=Missed\+collection\+dispute},
+                    'HTML alert does not contain dispute link';
+
+                $comment->delete;
+            };
         };
 
         subtest '"No access - Changed key" - provides follow-up link' => sub {
@@ -286,6 +322,47 @@ FixMyStreet::override_config {
             $mech->get_ok('/waste/12345');
             $mech->content_lacks('Report a problem with this missed collection', 'no dispute link');
             $mech->content_contains('Update_my_waste_information_in_Kingston', 'has follow-up link');
+
+            subtest 'Follow-up link in email' => sub {
+                # So comment->confirmed is greater than alert->whensubscribed
+                restore_time();
+
+                my $comment = FixMyStreet::DB->resultset('Comment')->create(
+                    {
+                        user          => $body_user,
+                        problem_id    => $bulky_report->id,
+                        text          => 'Resolution text',
+                        confirmed     => DateTime->now,
+                        problem_state => 'unable to fix',
+                        anonymous     => 0,
+                        mark_open     => 0,
+                        mark_fixed    => 0,
+                        state         => 'confirmed',
+                    }
+                );
+                $comment->set_extra_metadata('event_id', 8004);
+                $comment->set_extra_metadata('resolution_id', 913);
+                $comment->update;
+
+                set_fixed_time('2023-07-01T15:00:01Z');
+                $mech->clear_emails_ok;
+                FixMyStreet::Script::Alerts::send_updates();
+                $mech->email_count_is(1);
+                my $email = $mech->get_email;
+                my $email_text = $mech->get_text_body_from_email($email);
+                my $email_html = $mech->get_html_body_from_email($email);
+                like $email_text, qr/Resolution text/, 'Reason pulled from comment';
+                like $email_text, qr/report a problem with this missed collection/, 'Report a problem text in text email';
+                like $email_html, qr/Resolution text/, 'Reason pulled from comment';
+                unlike $email_html, qr/Report a problem with this missed collection/, 'Report a problem text  not in html email';
+                unlike $email_html,
+                    qr{/12345/enquiry\?category=Missed\+collection\+dispute},
+                    'HTML alert does not contain dispute link';
+                like $email_html, qr/Update my waste information/,
+                    'HTML alert contains follow-up link';
+
+                $comment->delete;
+            };
         };
 
         subtest 'Allowed resolution' => sub {
@@ -312,62 +389,71 @@ FixMyStreet::override_config {
                 $mech->content_contains('Report a problem with this missed collection', 'can report just before window closes');
             };
 
-            subtest 'Follow dispute link' => sub {
-                set_fixed_time('2023-07-01T15:00:01Z');
-                $mech->content_contains(
-                    '/enquiry?category=Missed+collection+dispute&amp;service_id=986&amp;booking_id=' . $booking_id
-                );
-                # XXX Why no event_id?
-                $mech->content_lacks('event_id');
-                $mech->content_lacks('report_id');
-                $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
-
+            my $test_dispute_page = sub {
                 $mech->content_contains('Missed collection dispute');
                 $mech->content_contains('your Bulky waste collection was not made');
                 $mech->content_contains('No access - Gate locked');
                 $mech->content_contains(
-                    '/Raise_a_waste_dispute_in_Kingston?uprn=1000000002&service_id=986'
+                    '/Raise_a_waste_dispute_in_Kingston?uprn=1000000002&service_id=986&event_id=8004'
                 );
-                # XXX Why no event_id?
-                $mech->content_lacks('&event_id=');
             };
 
-            # XXX
-            # subtest 'Correct dispute link in email' => sub {
-            #     restore_time();
+            subtest 'Follow dispute link' => sub {
+                set_fixed_time('2023-07-01T15:00:01Z');
+                $mech->content_contains(
+                    '/enquiry?category=Missed+collection+dispute&amp;service_id=986&amp;booking_id=' . $booking_id . '&amp;event_id=8004'
+                );
+                $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
 
-            #     my $comment = FixMyStreet::DB->resultset('Comment')->create(
-            #         {
-            #             user          => $body_user,
-            #             problem_id    => $bulky_report->id,
-            #             text          => 'No access - Gate locked',
-            #             confirmed     => DateTime->now,
-            #             problem_state => 'unable to fix',
-            #             anonymous     => 0,
-            #             mark_open     => 0,
-            #             mark_fixed    => 0,
-            #             state         => 'confirmed',
-            #         }
-            #     );
+                &$test_dispute_page;
+            };
 
-            #     set_fixed_time('2023-07-01T15:00:01Z');
+            subtest 'Correct dispute link in email' => sub {
+                # So comment->confirmed is greater than alert->whensubscribed
+                restore_time();
 
-            #     $mech->clear_emails_ok;
-            #     FixMyStreet::Script::Alerts::send_updates();
-            #     $mech->email_count_is(1);
-            #     my $email = $mech->get_email;
-            #     my $email_text = $mech->get_text_body_from_email($email);
-            #     my $email_html = $mech->get_html_body_from_email($email);
-            #     like $email_text, qr/No access - Gate locked/, 'Reason pulled from comment';
-            #     like $email_text, qr/report a problem with this missed collection/, 'Report a problem text in text email';
-            #     like $email_html, qr/No access - Gate locked/, 'Reason pulled from comment';
-            #     like $email_html, qr/Our crews reported your bulky waste collection was not made/, 'extra bulky waste text included';
-            #     like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
-            #     # XXX Where is service_id?
-            #     like $email_html, qr{enquiry\?category=Missed\+collection\+dispute&service_id=&booking_id=1}, 'HTML alert contains report link';
+                my $comment = FixMyStreet::DB->resultset('Comment')->create(
+                    {
+                        user          => $body_user,
+                        problem_id    => $bulky_report->id,
+                        text          => 'Resolution text',
+                        confirmed     => DateTime->now,
+                        problem_state => 'unable to fix',
+                        anonymous     => 0,
+                        mark_open     => 0,
+                        mark_fixed    => 0,
+                        state         => 'confirmed',
+                    }
+                );
+                $comment->set_extra_metadata('event_id', 8004);
+                $comment->set_extra_metadata('resolution_id', 466);
+                $comment->update;
 
-            #     $comment->delete;
-            # };
+                set_fixed_time('2023-07-01T15:00:01Z');
+                $mech->clear_emails_ok;
+                FixMyStreet::Script::Alerts::send_updates();
+                $mech->email_count_is(1);
+                my $email = $mech->get_email;
+                my $email_text = $mech->get_text_body_from_email($email);
+                my $email_html = $mech->get_html_body_from_email($email);
+                like $email_text, qr/Resolution text/, 'Reason pulled from comment';
+                like $email_text, qr/report a problem with this missed collection/, 'Report a problem text in text email';
+                like $email_html, qr/Resolution text/, 'Reason pulled from comment';
+                like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
+                like $email_html,
+                    qr{/12345/enquiry\?category=Missed\+collection\+dispute&service_id=986&booking_id=.+&event_id=8004},
+                    'HTML alert contains dispute link';
+
+                # we only want the HTML link as the text version does not contain the link
+                my @links = $email_html =~ m{https?://[^"]+}g;
+                my @enq_links = grep( /enquiry/, @links );
+                # need to strip the host otherwise we're not logged in
+                my $l = URI->new($enq_links[0]);
+                $mech->get_ok($l->path_query);
+                &$test_dispute_page;
+
+                $comment->delete;
+            };
         };
 
         subtest 'Existing dispute event' => sub {
@@ -459,8 +545,44 @@ FixMyStreet::override_config {
                 $mech->content_lacks('Report a problem with this missed collection', 'cannot report just before window closes');
             };
 
-            # XXX
-            # subtest 'No dispute link in email' => sub {};
+            subtest 'No dispute link in email' => sub {
+                # So comment->confirmed is greater than alert->whensubscribed
+                restore_time();
+
+                my $comment = FixMyStreet::DB->resultset('Comment')->create(
+                    {
+                        user          => $body_user,
+                        problem_id    => $mc_report->id,
+                        text          => 'Resolution text',
+                        confirmed     => DateTime->now,
+                        problem_state => 'cancelled',
+                        anonymous     => 0,
+                        mark_open     => 0,
+                        mark_fixed    => 0,
+                        state         => 'confirmed',
+                    }
+                );
+                $comment->set_extra_metadata('event_id', 112112321);
+                $comment->update;
+
+                set_fixed_time('2023-07-01T15:00:01Z');
+
+                $mech->clear_emails_ok;
+                FixMyStreet::Script::Alerts::send_updates();
+                $mech->email_count_is(1);
+                my $email = $mech->get_email;
+                my $email_text = $mech->get_text_body_from_email($email);
+                my $email_html = $mech->get_html_body_from_email($email);
+                like $email_text, qr/Resolution text/, 'Reason pulled from comment';
+                unlike $email_text, qr/report a problem with this missed collection/, 'Report a problem text in text email';
+                like $email_html, qr/Resolution text/, 'Reason pulled from comment';
+                unlike $email_html, qr/Report a problem with this missed collection/, 'Report a problem text not in html email';
+                unlike $email_html,
+                    qr{/12345/enquiry\?category=Missed\+collection\+dispute},
+                    'HTML alert does not contain dispute link';
+
+                $comment->delete;
+            };
         };
 
         subtest '"No access - Changed key" - provides follow-up link' => sub {
@@ -514,13 +636,7 @@ FixMyStreet::override_config {
                 $mech->content_contains('Report a problem with this missed collection', 'can report just before window closes');
             };
 
-            subtest 'Follow dispute link' => sub {
-                set_fixed_time('2023-07-02T15:00:01Z');
-                $mech->content_contains(
-                    '/enquiry?category=Missed+collection+dispute&amp;service_id=986&amp;booking_id=' . $booking_id .'&amp;report_id=' . $report_id . '&amp;event_id=112112321'
-                );
-                $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
-
+            my $test_dispute_page = sub {
                 $mech->content_contains('Missed collection dispute');
                 $mech->content_contains('your Bulky waste collection was not made');
                 $mech->content_contains('No access - Parked vehicle');
@@ -529,41 +645,62 @@ FixMyStreet::override_config {
                 );
             };
 
-            # XXX
-            # subtest 'Correct dispute link in email' => sub {
-            #     restore_time();
+            subtest 'Follow dispute link' => sub {
+                set_fixed_time('2023-07-02T15:00:01Z');
+                $mech->content_contains(
+                    '/enquiry?category=Missed+collection+dispute&amp;service_id=986&amp;booking_id=' . $booking_id . '&amp;event_id=112112321'
+                );
+                $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
 
-            #     my $comment = FixMyStreet::DB->resultset('Comment')->create(
-            #         {
-            #             user          => $body_user,
-            #             problem_id    => $mc_report->id,
-            #             text          => 'No access - Parked vehicle',
-            #             confirmed     => DateTime->now,
-            #             problem_state => 'unable to fix',
-            #             anonymous     => 0,
-            #             mark_open     => 0,
-            #             mark_fixed    => 0,
-            #             state         => 'confirmed',
-            #         }
-            #     );
+                &$test_dispute_page;
+            };
 
-            #     set_fixed_time('2023-07-02T15:00:01Z');
+            subtest 'Correct dispute link in email' => sub {
+                # So comment->confirmed is greater than alert->whensubscribed
+                restore_time();
 
-            #     $mech->clear_emails_ok;
-            #     FixMyStreet::Script::Alerts::send_updates();
-            #     $mech->email_count_is(1);
-            #     my $email = $mech->get_email;
-            #     my $email_text = $mech->get_text_body_from_email($email);
-            #     my $email_html = $mech->get_html_body_from_email($email);
-            #     like $email_text, qr/No access - Parked vehicle/, 'Reason pulled from comment';
-            #     like $email_text, qr/report a problem with this missed collection/, 'Report a problem text in text email';
-            #     like $email_html, qr/No access - Parked vehicle/, 'Reason pulled from comment';
-            #     like $email_html, qr/Our crews reported your collection was not made/, 'extra collection text included';
-            #     like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
-            #     like $email_html, qr{Raise_a_waste_dispute_in_Kingston\?uprn=1000000002&service_id=986}, 'HTML alert contains report link';
+                my $comment = FixMyStreet::DB->resultset('Comment')->create(
+                    {
+                        user          => $body_user,
+                        problem_id    => $mc_report->id,
+                        text          => 'Resolution text',
+                        confirmed     => DateTime->now,
+                        problem_state => 'unable to fix',
+                        anonymous     => 0,
+                        mark_open     => 0,
+                        mark_fixed    => 0,
+                        state         => 'confirmed',
+                    }
+                );
+                $comment->set_extra_metadata('event_id', 112112321);
+                $comment->set_extra_metadata('resolution_id', 617);
+                $comment->update;
 
-            #     $comment->delete;
-            # };
+                set_fixed_time('2023-07-01T15:00:01Z');
+                $mech->clear_emails_ok;
+                FixMyStreet::Script::Alerts::send_updates();
+                $mech->email_count_is(1);
+                my $email = $mech->get_email;
+                my $email_text = $mech->get_text_body_from_email($email);
+                my $email_html = $mech->get_html_body_from_email($email);
+                like $email_text, qr/Resolution text/, 'Reason pulled from comment';
+                like $email_text, qr/report a problem with this missed collection/, 'Report a problem text in text email';
+                like $email_html, qr/Resolution text/, 'Reason pulled from comment';
+                like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
+                like $email_html,
+                    qr{/12345/enquiry\?category=Missed\+collection\+dispute&service_id=986&missed_report_id=.+&event_id=112112321},
+                    'HTML alert contains dispute link';
+
+                # we only want the HTML link as the text version does not contain the link
+                my @links = $email_html =~ m{https?://[^"]+}g;
+                my @enq_links = grep( /enquiry/, @links );
+                # need to strip the host otherwise we're not logged in
+                my $l = URI->new($enq_links[0]);
+                $mech->get_ok($l->path_query);
+                &$test_dispute_page;
+
+                $comment->delete;
+            };
         };
 
         subtest 'Completed missed bin report' => sub {
@@ -580,7 +717,7 @@ FixMyStreet::override_config {
             subtest 'Follow dispute link' => sub {
                 $mech->get_ok('/waste/12345');
                 $mech->content_contains(
-                    '/enquiry?category=Missed+collection+dispute&amp;service_id=986&amp;booking_id=' . $booking_id . '&amp;report_id=' . $report_id . '&amp;event_id=112112321'
+                    '/enquiry?category=Missed+collection+dispute&amp;service_id=986&amp;booking_id=' . $booking_id . '&amp;event_id=112112321'
                 );
                 $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
                 $mech->content_contains('Missed collection dispute');

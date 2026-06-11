@@ -590,7 +590,6 @@ FixMyStreet::override_config {
                 $mech->get_ok('/waste/12345');
                 $mech->content_contains('/enquiry?category=Missed+collection+dispute&amp;service_id=966');
                 $mech->content_lacks('booking_id');
-                $mech->content_lacks('report_id');
                 $mech->content_lacks('event_id');
                 $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
 
@@ -769,9 +768,9 @@ FixMyStreet::override_config {
                 my $email_text = $mech->get_text_body_from_email($email);
                 my $email_html = $mech->get_html_body_from_email($email);
                 like $email_text, qr/Resolution text/, 'Reason pulled from comment';
-                like $email_text, qr/report a problem with this missed collection/, 'Report a problem text not in text email';
+                like $email_text, qr/report a problem with this missed collection/, 'Report a problem text in text email';
                 like $email_html, qr/Resolution text/, 'Reason pulled from comment';
-                unlike $email_html, qr/Report a problem with this missed collection/, 'Report a problem text  not in html email';
+                unlike $email_html, qr/Report a problem with this missed collection/, 'Report a problem text not in html email';
                 unlike $email_html,
                     qr{/12345/enquiry\?category=Missed\+collection\+dispute},
                     'HTML alert does not contain dispute link';
@@ -814,7 +813,6 @@ FixMyStreet::override_config {
                     '/enquiry?category=Missed+collection+dispute&amp;service_id=966&amp;event_id=112112321'
                 );
                 $mech->content_lacks('booking_id');
-                $mech->content_lacks('report_id');
                 $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
                 $mech->content_contains('Missed collection dispute');
                 $mech->content_contains('your Non-recyclable Refuse collection was not made');
@@ -864,7 +862,6 @@ FixMyStreet::override_config {
                     '/enquiry?category=Missed+collection+dispute&amp;service_id=966&amp;event_id=112112321'
                 );
                 $mech->content_lacks('booking_id');
-                $mech->content_lacks('report_id');
                 $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
 
                 &$test_dispute_page;
@@ -904,7 +901,7 @@ FixMyStreet::override_config {
                 like $email_html, qr/Resolution text/, 'Reason pulled from comment';
                 like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
                 like $email_html,
-                    qr{/12345/enquiry\?category=Missed\+collection\+dispute&service_id=966&event_id=112112321},
+                    qr{/12345/enquiry\?category=Missed\+collection\+dispute&service_id=966&missed_report_id=.+&event_id=112112321},
                     'HTML alert contains dispute link';
                 unlike $email_html, qr/booking_id/, 'No booking ID';
 
@@ -960,7 +957,6 @@ FixMyStreet::override_config {
                     '/enquiry?category=Missed+collection+dispute&amp;service_id=966&amp;event_id=112112321'
                 );
                 $mech->content_lacks('booking_id');
-                $mech->content_lacks('report_id');
                 $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
                 &$test_dispute_page;
             };
@@ -998,7 +994,7 @@ FixMyStreet::override_config {
                 like $email_html, qr/Completed collection/, 'Reason pulled from comment';
                 like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
                 like $email_html,
-                    qr{/12345/enquiry\?category=Missed\+collection\+dispute&service_id=966&event_id=112112321},
+                    qr{/12345/enquiry\?category=Missed\+collection\+dispute&service_id=966&missed_report_id=.+&event_id=112112321},
                     'HTML alert contains dispute link';
                 unlike $email_html, qr/booking_id/, 'No booking ID';
 

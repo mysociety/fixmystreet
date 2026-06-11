@@ -517,6 +517,21 @@ sub waste_munge_enquiry_form_pages {
     my $category = $c->get_param('category');
 
     my $booking_id = $c->get_param('booking_id');
+
+    if ( $c->cobrand->moniker eq 'kingston' && !$booking_id ) {
+        # Check for missed collection report made against bulky etc. booking
+        if ( my $missed_report_id = $c->get_param('missed_report_id') ) {
+            my $mc_report = $c->cobrand->problems->find($missed_report_id);
+
+            my $booking_guid = $mc_report->get_extra_field_value('Original_Event_ID');
+
+            my $booking_report = $c->cobrand->problems->find(
+                { external_id => $booking_guid } );
+
+            $booking_id = $booking_report->id if $booking_report;
+        }
+    }
+
     if ($booking_id) {
         my $report = $c->cobrand->problems->find($booking_id);
         unless ( $report && $c->user_exists && (
