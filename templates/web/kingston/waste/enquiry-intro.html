@@ -3,6 +3,7 @@
     SET event_id = c.req.params.event_id;
     SET category = c.req.params.category;
 
+    # For ordinary services & their missed collection reports
     IF services.$service_id;
         SET service = services.$service_id;
         SET service_name = service.service_name;
@@ -11,6 +12,7 @@
         SET completed = service.report_open.completed;
     END;
 
+    # For bulky collections & their missed collection reports
     IF booked_missed.$guid;
         SET missed = booked_missed.$guid;
         SET service_name = missed.service_name;

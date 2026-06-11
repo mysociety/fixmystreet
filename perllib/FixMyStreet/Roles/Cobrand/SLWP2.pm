@@ -707,6 +707,7 @@ sub open311_waste_update_extra {
     return (
         @media ? ( media_url => \@media ) : (),
         defined $override_status ? (status => $override_status ) : (),
+        fms_extra_event_id => $event->{Id},
     );
 }
 

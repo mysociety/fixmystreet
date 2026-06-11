@@ -41,6 +41,7 @@ sub create_contact {
 create_contact({ category => 'Report missed collection', email => '3145' }, 'Waste',
     { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
+    { code => 'property_id', required => 1, automated => 'hidden_field' },
 );
 create_contact({ category => 'Request new container', email => '3129' }, 'Waste',
     { code => 'service_id', required => 1, automated => 'hidden_field' },
@@ -629,6 +630,8 @@ FixMyStreet::override_config {
     # This is when a collection has been missed, a missed bin report made, and
     # then marked as complete, or not complete with a resolution
     subtest 'Dispute of closed missed bin report' => sub {
+        $mech->log_in_ok($user->email);
+
         # Submit a missed collection report
         $mech->get_ok('/waste/12345/report');
         $mech->submit_form_ok({ with_fields => { 'service-966' => 1 } });
@@ -827,6 +830,15 @@ FixMyStreet::override_config {
                 $mech->content_lacks('Report a problem with this missed collection', 'not allowed just after window closes');
             };
 
+            my $test_dispute_page = sub {
+                $mech->content_contains('Missed collection dispute');
+                $mech->content_contains('your Non-recyclable Refuse collection was not made');
+                $mech->content_contains("H\&S - Damaged container");
+                $mech->content_contains(
+                    '/Raise_a_waste_dispute_in_Kingston?uprn=1000000002&service_id=966&event_id=112112321'
+                );
+            };
+
             subtest 'Follow dispute link' => sub {
                 set_fixed_time('2022-09-11T16:00:00Z');
 
@@ -838,46 +850,56 @@ FixMyStreet::override_config {
                 $mech->content_lacks('report_id');
                 $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
 
-                $mech->content_contains('Missed collection dispute');
-                $mech->content_contains('your Non-recyclable Refuse collection was not made');
-                $mech->content_contains("H\&S - Damaged container");
-                $mech->content_contains(
-                    '/Raise_a_waste_dispute_in_Kingston?uprn=1000000002&service_id=966&event_id=112112321'
-                );
+                &$test_dispute_page;
             };
 
-            # XXX
-            # subtest 'Correct dispute link in email' => sub {
-            #     restore_time();
+            subtest 'Correct dispute link in email' => sub {
+                # So comment->confirmed is greater than alert->whensubscribed
+                restore_time();
 
-            #     $comment = FixMyStreet::DB->resultset('Comment')->create(
-            #         {
-            #             user          => $body_user,
-            #             problem_id    => $mc_report->id,
-            #             text          => 'Contaminated builder waste',
-            #             confirmed     => DateTime->now,
-            #             problem_state => 'unable to fix',
-            #             anonymous     => 0,
-            #             mark_open     => 0,
-            #             mark_fixed    => 0,
-            #             state         => 'confirmed',
-            #         }
-            #     );
+                $comment = FixMyStreet::DB->resultset('Comment')->create(
+                    {
+                        user          => $body_user,
+                        problem_id    => $mc_report->id,
+                        text          => 'Contaminated builder waste',
+                        confirmed     => DateTime->now,
+                        problem_state => 'unable to fix',
+                        anonymous     => 0,
+                        mark_open     => 0,
+                        mark_fixed    => 0,
+                        state         => 'confirmed',
+                    }
+                );
+                $comment->set_extra_metadata('event_id', 112112321);
+                $comment->update;
 
-            #     set_fixed_time('2022-09-11T16:00:00Z');
+                set_fixed_time('2022-09-11T16:00:00Z');
 
-            #     $mech->clear_emails_ok;
-            #     FixMyStreet::Script::Alerts::send_updates();
-            #     $mech->email_count_is(1);
-            #     my $email = $mech->get_email;
-            #     my $email_text = $mech->get_text_body_from_email($email);
-            #     my $email_html = $mech->get_html_body_from_email($email);
-            #     like $email_text, qr/Contaminated builder waste/, 'Reason pulled from comment';
-            #     like $email_text, qr/report a problem with this missed collection/, 'Report a problem text in text email';
-            #     like $email_html, qr/Contaminated builder waste/, 'Reason pulled from comment';
-            #     like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
-            #     like $email_html, qr{/enquiry\?category=Missed\+collection\+dispute&service_id=966}, 'HTML alert contains report link';
-            # };
+                $mech->clear_emails_ok;
+                FixMyStreet::Script::Alerts::send_updates();
+                $mech->email_count_is(1);
+                my $email = $mech->get_email;
+                my $email_text = $mech->get_text_body_from_email($email);
+                my $email_html = $mech->get_html_body_from_email($email);
+                like $email_text, qr/Contaminated builder waste/, 'Reason pulled from comment';
+                like $email_text, qr/report a problem with this missed collection/, 'Report a problem text in text email';
+                like $email_html, qr/Contaminated builder waste/, 'Reason pulled from comment';
+                like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
+                like $email_html,
+                    qr{/12345/enquiry\?category=Missed\+collection\+dispute&service_id=966&event_id=112112321},
+                    'HTML alert contains report link';
+                unlike $email_html, qr/booking_id/, 'No booking ID';
+
+                # we only want the HTML link as the text version does not contain the link
+                my @links = $email_html =~ m{https?://[^"]+}g;
+                my @enq_links = grep( /enquiry/, @links );
+                # need to strip the host otherwise we're not logged in
+                my $l = URI->new($enq_links[0]);
+                $mech->get_ok($l->path_query);
+                &$test_dispute_page;
+
+                $comment->delete;
+            };
         };
 
         subtest 'Existing dispute event' => sub {
@@ -906,6 +928,14 @@ FixMyStreet::override_config {
                 EventStateId => 19241, # Completed
             } ] });
 
+            my $test_dispute_page = sub {
+                $mech->content_contains('Missed collection dispute');
+                $mech->content_contains('your Non-recyclable Refuse collection was completed');
+                $mech->content_contains(
+                    '/Raise_a_waste_dispute_in_Kingston?uprn=1000000002&service_id=966&event_id=112112321'
+                );
+            };
+
             subtest 'Follow dispute link' => sub {
                 $mech->get_ok('/waste/12345');
                 $mech->content_contains(
@@ -914,11 +944,55 @@ FixMyStreet::override_config {
                 $mech->content_lacks('booking_id');
                 $mech->content_lacks('report_id');
                 $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
-                $mech->content_contains('Missed collection dispute');
-                $mech->content_contains('your Non-recyclable Refuse collection was completed');
-                $mech->content_contains(
-                    '/Raise_a_waste_dispute_in_Kingston?uprn=1000000002&service_id=966&event_id=112112321'
+                &$test_dispute_page;
+            };
+
+            subtest 'Correct dispute link in email' => sub {
+                # So comment->confirmed is greater than alert->whensubscribed
+                restore_time();
+
+                $comment = FixMyStreet::DB->resultset('Comment')->create(
+                    {
+                        user          => $body_user,
+                        problem_id    => $mc_report->id,
+                        text          => 'Completed collection',
+                        confirmed     => DateTime->now,
+                        problem_state => 'fixed',
+                        anonymous     => 0,
+                        mark_open     => 0,
+                        mark_fixed    => 0,
+                        state         => 'confirmed',
+                    }
                 );
+                $comment->set_extra_metadata('event_id', 112112321);
+                $comment->update;
+
+                set_fixed_time('2022-09-11T16:00:00Z');
+
+                $mech->clear_emails_ok;
+                FixMyStreet::Script::Alerts::send_updates();
+                $mech->email_count_is(1);
+                my $email = $mech->get_email;
+                my $email_text = $mech->get_text_body_from_email($email);
+                my $email_html = $mech->get_html_body_from_email($email);
+                like $email_text, qr/Completed collection/, 'Reason pulled from comment';
+                like $email_text, qr/report a problem with this missed collection/, 'Report a problem text in text email';
+                like $email_html, qr/Completed collection/, 'Reason pulled from comment';
+                like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
+                like $email_html,
+                    qr{/12345/enquiry\?category=Missed\+collection\+dispute&service_id=966&event_id=112112321},
+                    'HTML alert contains report link';
+                unlike $email_html, qr/booking_id/, 'No booking ID';
+
+                # we only want the HTML link as the text version does not contain the link
+                my @links = $email_html =~ m{https?://[^"]+}g;
+                my @enq_links = grep( /enquiry/, @links );
+                # need to strip the host otherwise we're not logged in
+                my $l = URI->new($enq_links[0]);
+                $mech->get_ok($l->path_query);
+                &$test_dispute_page;
+
+                $comment->delete;
             };
         };
 

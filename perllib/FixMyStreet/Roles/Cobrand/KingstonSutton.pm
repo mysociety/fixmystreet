@@ -587,7 +587,7 @@ sub waste_munge_enquiry_form_pages {
             @$fields = @new;
             $pages->[1]{fields} = [ grep { !/^extra_assisted/i } @{$pages->[1]{fields}} ];
         }
-    } elsif ( $category eq 'Missed collection dispute') {
+    } elsif ( $c->cobrand->moniker eq 'sutton' && $category eq 'Missed collection dispute') {
         my $guid = $c->stash->{guid};
         # if we have a guid then it might be a link from an email and
         # so it might be clicked outside the window so re-check if
