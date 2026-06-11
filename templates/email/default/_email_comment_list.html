@@ -38,9 +38,21 @@
           </p>
         [% END %]
 
-        <p>
-          <a href="[% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') %]/enquiry?category=Missed+collection+dispute&service_id=[% report.get_extra_field_value('service_id') %][% '&event_id=' _ item_extra.event_id IF item_extra.event_id %]">Report a problem with this missed collection</a>
-        </p>
+        [% SET dispute_permission = cobrand.waste_check_can_raise_dispute(
+          'type', 'missed_report_standard',
+          'resolution_key', (
+            update.item_problem_state == 'fixed' ? 'complete' : item_extra.resolution_id
+          )
+        ) %]
+        [% IF dispute_permission == 'allow' || item_extra.dispute_permission == 'message' %]
+          <p>
+            <a href="[% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') %]/enquiry?category=Missed+collection+dispute&service_id=[% report.get_extra_field_value('service_id') %][% '&event_id=' _ item_extra.event_id IF item_extra.event_id %]">Report a problem with this missed collection</a>
+          </p>
+        [% ELSIF dispute_permission == 'follow_up' %]
+          <p>
+            <a href="https://self.kingston.gov.uk/service/Update_my_waste_information_in_Kingston">Update my waste information</a>
+          </p>
+        [% END %]
       [% END %]
     [% END %]
     </div>

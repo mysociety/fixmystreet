@@ -803,6 +803,7 @@ sub construct_waste_open311_update {
         prefer_template => 1,
         fms_extra_resolution_code => $event_type->{resolution}{$resolution_id} || '',
         fms_extra_event_status => $event_type->{states}{$state_id}{name} || '',
+        fms_extra_event_id => $event->{Id},
         %extra,
     }
 }

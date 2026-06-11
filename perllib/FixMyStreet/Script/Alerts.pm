@@ -196,6 +196,8 @@ sub send_alert_type {
         $data{cobrand} = $cobrand;
         $data{cobrand_data} = $row->{alert_cobrand_data};
         $data{lang} = $row->{alert_lang};
+        $data{item_extra}
+            = $data{item_extra} ? JSON->new->decode( $data{item_extra} ) : {};
         $last_alert_id = $row->{alert_id};
     }
     if ($last_alert_id) {
@@ -423,9 +425,6 @@ sub _alert_iterator {
 
 sub _send_aggregated_alert(%) {
     my %data = @_;
-
-    $data{item_extra} = JSON->new->decode( $data{item_extra} )
-        if $data{item_extra};
 
     my $cobrand = $data{cobrand};
 
