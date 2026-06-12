@@ -165,15 +165,15 @@ sub image_for_unit {
     my $bag_clear = svg_container_sack('Clear sack', 'normal', '#d8d8d8');
     my $wheelie_green = svg_container_bin('Green wheelie bin', "wheelie", '#41B28A');
     my $images = {
-        $CONTAINERS{recycling_box} => "$base/box-green-mix",
+        $CONTAINERS{recycling_box} => { src => "$base/box-green-mix", alt => 'Green box' },
         $CONTAINERS{recycling_240} => $wheelie_green,
         $CONTAINERS{recycling_blue_bag} => $bag_blue_stripe,
         $CONTAINERS{paper_bag} => $bag_clear,
         $CONTAINERS{refuse_bag} => $bag_red_stripe,
-        $CONTAINERS{food_outdoor} => "$base/caddy-brown-large",
+        $CONTAINERS{food_outdoor} => { src => "$base/caddy-brown-large", alt => 'Large brown caddy' },
 
         $SERVICE_IDS{domestic_refuse} => svg_container_bin('Black wheelie bin', 'wheelie', '#333333'), # refuse
-        $SERVICE_IDS{domestic_food} => "$base/caddy-brown-large", # food
+        $SERVICE_IDS{domestic_food} => { src => "$base/caddy-brown-large", alt => 'Large brown caddy' }, # food
         $SERVICE_IDS{domestic_paper} => svg_container_bin('Blue lidded wheelie bin', "wheelie", '#767472', '#00A6D2', 1), # paper and card
         $SERVICE_IDS{domestic_mixed} => $wheelie_green,
         $SERVICE_IDS{fas_refuse} => $bag_red_stripe,

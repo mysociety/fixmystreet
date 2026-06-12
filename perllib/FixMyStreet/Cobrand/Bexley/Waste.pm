@@ -926,58 +926,58 @@ sub image_for_unit {
     my $is_communal = $property->{is_communal};
 
     my $images = {
-        'FO-140'   => 'communal-food-wheeled-bin',     # Food 140 ltr Bin
-        'FO-23'    => 'food-waste',                    # Food 23 ltr Caddy
-        'GA-140'   => 'garden-waste-brown-bin',        # Garden 140 ltr Bin
-        'GA-240'   => 'garden-waste-brown-bin',        # Garden 240 ltr Bin
-        'GL-660'   => 'green-euro-bin',                # Glass 660 ltr Bin
-        'GL-1100'  => 'green-euro-bin',                # Glass 1100 ltr Bin
-        'GL-1280'  => 'green-euro-bin',                # Glass 1280 ltr Bin
-        'GL-55'    => 'recycle-black-box',             # Glass 55 ltr Box
-        'MDR-SACK' => 'recycle-bag',                   # Mixed Dry Recycling Sack
-        'PC-180'   => 'recycling-bin-blue-lid',        # Paper & card 180 ltr wheeled bin
-        'PC-55'    => 'blue-recycling-box',            # Paper & card 55 ltr box
-        'PA-1100'  => 'communal-blue-euro',            # Paper & Cardboard & Cardbaord 1100 ltr Bin
-        'PA-1280'  => 'communal-blue-euro',            # Paper & Cardboard 1280 ltr Bin
-        'PA-140'   => 'communal-blue-euro',            # Paper & Cardboard 140 ltr Bin
-        'PA-240'   => 'communal-blue-euro',            # Paper & Cardboard 240 ltr Bin
-        'PA-55'    => 'recycle-green-box',             # Paper & Cardboard 55 ltr Box
-        'PA-660'   => 'communal-blue-euro',            # Paper & Cardboard 660 ltr Bin
-        'PA-940'   => 'communal-blue-euro',            # Paper & Cardboard 940 ltr Bin
-        'PL-1100'  => 'plastics-wheeled-bin',          # Plastic 1100 ltr Bin
-        'PL-1280'  => 'plastics-wheeled-bin',          # Plastic 1280 ltr Bin
-        'PL-140'   => 'plastics-wheeled-bin',          # Plastic 140 ltr Bin
-        'PL-55'    => 'recycle-maroon-box',            # Plastic 55 ltr Box
-        'PL-660'   => 'plastics-wheeled-bin',          # Plastic 660 ltr Bin
-        'PL-940'   => 'plastics-wheeled-bin',          # Plastic 940 ltr Bin
-        'PG-1100'  => 'plastics-wheeled-bin',          # Plastics & glass 1100 ltr euro bin
-        'PG-1280'  => 'plastics-wheeled-bin',          # Plastics & glass 1280 ltr euro bin
-        'PG-360'   => 'plastics-wheeled-bin',          # Plastics & glass 360 ltr wheeled bin
-        'PG-55'    => 'white-recycling-box',           # Plastics & glass 55 ltr box
-        'PG-660'   => 'plastics-wheeled-bin',          # Plastics & glass 660 ltr euro bin
-        'PG-940'   => 'plastics-wheeled-bin',          # Plastics & glass 940 ltr chamberlain bin
-        'RES-1100' => 'non-recyclable-wheeled-bin',    # Residual 1100 ltr bin
-        'RES-1280' => 'non-recyclable-wheeled-bin',    # Residual 1280 ltr bin
-        'RES-140'  => 'non-recyclable-wheeled-bin',    # Residual 140 ltr bin
-        'RES-180'  => 'general-waste-green-bin',       # Residual 180 ltr bin
-        'RES-660'  => 'non-recyclable-wheeled-bin',    # Residual 660 ltr bin
-        'RES-720'  => 'non-recyclable-wheeled-bin',    # Residual 720 ltr bin
-        'RES-940'  => 'non-recyclable-wheeled-bin',    # Residual 940 ltr bin
-        'RES-CHAM' => 'non-recyclable-wheeled-bin',    # Residual Chamberlain
-        'RES-DBIN' => 'non-recyclable-wheeled-bin',    # Residual Dustbin
-        'RES-SACK' => 'black-non-recyclable-bag',      # Residual Sack
+        'FO-140'   => { src => 'communal-food-wheeled-bin', alt => 'Brown wheelie bin and grey tall unit' }, # Food 140 ltr Bin
+        'FO-23'    => { src => 'food-waste', alt => 'Brown caddy' }, # Food 23 ltr Caddy
+        'GA-140'   => { src => 'garden-waste-brown-bin', alt => 'Brown wheelie bin' }, # Garden 140 ltr Bin
+        'GA-240'   => { src => 'garden-waste-brown-bin', alt => 'Large brown wheelie bin' }, # Garden 240 ltr Bin
+        'GL-660'   => { src => 'green-euro-bin', alt => 'Large green communal bin and black wheelie bin with green lid ' }, # Glass 660 ltr Bin
+        'GL-1100'  => { src => 'green-euro-bin', alt => 'Large green communal bin and black wheelie bin with green lid ' }, # Glass 1100 ltr Bin
+        'GL-1280'  => { src => 'green-euro-bin', alt => 'Large green communal bin and black wheelie bin with green lid ' }, # Glass 1280 ltr Bin
+        'GL-55'    => { src => 'recycle-black-box', alt => 'Black box' }, # Glass 55 ltr Box
+        'MDR-SACK' => { src => 'recycle-bag', alt => 'Clear plastic bag containing recycling' }, # Mixed Dry Recycling Sack
+        'PC-180'   => { src => 'recycling-bin-blue-lid', alt => 'Green container with blue lid' }, # Paper & card 180 ltr wheeled bin
+        'PC-55'    => { src => 'blue-recycling-box', alt => 'Blue box' }, # Paper & card 55 ltr box
+        'PA-1100'  => { src => 'communal-blue-euro', alt => 'Large blue communal bin and black wheelie bin with blue lid' }, # Paper & Cardboard & Cardbaord 1100 ltr Bin
+        'PA-1280'  => { src => 'communal-blue-euro', alt => 'Large blue communal bin and black wheelie bin with blue lid' }, # Paper & Cardboard 1280 ltr Bin
+        'PA-140'   => { src => 'communal-blue-euro', alt => 'Large blue communal bin and black wheelie bin with blue lid' }, # Paper & Cardboard 140 ltr Bin
+        'PA-240'   => { src => 'communal-blue-euro', alt => 'Large blue communal bin and black wheelie bin with blue lid' }, # Paper & Cardboard 240 ltr Bin
+        'PA-55'    => { src => 'recycle-green-box', alt => 'Green box' }, # Paper & Cardboard 55 ltr Box
+        'PA-660'   => { src => 'communal-blue-euro', alt => 'Large blue communal bin and black wheelie bin with blue lid' }, # Paper & Cardboard 660 ltr Bin
+        'PA-940'   => { src => 'communal-blue-euro', alt => 'Large blue communal bin and black wheelie bin with blue lid' }, # Paper & Cardboard 940 ltr Bin
+        'PL-1100'  => { src => 'plastics-wheeled-bin', alt => 'Large light blue communal bin and black wheelie bin with light blue lid' }, # Plastic 1100 ltr Bin
+        'PL-1280'  => { src => 'plastics-wheeled-bin', alt => 'Large light blue communal bin and black wheelie bin with light blue lid' }, # Plastic 1280 ltr Bin
+        'PL-140'   => { src => 'plastics-wheeled-bin', alt => 'Large light blue communal bin and black wheelie bin with light blue lid' }, # Plastic 140 ltr Bin
+        'PL-55'    => { src => 'recycle-maroon-box', alt => 'Maroon box' }, # Plastic 55 ltr Box
+        'PL-660'   => { src => 'plastics-wheeled-bin', alt => 'Large light blue communal bin and black wheelie bin with light blue lid' }, # Plastic 660 ltr Bin
+        'PL-940'   => { src => 'plastics-wheeled-bin', alt => 'Large light blue communal bin and black wheelie bin with light blue lid' }, # Plastic 940 ltr Bin
+        'PG-1100'  => { src => 'plastics-wheeled-bin', alt => 'Large light blue communal bin and black wheelie bin with light blue lid' }, # Plastics & glass 1100 ltr euro bin
+        'PG-1280'  => { src => 'plastics-wheeled-bin', alt => 'Large light blue communal bin and black wheelie bin with light blue lid' }, # Plastics & glass 1280 ltr euro bin
+        'PG-360'   => { src => 'plastics-wheeled-bin', alt => 'Large light blue communal bin and black wheelie bin with light blue lid' }, # Plastics & glass 360 ltr wheeled bin
+        'PG-55'    => { src => 'white-recycling-box', alt => 'White box' }, # Plastics & glass 55 ltr box
+        'PG-660'   => { src => 'plastics-wheeled-bin', alt => 'Large light blue communal bin and black wheelie bin with light blue lid' }, # Plastics & glass 660 ltr euro bin
+        'PG-940'   => { src => 'plastics-wheeled-bin', alt => 'Large light blue communal bin and black wheelie bin with light blue lid' }, # Plastics & glass 940 ltr chamberlain bin
+        'RES-1100' => { src => 'non-recyclable-wheeled-bin', alt => 'Large yellow communal bin and green wheelie bin' }, # Residual 1100 ltr bin
+        'RES-1280' => { src => 'non-recyclable-wheeled-bin', alt => 'Large yellow communal bin and green wheelie bin' }, # Residual 1280 ltr bin
+        'RES-140'  => { src => 'non-recyclable-wheeled-bin', alt => 'Large yellow communal bin and green wheelie bin' }, # Residual 140 ltr bin
+        'RES-180'  => { src => 'general-waste-green-bin', alt => 'Green wheelie bin' }, # Residual 180 ltr bin
+        'RES-660'  => { src => 'non-recyclable-wheeled-bin', alt => 'Large yellow communal bin and green wheelie bin' }, # Residual 660 ltr bin
+        'RES-720'  => { src => 'non-recyclable-wheeled-bin', alt => 'Large yellow communal bin and green wheelie bin' }, # Residual 720 ltr bin
+        'RES-940'  => { src => 'non-recyclable-wheeled-bin', alt => 'Large yellow communal bin and green wheelie bin' }, # Residual 940 ltr bin
+        'RES-CHAM' => { src => 'non-recyclable-wheeled-bin', alt => 'Large yellow communal bin and green wheelie bin' }, # Residual Chamberlain
+        'RES-DBIN' => { src => 'non-recyclable-wheeled-bin', alt => 'Large yellow communal bin and green wheelie bin' }, # Residual Dustbin
+        'RES-SACK' => { src => 'black-non-recyclable-bag', alt => 'Black bag' }, # Residual Sack
 
         # Plastics & glass 240 ltr wheeled bin
         'PG-240' => (
             $is_communal
-            ? 'plastics-wheeled-bin'
-            : 'recycling-bin-white-lid'
+            ? { src => 'plastics-wheeled-bin', alt => 'Large light blue communal bin and black wheelie bin with light blue lid' }
+            : { src => 'recycling-bin-white-lid', alt => 'Green wheelie bin with white lid' }
         ),
         # Residual 240 ltr bin
         'RES-240'  => (
             $is_communal
-            ? 'non-recyclable-wheeled-bin'
-            : 'general-waste-green-bin'
+            ? { src => 'non-recyclable-wheeled-bin', alt => 'Large yellow communal bin and green wheelie bin' }
+            : { src => 'general-waste-green-bin', alt => 'Green wheelie bin' }
         ),
     };
 
@@ -985,7 +985,9 @@ sub image_for_unit {
 
     return '/i/waste-containers/bulky-white' if $service_id eq 'bulky';
     return '/i/waste-containers/sharps' if $service_id eq 'sharps';
-    return '/i/waste-containers/bexley/' . $images->{$service_id};
+    my $image = $images->{$service_id};
+    $image->{src} = '/i/waste-containers/bexley/' . $image->{src};
+    return $image;
 }
 
 sub bin_day_format { '%A %-d %B %Y' }
