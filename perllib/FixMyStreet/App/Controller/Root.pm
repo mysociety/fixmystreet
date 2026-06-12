@@ -46,6 +46,7 @@ sub auto : Private {
 
     $c->forward('/offline/_stash_manifest_theme', [ $c->cobrand->moniker ]);
     $c->forward('store_app_platform');
+    $c->forward('nojs_map_controls');
 
     return 1;
 }
@@ -245,6 +246,19 @@ sub store_app_platform : Private {
         $c->session->{app_platform} = "Android";
     } elsif ( $pwa && !$param ) {
         $c->session->{app_platform} = "PWA";
+    }
+}
+
+sub nojs_map_controls : Private {
+    my ($self, $c) = @_;
+
+    if (my $nojs = $c->get_param('nojs-map-controls')) {
+        my ($lat, $lon, $zoom, $aerial, $no_pins) = split /\//, $nojs;
+        $c->set_param('lat', $lat);
+        $c->set_param('lon', $lon);
+        $c->set_param('zoom', $zoom);
+        $c->set_param('aerial', $aerial);
+        $c->set_param('no_pins', $no_pins);
     }
 }
 
