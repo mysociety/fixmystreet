@@ -690,14 +690,14 @@ sub image_for_unit {
     my $images = {
         $SERVICE_IDS{domestic_refuse} => svg_container_sack('Black sack', "normal", '#333333'),
         $SERVICE_IDS{fas_refuse} => svg_container_sack('Black sack', "normal", '#333333'),
-        $SERVICE_IDS{communal_refuse} => "$base/large-communal-grey-black-lid",
-        $SERVICE_IDS{domestic_mixed} => "$base/box-green-mix",
-        $SERVICE_IDS{communal_mixed} => "$base/bin-grey-green-lid-recycling",
-        $SERVICE_IDS{domestic_paper} => "$base/box-black-paper",
-        $SERVICE_IDS{communal_paper} => "$base/bin-grey-blue-lid-recycling",
-        $SERVICE_IDS{domestic_food} => "$base/caddy-green-recycling",
-        $SERVICE_IDS{communal_food} => "$base/bin-brown-recycling",
-        $SERVICE_IDS{garden} => "$base/bin-black-brown-lid-recycling",
+        $SERVICE_IDS{communal_refuse} => { src => "$base/large-communal-grey-black-lid", alt => 'Grey communal bin with black lid' },
+        $SERVICE_IDS{domestic_mixed} => { src => "$base/box-green-mix", alt => 'Green box' },
+        $SERVICE_IDS{communal_mixed} => { src => "$base/bin-grey-green-lid-recycling", alt => 'Grey wheelie bin with green lid' },
+        $SERVICE_IDS{domestic_paper} => { src => "$base/box-black-paper", alt => 'Black box' },
+        $SERVICE_IDS{communal_paper} => { src => "$base/bin-grey-blue-lid-recycling", alt => 'Grey wheelie bin with blue lid' },
+        $SERVICE_IDS{domestic_food} => { src => "$base/caddy-green-recycling", alt => 'Green caddy' },
+        $SERVICE_IDS{communal_food} => { src => "$base/bin-brown-recycling", alt => 'Brown wheelie bin' },
+        $SERVICE_IDS{garden} => {src => "$base/bin-black-brown-lid-recycling", alt => 'Black wheelie bin with brown lid' },
         bulky => "$base/bulky-white",
     };
     return $images->{$service_id};
