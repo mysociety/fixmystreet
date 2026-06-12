@@ -455,24 +455,38 @@ peterborough:
 
   - asset_category: ['General fly tipping', 'Hazardous fly tipping' ]
     template: 'pcc_property_combined'
-    message_template: '#js-environment-message'
+    no_asset_msg_id: '#js-environment-message'
   - asset_category: ['General fly tipping', 'Hazardous fly tipping' ]
     template: 'pcc_property_leased_out'
-    message_template: '#js-environment-message'
+    no_asset_msg_id: '#js-environment-message'
 
   - asset_category: ['Offensive graffiti', 'Non offensive graffiti', 'Offensive graffiti - STAFF ONLY' ]
     template: 'pcc_property_combined'
-    message_template: '#js-graffiti-message'
+    no_asset_msg_id: '#js-graffiti-message'
   - asset_category: ['Offensive graffiti', 'Non offensive graffiti', 'Offensive graffiti - STAFF ONLY' ]
     template: 'pcc_property_leased_out'
-    message_template: '#js-graffiti-message'
+    no_asset_msg_id: '#js-graffiti-message'
 
   - asset_category: ['Abandoned vehicles']
     template: 'pcc_property_combined'
-    message_template: '#js-abandoned-vehicles-message'
+    no_asset_msg_id: '#js-abandoned-vehicles-message'
   - asset_category: ['Abandoned vehicles']
     template: 'pcc_property_leased_out'
-    message_template: '#js-abandoned-vehicles-message'
+    no_asset_msg_id: '#js-abandoned-vehicles-message'
+
+  - asset_group: ['Street cleansing']
+    template: 'pcc_property_combined'
+    no_asset_msg_id: '#js-street-cleansing-message'
+  - asset_group: ['Street cleansing']
+    template: 'pcc_property_leased_out'
+    no_asset_msg_id: '#js-street-cleansing-message'
+
+  - asset_group: ['Grounds maintenance']
+    template: 'pcc_property_combined'
+    no_asset_msg_id: '#js-grounds-maintenance-message'
+  - asset_group: ['Grounds maintenance']
+    template: 'pcc_property_leased_out'
+    no_asset_msg_id: '#js-grounds-maintenance-message'
 
   - asset_group: ['Street cleansing']
     template: 'pcc_property_combined'
