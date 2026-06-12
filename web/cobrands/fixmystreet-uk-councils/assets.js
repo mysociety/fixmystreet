@@ -1297,6 +1297,9 @@ fixmystreet.assets.lincolnshire.drains_construct_selected_asset_message = functi
     }
     var out = ['This drain was last cleaned on', last];
     if (freq != 'not assigned' && freq != 'not for cyclic cleanse') {
+        if (/biennial/.test(freq)) {
+            freq = 'biennial'; // Remove y1/y2
+        }
         out.push('and is cleaned on');
         out.push(freq == 'annual' ? 'an' : 'a');
         out.push(freq, 'basis');
