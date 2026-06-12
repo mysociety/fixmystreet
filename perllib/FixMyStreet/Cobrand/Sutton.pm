@@ -408,14 +408,14 @@ sub image_for_unit {
         $CONTAINERS{recycling_blue_bag} => $bag_blue_stripe,
         $CONTAINERS{paper_bag} => $bag_clear,
         $CONTAINERS{refuse_bag} => $bag_red_stripe,
-        $CONTAINERS{food_outdoor} => "$base/caddy-brown-large",
+        $CONTAINERS{food_outdoor} => { src => "$base/caddy-brown-large", alt => 'Large brown caddy' },
         $CONTAINERS{food_indoor_premium} => $premium_food,
 
         # Fallback to the service if no container match
         $SERVICE_IDS{domestic_refuse} => svg_container_bin('Brown wheelie bin', 'wheelie', '#8B5E3D'),
-        $SERVICE_IDS{domestic_food} => "$base/caddy-brown-large",
+        $SERVICE_IDS{domestic_food} => { src => "$base/caddy-brown-large", alt => 'Large brown caddy' },
         $SERVICE_IDS{domestic_paper} => svg_container_bin('Green wheelie bin', 'wheelie', '#41B28A'),
-        $SERVICE_IDS{domestic_mixed} => "$base/box-green-mix",
+        $SERVICE_IDS{domestic_mixed} => { src => "$base/box-green-mix", alt => 'Green box' },
         $SERVICE_IDS{fas_refuse} => $bag_red_stripe,
         $SERVICE_IDS{communal_refuse} => svg_container_bin('Grey communal bin', 'communal', '#767472', '#333333'),
         $SERVICE_IDS{fas_mixed} => $bag_blue_stripe,
