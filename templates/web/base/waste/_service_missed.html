@@ -10,9 +10,11 @@
     <input type="submit" value="Report a [% unit.service_name FILTER lower %] collection as missed" class="waste-service-descriptor waste-service-link">
   </form>
 [% ELSIF unit.report_locked_out %]
-  [% IF c.cobrand.moniker == 'sutton' AND unit.dispute_allowed %]
+  [% IF unit.dispute_allowed %]
     <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Missed+collection+dispute&amp;service_id=[% unit.service_id %][% '&amp;booking_id=' _ original_booking IF original_booking %][% '&amp;report_id=' _ unit.report_id IF unit.report_id %][% '&amp;event_id=' _ unit.event_id IF unit.event_id %]" class="waste-service-link waste-service-descriptor">Report a problem with this missed collection</a>
-  [% ELSIF c.cobrand.moniker == 'sutton' AND unit.dispute_open %]
+  [% ELSIF unit.dispute_follow_up_link %]
+    <a href="https://self.kingston.gov.uk/service/Update_my_waste_information_in_Kingston">Update my waste information</a>
+  [% ELSIF unit.dispute_open %]
     We are investigating the problem with this collection.
   [% ELSE %]
   <span class="waste-service-descriptor">A missed collection cannot be reported;
@@ -30,4 +32,3 @@
       [% PROCESS 'waste/_service_missed_fallback.html' %]
   </span>
 [% END %]
-

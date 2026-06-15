@@ -1133,6 +1133,27 @@ sub enquiry : Chained('property') : Args(0) {
         $c->detach;
     }
 
+    my $kingston_disputes = $c->cobrand->moniker eq 'kingston'
+        && $category eq 'Missed collection dispute';
+
+    if ($kingston_disputes) {
+        $c->stash->{first_page} = 'enquiry';
+        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Enquiry';
+        $c->stash->{page_list} = [
+            enquiry => {
+                fields => [],
+                title => $category,
+            },
+        ];
+
+        my $fields = [];
+        $c->cobrand->call_hook("waste_munge_enquiry_form_pages", $c->stash->{page_list}, $fields);
+        $c->stash->{field_list} = $fields;
+
+        $c->forward('form');
+        return 1;
+    }
+
     my ($contact) = grep { $_->category eq $category } @{$c->stash->{contacts}};
     $c->detach('property_redirect') unless $contact;
 

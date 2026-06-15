@@ -5,6 +5,7 @@ use warnings;
 
 use DateTime::Format::Pg;
 use IO::String;
+use JSON::MaybeXS;
 use Math::Trig qw(great_circle_distance deg2rad);
 
 use FixMyStreet::Gaze;
@@ -422,6 +423,9 @@ sub _alert_iterator {
 
 sub _send_aggregated_alert(%) {
     my %data = @_;
+
+    $data{item_extra}
+        = $data{item_extra} ? JSON->new->decode( $data{item_extra} ) : {};
 
     my $cobrand = $data{cobrand};
 

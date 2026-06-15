@@ -593,6 +593,7 @@ sub waste_task_resolutions {
         $row->{last}{state} = $state unless $state eq 'Completed' || $state eq 'Not Completed' || $state eq 'Outstanding' || $state eq 'Allocated';
         $row->{last}{completed} = $completed;
         $row->{last}{resolution} = $resolution;
+        $row->{last}{resolution_id} = $resolution_id;
         $row->{last}{image} = $media if $media;
 
         # Special handling if last instance is today e.g. if it's before a
@@ -802,6 +803,7 @@ sub construct_waste_open311_update {
         prefer_template => 1,
         fms_extra_resolution_code => $event_type->{resolution}{$resolution_id} || '',
         fms_extra_event_status => $event_type->{states}{$state_id}{name} || '',
+        fms_extra_event_id => $event->{Id},
         %extra,
     }
 }
@@ -1035,12 +1037,14 @@ sub booked_check_missed_collection {
         my $row = {
             service_name => $type eq 'small_items' ? 'Small items' : 'Bulky waste',
             service_id => $service_id_missed || $service_id,
+            $self->{c}->cobrand->moniker eq 'kingston' ? ( event_id => $event->{id} ) : (),
         };
         my $in_time = $self->within_working_days($event->{date}, 2);
         foreach my $state_id (keys %$blocked_codes) {
             next unless $event->{state} eq $state_id;
             foreach (keys %{$blocked_codes->{$state_id}}) {
-                if ($event->{resolution} eq $_ || $_ eq 'all') {
+                if ( ( $event->{resolution} // '' ) eq $_ || $_ eq 'all') {
+                    $row->{resolution_id} = $_;
                     $row->{report_locked_out} = 1;
                     $row->{report_locked_out_reason} = $blocked_codes->{$state_id}{$_};
                     $row->{report_locked_out_date} = $event->{date};

@@ -686,4 +686,216 @@ sub bulky_show_location_field_mandatory { 0 }
 
 sub bulky_disabled_location_photo { 1 }
 
+=head2 Disputes
+
+=cut
+
+=head2 waste_check_can_raise_dispute
+
+Checks if disputes can be raised for the service and resolution text.
+
+=cut
+
+sub waste_check_can_raise_dispute {
+    my ($self, %args) = @_;
+
+    $args{resolution_key} //= '';
+
+    # $args{type} can be:
+    #   original_standard
+    #   missed_report_standard
+    #   original_bulky
+    #   missed_report_bulky
+
+    # Resolution codes that do not appear mean that disputes cannot be made
+    # against them
+    my %res;
+
+    if ( $args{type} eq 'original_standard' ) {
+        %res = (
+            # Contaminated builder waste
+            1135 => 'message',
+            # Contaminated comm waste
+            1134 => 'message',
+            # Contaminated electrical
+            1368 => 'message',
+            # Contaminated food
+            1366 => 'message',
+            # Contaminated garden
+            1374 => 'message',
+            # Contaminated glass
+            1373 => 'message',
+            # Contaminated hazardous
+            1372 => 'message',
+            # Contaminated mixed
+            1376 => 'message',
+            # Contaminated nappies
+            1369 => 'message',
+            # Contaminated other
+            1371 => 'message',
+            # Contaminated paper / card
+            1365 => 'message',
+            # Contaminated plastic
+            1375 => 'message',
+            # Contaminated refuse
+            1364 => 'message',
+            # Contaminated rigid plastic
+            1370 => 'message',
+            # Contaminated tetrapak
+            1377 => 'message',
+            # Contaminated textiles
+            1367 => 'message',
+            # H&S - Heavy bin / bag
+            1358 => 'message',
+
+            # No access - Dog out
+            615 => 'allow',
+            # No access - Gate locked
+            466 => 'allow',
+            # No access - Weather
+            616 => 'allow',
+            # No access - Parked vehicle
+            617 => 'allow',
+            # No access - Police incident
+            614 => 'allow',
+            # No access - Road works
+            613 => 'allow',
+            # Not presented
+            66 => 'allow',
+            # H&S - Damaged container
+            1359 => 'allow',
+
+            # No access - Changed key
+            913 => 'follow_up',
+        );
+    } elsif ( $args{type} eq 'missed_report_standard' ) {
+        %res = (
+            # Contaminated builder waste
+            1135 => 'message',
+            # Contaminated comm waste
+            1134 => 'message',
+            # Contaminated electrical
+            1368 => 'message',
+            # Contaminated food
+            1366 => 'message',
+            # Contaminated garden
+            1374 => 'message',
+            # Contaminated glass
+            1373 => 'message',
+            # Contaminated hazardous
+            1372 => 'message',
+            # Contaminated mixed
+            1376 => 'message',
+            # Contaminated nappies
+            1369 => 'message',
+            # Contaminated other
+            1371 => 'message',
+            # Contaminated paper / card
+            1365 => 'message',
+            # Contaminated plastic
+            1375 => 'message',
+            # Contaminated refuse
+            1364 => 'message',
+            # Contaminated rigid plastic
+            1370 => 'message',
+            # Contaminated tetrapak
+            1377 => 'message',
+            # Contaminated textiles
+            1367 => 'message',
+            # H&S - Heavy bin / bag
+            1358 => 'message',
+
+            # H&S - Damaged container
+            1359 => 'allow',
+            # No access - Dog out
+            615 => 'allow',
+            # No access - Gate locked
+            466 => 'allow',
+            # No access - Weather
+            616 => 'allow',
+            # No access - Parked vehicle
+            617 => 'allow',
+            # No access - Police incident
+            614 => 'allow',
+            # No access - Road works
+            613 => 'allow',
+            # Not presented
+            66 => 'allow',
+
+            complete => 'allow',
+
+            # No access - Changed key
+            913 => 'follow_up',
+        );
+    } elsif ( $args{type} eq 'original_bulky' ) {
+        %res = (
+            # H&S - Aggression / Violence
+            1361 => 'allow',
+            # H&S - Heavy bin / bag
+            1358 => 'allow',
+            # H&S - Other
+            1378 => 'allow',
+            # H&S - Unsafe equipment
+            1362 => 'allow',
+            # H&S - Unsafe surroundings
+            1360 => 'allow',
+            # H&S - Vermin
+            1146 => 'allow',
+            # No access - Dog out
+            615 => 'allow',
+            # No access - Gate locked
+            466 => 'allow',
+            # No access - Weather
+            616 => 'allow',
+            # No access - Parked vehicle
+            617 => 'allow',
+            # No access - Police incident
+            614 => 'allow',
+            # No access - Road works
+            613 => 'allow',
+            # Nor presented
+            66 => 'allow',
+
+            # No access - Changed key
+            913 => 'follow_up',
+        );
+    } elsif ( $args{type} eq 'missed_report_bulky' ) {
+        %res = (
+            # H&S - Aggression / Violence
+            1361 => 'allow',
+            # H&S - Heavy bin / bag
+            1358 => 'allow',
+            # H&S - Other
+            1378 => 'allow',
+            # H&S - Unsafe equipment
+            1362 => 'allow',
+            # H&S - Unsafe surroundings
+            1360 => 'allow',
+            # H&S - Vermin
+            1146 => 'allow',
+            # No access - Dog out
+            615 => 'allow',
+            # No access - Gate locked
+            466 => 'allow',
+            # No access - Weather
+            616 => 'allow',
+            # No access - Parked vehicle
+            617 => 'allow',
+            # No access - Police incident
+            614 => 'allow',
+            # No access - Road works
+            613 => 'allow',
+            # Not presented
+            66 => 'allow',
+
+            complete => 'allow',
+
+            # No access - Changed key
+            913 => 'follow_up',
+        );
+    }
+
+    return $res{ $args{resolution_key} } // '';
+}
+
 1;

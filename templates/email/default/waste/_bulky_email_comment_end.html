@@ -4,20 +4,48 @@
 
 [% email_sanitize_html(update, 'item_text_original') | replace('<p>', '<p style="' _ list_item_p_style _ '">') %]
 
-[% IF update.item_problem_state == 'unable to fix' %]
-  [% IF report.category == 'Small items collection' %]
-  <p>
-  Our crews reported your small items collection was not made for the reason above.
-  </p>
-  [% ELSE %]
-  <p>
-  Our crews reported your bulky waste collection was not made for the reason above.
-  </p>
-  [% END %]
+[% IF cobrand.moniker == 'sutton' AND update.item_problem_state == 'unable to fix' %]
+    [% IF report.category == 'Small items collection' %]
+        <p>
+        Our crews reported your small items collection was not made for the reason above.
+        </p>
+    [% ELSE %]
+        <p>
+        Our crews reported your bulky waste collection was not made for the reason above.
+        </p>
+    [% END %]
 
-  <p>
-  <a href="[% cobrand.base_url %]/waste/[% property_id %]/enquiry?category=Missed+collection+dispute&service_id=[% service_id %]&booking_id=[% report.id %]">Report a problem with this missed collection</a>
-  </p>
+    <p>
+        <a href="[% cobrand.base_url %]/waste/[% property_id %]/enquiry?category=Missed+collection+dispute&service_id=[% service_id %]&booking_id=[% report.id %]">Report a problem with this missed collection</a>
+    </p>
+[% ELSIF cobrand.moniker == 'kingston' %]
+    [% IF update.item_problem_state == 'unable to fix' %]
+        [% IF report.category == 'Small items collection' %]
+            <p>
+                Our crews reported your small items collection was not made for the reason above.
+            </p>
+        [% ELSE %]
+            <p>
+                Our crews reported your bulky waste collection was not made for the reason above.
+            </p>
+        [% END %]
+    [% END %]
+
+    [% SET dispute_permission = cobrand.waste_check_can_raise_dispute(
+        'type', 'missed_report_standard',
+        'resolution_key', (
+            update.item_problem_state == 'fixed' ? 'complete' : item_extra.resolution_id
+        )
+    ) %]
+    [% IF dispute_permission == 'allow' || dispute_permission == 'message' %]
+        <p>
+            <a href="[% cobrand.base_url %]/waste/[% property_id %]/enquiry?category=Missed+collection+dispute&service_id=[% cobrand.feature('echo').bulky_service_id %]&booking_id=[% report.id %][% '&event_id=' _ item_extra.event_id IF item_extra.event_id %]">Report a problem with this missed collection</a>
+        </p>
+    [% ELSIF dispute_permission == 'follow_up' %]
+        <p>
+            <a href="https://self.kingston.gov.uk/service/Update_my_waste_information_in_Kingston">Update my waste information</a>
+        </p>
+    [% END %]
 [% END %]
 
 <p style="[% p_style %]">
