@@ -2,6 +2,9 @@ name: Coverage
 
 on: [push, pull_request]
 
+permissions:
+  contents: read
+
 jobs:
   test:
     name: Run coverage tests
@@ -17,20 +20,21 @@ jobs:
       HARNESS_PERL_SWITCHES: "-MDevel::Cover=+ignore,local/lib/perl5,commonlib,perllib/Catalyst/[^A],perllib/Email,Test.pm,^t"
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       with:
         submodules: true
+        persist-credentials: false
 
-    - uses: mysociety/actions-memcached@v1
+    - uses: niden/actions-memcached@9ff2b102979272958682d09bf262563039bea69c # v8
 
     - name: Setup cache (carton)
-      uses: actions/cache@v3
+      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
       with:
         path: local
         key: ubuntu-24-carton-${{ hashFiles('cpanfile.snapshot') }}
 
     - name: Setup cache (coverage)
-      uses: actions/cache@v3
+      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
       with:
         path: local-coverage
         key: ubuntu-24-coverage
@@ -75,13 +79,9 @@ jobs:
     - name: Upload coverage to Codecov
       if: success()
       continue-on-error: true
-      uses: Wandalen/wretry.action@master
+      uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
       with:
-        action: codecov/codecov-action@v3
-        with: |
-          files: ./coverage.json
-          fail_ci_if_error: true
-        attempt_limit: 5
-        attempt_delay: 10000
+        files: ./coverage.json
+        fail_ci_if_error: true
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
