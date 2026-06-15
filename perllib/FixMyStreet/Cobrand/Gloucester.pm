@@ -293,4 +293,30 @@ sub lookup_site_code_config {
     };
 }
 
+=head2 dashboard_export_problems_add_columns
+
+Adds a 'Staff User' column to the dashboard export.
+
+=cut
+
+sub dashboard_export_problems_add_columns {
+    my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        staff_user => 'Staff User',
+    );
+
+    return if $csv->dbi; # Already covered
+
+    my $user_lookup = $self->csv_staff_users;
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+        my $by = $report->get_extra_metadata('contributed_by');
+        return {
+            staff_user => $self->csv_staff_user_lookup($by, $user_lookup),
+        };
+    });
+}
+
 1;

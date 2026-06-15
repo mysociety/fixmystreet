@@ -1,6 +1,6 @@
+use FixMyStreet::TestMech;
 use FixMyStreet::Cobrand::Gloucester;
 use FixMyStreet::Script::Reports;
-use FixMyStreet::TestMech;
 use Test::Deep;
 use Test::MockModule;
 
@@ -64,6 +64,9 @@ my $grass = $mech->create_contact_ok(
 ' },
     ] },
 );
+
+my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body);
+$counciluser->user_body_permissions->create({ body => $body, permission_type => 'view_dashboard' });
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'gloucester' ],
@@ -183,6 +186,32 @@ FixMyStreet::override_config {
         like $text, qr/Paragraph only for Moreland/;
         like $text, qr/Paragraph not for Westgate/;
         unlike $text, qr/Paragraph not for Moreland/;
+    };
+
+    subtest 'extra CSV columns are present' => sub {
+        my $report = FixMyStreet::DB->resultset('Problem')->order_by('-id')->first;
+        $report->set_extra_metadata(contributed_by => $counciluser->id);
+        $report->update;
+
+        $mech->log_in_ok( $counciluser->email );
+        $mech->get_ok('/dashboard?export=1');
+
+        my @rows = $mech->content_as_csv;
+        is scalar @rows, 2, '1 (header) + 1 (report) = 2 lines';
+        is scalar @{$rows[0]}, 22, '22 columns present';
+
+        is_deeply $rows[0],
+            [
+                'Report ID', 'Title', 'Detail', 'User Name', 'Category',
+                'Created', 'Confirmed', 'Acknowledged', 'Fixed', 'Closed',
+                'Status', 'Latitude', 'Longitude', 'Query', 'Ward',
+                'Easting', 'Northing', 'Report URL', 'Device Type', 'Site Used',
+                'Reported As', 'Staff User',
+            ],
+            'Column headers look correct';
+
+        is $rows[1]->[0], $report->id;
+        is $rows[1]->[21], $counciluser->email;
     };
 };
 
