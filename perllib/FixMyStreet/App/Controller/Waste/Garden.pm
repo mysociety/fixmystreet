@@ -13,7 +13,6 @@ use FixMyStreet::App::Form::Waste::Garden::Sacks::Purchase;
 use FixMyStreet::App::Form::Waste::Garden::Transfer;
 use WasteWorks::Costs;
 use Hash::Util qw(lock_hash);
-use JSON::MaybeXS;
 use MIME::Base64;
 
 has feature => (
@@ -241,7 +240,7 @@ sub process_garden_cancellation : Private {
             # Already cancelled recently - show confirmation without creating duplicate
             $c->stash->{payment_method} = $existing_cancel->get_extra_field_value('payment_method');
             $c->stash->{template} = 'waste/garden/cancel_confirmation.html';
-            $c->stash->{property_id} = $c->stash->{property}{id};
+            $c->stash->{report} = $existing_cancel;
             $c->detach;
         }
     }
