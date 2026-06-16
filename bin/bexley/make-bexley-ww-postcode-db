@@ -114,13 +114,26 @@ sub process_row {
     my $cols = $lookups->{columns}{$record_id} or return;
     @row_h{@$cols} = @$row;
     my $status = $row_h{LOGICAL_STATUS} || 0;
+    my $change_type = $row_h{CHANGE_TYPE};
 
     if ( $record_id == $lookups->{types}{street} ) {
+        if ($change_type eq 'D') {
+            $queries->{delete_sd}->execute($row_h{USRN});
+            return;
+        }
         $queries->{insert_sd}->execute($row_h{USRN}, $row_h{STREET_DESCRIPTOR}, $row_h{LOCALITY_NAME}, $row_h{TOWN_NAME});
     } elsif ( $record_id == $lookups->{types}{blpu} ) {
+        if ($change_type eq 'D' || $status == 8) {
+            $queries->{delete_blpu}->execute($row_h{UPRN});
+            return;
+        }
         return if $status != 1 && $status != 6;
         $queries->{insert_blpu}->execute($row_h{UPRN}, $row_h{BLPU_CLASS}, !!$row_h{PARENT_UPRN});
     } elsif ( $record_id == $lookups->{types}{lpi} ) {
+        if ($change_type eq 'D' || $status == 8) {
+            $queries->{delete_lpi}->execute($row_h{UPRN});
+            return;
+        }
         return if ($status != 1 && $status != 6) || !$row_h{POSTCODE};
 
         # Remove whitespace from postcode
@@ -210,10 +223,16 @@ SQL
             ?,?,?,?,?)
 SQL
     );
+    my $delete_sd = $db->prepare('DELETE FROM street_descriptors WHERE usrn = ?');
+    my $delete_blpu = $db->prepare('DELETE FROM blpu WHERE uprn = ?');
+    my $delete_lpi = $db->prepare('DELETE FROM lpi WHERE uprn = ?');
     return {
         insert_sd => $insert_sd,
         insert_blpu => $insert_blpu,
         insert_lpi => $insert_lpi,
+        delete_sd => $delete_sd,
+        delete_blpu => $delete_blpu,
+        delete_lpi => $delete_lpi,
     }
 }
 
