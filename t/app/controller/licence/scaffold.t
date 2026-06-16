@@ -230,6 +230,9 @@ subtest 'Scaffold form submission - smoke test' => sub {
             like $email_parts[4][0]{'Content-Disposition'}, qr{email-logo.gif};
         };
 
+        $problem->discard_changes;
+        is $problem->state, 'internal referral';
+
         subtest 'PDF token access' => sub {
             my $id = $problem->id;
 

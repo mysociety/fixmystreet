@@ -762,6 +762,21 @@ around 'munge_sendreport_params' => sub {
     }
 };
 
+=head2 post_report_sent
+
+TfL auto marks licence applications as internal referral, as they're dealt
+with from our point of view.
+
+=cut
+
+sub post_report_sent {
+    my ($self, $problem) = @_;
+
+    if ($problem->cobrand_data eq 'licence') {
+        $problem->update({ state => 'internal referral' });
+    }
+}
+
 # We write the detail as [page name]\nfields\n\n[page name]..
 # Change those page names to bold in email
 sub licence_detail {
