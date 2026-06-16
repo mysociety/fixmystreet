@@ -27,6 +27,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'tfl',
         PHONE_COUNTRY => 'GB',
+        MAPIT_URL => 'http://mapit.uk/',
         COBRAND_FEATURES => {
             licencing_forms => { tfl => 1 },
             anonymous_account => { tfl => 'anon' },
@@ -44,7 +45,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
             street_name => 'Test Street',
             building_name_number => '123',
             borough => 'camden',
-            postcode => 'NW1 1AA',
+            postcode => 'BR1 3UH',
         }});
 
         $mech->content_contains('2 weeks (mobile tower scaffold only)');
@@ -158,6 +159,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
         ok $problem, 'Problem record created';
         is $problem->cobrand_data, 'licence', 'cobrand_data is licence';
         is $problem->non_public, 1, 'Problem is non-public';
+        is $problem->areas, ',2482,';
         is $problem->user->email, 'test@example.com', 'User email set correctly';
         is $problem->user->name, 'Test Person', 'User name set correctly';
 
