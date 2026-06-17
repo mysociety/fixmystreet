@@ -110,30 +110,6 @@ sub skip_alert_state_changed_to {
     return $report->category eq 'Small items collection' || $report->category eq 'Request new container';
 }
 
-=head2 waste_on_the_day_criteria
-
-If it's before 6pm on the day of collection, treat an Outstanding/Allocated
-task as if it's the next collection and in progress, do not allow missed
-collection reporting, and do not show the collected time.
-
-=cut
-
-sub waste_on_the_day_criteria {
-    my ($self, $completed, $state, $now, $row) = @_;
-
-    return unless $now->hour < 18;
-    if ($state eq 'Outstanding' || $state eq 'Allocated') {
-        $row->{next} = $row->{last};
-        $row->{next}{state} = 'In progress';
-        delete $row->{last};
-    }
-    $row->{report_allowed} = 0; # No reports pre-6pm, completed or not
-    if ($row->{last}) {
-        # Prevent showing collected time until reporting is allowed
-        $row->{last}{completed} = 0;
-    }
-}
-
 =head2 public_holidays
 
 The only Bank Holidays relevant to Sutton are Christmas, Boxing, New Year.
