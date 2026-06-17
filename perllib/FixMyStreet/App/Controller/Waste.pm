@@ -1138,7 +1138,9 @@ sub enquiry : Chained('property') : Args(0) {
     if ($category eq 'redirect-missed') {
         my $id = $c->stash->{property}->{id};
         my $uri = $c->uri_for_action('waste/report', [ $id ]);
-        $uri .= '?original_booking_id=' . $c->stash->{original_booking_report}->id
+        my $service = $c->get_param('service_id');
+        $uri .= "?service-$service=1";
+        $uri .= '&original_booking_id=' . $c->stash->{original_booking_report}->id
             if $c->stash->{original_booking_report};
         $c->res->redirect($uri);
         $c->detach;
