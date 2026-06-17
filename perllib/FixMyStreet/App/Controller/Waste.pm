@@ -1132,13 +1132,14 @@ sub enquiry : Chained('property') : Args(0) {
     $c->forward('setup_categories_and_bodies');
 
     my $category = $c->get_param('category');
-    my $service = $c->get_param('service_id');
+    my $service_id = $c->get_param('service_id');
     $c->detach('property_redirect') unless $category;
 
     if ($category eq 'redirect-missed') {
         my $id = $c->stash->{property}->{id};
         my $uri = $c->uri_for_action('waste/report', [ $id ]);
-        $uri .= '?original_booking_id=' . $c->stash->{original_booking_report}->id
+        $uri .= "?service-$service_id=1";
+        $uri .= '&original_booking_id=' . $c->stash->{original_booking_report}->id
             if $c->stash->{original_booking_report};
         $c->res->redirect($uri);
         $c->detach;
