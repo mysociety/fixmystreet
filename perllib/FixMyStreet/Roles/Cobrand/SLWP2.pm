@@ -19,6 +19,29 @@ use LWP::Simple;
 use MIME::Base64;
 use WasteWorks::Costs;
 
+=head2 waste_on_the_day_criteria
+
+[Kingston/Sutton] [But not in their role as inheritance conflicts]
+If it's before 6pm on the day of collection, treat an Outstanding/Allocated
+task as if it's the next collection and in progress, and do not allow missed
+collection reporting if the task is not completed.
+
+=cut
+
+sub waste_on_the_day_criteria {
+    my ($self, $completed, $state, $now, $row) = @_;
+
+    return unless $now->hour < 18 || $self->moniker eq 'merton';
+    if ($state eq 'Outstanding' || $state eq 'Allocated') {
+        $row->{next} = $row->{last};
+        $row->{next}{state} = 'In progress';
+        delete $row->{last};
+    }
+    if (!$completed) {
+        $row->{report_allowed} = 0;
+    }
+}
+
 sub waste_staff_choose_payment_method { 1 }
 around waste_cheque_payments => sub {
     my ($orig, $self) = @_;
