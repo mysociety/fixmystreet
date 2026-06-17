@@ -1120,7 +1120,7 @@ FixMyStreet::override_config {
         $mech->follow_link_ok( { url_regex => qr/service_id=960/}, 'Follow "Report a problem" link for bulky waste' );
 
         $mech->submit_form_ok({ with_fields => { category => 'redirect-missed' } });
-        is $mech->uri->path_query, '/waste/12345/report?original_booking_id=' . $report->id;
+        is $mech->uri->path_query, '/waste/12345/report?service-960=1&original_booking_id=' . $report->id;
     };
 
     subtest 'Escalations of missed collections' => sub {
