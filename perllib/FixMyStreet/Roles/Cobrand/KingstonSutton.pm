@@ -312,6 +312,7 @@ sub munge_bin_services_for_address {
         $self->_setup_container_request_escalations_for_service($_);
         $self->_setup_missed_collection_disputes_for_service($_);
         $self->_setup_scheduled_collection_disputes_for_service($_);
+        $self->_setup_container_request_disputes_for_service($_);
     }
 }
 
@@ -409,6 +410,59 @@ sub _setup_container_request_escalations_for_service {
         $row->{escalations}{container} = $open_request_event;
     }
 }
+
+=head2 Disputes
+
+Kingston and Sutton have custom behaviour to allow disputes of completed container requests.
+TODO Container specific, but can refactor with scheduled/bulky disputes.
+
+=cut
+
+sub _check_date_within_container_dispute_window {
+    my ($self, $date) = @_;
+
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    my $wd = FixMyStreet::WorkingDays->new();
+    my $start = $date->clone->set_hour(0);
+    my $end_days = $self->moniker eq 'kingston' ? 20 : 2;
+    my $end = $wd->add_days($start, $end_days+1)->set_hour(0);
+
+    return 1 if $now >= $start && $now < $end;
+    return 0;
+}
+
+sub _setup_container_request_disputes_for_service {
+    my ($self, $row) = @_;
+    my $events = $row->{all_events};
+
+    # Look for any closed request events
+    my $request_events = $events->filter({ type => 'request', closed => 1, report_not_cancelled => 1 });
+    # And any existing disputes that could be on those events
+    my $dispute_events = $events->filter({ event_type => 3143 });
+
+    foreach my $request ($request_events->list) {
+        my $guid = $request->{guid};
+        my $request_report = $request->{report};
+        next unless $request_report;
+
+        $row->{disputes}{container}{$guid}{report} = $request_report;
+
+        foreach my $dispute ($dispute_events->list) {
+            my $dispute_report = $dispute->{report};
+            next unless $dispute_report;
+            if ($dispute_report->get_extra_field_value('container_request_guid') eq $guid) {
+                $row->{disputes}{container}{$guid}{open} = $dispute;
+            }
+        }
+
+        if (!$row->{disputes}{container}{$guid}{open}) {
+            if ( $self->_check_date_within_container_dispute_window($request->{resolved_date}) ) {
+                $row->{disputes}{container}{$guid}{event} = $request;
+            }
+        }
+    }
+}
+
 
 =head2 waste_munge_enquiry_form_pages
 
@@ -634,6 +688,13 @@ sub waste_munge_enquiry_data {
             $data->{extra_original_guid} = $original->{guid};
             $data->{extra_Notes} = "Originally Echo Event #$event_id\n\n" . ($data->{extra_Notes} || '');
         }
+    } elsif ($data->{category} eq 'Dispute container delivery') {
+        my $guid = $c->stash->{original_container_request};
+        my $service = $c->stash->{services}{$data->{service_id}};
+        my $original = $service->{disputes}{container}{$guid}{event};
+        $data->{extra_Notes} = "Originally Echo Event #$original->{id}";
+        $data->{extra_original_ref} = $original->{ref};
+        $data->{extra_container_request_guid} = $original->{guid};
     }
 
     if ($self->moniker eq 'kingston' && $data->{extra_details}) {

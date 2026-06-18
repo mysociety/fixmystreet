@@ -137,6 +137,19 @@ IF NOT original_booking_report; # Not a bulky booking
 
 END;
 
+FOR request IN service.disputes.container.keys;
+    report = service.disputes.container.$request.report;
+    SET field = { value = 'Dispute container delivery|' _ request, label = 'Dispute a container delivery (' _ report.title _ ')' };
+    IF service.disputes.container.$request.open;
+        field.hint = 'Thank you for reporting an issue with this delivery; we are investigating.';
+        field.disabled = 1;
+        f.push(field);
+    ELSIF service.disputes.container.$request.event;
+        field.hint = 'Our crews have marked this delivery as complete. If you have not received your container, you can report it and we will investigate.';
+        f.push(field);
+    END;
+END;
+
 SET field = { value = 'Failure to Deliver Bags/Containers', label = 'My container / bags have not been delivered' };
 IF service.escalations.container_open;
     field.hint = 'Thank you for reporting an issue with this delivery; we are investigating and aim to deliver the container by ' _ date.format(service.escalations.container_open.target, '%A, %-d %B') _ '.';

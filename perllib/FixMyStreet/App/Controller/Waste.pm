@@ -1134,6 +1134,16 @@ sub enquiry : Chained('property') : Args(0) {
     my $service = $c->get_param('service_id');
     $c->detach('property_redirect') unless $category;
 
+    # When disputing a container request delivery, we have a category-selection
+    # "report a problem" page with multiple entries for the same category (if
+    # multiple container requests). So pass the request GUID in the category name.
+    if ($category =~ /\|/) {
+        my $container_request_guid;
+        ($category, $container_request_guid) = split /\|/, $category;
+        $c->set_param(category => $category);
+        $c->stash->{original_container_request} = $container_request_guid;
+    }
+
     if ($category eq 'redirect-missed') {
         my $id = $c->stash->{property}->{id};
         my $uri = $c->uri_for_action('waste/report', [ $id ]);

@@ -84,6 +84,13 @@ create_contact({ category => 'Failure to Deliver Bags/Containers', email => '314
     { code => 'original_ref', required => 1, automated => 'hidden_field' },
     { code => 'container_request_guid', required => 0, automated => 'hidden_field' },
 );
+create_contact({ category => 'Dispute container delivery', email => '3143' }, 'Waste',
+    { code => 'Notes', required => 1, automated => 'hidden_field' },
+    { code => 'service_id', required => 1, automated => 'hidden_field' },
+    { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
+    { code => 'original_ref', required => 1, automated => 'hidden_field' },
+    { code => 'container_request_guid', required => 0, automated => 'hidden_field' },
+);
 my $new_container_request_contact = create_contact({ category => 'Request new container', email => '3129' }, 'Waste',
     { code => 'uprn', required => 1, automated => 'hidden_field' },
     { code => 'service_id', required => 1, automated => 'hidden_field' },
@@ -1365,6 +1372,132 @@ FixMyStreet::override_config {
             my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
             is $report->category, 'Failure to Deliver Bags/Containers', "Correct category";
             is $report->title, 'Issue with delivery';
+            is $report->detail, "Non-Recyclable Refuse\n\n2 Example Street, Sutton, SM1 1AA", "Details of report contain information about problem";
+            is $report->user->email, 'schmoe@example.org', 'User email added to report';
+            is $report->name, 'Joe Schmoe', 'User name added to report';
+            is $report->get_extra_field_value('Notes'), 'Originally Echo Event #112112321';
+            is $report->get_extra_field_value('container_request_guid'), 'container-request-event-guid';
+            is $report->get_extra_field_value('original_ref'), 'LBS-789';
+        };
+
+        $e->mock('GetEventsForObject', sub { [] }); # reset
+    };
+
+    subtest 'Disputes of container delivery' => sub {
+        my $request_time = "2025-02-03T08:00:00Z";
+        my $resolved_time = "2025-03-04T08:00:00Z";
+        my $window_start_time = "2025-03-04T00:00:00Z";
+        my $just_before_window = "2025-03-03T23:59:59Z";
+        my $window_end_time = "2025-03-06T23:59:59Z";
+        my $just_after_window = "2025-03-07T00:00:00Z";
+
+        my $container_request_event = {
+            Id => '112112321',
+            ClientReference => 'LBS-789',
+            EventTypeId => 3129, # Container request
+            ServiceId => 940, # Refuse
+            EventDate => { DateTime => $request_time },
+            ResolvedDate => { DateTime => $resolved_time },
+            Data => { ExtensibleDatum => [
+                { Value => 2, DatatypeName => 'Source' },
+                {
+                    ChildData => { ExtensibleDatum => [
+                        { Value => 1, DatatypeName => 'Action' },
+                        { Value => 1, DatatypeName => 'Container Type' }, # Refuse container
+                    ] },
+                },
+            ] },
+            Guid => 'container-request-event-guid',
+        };
+        my ($container_report) = $mech->create_problems_for_body(1, $body->id, 'Container request', {
+            cobrand => 'sutton',
+            external_id => 'container-request-event-guid',
+            cobrand_data => 'waste',
+        });
+        my $dispute_event = {
+            Id => '112112323',
+            ClientReference => 'LBS-890',
+            EventTypeId => 3143, # Formal Complaint
+            EventStateId => 0,
+            ServiceId => 940, # Refuse
+            EventDate => { DateTime => "2022-09-13T19:00:00Z" },
+            Guid => 'container-dispute-event-guid',
+        };
+        my ($dispute_report) = $mech->create_problems_for_body(1, $body->id, 'Container dispute', {
+            cobrand => 'sutton',
+            external_id => 'container-dispute-event-guid',
+            cobrand_data => 'waste',
+        });
+        $dispute_report->set_extra_fields({ name => 'container_request_guid', value => 'container-request-event-guid' });
+        $dispute_report->update;
+
+        $e->mock('GetEventsForObject', sub { [ $container_request_event, $dispute_event ] });
+
+        subtest "Closed request already disputed; can't dispute" => sub {
+            foreach my $config ((
+                { 'time' => $just_before_window, label => 'before window' },
+                { 'time' => $window_start_time,  label => 'window start' },
+                { 'time' => $window_end_time,    label => 'window end' },
+                { 'time' => $just_after_window,  label => 'after window' },
+            )) {
+                subtest $config->{label} => sub {
+                    set_fixed_time($config->{time});
+                    $mech->get_ok('/waste/12345');
+                    $mech->content_lacks('Request a non-recyclable refuse container');
+                    $mech->content_lacks('A non-recyclable refuse container request was made on Monday, 3 February');
+                    $mech->follow_link_ok( { url_regex => qr/service_id=940/}, 'Follow "Report a problem" link for Non-Recyclable Waste collection' );
+                    $mech->content_like(qr/Dispute container delivery[^>]*disabled>/);
+                    $mech->content_contains('Thank you for reporting an issue with this delivery; we are investigating.');
+                };
+            }
+        };
+        $e->mock('GetEventsForObject', sub { [ $container_request_event ] });
+
+        subtest "Closed request not disputed but outside window; can't dispute" => sub {
+            foreach my $config ((
+                { 'time' => $just_before_window, label => 'before window' },
+                { 'time' => $just_after_window,  label => 'after window' },
+            )) {
+                subtest $config->{label} => sub {
+                    set_fixed_time($config->{time});
+                    $mech->get_ok('/waste/12345');
+                    $mech->content_lacks('Request a non-recyclable refuse container');
+                    $mech->content_lacks('A non-recyclable refuse container request was made on Monday, 3 February');
+                    $mech->follow_link_ok( { url_regex => qr/service_id=940/}, 'Follow "Report a problem" link for Non-Recyclable Waste collection' );
+                    $mech->content_lacks('Dispute a container delivery');
+                };
+            }
+        };
+
+        subtest "Closed request not disputed and inside window; can dispute" => sub {
+            foreach my $config ((
+                { 'time' => $window_start_time, label => 'window start' },
+                { 'time' => $window_end_time,  label => 'window end' },
+            )) {
+                subtest $config->{label} => sub {
+                    set_fixed_time($config->{time});
+                    $mech->get_ok('/waste/12345');
+                    $mech->follow_link_ok( { url_regex => qr/service_id=940/}, 'Follow "Report a problem" link for Non-Recyclable Waste collection' );
+                    $mech->content_contains('Dispute a container delivery', 'Option to dispute available');
+                };
+            }
+        };
+
+        subtest 'Making a dispute' => sub {
+            set_fixed_time($window_start_time);
+            $mech->get_ok('/waste/12345');
+            $mech->follow_link_ok( { url_regex => qr/service_id=940/}, 'Follow "Report a problem" link for Non-Recyclable Waste collection' );
+            $mech->content_contains('Dispute container delivery|container-request-event-guid');
+            $mech->submit_form_ok( { with_fields => { category => 'Dispute container delivery|container-request-event-guid' } } );
+            $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
+
+            $mech->submit_form_ok( { with_fields => { submit => '1' } });
+            $mech->content_contains('Your enquiry has been submitted');
+            $mech->content_contains('Return to property details');
+            $mech->content_contains('/waste/12345"');
+            my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+            is $report->category, 'Dispute container delivery', "Correct category";
+            is $report->title, 'Dispute container delivery';
             is $report->detail, "Non-Recyclable Refuse\n\n2 Example Street, Sutton, SM1 1AA", "Details of report contain information about problem";
             is $report->user->email, 'schmoe@example.org', 'User email added to report';
             is $report->name, 'Joe Schmoe', 'User name added to report';
