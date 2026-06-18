@@ -451,6 +451,12 @@ sub _enquiry_nice_title {
         $category = 'Issue with delivery';
     } elsif ($category eq 'Report out-of-time missed collection') {
         $category = 'Reporting a missed collection outside the reporting window';
+    } elsif ($category eq 'Report out-of-time spillage') {
+        $category = 'Spillage during collection (for information only)';
+    } elsif ($category eq 'Report out-of-time not returned') {
+        $category = 'Wheelie bin, box or caddy not returned correctly after collection (for information only)';
+    } elsif ($category eq '') {
+        $category = 'Issue with delivery';
     }
     return $category;
 }
@@ -502,6 +508,10 @@ sub waste_munge_enquiry_data {
             . $self->service_name_override( { ServiceId => $data->{service_id} } );
 
         $data->{extra_Notes} = 'Non-actionable missed collection report';
+    } elsif ($data->{category} eq 'Report out-of-time spillage') {
+        $data->{extra_Notes} = "Non-actionable spillage report\n\n" . $data->{extra_Notes};
+    } elsif ($data->{category} eq 'Report out-of-time not returned') {
+        $data->{extra_Notes} = "Non-actionable not returned container\n\n" . $data->{extra_Notes};
     }
 
     if ($self->moniker eq 'kingston' && $data->{extra_details}) {
