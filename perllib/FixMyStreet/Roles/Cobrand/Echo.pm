@@ -290,6 +290,7 @@ sub bin_services_for_address {
         my $open_requests = { map { $_->{container} => $_ } $events->filter(
             {
                 type => 'request',
+                closed => 0,
                 containers => $containers || [],
                 report_not_cancelled => 1,  # Don't include requests which have cancellations pending
             }
@@ -460,7 +461,6 @@ sub _parse_events {
     my $events = Integrations::Echo::Events->new({
         cobrand => $self,
         event_types => $self->missed_event_types,
-        include_closed_requests => $params->{include_closed_requests},
     })->parse($events_data);
     return $events;
 }
