@@ -127,6 +127,7 @@ FixMyStreet::override_config {
         } },
         waste_features => { kingston => {
             large_refuse_application_form => '/faq?refuse-application',
+            dispute_url => '/faq?dispute-url',
         } },
     },
     STAGING_FLAGS => {
@@ -1227,6 +1228,81 @@ FixMyStreet::override_config {
             }
         };
     };
+
+    subtest 'Disputes of container delivery' => sub {
+        my $request_time = "2025-02-03T08:00:00Z";
+        my $resolved_time = "2025-03-04T08:00:00Z";
+        my $window_start_time = "2025-03-04T00:00:00Z";
+        my $just_before_window = "2025-03-03T23:59:59Z";
+        my $window_end_time = "2025-04-01T23:59:59Z";
+        my $just_after_window = "2025-04-02T00:00:00Z";
+
+        my $container_request_event = {
+            Id => '112112321',
+            ClientReference => 'RBK-789',
+            EventTypeId => 3129, # Container request
+            ServiceId => 966, # Refuse
+            EventDate => { DateTime => $request_time },
+            ResolvedDate => { DateTime => $resolved_time },
+            Data => { ExtensibleDatum => [
+                { Value => 2, DatatypeName => 'Source' },
+                {
+                    ChildData => { ExtensibleDatum => [
+                        { Value => 1, DatatypeName => 'Action' },
+                        { Value => 1, DatatypeName => 'Container Type' }, # Refuse container
+                    ] },
+                },
+            ] },
+            Guid => 'container-request-event-guid',
+        };
+        my ($container_report) = $mech->create_problems_for_body(1, $kingston->id, 'Container request', {
+            cobrand => 'kingston',
+            external_id => 'container-request-event-guid',
+            cobrand_data => 'waste',
+        });
+
+        $e->mock('GetEventsForObject', sub { [ $container_request_event ] });
+
+        subtest "Closed request not disputed but outside window; can't dispute" => sub {
+            foreach my $config ((
+                { 'time' => $just_before_window, label => 'before window' },
+                { 'time' => $just_after_window,  label => 'after window' },
+            )) {
+                subtest $config->{label} => sub {
+                    set_fixed_time($config->{time});
+                    $mech->get_ok('/waste/12345');
+                    $mech->follow_link_ok( { url_regex => qr/service_id=966/}, 'Follow "Report a problem" link for Non-Recyclable Waste collection' );
+                    $mech->content_lacks('Dispute a container delivery');
+                };
+            }
+        };
+
+        subtest "Closed request not disputed and inside window; can dispute" => sub {
+            foreach my $config ((
+                { 'time' => $window_start_time, label => 'window start' },
+                { 'time' => $window_end_time,  label => 'window end' },
+            )) {
+                subtest $config->{label} => sub {
+                    set_fixed_time($config->{time});
+                    $mech->get_ok('/waste/12345');
+                    $mech->follow_link_ok( { url_regex => qr/service_id=966/}, 'Follow "Report a problem" link for Non-Recyclable Waste collection' );
+                    $mech->content_contains('Dispute a container delivery', 'Option to dispute available');
+                };
+            }
+        };
+
+        subtest 'Making a dispute' => sub {
+            set_fixed_time($window_start_time);
+            $mech->get_ok('/waste/12345');
+            $mech->follow_link_ok( { url_regex => qr/service_id=966/}, 'Follow "Report a problem" link for Non-Recyclable Waste collection' );
+            $mech->content_contains('Dispute container delivery|container-request-event-guid');
+            $mech->submit_form_ok( { with_fields => { category => 'Dispute container delivery|container-request-event-guid' } } );
+            is $mech->uri->path_query, '/faq?dispute-url?uprn=1000000002&service_id=966&event_id=112112321';
+        };
+
+        $e->mock('GetEventsForObject', sub { [] }); # reset
+    };
+
 };
 
 sub get_report_from_redirect {
