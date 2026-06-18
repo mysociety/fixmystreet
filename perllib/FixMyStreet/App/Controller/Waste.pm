@@ -1134,6 +1134,16 @@ sub enquiry : Chained('property') : Args(0) {
     my $service_id = $c->get_param('service_id');
     $c->detach('property_redirect') unless $category;
 
+    # When disputing a container request delivery, we have a category-selection
+    # "report a problem" page with multiple entries for the same category (if
+    # multiple container requests). So pass the request GUID in the category name.
+    if ($category =~ /\|/) {
+        my $container_request_guid;
+        ($category, $container_request_guid) = split /\|/, $category;
+        $c->set_param(category => $category);
+        $c->stash->{original_container_request} = $container_request_guid;
+    }
+
     if ($category eq 'redirect-missed') {
         my $id = $c->stash->{property}->{id};
         my $uri = $c->uri_for_action('waste/report', [ $id ]);
@@ -1142,6 +1152,31 @@ sub enquiry : Chained('property') : Args(0) {
             if $c->stash->{original_booking_report};
         $c->res->redirect($uri);
         $c->detach;
+    }
+
+    if ($c->cobrand->moniker eq 'kingston' && $category =~ /dispute/i) {
+        my $service = $c->stash->{services}{$service_id};
+        my $event_id;
+        if (my $guid = $c->stash->{original_container_request}) {
+            my $original = $service->{disputes}{container}{$guid}{event};
+            $event_id = $original->{id};
+        } elsif (my $report = $c->stash->{original_booking_report}) {
+            my $booking_guid = $report->external_id;
+            my $original_booking_event = $c->stash->{booked_missed}{$booking_guid};
+            if (my $original = $original_booking_event->{dispute}{missed_event}) {
+                $event_id = $original->{id};
+            }
+        } else {
+            if (my $original = $service->{dispute}{missed_event}) {
+                $event_id = $original->{id};
+            }
+        }
+
+        my $uri = $c->cobrand->feature('waste_features')->{dispute_url};
+        $uri .= '?uprn=' . $c->stash->{property}{uprn};
+        $uri .= '&service_id=' . $service_id;
+        $uri .= '&event_id=' . $event_id if $event_id;
+        return $c->res->redirect($uri);
     }
 
     my ($contact) = grep { $_->category eq $category } @{$c->stash->{contacts}};

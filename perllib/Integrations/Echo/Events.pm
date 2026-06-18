@@ -46,6 +46,7 @@ sub parse {
             completed => $completed,
             source => $source,
             $_->{EventDate} ? (date => construct_bin_date($_->{EventDate})) : (),
+            $_->{ResolvedDate} ? (resolved_date => construct_bin_date($_->{ResolvedDate})) : (),
         };
 
         my $report = $self->cobrand->problems->search({ external_id => $_->{Guid} })->first;
