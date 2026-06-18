@@ -1,6 +1,9 @@
 use FixMyStreet;
 BEGIN { FixMyStreet->test_mode(1); }
 
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 package FixMyStreet::Cobrand::Tester;
 
 use parent 'FixMyStreet::Cobrand::Default';
@@ -409,6 +412,20 @@ subtest 'Edit photos' => sub {
     });
     $report->discard_changes;
     is $report->photo, undef;
+};
+
+subtest 'Check moderation of private reports' => sub {
+    $report->update({ non_public => 1 });
+    $mech->get($REPORT_URL);
+    is $mech->response->code, 403;
+    $mech->post('/moderate/report/' . $report->id, {
+        %problem_prepopulated,
+        problem_title => 'Naughty',
+        token => $csrf,
+    });
+    is $mech->res->previous, undef;
+    is $mech->res->code, 403;
+    $report->update({ non_public => 0 });
 };
 
 sub create_update {
