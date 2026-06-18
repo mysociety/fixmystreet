@@ -86,6 +86,12 @@ create_contact(
     { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
 );
+create_contact({ category => 'Report out-of-time not returned', email => 'general@example.org' }, 'Waste',
+    { code => 'Notes', description => 'Notes', required => 1, datatype => 'text' },
+);
+create_contact({ category => 'Report out-of-time spillage', email => 'general@example.org' }, 'Waste',
+    { code => 'Notes', description => 'Notes', required => 1, datatype => 'text' },
+);
 
 # Merton also covers Kingston because of an out-of-area park which is their responsibility
 my $merton = $mech->create_body_ok(2500, 'Merton Council');
@@ -689,6 +695,38 @@ FixMyStreet::override_config {
         is $cgi->param('attribute[Notes]'), 'Details: Blocking pavement';
     };
 
+    subtest 'test report a problem - bin not returned, not assisted, outside official reporting window' => sub {
+        set_fixed_time('2022-09-14T12:00:00Z');
+        FixMyStreet::Script::Reports::send();
+        $mech->clear_emails_ok;
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Report a problem with a non-recyclable refuse collection', 'Can report a problem with non-recyclable waste');
+        $mech->content_contains('Report a problem with a food waste collection', 'Can report a problem with food waste');
+        $mech->content_contains('Report a problem with a paper and card collection', 'Report a problem link although past reporting deadline');
+        $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable refuse collection' });
+        $mech->content_like(qr/id="category-1"\s+name="category" value="Report out-of-time not returned/s);
+        $mech->submit_form_ok( { with_fields => { category => 'Report out-of-time not returned' } });
+        $mech->content_contains('Wheelie bin, box or caddy not returned correctly after collection (for information only)');
+        $mech->submit_form_ok({ with_fields => { extra_Notes => 'Some notes' } });
+        $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
+        $mech->submit_form_ok( { with_fields => { submit => '1' } });
+
+        $mech->content_contains('Return to property details');
+        $mech->content_contains('/waste/12345"');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('Notes'), "Non-actionable not returned container\n\nSome notes", "Notes field contains issue with Non-actionable note";
+        is $report->detail, "Non-recyclable Refuse\n\n2 Example Street, Kingston, KT1 1AA", "Details of report contain information about problem";
+        is $report->user->email, 'schmoe@example.org', 'User details added to report';
+        is $report->name, 'Joe Schmoe', 'User details added to report';
+        is $report->category, 'Report out-of-time not returned', "Correct category";
+        FixMyStreet::Script::Reports::send();
+        my $text = $mech->get_text_body_from_email;
+        my $req = Open311->test_req_used;
+        my $cgi = CGI::Simple->new($req->content);
+        is $cgi->param('api_key'), 'KEY';
+        is $cgi->param('attribute[Notes]'), "Non-actionable not returned container\n\nSome notes";
+    };
+
    subtest 'test report a problem - bin not returned, assisted' => sub {
         my $dupe = dclone($bin_data);
         # Give the entry an assisted collection
@@ -786,6 +824,36 @@ FixMyStreet::override_config {
             is $_->content, 'KEY', 'API key present' if $cd =~ /api_key/;
             is $_->content, 'Rubbish left on driveway', 'Notes added' if $cd =~ /attribute\[Notes\]/;
             is $_->header('Content-Type'), 'image/jpeg', 'Right content type' if $cd =~ /jpeg/;
+        }
+    };
+
+   subtest 'test report a problem - waste spillage outside official reporting window', => sub {
+        set_fixed_time('2022-09-14T12:00:00Z');
+        $mech->get_ok('/waste/12345');
+        $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable refuse collection' });
+        $mech->content_like(qr/id="category-2"\s+name="category" value="Report out-of-time spillage"/s);
+        $mech->submit_form_ok( { with_fields => { category => 'Report out-of-time spillage' } });
+        $mech->content_contains('Spillage during collection (for information only)');
+        $mech->submit_form_ok( { with_fields => { extra_Notes => 'Rubbish left on driveway' } });
+        $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
+        $mech->submit_form_ok( { with_fields => { submit => '1' } });
+        $mech->content_contains('Your enquiry has been submitted');
+        $mech->content_contains('Return to property details');
+        $mech->content_contains('/waste/12345"');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->category, 'Report out-of-time spillage', "Correct category";
+        is $report->get_extra_field_value('Notes'), "Non-actionable spillage report\n\nRubbish left on driveway", "Notes filled in with Non-actionable note";
+        is $report->detail, "Non-recyclable Refuse\n\n2 Example Street, Kingston, KT1 1AA", "Details of report contain information about problem";
+        is $report->user->email, 'schmoe@example.org', 'User details added to report';
+        is $report->name, 'Joe Schmoe', 'User details added to report';
+        $mech->clear_emails_ok;
+        FixMyStreet::Script::Reports::send();
+        my $text = $mech->get_text_body_from_email;
+        my $req = Open311->test_req_used;
+        foreach ($req->parts) {
+            my $cd = $_->header('Content-Disposition');
+            is $_->content, 'KEY', 'API key present' if $cd =~ /api_key/;
+            is $_->content, "Non-actionable spillage report\n\nRubbish left on driveway", 'Notes added' if $cd =~ /attribute\[Notes\]/;
         }
     };
 

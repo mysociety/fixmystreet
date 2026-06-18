@@ -102,8 +102,12 @@ IF NOT original_booking_report; # Not a bulky booking
             field.disabled = 1;
         END;
     ELSE;
+      IF c.cobrand.moniker == 'kingston';
+        field.value = 'Report out-of-time not returned';
+      ELSE;
         field.hint = 'You can only report a bin not returned to the correct location within 2 working days of the scheduled collection.';
         field.disabled = 1;
+      END;
     END;
     f.push(field);
 
@@ -116,8 +120,12 @@ IF NOT original_booking_report; # Not a bulky booking
             field.disabled = 1;
         END;
     ELSE;
-        field.hint = 'You can only report a spillage by the crew within 2 working days of the scheduled collection.';
-        field.disabled = 1;
+        IF c.cobrand.moniker == 'kingston';
+           field.value = 'Report out-of-time spillage';
+        ELSE;
+           field.hint = 'You can only report a spillage by the crew within 2 working days of the scheduled collection.';
+           field.disabled = 1;
+        END;
     END;
     f.push(field);
 
