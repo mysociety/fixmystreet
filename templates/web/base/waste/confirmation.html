@@ -29,7 +29,9 @@ END ~%]
             <p class="govuk-body">Your application has been sent to Brent Council who <strong>will
             contact you</strong> to let you know if your request has been approved.
             <strong>Please allow up to 5 working days</strong> for your application to be reviewed.
-            If approved, the Council will need to take payment before any bins can be delivered.
+            [% IF NOT report.title.match('Food waste caddy|blue sack') %]
+                If approved, the Council will need to take payment before any bins can be delivered.
+            [% END %]
                 [% INCLUDE 'waste/_report_ids.html' %]
             </p>
         [% ELSIF report.category == 'Request new container' AND c.cobrand.moniker == 'brent' AND brent_request_automatic %]
