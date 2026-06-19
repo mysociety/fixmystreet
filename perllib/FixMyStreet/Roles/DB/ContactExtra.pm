@@ -39,12 +39,23 @@ sub by_categories {
     my @results = $rs->for_bodies(\@body_ids, undef);
     @contacts = grep { $body_ids{$_->body_id} } @contacts;
 
+    my $i = 0;
+    my %lookup;
+    my $join_table = $rs->join_table();
+    foreach my $result (@results) {
+        if ($result->$join_table == 0) { # There's no category at all on this defect type/template/priority
+            push @{$lookup{_all}}, [ $i, $result ];
+        } else {
+            for ($result->$join_table) {
+                push @{$lookup{$_->contact_id}}, [ $i, $result ];
+            }
+        }
+        $i++;
+    }
+
     foreach my $contact (@contacts) {
-        my $join_table = $rs->join_table();
-        my @ts = grep {
-               $_->$join_table == 0 # There's no category at all on this defect type/template/priority
-            || (grep { $_->contact_id == $contact->get_column('id') } $_->$join_table)
-        } @results;
+        my $id = $contact->get_column('id');
+        my @ts = map { $_->[1] } sort { $a->[0] <=> $b->[0] } @{$lookup{_all}}, @{$lookup{$id}};
         @ts = $rs->map_extras(\%params, @ts);
         $extras{$contact->category} = JSON::XS->new->encode(\@ts);
     }
