@@ -345,9 +345,9 @@ sub response_template_override {
 
 =head2 validate_response_template
 
-
 Performs some custom validation for templates whose title start with 'Cancelled Job':
 can't be auto-response; can't be for an external status code; must be for 'confirmed' state.
+
 =cut
 
 sub validate_response_template {
@@ -357,19 +357,21 @@ sub validate_response_template {
 
     my %errors;
 
+    my $prefix = 'Templates whose title starts with "Cancelled Job" are reserved for cancelled job handling and';
+
     if (($template->state || '') ne 'confirmed') {
         $errors{state} =
-            'Templates whose title starts with "Cancelled Job" are reserved for cancelled job handling and must use the Open state.';
+            "$prefix must use the Open state.";
     }
 
     if ($template->external_status_code) {
         $errors{external_status_code} =
-            'Templates whose title starts with "Cancelled Job" are reserved for cancelled job handling and cannot use an external status code.';
+            "$prefix cannot use an external status code.";
     }
 
     if ($template->auto_response) {
         $errors{auto_response} =
-            'Templates whose title starts with "Cancelled Job" are reserved for the cancelled job feature and cannot be set as auto-response.';
+            "$prefix cannot be set as auto-response.";
     }
 
     return %errors ? \%errors : undef;

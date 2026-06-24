@@ -799,7 +799,7 @@ subtest 'planned->confirmed uses Cancelled Job template override' => sub {
             title => 'Cancelled Job - Planned to Confirmed',
             text => 'Cancelled job template text',
             auto_response => 0,
-            state => '',
+            state => 'confirmed',
             external_status_code => '',
         });
 
@@ -876,7 +876,7 @@ subtest 'admin validates reserved Cancelled Job templates' => sub {
 
             is $mech->uri->path, '/admin/templates/' . $body->id . '/new',
                 'Not redirected when reserved template is set as auto-response';
-            $mech->content_contains('reserved for the cancelled job feature',
+            $mech->content_contains('reserved for cancelled job handling and cannot be set as auto-response',
                 'Reserved-template validation message shown');
         };
 
@@ -890,7 +890,7 @@ subtest 'admin validates reserved Cancelled Job templates' => sub {
 
             is $mech->uri->path, '/admin/templates/' . $body->id . '/new',
                 'Not redirected when reserved template uses non-open state';
-            $mech->content_contains('must use the Open state',
+            $mech->content_contains('reserved for cancelled job handling and must use the Open state',
                 'Open-state validation message shown');
         };
 
@@ -905,7 +905,7 @@ subtest 'admin validates reserved Cancelled Job templates' => sub {
 
             is $mech->uri->path, '/admin/templates/' . $body->id . '/new',
                 'Not redirected when reserved template uses external status code';
-            $mech->content_contains('cannot use an external status code',
+            $mech->content_contains('reserved for cancelled job handling and cannot use an external status code',
                 'External status code validation message shown');
         };
 

@@ -130,8 +130,7 @@ sub edit : Path : Args(2) {
             if ($body_cobrand) {
                 my $errors = $body_cobrand->call_hook(validate_response_template => $template);
                 if ($errors && ref $errors eq 'HASH') {
-                    $c->stash->{errors} ||= {};
-                    %{ $c->stash->{errors} } = (%{ $c->stash->{errors} }, %$errors);
+                    $c->stash->{errors}{$_} = $errors->{$_} for keys %$errors;
                 }
             }
 
