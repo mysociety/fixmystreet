@@ -282,7 +282,7 @@ sub should_skip_sending_update {
 =head2 record_update_extra_fields
 
 We want to create comments when assigned (= shortlisted) user or
-extra details (= detail_information) are updated for a report.
+extra details (= detailed_information) are updated for a report.
 
 =cut
 

@@ -166,6 +166,7 @@ sub _process_update {
     my $body = $self->current_body;
 
     $self->_handle_assigned_user($request, $p);
+    $self->_handle_detailed_information($request, $p);
     $self->_handle_category_change($request, $p);
 
     my $state = $open311->map_state( $request->{status} );
@@ -357,12 +358,20 @@ sub _handle_assigned_user {
 
             # TODO Unassign?
         }
-        if ( exists $request->{extras}{detailed_information} ) {
-            $request->{extras}{detailed_information}
-                ? $p->set_extra_metadata( detailed_information =>
-                    $request->{extras}{detailed_information} )
-                : $p->unset_extra_metadata('detailed_information');
-        }
+    }
+}
+
+sub _handle_detailed_information {
+    my ( $self, $request, $p ) = @_;
+
+    if ( $request->{extras}
+        && exists $request->{extras}{detailed_information} )
+    {
+        $request->{extras}{detailed_information}
+            ? $p->set_extra_metadata(
+                detailed_information => $request->{extras}{detailed_information}
+            )
+            : $p->unset_extra_metadata('detailed_information');
     }
 }
 
