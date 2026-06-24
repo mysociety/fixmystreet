@@ -2369,9 +2369,9 @@ html.js #map .noscript {
   background: $col_click_map;
   color: #fff;
   padding: 1em;
-  text-transform: uppercase;
   text-align: center;
   font-size: 0.875em;
+  line-height: 105%;
   .map-fullscreen & {
     display: none;
   }
