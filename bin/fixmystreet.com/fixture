@@ -221,6 +221,9 @@ if ($opt->test_fixtures) {
                 { group => 'Bus Stops and Shelters', category => 'Glass broken' },
                 'Mobile Crane Operation', 'Roadworks', 'Other (TfL)'
             ], name => 'TfL', cobrand => 'tfl' },
+        { area_id => 2493, categories => [
+                { group => '', category => 'Abandoned vehicles' },
+            ], name => 'Royal Borough of Greenwich', cobrand => 'greenwich' },
         { area_id => 2237, categories => [ 'Flytipping', 'Roads', 'Parks', 'Lamp Out of Light' ], name => 'Oxfordshire County Council', cobrand => 'oxfordshire' },
         { area_id => 2551, categories => [ 'Abandoned vehicles', 'Dog fouling', 'Blocked drain' ], name => 'Bath and North East Somerset Council', cobrand => 'bathnes' },
         { area_id => 2238, categories => [
@@ -338,6 +341,17 @@ if ($opt->test_fixtures) {
         {"code" => "NE03", "values" => [{"key" => "C", "name" => "Car"}, {"key" => "MM", "name" => "Motorcyle or Moped"}, {"key" => "O", "name" => "Other"}, {"key" => "V", "name" => "Van"}], "datatype" => "singlevaluelist", "required" => "false", "variable" => "true", "protected" => "false", "description" => "Please select the type of vehicle"},
         {"code" => "NE04", "datatype" => "string", "required" => "false", "variable" => "true", "protected" => "false", "description" => "Make of the vehicle (if not known, please note not known)"},
         {"code" => "NE06", "datatype" => "string", "required" => "false", "variable" => "true", "protected" => "false", "description" => "Colour of the vehicle (if not known, please note not known)"},
+    );
+    $child_cat->update;
+
+    $child_cat = FixMyStreet::DB->resultset("Contact")->find({
+        body => $bodies->{2493},
+        category => 'Abandoned vehicles',
+    });
+    $child_cat->set_extra_fields(
+        {"code" => "vehicle_registration", "datatype" => "string", "required" => "false", "variable" => "true", "protected" => "false", "description" => "Vehicle registration number"},
+        {"code" => "vehicle_make", "datatype" => "string", "required" => "true", "variable" => "true", "protected" => "false", "description" => "Vehicle make"},
+        {"code" => "vehicle_colour", "datatype" => "string", "required" => "true", "variable" => "true", "protected" => "false", "description" => "Vehicle colour"},
     );
     $child_cat->update;
 
