@@ -999,11 +999,19 @@ will automatically be added as a first update to any new report created that
 matches the template (ie. in the relevant category if assigned). This lets
 you give eg. estimated timescales or other useful information up front.
 
-#### Editing or deleting a template
+#### Editing, deactivating or deleting a template
 
 Click on ‘Templates’ in the admin menu. You will see a table of existing templates. Click on ‘Edit’
-beside the status you wish to change. You may alter any of the fields as described in the section
-above, ‘Creating a template’. Additionally you can delete the template from this page.
+beside the template you wish to change. You may alter any of the fields within a template as described in the section
+above, ‘Creating a template’. 
+
+To deactivate a template, select the 'Inactive' checkbox from the options toward the bottom of the page and then click 'Save changes'. When checked, this template will not be used for incoming Open311 updates, nor will it be available for selection by staff when adding updates manually.
+
+<img loading="lazy" alt="Templates marked as inactive will not be used for incoming Open311 updates, nor will it be available for selection by staff when adding updates manually" src="docs/assets/img/pro-user-guide/Marking template as inactive.png" class="admin-screenshot"/>
+
+Marking a template as inactive is particularly useful for when responses to reports in certain categories change throughout the year. For example, you may want to have different versions of templates for reports about grit bins, disabling any that aren’t relevant within the summer months and vice versa.
+
+To delete a template, select 'Delete template'. This will permanently delete the template.  
 
 #### HTML content in templates
 
