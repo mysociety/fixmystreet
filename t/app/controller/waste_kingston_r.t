@@ -593,7 +593,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Request a mixed recycling container');
         $mech->follow_link_ok({ text => 'Report a problem with a mixed recycling collection' });
         $mech->content_contains('A mixed recycling collection was reported as missed');
-        $mech->content_contains('We aim to resolve this by Tuesday, 13 September');
+        $mech->content_contains('We aim to resolve this by the end of the day on Tuesday, 13 September');
 
         #set_fixed_time('2022-09-13T19:00:00Z');
 

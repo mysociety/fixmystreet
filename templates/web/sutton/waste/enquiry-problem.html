@@ -25,9 +25,7 @@ END;
             by yourself, a neighbour, or your Managing Agent
         [% END %]
         on [% date.format(service.report_open.date, '%A, %-d %B') %].
-        [% SET resolve_date = service.target OR service.report_open.target %]
-        Our crews should have returned to collect by [% date.format(resolve_date, '%A, %-d %B') %];
-        if they have not returned you can escalate the report.
+        If your bin has still not been collected, you can escalate the report now and a crew will be back to collect your bin within 2 working days.
         </p>
     [% ELSIF service.report_open OR service.report_open_non_actionable %]
         [% SET report_date = service.report_open.date || service.report_open_non_actionable.date %]
@@ -37,7 +35,8 @@ END;
         [% END %]
         on [% date.format(report_date, '%A, %-d %B') %].
         [% SET resolve_date = service.target OR service.report_open.target %]
-        We aim to resolve this by [% date.format(resolve_date, '%A, %-d %B') %].
+        We aim to resolve this by the end of the day on [% date.format(resolve_date, '%A, %-d %B') %].
+        If it has still not been collected, you will be able to come back to this page to escalate the reported missed collection.
         </p>
     [% ELSIF service.report_locked_out %]
         <p>The crew have closed your collection task as not collected[%
