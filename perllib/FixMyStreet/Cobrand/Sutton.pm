@@ -788,7 +788,7 @@ sub waste_munge_report_form_fields {
     push @$field_list, 'sutton_collection_note' => {
         type => 'Notice',
         widget => 'NoRender',
-        label => 'Once you’ve reported a missed collection, please leave the bin, box or caddy at the front of your property, ideally close to the pavement but not on it, ready for collection. Where this is not possible, bins, boxes, and caddies can be presented on the pavement, but must be removed as soon as possible after collection to avoid obstruction.',
+        label => 'We will return to collect your bin within 2 working days. Please leave the bin, box, or caddy at the front of your property ready for collection.',
     };
 }
 
