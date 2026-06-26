@@ -441,8 +441,8 @@ FixMyStreet::override_config {
         $mech->content_contains('A mixed recycling (cans, plastics &amp; glass) container request was made on Saturday, 10 September');
         $mech->content_lacks('Report a mixed recycling (cans, plastics &amp; glass) collection as missed', 'Standard missed reporting link not expected');
         $mech->get_ok('/waste/12345/request');
-        $mech->content_like(qr/name="container-choice" value="12" aria-describedby="container-choice-item-hint"\s+disabled/s); # green
-        $mech->content_like(qr/Mixed Recycling Green Box \(55L\).*?<span id="container-choice-item-hint" class="govuk-hint govuk-checkboxes__hint">\s+Unavailable to request as order in progress/s);
+        $mech->content_like(qr/name="container-choice" value="12" aria-describedby="container-choice-4-item-hint"\s+disabled/s); # green
+        $mech->content_like(qr/Mixed Recycling Green Box \(55L\).*?<span id="container-choice-4-item-hint" class="govuk-hint govuk-checkboxes__hint">\s+Unavailable to request as order in progress/s);
         $e->mock('GetEventsForObject', sub { [ {
             # Request
             EventDate => { DateTime => "2022-09-10T17:00:00Z" },
@@ -460,7 +460,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345');
         $mech->content_contains('A food waste container request was made on Saturday, 10 September');
         $mech->get_ok('/waste/12345/request');
-        $mech->content_like(qr/name="container-choice" value="43" aria-describedby="container-choice-item-hint"\s+disabled/s); # indoor
+        $mech->content_like(qr/name="container-choice" value="43" aria-describedby="container-choice-3-item-hint"\s+disabled/s); # indoor
         $mech->content_like(qr/name="container-choice" value="46"\s*>/s); # outdoor
 
         $e->mock('GetEventsForObject', sub { [ {
@@ -793,11 +793,11 @@ FixMyStreet::override_config {
         } ] });
         $mech->get_ok('/waste/12345');
         $mech->follow_link_ok( { url_regex => qr/service_id=940/}, 'Follow "Report a problem" link for the non-recyclable collection' );
-        $mech->content_like(qr/name="category" value="Waste spillage" aria-describedby="category-item-hint"\s+disabled/s);
+        $mech->content_like(qr/name="category" value="Waste spillage" aria-describedby="category-2-item-hint"\s+disabled/s);
         $mech->content_like(qr/You have already reported a spillage/s);
         $mech->back;
         $mech->follow_link_ok( { url_regex => qr/service_id=954/}, 'Follow "Report a problem" link for the food collection' );
-        $mech->content_unlike(qr/name="category" value="Waste spillage" aria-describedby="category-item-hint"\s+disabled/s);
+        $mech->content_unlike(qr/name="category" value="Waste spillage" aria-describedby="category-2-item-hint"\s+disabled/s);
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
 
@@ -1029,7 +1029,7 @@ FixMyStreet::override_config {
             $mech->get_ok('/waste/12345');
             $mech->follow_link_ok( { url_regex => qr/service_id=940/}, 'Follow "Report a problem" link for Non-Recyclable Waste collection' );
             $mech->content_contains('Escalate my missed collection report', 'Escalation option not available');
-            $mech->content_like(qr/name="category" value="Complaint against time" aria-describedby="category-item-hint"\s+disabled/s, 'Escalation option shown, but disabled, after end of window');
+            $mech->content_like(qr/name="category" value="Complaint against time" aria-describedby="category-0-item-hint"\s+disabled/s, 'Escalation option shown, but disabled, after end of window');
         };
 
         subtest 'Completed missed collection - no escalation' => sub {
