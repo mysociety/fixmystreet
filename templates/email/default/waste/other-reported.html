@@ -55,6 +55,12 @@ INCLUDE '_email_top.html';
         You can
         <a href="[% cancel_url %]">cancel your request</a>
         if you would like.[% IF report.waste_has_payment %] A refund will not be issued.[% END %]
+    [% ELSIF report.category == 'Report missed collection' OR report.category == 'Report missed assisted collection' %]
+      <p style="[% p_style %]">Our crew will return by the end of [% cobrand.missed_target_date(report) %] to collect your bin. If it has not been collected by that time, you can escalate the missed collection online.<p>
+    [% ELSIF report.category == 'Complaint against time' %]
+      <p style="[% p_style %]">
+        Your missed collection escalation has been logged. Our crew will be back to collect your bin within 2 working days.
+      </p>
     [% ELSIF report.category == 'Waste spillage' %]
       <p style="[% p_style %]">
         We apologise for any inconvenience caused and appreciate your feedback.  We're committed to using it to improve our customer service.
@@ -90,7 +96,11 @@ INCLUDE '_email_top.html';
       to remove it. We aim for this to be the same day as we deliver your new bin, but it could be a different day.
     </p>
   [% ELSIF report.category == 'Report missed collection' OR report.category == 'Report missed assisted collection' %]
-    <p style="[% p_style %]">We will arrange another collection as soon as possible over the next 2 working days.</p>
+    <p style="[% p_style %]">Our crew will return by the end of [% cobrand.missed_target_date(report) %] to collect your bin. If it has not been collected by that time, you can escalate the missed collection online.<p>
+  [% ELSIF report.category == 'Complaint against time' %]
+    <p style="[% p_style %]">
+      Your missed collection escalation has been logged. Our crew will be back to collect your bin within 2 working days.
+    </p>
   [% ELSIF report.category == 'Waste spillage' %]
     <p style="[% p_style %]">
       We apologise for any inconvenience caused and appreciate your feedback.  We're committed to using it to improve our customer service.
