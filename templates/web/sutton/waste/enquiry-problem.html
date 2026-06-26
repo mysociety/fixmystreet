@@ -60,7 +60,11 @@ END;
 f = [];
 
 IF service.escalations.missed;
-    SET field = { label = 'Escalate my missed collection report', value = 'Complaint against time' };
+    SET field = {
+        label = 'Escalate my missed collection report',
+        value = 'Complaint against time',
+        hint_class = 'govuk-hint--unfaded',
+    };
     IF service.escalations.missed.too_late;
         IF original_booking_report;
             field.hint = 'You cannot escalate the reported missed collection as the 2 working day escalation window has closed.';
@@ -73,14 +77,22 @@ IF service.escalations.missed;
     END;
     f.push(field);
 ELSIF service.dispute;
-    SET field = { value = 'Missed collection dispute', label = 'Dispute collection closure reason' };
+    SET field = {
+        value = 'Missed collection dispute',
+        label = 'Dispute collection closure reason',
+        hint_class = 'govuk-hint--unfaded',
+    };
     IF service.dispute.open;
         field.hint = 'We are investigating the problem with this collection.';
         field.disabled = 1;
     END;
     f.push(field);
 ELSE;
-    SET field = { value = 'redirect-missed', label = 'Report a missed collection' };
+    SET field = {
+        value = 'redirect-missed',
+        label = 'Report a missed collection',
+        hint_class = 'govuk-hint--unfaded',
+    };
     IF service.report_allowed_non_actionable;
         field.value = 'Report out-of-time missed collection';
     ELSIF service.report_open OR service.report_open_non_actionable;
@@ -102,7 +114,11 @@ END;
 
 IF NOT original_booking_report; # Not a bulky booking
 
-    SET field = { value = 'Bin not returned', label = 'Report a bin, box or caddy not returned to the correct location' };
+    SET field = {
+        value = 'Bin not returned',
+        label = 'Report a bin, box or caddy not returned to the correct location',
+        hint_class = 'govuk-hint--unfaded',
+    };
     IF service.report_allowed;
         IF service.events.filter(event_type = 3135);
             field.hint = 'You have already reported a bin not returned';
@@ -118,7 +134,11 @@ IF NOT original_booking_report; # Not a bulky booking
     END;
     f.push(field);
 
-    SET field = { value = 'Waste spillage', label = 'Report a spillage by the crew' };
+    SET field = {
+        value = 'Waste spillage',
+        label = 'Report a spillage by the crew',
+        hint_class = 'govuk-hint--unfaded',
+    };
     IF c.cobrand.moniker == 'kingston' AND fas_property;
         field.disabled = 1;
     ELSIF service.report_allowed;
@@ -140,7 +160,11 @@ END;
 
 FOR request IN service.disputes.container.keys;
     report = service.disputes.container.$request.report;
-    SET field = { value = 'Dispute container delivery|' _ request, label = 'Dispute a container delivery (' _ report.title _ ')' };
+    SET field = {
+        value = 'Dispute container delivery|' _ request,
+        label = 'Dispute a container delivery (' _ report.title _ ')',
+        hint_class = 'govuk-hint--unfaded',
+    };
     IF service.disputes.container.$request.open;
         field.hint = 'Thank you for reporting an issue with this delivery; we are investigating.';
         field.disabled = 1;
@@ -151,7 +175,11 @@ FOR request IN service.disputes.container.keys;
     END;
 END;
 
-SET field = { value = 'Failure to Deliver Bags/Containers', label = 'My container / bags have not been delivered' };
+SET field = {
+    value = 'Failure to Deliver Bags/Containers',
+    label = 'My container / bags have not been delivered',
+    hint_class = 'govuk-hint--unfaded',
+};
 IF service.escalations.container_open;
     field.hint = 'Thank you for reporting an issue with this delivery; we are investigating and aim to deliver the container by ' _ date.format(service.escalations.container_open.target, '%A, %-d %B') _ '.';
     field.disabled = 1;
