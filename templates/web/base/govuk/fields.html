@@ -219,7 +219,7 @@
 	  [% hint = item.hint OR item.get_tag('hint') ~%]
       <div class="govuk-radios__item">
         <input type="radio" class="govuk-radios__input" id="[% field.id %]-[% loop.index %]"
-            name="[% field.html_name %]" value="[% item.value %]"[% ' aria-describedby="' _ field.id _ '-item-hint"' IF hint %]
+            name="[% field.html_name %]" value="[% item.value %]"[% ' aria-describedby="' _ field.id _ '-' _ loop.index _ '-item-hint"' IF hint %]
             [% 'data-show="' _ item.data_show _ '"' IF item.data_show %]
             [% 'data-hide="' _ item.data_hide _ '"' IF item.data_hide %]
             [% 'checked' IF field.fif == item.value OR only_one_option OR item.selected %]
@@ -228,7 +228,7 @@
           [% item.label %]
         </label>
 [% IF hint %]
-        <span id="[% field.id %]-item-hint" class="govuk-hint govuk-checkboxes__hint[% IF item.hint_class %] [% item.hint_class %][% END %]">
+        <span id="[% field.id %]-[% loop.index %]-item-hint" class="govuk-hint govuk-checkboxes__hint[% IF item.hint_class %] [% item.hint_class %][% END %]">
           [% hint %]
         </span>
 [% END %]
