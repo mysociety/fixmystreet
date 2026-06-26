@@ -55,7 +55,7 @@ create_contact({ category => 'Request new container', email => '3129' }, 'Waste'
     { code => 'payment_method', required => 0, automated => 'hidden_field' },
     { code => 'payment', required => 0, automated => 'hidden_field' },
 );
-create_contact({ category => 'Complaint against time', email => '3134' }, 'Waste',
+create_contact({ category => 'Escalate missed collection report', email => '3134' }, 'Waste',
     { code => 'Notes', required => 1, automated => 'hidden_field' },
     { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
@@ -1316,14 +1316,14 @@ FixMyStreet::override_config {
             $mech->content_contains('Escalate my missed collection');
 
             subtest 'actually make the report' => sub {
-                $mech->submit_form_ok({ with_fields => { category => 'Complaint against time' } });
+                $mech->submit_form_ok({ with_fields => { category => 'Escalate missed collection report' } });
                 $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
                 $mech->submit_form_ok( { with_fields => { submit => '1' } });
                 $mech->content_contains('Your enquiry has been submitted');
                 $mech->content_contains('Return to property details');
                 $mech->content_contains('/waste/12345"');
                 my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-                is $report->category, 'Complaint against time', "Correct category";
+                is $report->category, 'Escalate missed collection report', "Correct category";
                 is $report->title, 'Issue with collection';
                 is $report->detail, "Non-recyclable Refuse\n\n2 Example Street, Kingston, KT1 1AA", "Details of report contain information about problem";
                 is $report->user->email, 'schmoe@example.org', 'User details added to report';
@@ -1372,7 +1372,7 @@ FixMyStreet::override_config {
 
             set_fixed_time('2022-09-15T19:00:00Z');
             $mech->get_ok('/waste/12345/enquiry?template=problem&service_id=966');
-            $mech->content_like(qr/value="Complaint against time"[^>]*disabled>/);
+            $mech->content_like(qr/value="Escalate missed collection report"[^>]*disabled>/);
         };
 
         subtest 'Completed missed collection - no escalation' => sub {
