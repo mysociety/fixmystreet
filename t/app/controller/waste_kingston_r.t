@@ -135,6 +135,7 @@ FixMyStreet::override_config {
         waste_features => { kingston => {
             large_refuse_application_form => '/faq?refuse-application',
             dispute_url => '/faq?dispute-url',
+            missing_address_url => '/faq?missing-url',
         } },
     },
     STAGING_FLAGS => {
@@ -143,6 +144,19 @@ FixMyStreet::override_config {
 }, sub {
     my ($e) = shared_echo_mocks();
     my ($scp) = shared_scp_mocks();
+
+    subtest 'Missing address lookup' => sub {
+        $e->mock('FindPoints', sub { [
+            { Description => '1 Example Street, Kingston, KT1 1AA', Id => '11345', SharedRef => { Value => { anyType => 1000000001 } } },
+            { Description => '2 Example Street, Kingston, KT1 1AA', Id => '12345', SharedRef => { Value => { anyType => 1000000002 } } },
+            { Description => '3 Example Street, Kingston, KT1 1AA', Id => '14345', SharedRef => { Value => { anyType => 1000000004 } } },
+        ] });
+        $mech->get_ok('/waste');
+        $mech->submit_form_ok({ with_fields => { postcode => 'KT1 1AA' } });
+        $mech->content_contains('12345');
+        $mech->submit_form_ok({ with_fields => { address => 'missing:KT11AA' } });
+        $mech->content_contains('postcode=KT11AA');
+    };
 
     subtest 'Address lookup' => sub {
         set_fixed_time('2022-09-10T12:00:00Z');
@@ -183,6 +197,26 @@ FixMyStreet::override_config {
         set_fixed_time('2022-09-13T19:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Report a problem with a non-recyclable refuse collection');
+        $e->mock('GetTasks', sub { [] });
+    };
+
+    subtest 'Roadworks so no collection' => sub {
+        $kingston->add_to_response_templates({
+            title => 'Roadworks',
+            text => 'We will continue to try and collect over the next few days',
+            external_status_code => 613,
+        });
+        $e->mock('GetTasks', sub { [ {
+            Ref => { Value => { anyType => [ 17430692, 8287 ] } },
+            State => { Name => 'Completed' },
+            Resolution => { Name => "NA - Roadworks", Ref => { Value => { anyType => 613 } } },
+            CompletedDate => { DateTime => '2022-09-09T16:00:00Z' }
+        } ] });
+        set_fixed_time('2022-09-09T16:30:00Z');
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('continue to try and collect');
+        $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable refuse collection' });
+        $mech->content_like(qr/value="redirect-missed"[^>]*disabled>/, 'Cannot report missed collection');
         $e->mock('GetTasks', sub { [] });
     };
 
