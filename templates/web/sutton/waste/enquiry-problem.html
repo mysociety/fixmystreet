@@ -47,7 +47,7 @@ END;
 
 f = [];
 
-SET field = { label = 'Escalate my missed collection report', value = 'Complaint against time' };
+SET field = { label = 'Escalate my missed collection report', value = 'Escalate missed collection report' };
 IF service.escalations.missed;
     IF service.escalations.missed.too_late;
         IF original_booking_report;
