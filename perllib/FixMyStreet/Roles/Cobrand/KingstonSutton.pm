@@ -339,6 +339,18 @@ sub munge_bin_services_for_address {
     }
 }
 
+# For use in a missed collection logged email
+sub missed_target_date {
+    my ($self, $report) = @_;
+    my $wd = FixMyStreet::WorkingDays->new();
+    my $days = $self->waste_target_days->{missed};
+    if ($report->category eq 'Bulky collection' || $report->category eq 'Small items collection') {
+        $days = $self->waste_target_days->{missed_bulky};
+    }
+    my $target = $wd->add_days($report->confirmed, $days);
+    return $target->strftime('%A, %e %B');
+}
+
 sub _setup_missed_collection_escalations_for_service {
     my ($self, $row) = @_;
     my $events = $row->{events} or return;
