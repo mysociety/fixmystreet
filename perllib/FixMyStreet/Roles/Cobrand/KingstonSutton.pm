@@ -691,7 +691,7 @@ sub _enquiry_nice_title {
         $category = 'Wheelie bin, box or caddy not returned correctly after collection';
     } elsif ($category eq 'Waste spillage') {
         $category = 'Spillage during collection';
-    } elsif ($category eq 'Complaint against time') {
+    } elsif ($category eq 'Escalate missed collection report') {
         $category = 'Issue with collection';
     } elsif ($category eq 'Failure to Deliver Bags/Containers') {
         $category = 'Issue with delivery';
@@ -730,7 +730,7 @@ sub waste_munge_enquiry_data {
         }
     } elsif ($data->{category} eq 'Waste spillage') {
         $detail = "$data->{extra_Notes}\n\n";
-    } elsif ($data->{category} eq 'Complaint against time') {
+    } elsif ($data->{category} eq 'Escalate missed collection report') {
         my $service;
         if ($c->stash->{original_booking_report}) {
             my $booking_guid = $c->stash->{original_booking_report}->external_id;

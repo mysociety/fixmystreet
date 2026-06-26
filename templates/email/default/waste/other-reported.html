@@ -57,7 +57,7 @@ INCLUDE '_email_top.html';
         if you would like.[% IF report.waste_has_payment %] A refund will not be issued.[% END %]
     [% ELSIF report.category == 'Report missed collection' OR report.category == 'Report missed assisted collection' %]
       <p style="[% p_style %]">Our crew will return within 2 working days to collect your bin. If it has not been collected by that time, you can escalate the missed collection online.<p>
-    [% ELSIF report.category == 'Complaint against time' %]
+    [% ELSIF report.category == 'Escalate missed collection report' %]
       <p style="[% p_style %]">
         Your missed collection escalation has been logged. Our crew will be back to collect your bin within 2 working days.
       </p>
@@ -97,7 +97,7 @@ INCLUDE '_email_top.html';
     </p>
   [% ELSIF report.category == 'Report missed collection' OR report.category == 'Report missed assisted collection' %]
     <p style="[% p_style %]">Our crew will return within 2 working days to collect your bin. If it has not been collected by that time, you can escalate the missed collection online.<p>
-  [% ELSIF report.category == 'Complaint against time' %]
+  [% ELSIF report.category == 'Escalate missed collection report' %]
     <p style="[% p_style %]">
       Your missed collection escalation has been logged. Our crew will be back to collect your bin within 2 working days.
     </p>

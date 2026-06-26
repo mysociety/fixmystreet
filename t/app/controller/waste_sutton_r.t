@@ -70,7 +70,7 @@ create_contact({ category => 'Report missed assisted collection', email => '3146
     { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
 );
-create_contact({ category => 'Complaint against time', email => '3134' }, 'Waste',
+create_contact({ category => 'Escalate missed collection report', email => '3134' }, 'Waste',
     { code => 'Notes', required => 1, automated => 'hidden_field' },
     { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
@@ -967,7 +967,7 @@ FixMyStreet::override_config {
             $mech->content_contains('Escalate my missed collection report', 'Escalation option available');
             $mech->content_contains('you can escalate the report now');
             subtest 'actually make the report' => sub {
-                $mech->submit_form_ok( { with_fields => { category => 'Complaint against time' } });
+                $mech->submit_form_ok( { with_fields => { category => 'Escalate missed collection report' } });
                 $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
                 $mech->submit_form_ok( { with_fields => { submit => '1' } });
                 $mech->content_contains('Your enquiry has been submitted');
@@ -976,7 +976,7 @@ FixMyStreet::override_config {
                 my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
                 # save this for later
                 $missed_report = $report;
-                is $report->category, 'Complaint against time', "Correct category";
+                is $report->category, 'Escalate missed collection report', "Correct category";
                 is $report->title, 'Issue with collection';
                 is $report->detail, "Non-Recyclable Refuse\n\n2 Example Street, Sutton, SM1 1AA", "Details of report contain information about problem";
                 is $report->user->email, 'schmoe@example.org', 'User details added to report';
@@ -1029,7 +1029,7 @@ FixMyStreet::override_config {
             $mech->get_ok('/waste/12345');
             $mech->follow_link_ok( { url_regex => qr/service_id=940/}, 'Follow "Report a problem" link for Non-Recyclable Waste collection' );
             $mech->content_contains('Escalate my missed collection report', 'Escalation option not available');
-            $mech->content_like(qr/name="category" value="Complaint against time" aria-describedby="category-0-item-hint"\s+disabled/s, 'Escalation option shown, but disabled, after end of window');
+            $mech->content_like(qr/name="category" value="Escalate missed collection report" aria-describedby="category-0-item-hint"\s+disabled/s, 'Escalation option shown, but disabled, after end of window');
         };
 
         subtest 'Completed missed collection - no escalation' => sub {
@@ -1530,7 +1530,7 @@ FixMyStreet::override_config {
     subtest 'CSV export including escalation information' => sub {
         $mech->log_in_ok($staff->email);
         $mech->get_ok('/dashboard?export=1');
-        $mech->content_like(qr/Complaint against time.*LBS-123/);
+        $mech->content_like(qr/Escalate missed collection report.*LBS-123/);
         $mech->content_like(qr/Failure to Deliver.*LBS-789/);
     };
 
