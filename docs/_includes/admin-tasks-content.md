@@ -1125,7 +1125,7 @@ particular date range:
 <span class="admin-task__permissions">Permissions required: User must be marked as staff and ‘Add/edit site message’ must be ticked.</span>
 
 This feature allows you to set site messages which will be displayed on
-the homepage or reporting pages; you can have different messages for in/out of hours.
+the homepage or reporting pages. You can have different messages for in/out of hours.
 
 Certain HTML tags can be used for formatting purposes. These are limited to the same set as described
 in ["HTML content in notices"](#html-content-in-notices). You should not use block-level HTML elements
@@ -1146,6 +1146,8 @@ plus Christmas Eve, you would set it up as the following screenshot:
 
 <img loading="lazy" alt="Saturday, Sunday, Bank Holidays, and a special Christmas Eve, 00:00-24:00; Monday to Friday 00:00-08:00 and 18:00-24:00."
     src="/assets/img/pro-user-guide/site-message-time-periods.jpeg" class="admin-screenshot">
+
+It's also possible to display notices containing ward-specific information only when a user drops a map pin within a certain area and category. If you want to implement this, please open a ticket requesting which ward(s) and categories you want to display a message for, and the text to use.
 
 </div>
 
