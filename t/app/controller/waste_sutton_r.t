@@ -405,6 +405,8 @@ FixMyStreet::override_config {
     };
 
     subtest 'Report missed collection' => sub {
+        FixMyStreet::Script::Reports::send();
+        $mech->clear_emails_ok;
 
         $mech->get_ok('/waste/12345');
         $mech->follow_link_ok( { url_regex => qr/service_id=954/}, 'Follow "Report a problem" link for food waste' );
@@ -417,6 +419,10 @@ FixMyStreet::override_config {
         is $report->uprn, 1000000002;
         is $report->detail, "Report missed Food Waste\n\n2 Example Street, Sutton, SM1 1AA";
         is $report->title, 'Report missed Food Waste';
+        $report->update({ confirmed => '2022-09-09 16:30' }); # Was set by database, so current not override
+        FixMyStreet::Script::Reports::send();
+        my $text = $mech->get_html_body_from_email;
+        like $text, qr/Our crew will return by the end of Tuesday, 13 September to collect your bin/;
     };
 
     subtest 'No reporting/requesting if open request' => sub {
