@@ -2,12 +2,17 @@
   data = form.saved_data;
   step1 = first_page;
   non_actionable = ( data.category == 'Report out-of-time missed collection' );
+  escalation = ( data.category == 'Escalate missed collection report' );
   IF non_actionable;
     title = 'Submit missed bin report';
     thing = 'missed collection';
     summary_title = 'Missed collection';
   ELSE;
-    title = 'Submit enquiry';
+    IF escalation;
+      title = 'Submit escalation';
+    ELSE;
+      title = 'Submit enquiry';
+    END;
     thing = 'enquiry';
     summary_title = data.category;
   END
