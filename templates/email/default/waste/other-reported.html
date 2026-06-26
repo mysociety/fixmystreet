@@ -58,7 +58,7 @@ INCLUDE '_email_top.html';
     [% ELSIF report.category == 'Report missed collection' OR report.category == 'Report missed assisted collection' %]
       [% escalate_url = cobrand.base_url _ '/waste/' _ report.waste_property_id _ '/enquiry?template=problem&service_id=' _ report.get_extra_field_value('service_id'); %]
       <p style="[% p_style %]">Our crew will return by the end of [% cobrand.missed_target_date(report) %] to collect your bin. If it has not been collected by that time, you can <a href="[% escalate_url %]">escalate the missed collection online</a>.<p>
-    [% ELSIF report.category == 'Complaint against time' %]
+    [% ELSIF report.category == 'Escalate missed collection report' %]
       <p style="[% p_style %]">
         Your missed collection escalation has been logged. Our crew will be back to collect your bin within 2 working days.
       </p>
@@ -99,7 +99,7 @@ INCLUDE '_email_top.html';
   [% ELSIF report.category == 'Report missed collection' OR report.category == 'Report missed assisted collection' %]
     [% escalate_url = cobrand.base_url _ '/waste/' _ report.waste_property_id _ '/enquiry?template=problem&service_id=' _ report.get_extra_field_value('service_id'); %]
     <p style="[% p_style %]">Our crew will return by the end of [% cobrand.missed_target_date(report) %] to collect your bin. If it has not been collected by that time, you can <a href="[% escalate_url %]">escalate the missed collection online</a>.<p>
-  [% ELSIF report.category == 'Complaint against time' %]
+  [% ELSIF report.category == 'Escalate missed collection report' %]
     <p style="[% p_style %]">
       Your missed collection escalation has been logged. Our crew will be back to collect your bin within 2 working days.
     </p>

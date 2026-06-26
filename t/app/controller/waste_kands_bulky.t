@@ -28,7 +28,7 @@ my $contact = $mech->create_contact_ok(body => $body, ( category => 'Report miss
     );
 $contact->update;
 
-create_contact($body, { category => 'Complaint against time', email => '3134' },
+create_contact($body, { category => 'Escalate missed collection report', email => '3134' },
     { code => 'Notes', required => 1, automated => 'hidden_field' },
     { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
@@ -48,7 +48,7 @@ for ($body, $sutton) {
     create_bulky_contact($_);
 }
 
-create_contact($sutton, { category => 'Complaint against time', email => '3134' },
+create_contact($sutton, { category => 'Escalate missed collection report', email => '3134' },
     { code => 'Notes', required => 1, automated => 'hidden_field' },
     { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
@@ -910,7 +910,7 @@ FixMyStreet::override_config {
             set_fixed_time('2023-07-12T15:00:00Z');
             $mech->get_ok('/waste/12345');
             $mech->follow_link_ok({ text => 'Report a problem with a bulky waste collection' });
-            $mech->submit_form_ok( { with_fields => { category => 'Complaint against time' } } );
+            $mech->submit_form_ok( { with_fields => { category => 'Escalate missed collection report' } } );
 
             subtest 'actually make the report' => sub {
                 $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
@@ -919,7 +919,7 @@ FixMyStreet::override_config {
                 $mech->content_contains('Return to property details');
                 $mech->content_contains('/waste/12345"');
                 $escalation = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-                is $escalation->category, 'Complaint against time', "Correct category";
+                is $escalation->category, 'Escalate missed collection report', "Correct category";
                 is $escalation->detail, "2 Example Street, Kingston, KT1 1AA", "Details of report contain information about problem";
                 is $escalation->user->email, 'schmoe@example.org', 'User details added to report';
                 is $escalation->name, 'Joe Schmoe', 'User details added to report';
@@ -1283,7 +1283,7 @@ FixMyStreet::override_config {
             $mech->follow_link_ok( { url_regex => qr/service_id=960/}, 'Follow "Report a problem" link for bulky waste' );
 
             $mech->content_like(qr/Escalate my missed collection report/);
-            $mech->submit_form_ok({ with_fields => { category => 'Complaint against time' }});
+            $mech->submit_form_ok({ with_fields => { category => 'Escalate missed collection report' }});
             subtest 'actually make the report' => sub {
                 $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
                 $mech->submit_form_ok( { with_fields => { submit => '1' } });
@@ -1291,7 +1291,7 @@ FixMyStreet::override_config {
                 $mech->content_contains('Return to property details');
                 $mech->content_contains('/waste/12345"');
                 $escalation = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-                is $escalation->category, 'Complaint against time', "Correct category";
+                is $escalation->category, 'Escalate missed collection report', "Correct category";
                 is $escalation->detail, "2/3 Example Street, Sutton, SM2 5HF", "Details of report contain information about problem";
                 is $escalation->user->email, 'schmoe@example.org', 'User details added to report';
                 is $escalation->name, 'Joe Schmoe', 'User details added to report';
