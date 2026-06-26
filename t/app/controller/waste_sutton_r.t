@@ -965,7 +965,7 @@ FixMyStreet::override_config {
             $mech->follow_link_ok( { url_regex => qr/service_id=940/}, 'Follow "Report a problem" link for Non-Recyclable Waste collection' );
             $mech->content_contains('class="govuk-heading-xl">Report a problem', 'On the report a problem page');
             $mech->content_contains('Escalate my missed collection report', 'Escalation option available');
-            $mech->content_contains('if they have not returned you can escalate the report');
+            $mech->content_contains('you can escalate the report now');
             subtest 'actually make the report' => sub {
                 $mech->submit_form_ok( { with_fields => { category => 'Escalate missed collection report' } });
                 $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
@@ -1023,7 +1023,7 @@ FixMyStreet::override_config {
             $mech->follow_link_ok( { url_regex => qr/service_id=940/}, 'Follow "Report a problem" link for Non-Recyclable Waste collection' );
             $mech->content_contains('class="govuk-heading-xl">Report a problem', 'On the report a problem page');
             $mech->content_contains('Escalate my missed collection report', 'Escalation option available');
-            $mech->content_contains('if they have not returned you can escalate the report', 'Allows escalating');
+            $mech->content_contains('you can escalate the report now', 'Allows escalating');
 
             set_fixed_time('2022-09-15T19:00:00Z');
             $mech->get_ok('/waste/12345');
