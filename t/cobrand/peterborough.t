@@ -71,6 +71,7 @@ my $flytipping = $mech->create_contact_ok(email => 'FLY', body_id => $peterborou
         ], "datatype" => "singlevaluelist", "required" => "true", "variable" => "true", "description" => "Did you witness the fly-tipping or have evidence about who did it?"},
     ],
 });
+$mech->create_contact_ok(email => 'Bartec-Sharps', body_id => $peterborough->id, category => 'Sharps');
 $mech->create_contact_ok(email => 'Bartec-Graffiti', body_id => $peterborough->id, category => 'Non offensive graffiti');
 my $user = $mech->create_user_ok('peterborough@example.org', name => 'Council User', from_body => $peterborough);
 $peterborough->update( { comment_user_id => $user->id } );
@@ -589,6 +590,30 @@ subtest "flytipping witnessed in a CCTV camera zone sends three emails" => sub {
         is $email[1]->header('To'), '"Environmental Enforcement" <witnessed@example.org>', 'witnessed enforcement email sent';
         is $email[2]->header('To'), '"Environmental Enforcement" <cctv@example.org>', 'CCTV enforcement email sent';
         like $email[2]->header('Subject'), qr/\[Priority Evidence Available \(Fixed CCTV\)\] Problem Report: /, 'CCTV email uses the CCTV subject prefix';
+    };
+};
+
+subtest "sharps report also emailed" => sub {
+    FixMyStreet::override_config {
+        STAGING_FLAGS => { send_reports => 1 },
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'peterborough',
+        COBRAND_FEATURES => { open311_email => { peterborough => {
+            sharps => 'sharps@example.org,sharps2@example.org',
+        } } },
+    }, sub {
+        $mech->clear_emails_ok;
+
+        my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', {
+            category => 'Sharps',
+        });
+
+        FixMyStreet::Script::Reports::send();
+        $p->discard_changes;
+        is $p->send_state, 'sent', 'Report marked as sent';
+
+        my $email = $mech->get_email;
+        is $email->header('To'), 'sharps@example.org, sharps2@example.org';
     };
 };
 
