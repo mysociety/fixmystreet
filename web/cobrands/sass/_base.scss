@@ -2002,6 +2002,10 @@ html.js #map .noscript {
   }
 }
 
+#ns_fms_pan_zoom .olButton {
+  border: none;
+}
+
 #ns_fms_pan_zoom_panup,
 #ns_fms_pan_zoom_pandown,
 #ns_fms_pan_zoom_panleft,
@@ -2167,6 +2171,7 @@ html.js #map .noscript {
     background-repeat: no-repeat;
     background-size: $maplink-button-height $maplink-button-height;
     border-radius: 5px;
+    border: none;
     margin-top: $panzoom-gutter; // vertical space between links
     text-decoration: none !important;
 

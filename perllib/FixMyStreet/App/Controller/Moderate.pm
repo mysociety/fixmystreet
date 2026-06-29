@@ -48,7 +48,7 @@ sub end : ActionClass('RenderView') {
         $c->forward('/report/display');
     } elsif ($c->res->redirect) {
         # Do nothing if we're already going somewhere
-    } else {
+    } elsif ($c->stash->{report_uri}) {
         $c->res->redirect($c->stash->{report_uri});
     }
 }
@@ -57,8 +57,9 @@ sub moderate : Chained('/') : PathPart('moderate') : CaptureArgs(0) { }
 
 sub report : Chained('moderate') : PathPart('report') : CaptureArgs(1) {
     my ($self, $c, $id) = @_;
-    my $problem = $c->model('DB::Problem')->find($id);
-    $c->detach unless $problem;
+
+    $c->forward( '/report/load_problem_or_display_error', [ $id ] );
+    my $problem = $c->stash->{problem};
 
     my $cobrand_base = $c->cobrand->base_url_for_report( $problem );
     my $report_uri = $cobrand_base . $problem->url;

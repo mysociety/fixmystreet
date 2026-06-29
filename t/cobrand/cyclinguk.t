@@ -2,6 +2,7 @@ use Test::MockModule;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Alerts;
 use FixMyStreet::Script::Questionnaires;
+use FixMyStreet::Script::Reports;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -12,7 +13,9 @@ END { FixMyStreet::App->log->enable('info'); }
 my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::BathNES');
 $cobrand->mock('area_types', sub { [ 'UTA' ] });
 
-my $body = $mech->create_body_ok(2551, 'Bath and North East Somerset Council', { cobrand => 'bathnes' });
+my $body = $mech->create_body_ok(2551, 'Bath and North East Somerset Council', {
+    cobrand => 'bathnes', send_method => 'Blackhole' });
+my $nyorks = $mech->create_body_ok(2235, 'North Yorkshire Council');
 my $cyclinguk = $mech->create_body_ok(2551, 'Cycling UK', { cobrand => 'cyclinguk' });
 $cyclinguk->body_areas->delete;
 
@@ -20,6 +23,11 @@ my $contact = $mech->create_contact_ok(
     body_id => $body->id,
     category => 'Potholes',
     email => 'POTHOLE',
+);
+$mech->create_contact_ok(
+    body_id => $nyorks->id,
+    category => 'Potholes',
+    email => 'default@nyorks',
 );
 
 my $user = $mech->create_user_ok( 'bathnes@example.com', name => 'Public User 1' );
@@ -37,7 +45,8 @@ $staff->alerts->create({
 });
 
 my ($problem) = $mech->create_problems_for_body(1, $body->id, 'Title', {
-    areas => ",2651,", category => 'Potholes', cobrand => 'fixmystreet',
+    areas => ",2235,", category => 'Potholes', cobrand => 'fixmystreet',
+    latitude => 54.2448, longitude => -1.0643,
     whensent => DateTime->now->subtract( weeks => 5 ),
     user => $user,
 });
@@ -53,6 +62,13 @@ FixMyStreet::override_config {
                 Bath => 0,
             }
         },
+        borough_email_addresses => {
+            fixmystreet => {
+                'default@nyorks' => [
+                    { email => 'test@example.com', areas => [ 2408 ] },
+                ]
+            }
+        }
     },
     MAPIT_URL => 'http://mapit.uk/',
     STAGING_FLAGS => { skip_must_have_2fa => 1 },
@@ -274,6 +290,7 @@ subtest 'New report user info fields' => sub {
     $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     is $report->name, "Brand New";
     is $report->get_extra_metadata('CyclingUK_marketing_opt_in'), 'no';
+    $mech->clear_emails_ok;
 };
 
 subtest 'Dashboard CSV export' => sub {
@@ -318,6 +335,14 @@ subtest 'Contact form' => sub {
         message => 'A message',
     }});
     $mech->content_contains("Thank you for your enquiry");
+    $mech->clear_emails_ok;
+};
+
+subtest 'Direct borough email correctly' => sub {
+    $problem->update({ bodies_str => $nyorks->id });
+    FixMyStreet::Script::Reports::send();
+    my $email = $mech->get_email;
+    is $email->header('To'), '"North Yorkshire Council" <test@example.com>';
 };
 
 };

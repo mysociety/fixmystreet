@@ -59,7 +59,6 @@ The following are all the configuration settings that you can change in `conf/ge
 * <code><a href="#secure_proxy_ssl_header">SECURE_PROXY_SSL_HEADER</a></code>
 * <code><a href="#content_security_policy">CONTENT_SECURITY_POLICY</a></code>
 * <code><a href="#geo_cache">GEO_CACHE</a></code>
-* <code><a href="#admin_base_url">ADMIN_BASE_URL</a></code>
 
 ### Photo storage
 
@@ -1007,23 +1006,6 @@ ALLOWED_COBRANDS:
             hostname that don't match will be served using the Default cobrand,
             which isn't what you want.
           </p>
-        </li>
-      </ul>
-    </div>
-  </dd>
-
-  <dt>
-    <a name="admin_base_url"><code>ADMIN_BASE_URL</code></a>
-  </dt>
-  <dd>
-    This is used in "offensive report" emails to provide a link directly
-    to the admin interface, and to make sure the admin can work through a
-    proxy. It defaults to `/admin` in your installation.
-    <div class="more-info">
-      <p>Example:</p>
-      <ul class="examples">
-        <li>
-          <code>ADMIN_BASE_URL: ''</code>
         </li>
       </ul>
     </div>

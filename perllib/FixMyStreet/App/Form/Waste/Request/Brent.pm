@@ -39,9 +39,6 @@ has_page about_you => (
         my $c = $form->{c};
 
         my $choice = $data->{"container-choice"};
-        my $how_long = $data->{how_long_lived} || '';
-        my $ordered = $data->{ordered_previously};
-
         # We only ask for immediate payment if it's not a referral
         if (!FixMyStreet::Cobrand::Brent::request_referral($choice, $data)) {
             my ($cost) = $c->cobrand->request_cost($choice);

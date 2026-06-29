@@ -134,6 +134,7 @@ my @PLACES = (
     [ 'AB51 5JQ', 57.27126, -2.43012, 2648, 'Aberdeenshire Council', 'UTA' ],
     [ '?', 51.530133, -0.228924, 2502, 'Hammersmith and Fulham Borough Council', 'LBO' ],
     [ '?', 51.530115, -0.228293, 2503, 'Kensington and Chelsea Borough Council', 'LBO' ],
+    [ '?', 54.2448, -1.0643, 2408, 'Ryedale District Council', 'DIS' ], # When doing gen36 lookup
 );
 
 sub dispatch_request {

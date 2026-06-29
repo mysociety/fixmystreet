@@ -3496,6 +3496,7 @@ FixMyStreet::override_config {
         # Page 3: Confirm - this triggers process_garden_cancellation which detects duplicate
         # When duplicate is detected, it shows confirmation page and detaches, so no new report is created
         $mech->submit_form_ok({ with_fields => { confirm => 1 }});
+        $mech->content_contains('reference number is <strong>' . $first_cancel->id);
 
         # Verify duplicate prevention worked
         my @all_cancels = FixMyStreet::DB->resultset('Problem')->search({

@@ -50,6 +50,7 @@
         - Use on-disk cache for front page stats rather than memcache. #5763
         - Add an index on problem(confirmed).
         - Add optional PostGIS nearby database calls.
+        - Remove nested loop when calculating priorities/templates on report page.
     - Internal things:
         - Upgrade GitHub Actions to Ubuntu 24.
 

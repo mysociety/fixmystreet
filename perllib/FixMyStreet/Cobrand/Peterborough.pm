@@ -314,7 +314,7 @@ sub _send_extra_flytipping_email {
 
     $row->push_extra_fields(@$extra_fields) if $extra_fields;
 
-    my $sender = FixMyStreet::SendReport::Email->new( to => [ $args{dest} ] );
+    my $sender = FixMyStreet::SendReport::Email->new( to => $args{dest} );
     $sender->send($row, \%send_h);
 
     if ($sender->success && @sent_to_before_send) {
@@ -372,7 +372,7 @@ sub open311_post_send {
     my $emails = $self->feature('open311_email') || {};
     my %flytipping_cats = map { $_ => 1 } @{ $self->_flytipping_categories };
     if ( $emails->{flytipping} && $flytipping_cats{$row->category} ) {
-        my $dest = [ $emails->{flytipping}, "Environmental Services" ];
+        my $dest = [ [ $emails->{flytipping}, "Environmental Services" ] ];
         $self->_send_extra_flytipping_email(
             $row,
             $h,
@@ -380,7 +380,7 @@ sub open311_post_send {
             send_context => { flytipping_extra => 1 },
         );
         if ($emails->{flytipping_witnessed} && $self->_witnessed_general_flytipping($row)) {
-            my $dest2 = [ $emails->{flytipping_witnessed}, "Environmental Enforcement" ];
+            my $dest2 = [ [ $emails->{flytipping_witnessed}, "Environmental Enforcement" ] ];
             $self->_send_extra_flytipping_email(
                 $row,
                 $h,
@@ -389,7 +389,7 @@ sub open311_post_send {
             );
         }
         if ($emails->{flytipping_cctv} && $self->_report_is_in_cctv_zone($row)) {
-            my $dest3 = [ $emails->{flytipping_cctv}, 'Environmental Enforcement' ];
+            my $dest3 = [ [ $emails->{flytipping_cctv}, 'Environmental Enforcement' ] ];
             $self->_send_extra_flytipping_email(
                 $row,
                 $h,
@@ -404,6 +404,11 @@ sub open311_post_send {
                 ],
             );
         }
+    } elsif ( $emails->{sharps} && $row->category eq 'Sharps' ) {
+        my @emails = split(/,/, $emails->{sharps});
+        $self->_send_extra_flytipping_email(
+            $row, $h, dest => [ @emails ],
+        );
     }
 
     if ($h->{report}->get_extra_field_value('bulky_text_reminders')) {

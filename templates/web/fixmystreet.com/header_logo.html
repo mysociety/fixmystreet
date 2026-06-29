@@ -4,7 +4,7 @@
     </a>
 [% END %]
 
-<a href="[% c.cobrand.base_url IF admin %]/" id="site-logo" aria-label="Fix My Street">[% FILTER collapse %]
+<a href="/" id="site-logo" aria-label="Fix My Street">[% FILTER collapse %]
     [% IF c.req.uri.path == '/' %]
         [% INSERT site_logo_with_fallback.svg %]
     [% ELSE %]
@@ -25,4 +25,4 @@
 %][% c.req.uri.path_query %]">[% IF lang_code == 'en-gb' %]Cymraeg[% ELSE %]English[% END %]
 </a>
 
-<a href="[% c.cobrand.base_url IF admin %]/" id="report-cta" title="[%- loc('Report a problem') -%]">[%- loc('Report') -%]</a>
+<a href="/" id="report-cta" title="[%- loc('Report a problem') -%]">[%- loc('Report') -%]</a>

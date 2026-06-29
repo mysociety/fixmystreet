@@ -5,6 +5,7 @@ use namespace::autoclean;
 BEGIN { extends 'FixMyStreet::App::Controller::Form' }
 
 use utf8;
+use Try::Tiny;
 use FixMyStreet::App::Form::Licence;
 
 has feature => ( is => 'ro', default => 'licencing_forms' );
@@ -94,6 +95,11 @@ sub process_licence : Private {
     my $latitude = $data->{latitude} || 51.508;
     my $longitude = $data->{longitude} || -0.128;
 
+    my $areas = try {
+        my $areas = FixMyStreet::MapIt::call('point', "4326/$longitude,$latitude", type => 'LBO');
+        ',' . join(',', sort keys %$areas) . ',';
+    } || "";
+
     my $problem = $c->model('DB::Problem')->new({
         non_public         => 1,
         category           => $category,
@@ -103,7 +109,7 @@ sub process_licence : Private {
         postcode           => $data->{postcode} || '',
         latitude           => $latitude,
         longitude          => $longitude,
-        areas              => '',
+        areas              => $areas,
         send_questionnaire => 0,
         bodies_str         => $c->cobrand->body->id,
         photo              => $data->{photos},

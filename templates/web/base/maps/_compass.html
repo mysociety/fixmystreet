@@ -1,20 +1,20 @@
 [% RETURN IF map.no_compass %]
 [%
-    north    = c.uri_with( { lat = map.compass.north.0, lon = map.compass.north.1, zoom = map.zoom } )
-    south    = c.uri_with( { lat = map.compass.south.0, lon = map.compass.south.1, zoom = map.zoom } )
-    east     = c.uri_with( { lat = map.compass.east.0,  lon = map.compass.east.1,  zoom = map.zoom } )
-    west     = c.uri_with( { lat = map.compass.west.0,  lon = map.compass.west.1,  zoom = map.zoom } );
-    SET zoom_in  = c.uri_with( { lat = map.latitude, lon = map.longitude, zoom = map.zoom + 1 } ) IF map.zoom < map.numZoomLevels - 1;
-    SET zoom_out = c.uri_with( { lat = map.latitude, lon = map.longitude, zoom = map.zoom - 1 } ) IF map.zoom > 0;
-    SET zoom_in  = '#' IF map.zoom >= map.numZoomLevels - 1;
-    SET zoom_out = '#' IF map.zoom <= 0;
+    north    = c.uri_map( { lat = map.compass.north.0, lon = map.compass.north.1, zoom = map.zoom } )
+    south    = c.uri_map( { lat = map.compass.south.0, lon = map.compass.south.1, zoom = map.zoom } )
+    east     = c.uri_map( { lat = map.compass.east.0,  lon = map.compass.east.1,  zoom = map.zoom } )
+    west     = c.uri_map( { lat = map.compass.west.0,  lon = map.compass.west.1,  zoom = map.zoom } );
+    SET zoom_in  = c.uri_map( { lat = map.latitude, lon = map.longitude, zoom = map.zoom + 1 } ) IF map.zoom < map.numZoomLevels - 1;
+    SET zoom_out = c.uri_map( { lat = map.latitude, lon = map.longitude, zoom = map.zoom - 1 } ) IF map.zoom > 0;
+    SET zoom_in  = '' IF map.zoom >= map.numZoomLevels - 1;
+    SET zoom_out = '' IF map.zoom <= 0;
 %]
 
 <div id="ns_fms_pan_zoom" style="position: absolute;" class="olControlPanZoom olControlNoSelect" unselectable="on">
-    <a rel="nofollow" role="button" tabindex="0" href="[% north %]"><span id="ns_fms_pan_zoom_panup" class="olButton">pan up</span></a>
-    <a rel="nofollow" role="button" tabindex="0" href="[% west %]"><span id="ns_fms_pan_zoom_panleft" class="olButton">pan left</span></a>
-    <a rel="nofollow" role="button" tabindex="0" href="[% east %]"><span id="ns_fms_pan_zoom_panright" class="olButton">pan right</span></a>
-    <a rel="nofollow" role="button" tabindex="0" href="[% south %]"><span id="ns_fms_pan_zoom_pandown" class="olButton">pan down</span></a>
-    <a rel="nofollow" role="button" tabindex="0" href="[% zoom_in %]"><span id="ns_fms_pan_zoom_zoomin" class="olButton">zoom in</span></a>
-    <a rel="nofollow" role="button" tabindex="0" href="[% zoom_out %]"><span id="ns_fms_pan_zoom_zoomout" class="olButton">zoom out</span></a>
+    <button form="nojs-map-controls-form" name="nojs-map-controls" value="[% north %]" id="ns_fms_pan_zoom_panup" class="olButton">pan up</span></button>
+    <button form="nojs-map-controls-form" name="nojs-map-controls" value="[% west %]" id="ns_fms_pan_zoom_panleft" class="olButton">pan left</span></button>
+    <button form="nojs-map-controls-form" name="nojs-map-controls" value="[% east %]" id="ns_fms_pan_zoom_panright" class="olButton">pan right</span></button>
+    <button form="nojs-map-controls-form" name="nojs-map-controls" value="[% south %]" id="ns_fms_pan_zoom_pandown" class="olButton">pan down</span></button>
+    <button [% 'disabled' IF map.zoom >= map.numZoomLevels - 1 %] form="nojs-map-controls-form" name="nojs-map-controls" value="[% zoom_in %]" id="ns_fms_pan_zoom_zoomin" class="olButton">zoom in</span></button>
+    <button [% 'disabled' IF map.zoom <= 0 %] form="nojs-map-controls-form" name="nojs-map-controls" value="[% zoom_out %]" id="ns_fms_pan_zoom_zoomout" class="olButton">zoom out</span></button>
 </div>

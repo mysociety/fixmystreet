@@ -165,16 +165,15 @@ sub version {
         _version_get_details($file_min);
         $url = $file = $file_min if $version_hash{$file_min}{mtime} >= $version_hash{$file}{mtime};
     }
-    my $admin = $self->template->context->stash->{admin} ? FixMyStreet->config('ADMIN_BASE_URL') : '';
 
     # Check for compiled hash-in-filename first
     my $digest = $version_hash{$file}{digest};
     my ($name, $path, $suffix) = fileparse($url, qr/\.css/, qr/\.js/);
     my $compiled = "/static$path$name.$digest$suffix";
     if (-e FixMyStreet->path_to('web', $compiled)) {
-        return "$admin$compiled";
+        return $compiled;
     }
-    return "$admin$url?$digest";
+    return "$url?$digest";
 }
 
 sub _version_get_details {

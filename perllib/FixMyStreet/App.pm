@@ -439,6 +439,17 @@ sub uri_for_email {
     return URI->new($email_uri);
 }
 
+sub uri_map {
+    my ($c, $params) = @_;
+    my $map = $c->stash->{map};
+    my $lat = $params->{lat} // $map->{latitude};
+    my $lon = $params->{lon} // $map->{longitude};
+    my $zoom = $params->{zoom} // $map->{zoom};
+    my $aerial = $params->{aerial} // $c->get_param('aerial') // "";
+    my $no_pins = $params->{no_pins} // $c->get_param('no_pins') // "";
+    return "$lat/$lon/$zoom/$aerial/$no_pins";
+}
+
 sub finalize {
     my $c = shift;
     $c->next::method(@_);

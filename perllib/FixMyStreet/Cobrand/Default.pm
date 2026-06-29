@@ -270,7 +270,7 @@ Base URL for the admin interface.
 
 sub admin_base_url {
     my $self = shift;
-    return FixMyStreet->config('ADMIN_BASE_URL') || $self->base_url . "/admin";
+    $self->base_url . "/admin";
 }
 
 =item base_url
@@ -549,6 +549,7 @@ Return an override type of map if necessary.
 sub map_type {
     my $self = shift;
     return 'OSM' if $self->{c} && $self->{c}->req->uri->host =~ /^osm\./;
+    return 'OSM' if -e FixMyStreet->path_to('../data/osm-map-override');
     return;
 }
 
