@@ -40,6 +40,15 @@ const FIELDS = {
             'Vehicle being repaired on road or pavement',
         ],
         'summary': 'question',
+    },
+    'greenwich': {
+        'block': true,
+        'categories': [
+            'Abandoned vehicles'
+        ],
+        'reg': 'vehicle_registration',
+        'make': 'vehicle_make',
+        'colour': 'vehicle_colour',
     }
 };
 
@@ -72,6 +81,15 @@ const REASONS = {
             }
             return reasons.join(' or ');
         },
+    },
+    'greenwich': {
+        fn: function (data) {
+            if ( data.taxStatus == 'SORN' || (data.taxStatus == 'Taxed' && data.motStatus == 'Valid')) {
+               return 'This vehicle has a valid tax or MOT, so it does not meet the criteria for an abandoned vehicle report.';
+            } else {
+                return '';
+            }
+        }
     }
 };
 
@@ -165,7 +183,7 @@ function dvla_lookup(e) {
 
         const type = data.typeApproval || '';
         const wheelplan = data.wheelplan || '';
-        let types = TYPES[fixmystreet.cobrand];
+        let types = TYPES[fixmystreet.cobrand] || '';
         let vehicle_type = '';
         if (types) {
             if (type.match(/L[1-7]|motorcycle/i) || wheelplan.match(/motorcycle|moped|2 wheel/i)) {
