@@ -1149,9 +1149,6 @@ sub send_bulky_payment_echo_update_failed {
 sub per_photo_size_limit_for_report_in_bytes {
     my ($self, $report, $image_count) = @_;
 
-    # We only need to check bulky collections at present.
-    return 0 unless $report->cobrand_data eq 'waste' && $report->contact->category eq 'Bulky collection';
-
     my $cfg = FixMyStreet->config('COBRAND_FEATURES');
     return 0 unless $cfg;
 
