@@ -1,3 +1,4 @@
+use utf8;
 use JSON::MaybeXS;
 use Path::Tiny;
 use Storable qw(dclone);
@@ -196,15 +197,14 @@ FixMyStreet::override_config {
         $e->mock('GetTasks', sub { [ {
             Ref => { Value => { anyType => [ 17430692, 8287 ] } },
             State => { Name => 'Not Completed' },
-            Resolution => { Name => 'Contaminated waste' },
-            ResolutionCodeId => '1135',
+            Resolution => { Name => 'Contaminated waste', Ref => { Value => { 'anyType' => 1135 } } },
             CompletedDate => { DateTime => '2022-09-09T16:00:00Z' }
         } ] });
         set_fixed_time('2022-09-09T16:30:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Contaminated waste');
         $mech->follow_link_ok( { url_regex => qr/service_id=940/}, 'Follow "Report a problem" link for food waste' );
-        $mech->content_contains('Contaminated waste');
+        $mech->content_contains('Contaminated (builder’s waste)');
         $mech->back;
         $e->mock('GetTasks', sub { [] });
     };
@@ -869,11 +869,11 @@ FixMyStreet::override_config {
             $mech->clear_emails_ok;
             set_fixed_time('2022-09-11T18:01:00Z');
             $mech->get_ok($problem_url);
-            $mech->content_contains('Contaminated builder waste', 'details of missed bin collection displayed');
+            $mech->content_contains('Contaminated (builder’s waste)', 'details of missed bin collection displayed');
             $mech->submit_form_ok(
                 { with_fields => { category => 'Missed collection dispute' } }
             );
-            $mech->content_contains('Contaminated builder waste', 'details of missed bin collection displayed');
+            $mech->content_contains('Contaminated (builder’s waste)', 'details of missed bin collection displayed');
             $mech->content_lacks('This photo provides the evidence', 'No resolution photo text');
             $mech->submit_form_ok( { with_fields => { 'extra_Notes' => 'There was no problem with the bin' } }, 'submitted reasons');
             $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } }, 'sumitted name and email');
@@ -1193,7 +1193,7 @@ FixMyStreet::override_config {
             # need to strip the host otherwise we're not logged in
             my $l = URI->new($enq_links[0]);
             $mech->get_ok($l->path_query);
-            $mech->content_contains('Contaminated builder waste', 'details of missed bin collection displayed');
+            $mech->content_contains('Contaminated (builder’s waste)', 'details of missed bin collection displayed');
 
             # XXX Email link uses 'original_booking_id' param here to denote
             # missed collection report ID, but 'original_booking_id' should
@@ -1211,7 +1211,7 @@ FixMyStreet::override_config {
             $mech->submit_form_ok(
                 { with_fields => { category => 'Missed collection dispute' } }
             );
-            $mech->content_contains('Contaminated builder waste', 'details of missed bin collection displayed');
+            $mech->content_contains('Contaminated (builder’s waste)', 'details of missed bin collection displayed');
             $mech->content_lacks('This photo provides the evidence', 'No resolution photo text');
             $mech->submit_form_ok( { with_fields => { 'extra_Notes' => 'There was no problem with the bin' } }, 'submitted reasons');
             $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } }, 'sumitted name and email');

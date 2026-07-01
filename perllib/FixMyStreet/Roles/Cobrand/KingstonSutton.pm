@@ -274,13 +274,8 @@ sub parse_event_missed {
     my ($self, $orig_event, $event, $events) = @_;
 
     $event->{resolution} = $orig_event->{ResolutionCodeId};
-    my $missed_codes = $self->waste_bulky_missed_blocked_codes;
-    if ($missed_codes
-        && $event->{resolution}
-        && $missed_codes->{$orig_event->{EventStateId}}
-        && $missed_codes->{$orig_event->{EventStateId}}->{$event->{resolution}}
-    ) {
-        $event->{resolution_reason} = $missed_codes->{$orig_event->{EventStateId}}->{$event->{resolution}};
+    if ($event->{resolution}) {
+        $event->{resolution_reason} = $self->resolution_text($event->{resolution});
     }
     if ($event->{closed}) {
         $event->{date} = Integrations::Echo::Events::construct_bin_date($orig_event->{ResolvedDate});
@@ -539,7 +534,6 @@ sub _setup_scheduled_collection_disputes_for_service {
 
     my $events = $row->{events};
 
-    my $property = $self->{c}->stash->{property};
     my $dispute_event;
     if ($events) {
         $dispute_event = ($events->filter({ event_type => 3143 })->list)[0];

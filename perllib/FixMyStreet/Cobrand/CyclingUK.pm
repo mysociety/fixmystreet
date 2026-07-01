@@ -178,7 +178,7 @@ Cycling UK's testing.
 sub get_body_sender {
     my ( $self, $body, $problem ) = @_;
 
-    return { method => 'Blackhole' } if FixMyStreet->config('STAGING_SITE');
+    return { method => 'Blackhole' } if FixMyStreet->config('STAGING_SITE') && !FixMyStreet->test_mode;
 
     return $self->SUPER::get_body_sender($body, $problem);
 }
@@ -188,7 +188,7 @@ sub get_body_handler_for_problem {
 
     # want to force CyclingUK cobrand on staging so our get_body_sender is used
     # and reports aren't sent anywhere.
-    return $self if FixMyStreet->config('STAGING_SITE');
+    return $self if FixMyStreet->config('STAGING_SITE') && !FixMyStreet->test_mode;
 
     return $self->SUPER::get_body_handler_for_problem($problem);
 }
@@ -279,5 +279,17 @@ the validation in FixMyStreet will prevent the form being submitted.
 =cut
 
 sub extra_contact_validation {}
+
+=item munge_sendreport_params
+
+Follow .com munge_sendreport_params
+
+=cut
+
+sub munge_sendreport_params {
+    my $self = shift;
+    my $fms = FixMyStreet::Cobrand::FixMyStreet->new;
+    return $fms->munge_sendreport_params(@_);
+}
 
 1;

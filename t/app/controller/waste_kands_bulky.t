@@ -834,7 +834,7 @@ FixMyStreet::override_config {
         $mech->follow_link_ok({ text => 'Report a problem with a bulky waste collection' }, 'In time, normal completion');
         $mech->submit_form_ok({ with_fields => { category => 'redirect-missed' } });
         $mech->content_contains('Bulky waste collection');
-        $mech->submit_form_ok({ form_number => 1 });
+        $mech->submit_form_ok({ with_fields => { 'service-986' => 1 } });
         $mech->submit_form_ok({ with_fields => { extra_detail => "They left the mattress" } });
         $mech->submit_form_ok({ form_number => 1 });
         $mech->content_contains('Submit missed bulky collection');
@@ -859,7 +859,7 @@ FixMyStreet::override_config {
 
         $mech->follow_link_ok({ text => 'Report a problem with a bulky waste collection' }, 'In time, normal completion');
         $mech->content_contains('The crew have closed your collection task as not collected', 'Not completed');
-        $mech->content_contains('Not presented');
+        $mech->content_contains('Bin not presented');
 
         $mech->get_ok('/waste/12345/report');
         $mech->content_lacks('Bulky waste collection');
@@ -1406,7 +1406,7 @@ FixMyStreet::override_config {
             );
             # save this for checking logged out access below
             $link = $mech->uri;
-            $mech->content_contains('No access - Gate locked', 'details of missed bin collection displayed');
+            $mech->content_contains('No access due to gate locked', 'details of missed bin collection displayed');
             $mech->content_lacks('This photo provides the evidence', 'No resolution photo text');
             $mech->submit_form_ok( { with_fields => { 'extra_Notes' => 'The gate was open' } }, 'submitted reasons');
             $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } }, 'sumitted name and email');
@@ -1440,7 +1440,7 @@ FixMyStreet::override_config {
             {
                 user          => $sutton_user,
                 problem_id    => $report->id,
-                text          => 'No access - Gate locked',
+                text          => 'No access due to gate locked',
                 confirmed     => DateTime->now - DateTime::Duration->new( minutes => 15 ),
                 problem_state => 'unable to fix',
                 anonymous     => 0,
@@ -1456,7 +1456,7 @@ FixMyStreet::override_config {
             $mech->submit_form_ok(
                 { with_fields => { category => 'Missed collection dispute' } }
             );
-            $mech->content_contains('No access - Gate locked', 'details of missed bin collection displayed');
+            $mech->content_contains('No access due to gate locked', 'details of missed bin collection displayed');
             $mech->content_contains('This photo provides the evidence', 'Has resolution photo text');
         };
 
@@ -1473,9 +1473,9 @@ FixMyStreet::override_config {
             $email = $mech->get_email;
             my $email_text = $mech->get_text_body_from_email($email);
             my $email_html = $mech->get_html_body_from_email($email);
-            like $email_text, qr/No access - Gate locked/, 'Reason pulled from comment';
+            like $email_text, qr/No access due to gate locked/, 'Reason pulled from comment';
             like $email_text, qr/report a problem with this missed collection/, 'Report a problem text in text email';
-            like $email_html, qr/No access - Gate locked/, 'Reason pulled from comment';
+            like $email_html, qr/No access due to gate locked/, 'Reason pulled from comment';
             like $email_html, qr/Our crews reported your bulky waste collection was not made/, 'extra bulky waste text included';
             like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
             like $email_html, qr{waste/12345/enquiry}, 'HTML alert contains report link';
@@ -1486,14 +1486,14 @@ FixMyStreet::override_config {
             # need to strip the host otherwise we're not logged in
             my $l = URI->new($enq_links[0]);
             $mech->get_ok($l->path_query);
-            $mech->content_contains('No access - Gate locked', 'details of missed bin collection displayed');
+            $mech->content_contains('No access due to gate locked', 'details of missed bin collection displayed');
             $mech->content_contains('This photo provides the evidence', 'Has resolution photo text');
         };
 
         set_fixed_time('2025-04-11T19:00:00Z');
         subtest 'Cannot open collection dispute from email outside window' => sub {
             my $email_html = $mech->get_html_body_from_email($email);
-            like $email_html, qr/No access - Gate locked/, 'Got correct update in html email';
+            like $email_html, qr/No access due to gate locked/, 'Got correct update in html email';
             like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
             like $email_html, qr{waste/12345/enquiry}, 'HTML alert contains report link';
 
@@ -1661,7 +1661,7 @@ FixMyStreet::override_config {
                 {
                     user          => $sutton_user,
                     problem_id    => $missed->id,
-                    text          => 'No access - Parked vehicle',
+                    text          => 'No access due to parked vehicle',
                     confirmed     => DateTime->now - DateTime::Duration->new( minutes => 15 ),
                     problem_state => 'unable to fix',
                     anonymous     => 0,
@@ -1688,9 +1688,9 @@ FixMyStreet::override_config {
                 $email = $mech->get_email;
                 my $email_text = $mech->get_text_body_from_email($email);
                 my $email_html = $mech->get_html_body_from_email($email);
-                like $email_text, qr/No access - Parked vehicle/, 'Reason pulled from comment';
+                like $email_text, qr/No access due to parked vehicle/, 'Reason pulled from comment';
                 like $email_text, qr/report a problem with this missed collection/, 'Report a problem text in text email';
-                like $email_html, qr/No access - Parked vehicle/, 'Reason pulled from comment';
+                like $email_html, qr/No access due to parked vehicle/, 'Reason pulled from comment';
                 like $email_html, qr/Our crews reported your collection was not made/, 'extra collection text included';
                 like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
                 like $email_html, qr{waste/12345/enquiry}, 'HTML alert contains report link';
@@ -1703,14 +1703,14 @@ FixMyStreet::override_config {
                 my $l = URI->new($enq_links[0]);
                 like $l->path_query, qr/$link_part/, 'link has correct booking_id';
                 $mech->get_ok($l->path_query);
-                $mech->content_contains('No access - Parked vehicle', 'details of missed bin collection displayed');
+                $mech->content_contains('No access due to parked vehicle', 'details of missed bin collection displayed');
                 $mech->content_contains('This photo provides the evidence', 'Has resolution photo text');
             };
 
             set_fixed_time('2025-04-11T19:00:00Z');
             subtest 'Cannot open collection dispute from email outside window' => sub {
                 my $email_html = $mech->get_html_body_from_email($email);
-                like $email_html, qr/No access - Parked vehicle/, 'Got correct update in html email';
+                like $email_html, qr/No access due to parked vehicle/, 'Got correct update in html email';
                 like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
                 like $email_html, qr{waste/12345/enquiry}, 'HTML alert contains report link';
 
