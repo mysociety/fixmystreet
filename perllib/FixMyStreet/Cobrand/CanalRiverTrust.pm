@@ -57,6 +57,16 @@ sub privacy_policy_url {
     'https://canalrivertrust.org.uk/the-publication-scheme/making-a-request-for-information/privacy-notice'
 }
 
+=item * Include all reports in duplicate spotting, not just open ones
+
+=cut
+
+sub around_nearby_filter {
+    my ($self, $params) = @_;
+
+    delete $params->{states};
+}
+
 sub fetch_area_children {
     my $self = shift;
 
