@@ -76,7 +76,7 @@ const REASONS = {
     },
     'greenwich': {
         fn: function (data) {
-            if ( data.taxStatus == 'SORN' || (data.taxStatus == 'Taxed' && data.motStatus == 'Valid')) {
+            if ( data.taxStatus == 'SORN' || (data.taxStatus == 'Taxed' && data.motStatus != 'Not valid')) {
                return 'This vehicle has a valid tax or MOT, so it does not meet the criteria for an abandoned vehicle report.';
             } else {
                 return '';
