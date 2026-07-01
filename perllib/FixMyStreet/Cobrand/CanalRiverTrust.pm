@@ -49,6 +49,24 @@ sub example_places { ['Lock 47, Fazeley', 'Bridge 33, Kennet and Avon'] }
 sub admin_user_domain { 'canalrivertrust.org.uk' }
 sub abuse_reports_only { 1 }
 
+=item * Uses its own privacy policy
+
+=cut
+
+sub privacy_policy_url {
+    'https://canalrivertrust.org.uk/the-publication-scheme/making-a-request-for-information/privacy-notice'
+}
+
+=item * Include all reports in duplicate spotting, not just open ones
+
+=cut
+
+sub around_nearby_filter {
+    my ($self, $params) = @_;
+
+    delete $params->{states};
+}
+
 sub fetch_area_children {
     my $self = shift;
 
@@ -60,6 +78,8 @@ sub fetch_area_children {
     };
     return $areas;
 }
+
+=back
 
 =head2 Report categories
 
