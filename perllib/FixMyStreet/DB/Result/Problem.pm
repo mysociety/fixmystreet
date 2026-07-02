@@ -1685,6 +1685,7 @@ sub waste_confirm_payment {
     if ($already_confirmed) {
         $self->discard_changes;
         $self->bulky_add_payment_confirmation_update($reference);
+        $cobrand->call_hook('bulky_extra_confirmation_step', $self);
     }
 
     if (my $previous = $self->get_extra_metadata('previous_booking_id')) {
