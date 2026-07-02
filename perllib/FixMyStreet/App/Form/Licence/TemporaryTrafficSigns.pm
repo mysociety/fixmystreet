@@ -47,11 +47,27 @@ has_page location_1 => (
     },
 );
 
-with 'FixMyStreet::App::Form::Licence::Fields::MultipleLocations' => {
-    pages => 10,
-    title => 'Location of the temporary traffic signs',
-    template => 'temporary-traffic-signs/location.html',
-};
+with 'FixMyStreet::App::Form::Licence::Fields::MultipleLocations';
+for my $page (2..10) {
+    has_page "location_$page" => location_page_fields({
+        page => $page,
+        pages => 10,
+        title => 'Location of the temporary traffic signs',
+        template => 'temporary-traffic-signs/location.html',
+    });
+    has_field "building_name_number_$page" => ( type => 'Text', label => 'Building name / number', required => 1 );
+    has_field "street_name_$page" => ( type => 'Text', label => 'Street name', disabled => 1 );
+    has_field "borough_$page" => ( type => 'Text', label => 'Borough', disabled => 1 );
+    has_field "postcode_$page" => ( type => 'Text', label => 'Postcode', required => 1 );
+}
+
+has_field 'add_another' => (
+    type => 'Submit',
+    value => 'Add another',
+    element_attr => {
+        class => 'govuk-button govuk-button--secondary',
+    },
+);
 
 # ==========================================================================
 # Activity/Sign Contents
