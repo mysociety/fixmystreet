@@ -134,12 +134,19 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
     [%~ IF extra_fields_display.size ~%]
         <ul>
         [%~ FOREACH field IN extra_fields_display ~%]
-            <li><strong>[%~ field.name ~%]</strong>: [% IF field.val.0.defined ~%]
-                    [%~ field.val.list.join(", ") ~%]
-                [%~ ELSE ~%]
-                    [%~ field.val ~%]
-                [%~ END ~%]
-            </li>
+          [% IF field.name == 'detailed_information' %]
+              <li>
+                <strong>[%~ field.name ~%]</strong>:
+                  [%~ field.val | html_para ~%]
+              </li>
+          [% ELSE %]
+              <li><strong>[%~ field.name ~%]</strong>: [% IF field.val.0.defined ~%]
+                  [%~ field.val.list.join(", ") ~%]
+              [%~ ELSE ~%]
+                  [%~ field.val ~%]
+              [%~ END ~%]
+              </li>
+          [% END %]
         [%~ END ~%]
         </ul>
     [%~ ELSE %] No[% END ~%]
