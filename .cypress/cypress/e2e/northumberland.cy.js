@@ -12,9 +12,8 @@ it('toggles the aerial map', function() {
 
 describe('Abandoned vehicle behaviour', function() {
   beforeEach(function() {
-    cy.server();
-    cy.route('/report/new/ajax*').as('report-ajax');
-    cy.route('/around\?ajax*').as('update-results');
+    cy.intercept('/report/new/ajax*').as('report-ajax');
+    cy.intercept('/around\?ajax*').as('update-results');
     cy.visit('http://northumberland.localhost:3001/');
     cy.contains('Northumberland');
     cy.get('[name=pc]').type('NE61 1BE');
@@ -39,7 +38,7 @@ describe('Abandoned vehicle behaviour', function() {
   });
 
   it('Gave an okay reg plate', function() {
-    cy.route('POST', '/report/dvla', 'fixture:bucks_dvla_ok.json').as('dvla');
+    cy.intercept('POST', '/report/dvla', {fixture: 'bucks_dvla_ok.json'}).as('dvla');
     cy.get('.js-reporting-page--active').contains('Yes').click();
     cy.get('[name=dvla_reg]').type('G00D');
     cy.nextPageReporting();
@@ -49,7 +48,7 @@ describe('Abandoned vehicle behaviour', function() {
   });
 
   it('Gave an untaxed reg plate', function() {
-    cy.route('POST', '/report/dvla', 'fixture:bucks_dvla_notok.json').as('dvla');
+    cy.intercept('POST', '/report/dvla', {fixture: 'bucks_dvla_notok.json'}).as('dvla');
     cy.get('.js-reporting-page--active').contains('Yes').click();
     cy.get('[name=dvla_reg]').type('B4D');
     cy.nextPageReporting();
