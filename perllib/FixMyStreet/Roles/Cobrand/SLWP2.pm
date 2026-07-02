@@ -778,16 +778,22 @@ sub waste_munge_bulky_amend {
     $p->update_extra_field({ name => 'TEM_-_Bulky_Collection_Description', value => join("::", @notes) });
     $p->update_extra_field({ name => 'TEM_-_Bulky_Collection_Item', value => join("::", @ids) });
     $p->update_extra_field({ name => 'Exact_Location', value => $data->{location} });
+    $p->update_extra_field({ name => 'discounted', value => $data->{extra_discounted} }) if $data->{extra_discounted};
 }
 
 sub waste_amend_amendment_update {
     my ($self, $p, $update) = @_;
+    my $payment = $p->get_extra_field_value('payment') || 0;
+    $payment = sprintf( '%.2f', $payment / 100 );
     $update->set_extra_metadata(
         fms_extra_amend_items => $p->get_extra_field_value('TEM_-_Bulky_Collection_Item'),
         fms_extra_amend_notes => $p->get_extra_field_value('TEM_-_Bulky_Collection_Description'),
         fms_extra_amend_location => $p->get_extra_field_value('Exact_Location'),
+        fms_extra_amend_payment_ref => $p->get_extra_metadata('payment_reference'),
+        fms_extra_amend_payment_amount => $payment,
     );
     $update->photo($p->photo);
+    $self->call_hook('bulky_extra_confirmation_step', $p);
 }
 
 sub bulky_can_refund { 0 }

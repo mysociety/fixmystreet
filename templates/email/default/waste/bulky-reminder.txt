@@ -15,8 +15,8 @@ Dear [% report.name %],
 
 [% email_summary %]
 
-[% IF days == 3 %]
-This is a reminder that your collection is in 3 days.
+[% IF days > 1 %]
+This is a reminder that your collection is in [% days %] days.
 [% ELSIF days == 1 %]
 This is a reminder that your collection is tomorrow.
 [% END %]
@@ -56,7 +56,7 @@ You may still be able to cancel your booking.
 
 [% END ~%]
 
-[% IF cobrand.moniker == 'peterborough' OR cobrand.moniker == 'bromley' %]
+[% IF cobrand.moniker == 'peterborough' OR cobrand.moniker == 'bromley' OR cobrand.moniker == 'merton' %]
 [% INCLUDE 'waste/_bulky_extra_text.txt' %]
 [% END %]
 

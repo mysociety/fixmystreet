@@ -1655,11 +1655,11 @@ sub waste_confirm_payment {
         my $max_key = $self->category eq 'Small items collection' ? 'small_items_per_collection_max' : 'items_per_collection_max';
         my $max = $cobrand->wasteworks_config->{$max_key} || 5;
         $self->waste_amend_extra_data($cobrand, $max, $data);
+        $self->set_extra_metadata('payment_reference', $reference) if $reference;
         $cobrand->waste_amend_amendment_update($self, $amendment);
         $amendment->unset_extra_metadata('fms_extra_amend');
         $amendment->confirm;
         $amendment->update;
-        $self->set_extra_metadata('payment_reference', $reference) if $reference;
         $self->update;
         return;
     }
@@ -1740,6 +1740,7 @@ sub bulky_add_payment_confirmation_update {
         }
     });
     $self->cancel_update_alert($comment->id);
+    $cobrand->call_hook('bulky_extra_confirmation_step', $self);
 }
 
 sub bulky_cancel_collection {

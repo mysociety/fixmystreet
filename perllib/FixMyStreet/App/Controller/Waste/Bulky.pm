@@ -99,7 +99,7 @@ sub item_list : Private {
     my $field_list = [];
 
     my $hint = $c->cobrand->moniker eq 'merton'
-      ? 'Describe the item to help our crew pick up the right thing. <strong>Do not</strong> include personal details or location information'
+      ? 'Describe the item so our crew can identify it.<br>Do not include any personal details or location.<br>Describe one item only.'
       : 'Describe the item to help our crew pick up the right thing';
 
     my $notes_field = {
