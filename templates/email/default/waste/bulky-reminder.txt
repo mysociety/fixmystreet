@@ -15,8 +15,8 @@ Dear [% report.name %],
 
 [% email_summary %]
 
-[% IF days == 3 %]
-This is a reminder that your collection is in 3 days.
+[% IF days > 1 %]
+This is a reminder that your collection is in [% days %] days.
 [% ELSIF days == 1 %]
 This is a reminder that your collection is tomorrow.
 [% END %]

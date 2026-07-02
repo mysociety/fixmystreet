@@ -661,4 +661,125 @@ sub bulky_location_text_prompt {
   "Do not give any personal information or access codes."
 }
 
+sub bulky_total_cost {
+    my ($self, $data) = @_;
+    my $c = $self->{c};
+
+    my $cfg = $self->wasteworks_config;
+    my $max = $c->stash->{booking_maximum};
+    my $count = 0;
+    for (1..$max) {
+        my $item = $data->{"item_$_"} or next;
+        $count++;
+    }
+
+    my $discount_allowed;
+    my $previous = $c->stash->{amending_booking};
+    if ($previous) {
+        my $discounted = $previous->get_extra_field_value('discounted') || '';
+        if ($discounted eq 'yes') {
+            my $DISCOUNT_MAX_ITEMS = $cfg->{discount_max_items} || 3;
+            if ($count <= $DISCOUNT_MAX_ITEMS) {
+                $data->{extra_discounted} = 'yes';
+                $discount_allowed = 1;
+            } else {
+                $data->{extra_discounted} = 'previously';
+            }
+        }
+    } else {
+        # Check discount, if enabled
+        if ($cfg->{discount_enabled}) {
+            my $DISCOUNT_MONTHS = $cfg->{discount_months} || 12;
+            my $DISCOUNT_MAX_ITEMS = $cfg->{discount_max_items} || 3;
+            my $uprn = $c->stash->{property}{uprn};
+            my $property = FixMyStreet::DB->resultset("Property")->find($uprn);
+            my $latest = DateTime->today(time_zone => FixMyStreet->local_time_zone);
+            $latest->subtract( months => $DISCOUNT_MONTHS );
+            if (!$property || $property->discount_date <= $latest) {
+                if ($count <= $DISCOUNT_MAX_ITEMS) {
+                    $data->{extra_discounted} = 'yes';
+                    $discount_allowed = 1;
+                }
+            }
+        }
+    }
+
+    if ($discount_allowed) {
+        $c->stash->{payment} = $cfg->{discount_price} || 0;
+    } else {
+        # Assume is two-banded pricing in Merton
+        if ($count <= $cfg->{band1_max}) {
+            $c->stash->{payment} = $cfg->{band1_price};
+        } else {
+            $c->stash->{payment} = $cfg->{base_price};
+        }
+    }
+
+    # Calculate the difference in cost for this booking compared to the whatever
+    # the user may have already paid for any previous versions of this booking.
+    my $already_paid;
+    if ($previous && $c->stash->{payment}) {
+        $already_paid = $self->get_total_paid($previous);
+        my $new_cost = $c->stash->{payment} - $already_paid;
+        # no refunds if they've already paid more than the new booking would cost
+        $c->stash->{payment} = max(0, $new_cost);
+    }
+    return {
+        amount => $c->stash->{payment},
+        already_paid => $already_paid,
+    }
+}
+
+sub bulky_extra_confirmation_step {
+    my ($self, $report) = @_;
+    my $discounted = $report->get_extra_field_value('discounted');
+    return unless $discounted;
+    my $uprn = $report->uprn;
+    if ($discounted eq 'previously') {
+        # Remove discount date (can have a discount again)
+        my $property = FixMyStreet::DB->resultset("Property")->find($uprn);
+        if ($property) {
+            $property->delete;
+        }
+    } elsif ($discounted eq 'yes') {
+        # Add/update discount date
+        my $collection_date = $self->collection_date($report);
+        my $property = FixMyStreet::DB->resultset("Property")->find($uprn);
+        if ($property) {
+            $property->update({
+                discount_date => $collection_date,
+            });
+        } else {
+            FixMyStreet::DB->resultset("Property")->create({
+                uprn => $uprn,
+                discount_date => $collection_date,
+            });
+        }
+    }
+}
+
+sub unset_free_bulky_used {
+    my $self = shift;
+    my $c = $self->{c};
+
+    my $report = $c->stash->{cancelling_booking};
+    return unless $report;
+
+    my $discounted = $report->get_extra_field_value('discounted') || '';
+    return unless $discounted eq 'yes';
+
+    my $uprn = $report->uprn;
+    my $property = FixMyStreet::DB->resultset("Property")->find($uprn);
+    return unless $property;
+
+    my $collection_date = $self->collection_date($report);
+    my $latest = DateTime->today(time_zone => FixMyStreet->local_time_zone);
+    $latest->add( days => 7 );
+    if ($collection_date >= $latest) {
+        # Reset allowing a free collection
+        $property->delete;
+    }
+}
+
+
 1;
