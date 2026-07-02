@@ -65,6 +65,7 @@ sub create_contact {
 
 create_contact({ category => 'Report missed collection', email => 'missed' }, 'Waste',
     { code => 'service_id', required => 1, automated => 'hidden_field' },
+    { code => 'property_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
 );
 create_contact({ category => 'Report missed assisted collection', email => '3146' }, 'Waste',
@@ -423,6 +424,7 @@ FixMyStreet::override_config {
         FixMyStreet::Script::Reports::send();
         my $text = $mech->get_html_body_from_email;
         like $text, qr/Our crew will return by the end of Tuesday, 13 September to collect your bin/;
+        like $text, qr{href="[^"]*?/waste/12345/enquiry\?template=problem&amp;service_id=954">escalate the missed collection};
     };
 
     subtest 'No reporting/requesting if open request' => sub {
