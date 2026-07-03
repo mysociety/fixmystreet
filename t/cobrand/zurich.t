@@ -320,6 +320,12 @@ subtest "Auto select category and input description from url" => sub {
     $mech->content_contains('Klicken Sie auf den Link im');
     ok (my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test 1234 Äï'}), "Report created with text from url");
     is $report->category, 'Cat1', "Report in correct category from url";
+    send_reports_for_zurich();
+    my @emails = $mech->get_email;
+    my ($DMemail) = grep { $_->body =~ m#https://www.zurich/report/1# } @emails;
+    like $DMemail->as_string, qr/Title: Test Test 1 for \d+/;
+    $mech->clear_emails_ok;
+
     $report->update({ confirmed => DateTime->now });
 };
 

@@ -4,6 +4,8 @@ Guten Tag [% bodies_name %],
 
 Eine neue Meldung wurde erfasst:
 
+[% loc('Title') %]: [% report.title %]
+
 Öffentliche URL: [% url %]
 
 Admin URL: [% admin_url %]
