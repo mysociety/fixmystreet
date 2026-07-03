@@ -27,6 +27,15 @@ END;
         on [% date.format(service.report_open.date, '%A, %-d %B') %].
         If your bin has still not been collected, you can escalate the report now and a crew will be back to collect your bin within 2 working days.
         </p>
+    [% ELSIF service.dispute %]
+        [% IF NOT service.dispute.open %]
+        <p>The crew have closed your collection task as not collected[%
+            IF resolution %]: [% resolution | staff_html_markup({ is_body_user => 1 }) %]
+            [% END %]
+            Please resolve the issue so the bin can be collected on the next scheduled collection. <a href="https://www.sutton.gov.uk/waste-and-recycling/your-collection-service">Check our website</a> for more information on how your bin should be presented and what you can put in it.
+        </p>
+        <p>If it is less than 2 working days, you can dispute the reason given and we will investigate. If we find that the collection task was closed incorrectly, we will return to collect the bin.</p>
+        [% END %]
     [% ELSIF service.report_open OR service.report_open_non_actionable %]
         [% SET report_date = service.report_open.date || service.report_open_non_actionable.date %]
         <p>A [% service.service_name FILTER lower %] collection was reported as missed
