@@ -810,7 +810,7 @@ FixMyStreet::override_config {
     };
 
     # this is a dispute for when a scheduled collection has been marked as not complete
-    subtest 'Dispute of missed collections' => sub {
+    subtest 'Dispute of scheduled collections' => sub {
         my $dispute_label = 'Dispute collection closure reason';
         my $problem_url
             = '/waste/12345/enquiry?template=problem&service_id=940';
@@ -1210,6 +1210,7 @@ FixMyStreet::override_config {
             set_fixed_time('2022-09-11T18:01:00Z');
             $mech->get_ok('/waste/12345');
             $mech->follow_link_ok( { url_regex => qr/service_id=940/} );
+            $mech->content_contains('Contaminated (builder’s waste)', 'details of missed bin collection displayed');
             $mech->submit_form_ok(
                 { with_fields => { category => 'Missed collection dispute' } }
             );
