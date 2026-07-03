@@ -4310,22 +4310,28 @@ DISTRIBUTIONS
       Lingua::Stem::Snowball::Da 1.01
     requirements:
       ExtUtils::MakeMaker 0
-  List-MoreUtils-0.413
-    pathname: R/RE/REHSACK/List-MoreUtils-0.413.tar.gz
+  List-MoreUtils-0.430
+    pathname: R/RE/REHSACK/List-MoreUtils-0.430.tar.gz
     provides:
-      List::MoreUtils 0.413
-      List::MoreUtils::PP 0.413
-      List::MoreUtils::XS 0.413
+      List::MoreUtils 0.430
+      List::MoreUtils::PP 0.430
+    requirements:
+      Exporter::Tiny 0.038
+      ExtUtils::MakeMaker 0
+      List::MoreUtils::XS 0.430
+  List-MoreUtils-XS-0.430
+    pathname: R/RE/REHSACK/List-MoreUtils-XS-0.430.tar.gz
+    provides:
+      List::MoreUtils::XS 0.430
     requirements:
       Carp 0
-      Exporter::Tiny 0.038
       ExtUtils::MakeMaker 0
       File::Basename 0
       File::Copy 0
       File::Path 0
       File::Spec 0
       IPC::Cmd 0
-      XSLoader 0
+      XSLoader 0.22
       base 0
   MIME-Types-2.17
     pathname: M/MA/MARKOV/MIME-Types-2.17.tar.gz
