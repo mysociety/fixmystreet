@@ -1,5 +1,5 @@
 # setenv script
-requires 'List::MoreUtils', '0.402';
+requires 'List::MoreUtils', '0.430';
 requires 'local::lib', '2.000024';
 requires 'Class::Unload';
 
