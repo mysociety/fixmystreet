@@ -139,15 +139,9 @@ lock_hash(%CONTAINERS);
 my %GARDEN_CONTAINER_IDS = (
     bin240 => 1915,
     bin140 => 1914,
-    sack => {
-        kingston => 1928,
-        sutton => 1910,
-        merton => 1910,
-    },
+    sack => 1910,
 );
 lock_hash(%GARDEN_CONTAINER_IDS);
-
-my %GARDEN_SACK_IDS = map { $_ => 1 } values %{$GARDEN_CONTAINER_IDS{sack}};
 
 my %GARDEN_QUANTITIES = (
     sack => 11,
@@ -455,7 +449,7 @@ sub garden_container_data_extract {
         $container_end_date = $end_date if $end_date lt $schedules->{end_date};
         my $asset_id = $_->{AssetTypeId};
         # Any sack ID should count here
-        if ($GARDEN_SACK_IDS{$asset_id}) {
+        if ($asset_id == $GARDEN_CONTAINER_IDS{sack}) {
             $garden_sacks = 1;
             $garden_bins = undef;
             $garden_cost += $costs->sacks_renewal(1, $schedules->{end_date}) / 100;
@@ -517,10 +511,7 @@ sub waste_garden_sub_params {
     }
     $container ||= $GARDEN_CONTAINER_IDS{bin240};
 
-    if (ref $container) { # By cobrand
-        $container = $container->{$self->moniker};
-    }
-    my $sack_id = $GARDEN_CONTAINER_IDS{sack}{$self->moniker};
+    my $sack_id = $GARDEN_CONTAINER_IDS{sack};
 
     $c->set_param('Paid_Container_Type', $container);
     if ($container == $sack_id) {

@@ -240,8 +240,10 @@ EOF
 
     my $where_states = '';
     my $all_states = $cobrand->call_hook('dashboard_export_include_all_states');
+    my $include_hidden = $cobrand->call_hook('dashboard_export_include_hidden');
     unless ($all_states) {
         my $states = join(', ', map { "'$_'" } FixMyStreet::DB::Result::Problem->visible_states);
+        $states .= ", 'hidden'" if $include_hidden;
         $where_states = " AND me.state IN ($states)";
     }
     return <<EOF;

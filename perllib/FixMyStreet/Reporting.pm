@@ -124,12 +124,15 @@ sub construct_rs_filter {
         if @{$self->category};
 
     my $all_states = $self->cobrand->call_hook('dashboard_export_include_all_states');
+    my $include_hidden = $self->cobrand->call_hook('dashboard_export_include_hidden');
     if ( $self->state && FixMyStreet::DB::Result::Problem->fixed_states->{$self->state} ) { # Probably fixed - council
         $where{"$table_name.state"} = [ FixMyStreet::DB::Result::Problem->fixed_states() ];
     } elsif ( $self->state ) {
         $where{"$table_name.state"} = $self->state;
     } elsif ($all_states) {
         # Do nothing, want all states
+    } elsif ($include_hidden) {
+        $where{"$table_name.state"} = [ FixMyStreet::DB::Result::Problem->visible_states(), 'hidden' ];
     } else {
         $where{"$table_name.state"} = [ FixMyStreet::DB::Result::Problem->visible_states() ];
     }
