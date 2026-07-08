@@ -170,6 +170,16 @@ FixMyStreet::override_config {
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
 
+    subtest 'No next does not show current date' => sub {
+        my $dupe = dclone($bin_data);
+        $dupe->[1]{ServiceTasks}{ServiceTask}[0]{ServiceTaskSchedules}{ServiceTaskSchedule}[1]{NextInstance} = undef;
+        $e->mock('GetServiceUnitsForObject', sub { $dupe });
+        $mech->get_ok('/waste/12345');
+        my ($pre, $food) = split /waste-service-grid--service-name/, $mech->encoded_content;
+        like $food, qr{Next collection</dt>\s*<dd class="govuk-summary-list__value">\s*<i>None};
+        $e->mock('GetServiceUnitsForObject', sub { $bin_data });
+    };
+
     subtest 'In progress collection' => sub {
         $e->mock('GetTasks', sub { [ {
             Ref => { Value => { anyType => [ 17430692, 8287 ] } },
