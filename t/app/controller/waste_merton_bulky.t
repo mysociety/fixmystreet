@@ -1328,6 +1328,19 @@ FixMyStreet::override_config {
         $mech->content_contains('£37.00');
     };
 
+    subtest 'Booking for a year later is discounted again' => sub {
+        set_fixed_time('2024-06-04T05:44:59Z');
+        # Config maintained from before
+        $mech->get_ok('/waste/12345/bulky');
+        $mech->submit_form_ok;
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
+        $mech->submit_form_ok({ with_fields => { chosen_date => '2024-07-01T00:00:00;reserveA==;2023-06-25T10:10:00' } });
+        $mech->submit_form_ok({ form_number => 1, fields => { 'item_1' => 'BBQ', 'item_2' => 'Bicycle', 'item_3' => 'Bath' } });
+        $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
+        $mech->content_contains('3 items requested for collection');
+        $mech->content_contains('£0.00');
+    };
+
     subtest 'Discounted email reminders' => sub {
         my $cobrand = $body->get_cobrand_handler;
         foreach (
