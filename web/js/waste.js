@@ -237,19 +237,26 @@ $(function() {
             return;
         }
 
-        var base_price = pricing.bands[1].price / 100;
-        var base_max = pricing.bands[1].max;
-        var band1_max = pricing.bands[0].max;
         var count = numberOfItems();
+        var base_max = pricing.bands[pricing.bands.length-1].max;
         var message = count + ' ' + (count === 1 ? 'item' : 'items') + ' selected - ';
         message += 'you can add up to ' + (base_max - count) + ' more ' + (base_max - count === 1 ? 'item' : 'items') + '.';
-        if (count && count < band1_max) {
-            message += ' Adding another item will not increase the cost';
-        } else if (count && count == band1_max) {
-            message += ' Adding another item will increase the cost to £' + base_price.toFixed(2);
-        } else if (count && count < base_max) {
-        } else {
-            message = '';
+        for (var i=0; i<pricing.bands.length; i++) {
+            var band = pricing.bands[i];
+            var price = band.price / 100;
+            var max = band.max;
+            if (!count) {
+                break;
+            }
+            if (count < max && i < pricing.bands.length - 1) {
+                message += ' Adding another item will not increase the cost';
+                break;
+            } else if (count == max && i < pricing.bands.length - 1) {
+                message += ' Adding another item will increase the cost to £' + (pricing.bands[i+1].price / 100).toFixed(2);
+                break;
+            } else if (count == max && i == pricing.bands.length - 1) {
+                message = '';
+            }
         }
         $('#band-pricing-info').text(message);
     }
