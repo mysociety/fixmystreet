@@ -661,11 +661,62 @@ sub bulky_location_text_prompt {
   "Do not give any personal information or access codes."
 }
 
+=head2 Discounted bulky collections
+
+Overriding default pricing code, assume is two-banded pricing.
+
+=cut
+
+sub bulky_discount_available_by_date {
+    my ($self, $data) = @_;
+    my $cfg = $self->wasteworks_config;
+
+    # Check discount, if enabled
+    return unless $cfg->{discount_enabled};
+
+    my $uprn = $self->{c}->stash->{property}{uprn};
+    my $property = FixMyStreet::DB->resultset("Property")->find($uprn);
+    return 1 unless $property;
+
+    my $DISCOUNT_MONTHS = $cfg->{discount_months} || 12;
+    my ($date, $ref, $expiry) = split(";", $data->{chosen_date});
+    my $latest = DateTime::Format::W3CDTF->parse_datetime($date);
+    $latest->subtract( months => $DISCOUNT_MONTHS );
+    return 1 if $property->discount_date <= $latest;
+}
+
+sub bulky_pricing_strategy {
+    my $self = shift;
+    my $cfg = $self->wasteworks_config;
+    my $c = $self->{c};
+
+    my $data = $c->stash->{form}->saved_data;
+    my $discount = $self->bulky_discount_available_by_date($data);
+    my $DISCOUNT_MAX_ITEMS = $cfg->{discount_max_items} || 3;
+
+    my $base_price = $cfg->{base_price};
+    my $band1_max = $cfg->{band1_max};
+    my $band1_price = $cfg->{band1_price};
+    my $max = $c->stash->{booking_maximum};
+    my $out = {
+        strategy => 'banded',
+        bands => [
+            $discount ? { max => $DISCOUNT_MAX_ITEMS, price => $cfg->{discount_price} } : (),
+            (!$discount || $band1_max > $DISCOUNT_MAX_ITEMS) ? { max => $band1_max, price => $band1_price } : (),
+            { max => $max, price => $base_price }
+        ]
+    };
+    my $json = encode_json($out);
+    return { %$out, json => $json };
+}
+
 sub bulky_total_cost {
     my ($self, $data) = @_;
     my $c = $self->{c};
 
     my $cfg = $self->wasteworks_config;
+    my $DISCOUNT_MAX_ITEMS = $cfg->{discount_max_items} || 3;
+
     my $max = $c->stash->{booking_maximum};
     my $count = 0;
     for (1..$max) {
@@ -678,7 +729,6 @@ sub bulky_total_cost {
     if ($previous) {
         my $discounted = $previous->get_extra_field_value('discounted') || '';
         if ($discounted eq 'yes') {
-            my $DISCOUNT_MAX_ITEMS = $cfg->{discount_max_items} || 3;
             if ($count <= $DISCOUNT_MAX_ITEMS) {
                 $data->{extra_discounted} = 'yes';
                 $discount_allowed = 1;
@@ -688,20 +738,11 @@ sub bulky_total_cost {
         }
     } else {
         # Check discount, if enabled
-        if ($cfg->{discount_enabled}) {
-            my $DISCOUNT_MONTHS = $cfg->{discount_months} || 12;
-            my $DISCOUNT_MAX_ITEMS = $cfg->{discount_max_items} || 3;
-            my $uprn = $c->stash->{property}{uprn};
-            my $property = FixMyStreet::DB->resultset("Property")->find($uprn);
-
-            my ($date, $ref, $expiry) = split(";", $data->{chosen_date});
-            my $latest = DateTime::Format::W3CDTF->parse_datetime($date);
-            $latest->subtract( months => $DISCOUNT_MONTHS );
-            if (!$property || $property->discount_date <= $latest) {
-                if ($count <= $DISCOUNT_MAX_ITEMS) {
-                    $data->{extra_discounted} = 'yes';
-                    $discount_allowed = 1;
-                }
+        my $discount_by_date = $self->bulky_discount_available_by_date($data);
+        if ($discount_by_date) {
+            if ($count <= $DISCOUNT_MAX_ITEMS) {
+                $data->{extra_discounted} = 'yes';
+                $discount_allowed = 1;
             }
         }
     }
