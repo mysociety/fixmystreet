@@ -693,7 +693,9 @@ sub bulky_total_cost {
             my $DISCOUNT_MAX_ITEMS = $cfg->{discount_max_items} || 3;
             my $uprn = $c->stash->{property}{uprn};
             my $property = FixMyStreet::DB->resultset("Property")->find($uprn);
-            my $latest = DateTime->today(time_zone => FixMyStreet->local_time_zone);
+
+            my ($date, $ref, $expiry) = split(";", $data->{chosen_date});
+            my $latest = DateTime::Format::W3CDTF->parse_datetime($date);
             $latest->subtract( months => $DISCOUNT_MONTHS );
             if (!$property || $property->discount_date <= $latest) {
                 if ($count <= $DISCOUNT_MAX_ITEMS) {
