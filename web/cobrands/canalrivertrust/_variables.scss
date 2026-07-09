@@ -8,10 +8,10 @@ $cobrand_blue_600: #1821c4; //  --brand-water-600
 $cobrand_blue_100: #ccd9e2; // --brand-deepwater-100
 $cobrand_blue_200: #99b3c5; // --brand-deepwater-200
 $cobrand_blue_800: #00416E; // Deepwater · Button & Link hover
-$cobrand_teal: #0086a6; // Numbers in homepage
+$cobrand_teal: #0086a6;
 $cobrand_white: #fff;
 $cobrand_black_400: #5c5c5c; // --brand-darkslate-400
-$cobrand_black: #333333;
+$cobrand_black: #333333; // --brand-darkslate
 $cobrand_gravel_100: #f9f7f5; // --brand-gravel-100
 $cobrand_gravel_200: #f3efeb; // --brand-gravel-200
 $cobrand_gravel_500: #e1d7cd; // --brand-gravel-500
@@ -22,6 +22,8 @@ $cobrand_yellow: #FFD400; // Secondary button --brand-dawn
 $cobrand_yellow_400: #ffdd33; // --brand-dawn-400 obtained from their donation button in the homepage
 $cobrand_orange: #FF8700; // Orange button
 $cobrand_grey: #F9F7F5; // Lightest shade of gravel
+$cobrand_towpath_100: #ecf0f2;
+$cobrand_towpath: #a0b4be;
 
 $primary: $cobrand_blue;
 $yellow: $cobrand_yellow;
@@ -37,7 +39,7 @@ $base_fg: $cobrand_black;
 $dark_bg: #7B7B7B;
 $dark_fg: $cobrand_black;
 
-$layout_front_stats_color: $cobrand_teal;
+$layout_front_stats_color: $primary;
 
 /* LINKS */
 // Style comes from: https://canalrivertrust.org.uk/news-and-views/media-centre?tags=Press+Release&page=1
@@ -123,7 +125,7 @@ $col_fixed_label: $primary;
 $dropzone-button-text: $primary_text;
 $dropzone-border-colour: $cobrand_blue_800;
 
-$dropzone-background-color: $cobrand_blue_100;
+$dropzone-background-color: #ecf0f2;
 $dropzone-background-color-frontpage: $dropzone-background-color;
 
 $dropzone-background-color--awakened: $cobrand_blue_200;
@@ -134,13 +136,13 @@ $dropzone-background-color-frontpage--full: $cobrand_blue_200;
 // $pagination_background: #f6f6f6;
 $itemlist_item_background:  $base_bg;
 $itemlist_item_background_hover: $cobrand_blue_100;
-$col_big_numbers: $cobrand_teal;
+$col_big_numbers: $primary;
 
 // $form-control-border-color: #aaaaaa;
 $mobile-sticky-sidebar-button-menu-image: "menu-white";
 
 $front-main-color: $primary_b;
-$postcodeform-background: $cobrand_blue_100;
+$postcodeform-background: #ecf0f2;
 $postcodeform-color: $primary_b;
 
 $postcodeform-color-desktop: $primary_b;
@@ -148,7 +150,7 @@ $front-main-color-desktop: $primary_b;
 $front-main-background-desktop: white url("/cobrands/canalrivertrust/images/crt-hero.webp") no-repeat center / cover;
 $front-main-container-background-desktop: $cobrand_white;
 
-$sticky-sidebar-bg-color: $cobrand_blue_100;
+$sticky-sidebar-bg-color: #ecf0f2;
 
 $report-forms-wrapper-flex-column-gap: 5rem;
 

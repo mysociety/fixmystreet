@@ -24,7 +24,77 @@ body {
   }
 }
 
-/* INPUT */
+small, .small-print {
+  font-style: normal;
+}
+
+/* BUTTONS */
+
+.btn-crt, .btn {
+  width: fit-content;
+  height: 46px;
+  line-height: 90%;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
+  border-radius: 50px;
+  text-decoration: none;
+}
+
+
+.postcode-form-box input#sub {
+  &:focus {
+    background-color: $button-primary-hover-bg-bottom;
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+.dz-clickable .dz-message u {
+  padding: $button-padding-top $button-padding-left;
+}
+
+.js #photoForm {
+  box-shadow: none;
+}
+
+a#geolocate_link,
+.btn,
+.dz-clickable .dz-message u {
+  @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text,$focus-bg-bottom: $button-primary-focus-bg-bottom, $focus-bg-top: $button-primary-focus-bg-top, $focus-border: $button-primary-focus-border, $focus-text: $button-primary-focus-text);
+  text-decoration: none;
+  @extend .btn-crt;
+}
+
+$btn-heigh-navbar: 36px;
+
+#report-cta {
+  @include button-variant($bg-top: $button-secondary-bg-top, $bg-bottom: $button-secondary-bg-bottom, $border: $button-secondary-border, $text: $button-secondary-text, $hover-bg-bottom: $button-secondary-hover-bg-bottom, $hover-bg-top: $button-secondary-hover-bg-top, $hover-border: $button-secondary-hover-border, $hover-text: $button-secondary-hover-text,$focus-bg-bottom: $button-secondary-focus-bg-bottom, $focus-bg-top: $button-secondary-focus-bg-top, $focus-border: $button-secondary-focus-border, $focus-text: $button-secondary-focus-text);
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  line-height: 20px;
+  font-size: 14px;
+  @extend .btn-crt;
+  right: 4.5rem;
+  box-sizing: border-box;
+  height: $btn-heigh-navbar;
+}
+
+a,
+.fake-link {
+  &:focus-visible {
+    outline: 3px solid $cobrand_yellow;
+  }
+}
+
+.segmented-control .btn, .segmented-control .skiplink {
+  padding: $button-padding-top $button-padding-left;
+}
+
+/* INPUTS */
 .govuk-label {
   font-size: 1rem;
 }
@@ -37,52 +107,15 @@ body {
   background-color: #b3d7fe; // From CRT website
 }
 
-/* BUTTONS */
+.form-control {
+  box-shadow: none;
 
-// The button size for their buttons in their website is
-// 1.275rem but that makes the button quite which might cause conflicts.
-
-.btn-crt, .btn {
   &:focus {
+    border-color: $cobrand_black;
     outline: none;
-    box-shadow: none;
-  }
-  border-radius: 50px;
-  text-decoration: none;
-}
-
-.postcode-form-box input#sub {
-  &:focus {
-    background-color: $button-primary-hover-bg-bottom;
-    outline: none;
-    box-shadow: none;
   }
 }
 
-a#geolocate_link,
-.btn,
-.dz-clickable .dz-message u {
-  @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text,$focus-bg-bottom: $button-primary-focus-bg-bottom, $focus-bg-top: $button-primary-focus-bg-top, $focus-border: $button-primary-focus-border, $focus-text: $button-primary-focus-text);
-  text-decoration: none;
-  @extend .btn-crt;
-}
-
-#report-cta {
-  @include button-variant($bg-top: $button-secondary-bg-top, $bg-bottom: $button-secondary-bg-bottom, $border: $button-secondary-border, $text: $button-secondary-text, $hover-bg-bottom: $button-secondary-hover-bg-bottom, $hover-bg-top: $button-secondary-hover-bg-top, $hover-border: $button-secondary-hover-border, $hover-text: $button-secondary-hover-text,$focus-bg-bottom: $button-secondary-focus-bg-bottom, $focus-bg-top: $button-secondary-focus-bg-top, $focus-border: $button-secondary-focus-border, $focus-text: $button-secondary-focus-text);
-  padding: 1em 1em;
-  font-weight: 500;
-  @extend .btn-crt;
-  right: 4.5em;
-}
-
-a,
-.fake-link {
-  &:focus-visible {
-    outline: 3px solid $cobrand_yellow;
-  }
-}
-
-/* INPUTS */
 .multi-select-button,
 input[type="email"],
 input[type="text"],
@@ -94,15 +127,24 @@ input[type="search"],
 textarea,
 .govuk-textarea,
 select,
-.postcode-form-box div {
-  border-radius: 0.5rem;
+.form-control {
+  border-radius: 10px;
+  border-color: $cobrand_towpath;
+  border-width: 1px;
+}
+
+input[type="radio"],
+.govuk-multi-select__label:before {
+  border-color: $cobrand_towpath;
+  border-width: 1px;
 }
 
 input[type="checkbox"],
 .govuk-multi-select--checkboxes .govuk-multi-select__label:before,
 .govuk-checkboxes--small .govuk-checkboxes__label:before {
-  border-radius: 0.375rem;
-  border-color: $cobrand_black;
+  border-radius: 6px;
+  border-color: $cobrand_towpath;
+  border-width: 1px;
 }
 
 .govuk-select:focus, .multi-select-button:focus {
@@ -110,9 +152,10 @@ input[type="checkbox"],
 }
 
 .govuk-select, .multi-select-button {
-  border-color: $cobrand_black;
+  border-width: 1px;
+  border-color: $cobrand_towpath;
   &:focus {
-    outline-color: $cobrand_yellow;
+    border-color: $cobrand_black;
   }
 }
 
@@ -139,11 +182,21 @@ input[type="checkbox"],
 }
 
 /* NAVBAR */
+#site-header {
+  .js-nav-open & {
+    background-color: $cobrand_white;
+  }
+}
+
 #site-logo {
   background-image: url("/cobrands/canalrivertrust/images/logo.svg");
   background-size: auto 4rem;
   height: 5rem;
   width: 11.875rem;
+
+  .js-nav-open & {
+    background-image: url("/cobrands/canalrivertrust/images/logo-blue.svg");
+  }
 }
 
 .crt-logo-wrapper {
@@ -170,11 +223,11 @@ input[type="checkbox"],
 .nav-menu--main {
   a {
     background-color: $cobrand_white;
-    color: $primary;
+    color: $cobrand_black;
     text-decoration: none;
 
     &:visited {
-      color: $primary;
+      color: $cobrand_black;
     }
   }
 
@@ -186,6 +239,27 @@ input[type="checkbox"],
 
 #nav-link, #report-cta {
   top: 2.5rem;
+}
+
+#nav-link {
+  border-radius: 10px;
+  border: 1px solid $cobrand_white;
+  width: 48px;
+  max-height: $btn-heigh-navbar;
+  min-height: $btn-heigh-navbar;
+  box-sizing:border-box;
+  background-color: white;
+  background-image: url('/cobrands/canalrivertrust/images/hamburger.svg');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 15px 12px;
+  border-radius: 999px;
+  outline: none !important;
+
+  .js-nav-open & {
+    background-image: url('/cobrands/canalrivertrust/images/close.svg');
+    background-color: $cobrand_blue_600;
+  }
 }
 
 #main-nav {
@@ -202,7 +276,18 @@ input[type="checkbox"],
 }
 
 .postcode-form-box {
+  input#pc {
+    border: 1px solid $cobrand_towpath;
+    border-right: none;
+    border-radius: 0.5rem 0 0 0.5rem;
+    
+    &:focus {
+      border-color: $cobrand_black;
+    }
+  }
+
   input#sub {
+    border-radius: 0 0.5rem 0.5rem 0;
     font-family: $body-font;
     background-color: $button-primary-bg-top;
 
@@ -213,12 +298,18 @@ input[type="checkbox"],
   }
 
   div {
-    overflow: hidden; // So the border-radius works
+    border: none;
+    border-radius: 10px;
     input[type="text"] {
       border-radius: 0;
       outline: none;
     }
   }
+}
+
+.dropzone {
+  border-radius: 0;
+  border: none;
 }
 
 .js #photoForm,
@@ -232,8 +323,9 @@ input[type="checkbox"],
 }
 
 .badge {
-  background-color: $cobrand_blue_100;
+  background-color: #ecf0f2;
   border-color: $cobrand_blue_800;
+  border: none;
 }
 
 /* OTHERS */
@@ -254,6 +346,7 @@ input[type="checkbox"],
 .item-list__update-text .meta-2,
 .report-list-filters {
   font-size: 1rem;
+  color: $primary_b;
 }
 
 #mobile-sticky-sidebar-button {
@@ -261,10 +354,15 @@ input[type="checkbox"],
 }
 
 #key-tools a, #key-tools button {
-  background-color: #fff;
+  color: $primary !important; //overrides !important rule in _base
+  text-decoration: underline;
+  background-color: $cobrand_white;
+  border-color: transparent;
 
-  &:focus, &:hover {
-    background-color: $primary;
+  &:hover {
+    background-color: $cobrand_white;
+    color: $cobrand_blue_800 !important;
+    text-decoration: underline;
   }
 }
 
@@ -285,13 +383,13 @@ input[type="checkbox"],
 
 html.js .form-section-preview,
 .banner {
-  background-color: $cobrand_gravel_200;
+  background-color: $cobrand_towpath_100;
   border-color: $cobrand_gravel_500;
 }
 
 .change_location,
 .problem-back:link, .problem-back:visited, .problem-back:hover {
-  color: $cobrand_black_400;
+  color: $cobrand_black;
   border-color: $cobrand_gravel_500;
 }
 
