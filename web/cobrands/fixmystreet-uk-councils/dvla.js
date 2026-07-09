@@ -84,7 +84,11 @@ const REASONS = {
     },
     'greenwich': {
         fn: function (data) {
-            if ( data.taxStatus == 'SORN' || (data.taxStatus == 'Taxed' && data.motStatus == 'Valid')) {
+            // There are multiple motStatuses - 'Valid', 'Not valid', 'No details held by DVLA', 'No results returned'
+            // Valid seemed the obvious one to use, but discovered new vehicles, pre-MOT have 'No details...'
+            // And possibly fully exempt vehicles (over 40 years old?) may have 'No results..'
+            // We will only consider vehicles that are specifically 'Not valid' as being reportable
+            if ( data.taxStatus == 'SORN' || (data.taxStatus == 'Taxed' && data.motStatus != 'Not valid')) {
                return 'This vehicle has a valid tax or MOT, so it does not meet the criteria for an abandoned vehicle report.';
             } else {
                 return '';
@@ -162,7 +166,8 @@ function dvla_lookup(e) {
                 if (data.taxStatus == 'Taxed') {
                     reason_msgs.push('are taxed');
                 }
-                if (data.motStatus == 'Valid') {
+                // See note on greenwich above
+                if (data.motStatus != 'Not valid') {
                     reason_msgs.push('have a valid MOT');
                 }
                 if (reason_msgs.length) {

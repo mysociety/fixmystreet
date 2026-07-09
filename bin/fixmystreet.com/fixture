@@ -346,6 +346,7 @@ if ($opt->test_fixtures) {
     $child_cat->update;
 
     $child_cat = FixMyStreet::DB->resultset("Contact")->find({
+
         body => $bodies->{2248},
         category => 'Vehicle abandoned on your property',
     });
