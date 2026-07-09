@@ -1048,8 +1048,10 @@ $.extend(fixmystreet.set_up, {
 
   on_resize: function() {
     var last_type;
+    var breakpoint = fixmystreet.breakpoint_override || '48em';
     $(window).on('resize', function() {
-        var type = Modernizr.mq('(min-width: 48em)') ? 'desktop' : 'mobile';
+        var query = '(min-width: ' + breakpoint + ')';
+        var type = Modernizr.mq(query) ? 'desktop' : 'mobile';
         if (last_type == type) { return; }
         if (type == 'mobile') {
             fixmystreet.resize_to.mobile_page();
