@@ -655,4 +655,174 @@ sub _bulky_collection_overdue {
     return $today > $collection_due_date;
 }
 
+sub bulky_location_text_prompt {
+  "Please provide the exact location where the items will be left ".
+  "(e.g., On the driveway; To the left of the front door; By the front hedge, etc.). ".
+  "Do not give any personal information or access codes."
+}
+
+=head2 Discounted bulky collections
+
+Overriding default pricing code, assume is two-banded pricing.
+
+=cut
+
+sub bulky_discount_available_by_date {
+    my ($self, $data) = @_;
+    my $cfg = $self->wasteworks_config;
+
+    # Check discount, if enabled
+    return unless $cfg->{discount_enabled};
+
+    my $uprn = $self->{c}->stash->{property}{uprn};
+    my $property = FixMyStreet::DB->resultset("Property")->find($uprn);
+    return 1 unless $property;
+
+    my $DISCOUNT_MONTHS = $cfg->{discount_months} || 12;
+    my ($date, $ref, $expiry) = split(";", $data->{chosen_date});
+    my $latest = DateTime::Format::W3CDTF->parse_datetime($date);
+    $latest->subtract( months => $DISCOUNT_MONTHS );
+    return 1 if $property->discount_date <= $latest;
+}
+
+sub bulky_pricing_strategy {
+    my $self = shift;
+    my $cfg = $self->wasteworks_config;
+    my $c = $self->{c};
+
+    my $data = $c->stash->{form}->saved_data;
+    my $discount = $self->bulky_discount_available_by_date($data);
+    my $DISCOUNT_MAX_ITEMS = $cfg->{discount_max_items} || 3;
+
+    my $base_price = $cfg->{base_price};
+    my $band1_max = $cfg->{band1_max};
+    my $band1_price = $cfg->{band1_price};
+    my $max = $c->stash->{booking_maximum};
+    my $out = {
+        strategy => 'banded',
+        bands => [
+            $discount ? { max => $DISCOUNT_MAX_ITEMS, price => $cfg->{discount_price} } : (),
+            (!$discount || $band1_max > $DISCOUNT_MAX_ITEMS) ? { max => $band1_max, price => $band1_price } : (),
+            { max => $max, price => $base_price }
+        ]
+    };
+    my $json = encode_json($out);
+    return { %$out, json => $json };
+}
+
+sub bulky_total_cost {
+    my ($self, $data) = @_;
+    my $c = $self->{c};
+
+    my $cfg = $self->wasteworks_config;
+    my $DISCOUNT_MAX_ITEMS = $cfg->{discount_max_items} || 3;
+
+    my $max = $c->stash->{booking_maximum};
+    my $count = 0;
+    for (1..$max) {
+        my $item = $data->{"item_$_"} or next;
+        $count++;
+    }
+
+    my $discount_allowed;
+    my $previous = $c->stash->{amending_booking};
+    if ($previous) {
+        my $discounted = $previous->get_extra_field_value('discounted') || '';
+        if ($discounted eq 'yes') {
+            if ($count <= $DISCOUNT_MAX_ITEMS) {
+                $data->{extra_discounted} = 'yes';
+                $discount_allowed = 1;
+            } else {
+                $data->{extra_discounted} = 'previously';
+            }
+        }
+    } else {
+        # Check discount, if enabled
+        my $discount_by_date = $self->bulky_discount_available_by_date($data);
+        if ($discount_by_date) {
+            if ($count <= $DISCOUNT_MAX_ITEMS) {
+                $data->{extra_discounted} = 'yes';
+                $discount_allowed = 1;
+            }
+        }
+    }
+
+    if ($discount_allowed) {
+        $c->stash->{payment} = $cfg->{discount_price} || 0;
+    } else {
+        # Assume is two-banded pricing in Merton
+        if ($count <= $cfg->{band1_max}) {
+            $c->stash->{payment} = $cfg->{band1_price};
+        } else {
+            $c->stash->{payment} = $cfg->{base_price};
+        }
+    }
+
+    # Calculate the difference in cost for this booking compared to the whatever
+    # the user may have already paid for any previous versions of this booking.
+    my $already_paid;
+    if ($previous && $c->stash->{payment}) {
+        $already_paid = $self->get_total_paid($previous);
+        my $new_cost = $c->stash->{payment} - $already_paid;
+        # no refunds if they've already paid more than the new booking would cost
+        $c->stash->{payment} = max(0, $new_cost);
+    }
+    return {
+        amount => $c->stash->{payment},
+        already_paid => $already_paid,
+    }
+}
+
+sub bulky_extra_confirmation_step {
+    my ($self, $report) = @_;
+    my $discounted = $report->get_extra_field_value('discounted');
+    return unless $discounted;
+    my $uprn = $report->uprn;
+    if ($discounted eq 'previously') {
+        # Remove discount date (can have a discount again)
+        my $property = FixMyStreet::DB->resultset("Property")->find($uprn);
+        if ($property) {
+            $property->delete;
+        }
+    } elsif ($discounted eq 'yes') {
+        # Add/update discount date
+        my $collection_date = $self->collection_date($report);
+        my $property = FixMyStreet::DB->resultset("Property")->find($uprn);
+        if ($property) {
+            $property->update({
+                discount_date => $collection_date,
+            });
+        } else {
+            FixMyStreet::DB->resultset("Property")->create({
+                uprn => $uprn,
+                discount_date => $collection_date,
+            });
+        }
+    }
+}
+
+sub unset_free_bulky_used {
+    my $self = shift;
+    my $c = $self->{c};
+
+    my $report = $c->stash->{cancelling_booking};
+    return unless $report;
+
+    my $discounted = $report->get_extra_field_value('discounted') || '';
+    return unless $discounted eq 'yes';
+
+    my $uprn = $report->uprn;
+    my $property = FixMyStreet::DB->resultset("Property")->find($uprn);
+    return unless $property;
+
+    my $collection_date = $self->collection_date($report);
+    my $latest = DateTime->today(time_zone => FixMyStreet->local_time_zone);
+    $latest->add( days => 7 );
+    if ($collection_date >= $latest) {
+        # Reset allowing a free collection
+        $property->delete;
+    }
+}
+
+
 1;

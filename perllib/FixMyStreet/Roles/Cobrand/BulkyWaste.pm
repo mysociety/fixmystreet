@@ -4,6 +4,7 @@ use Moo::Role;
 use JSON::MaybeXS;
 use FixMyStreet::Map;
 use List::Util qw(max);
+use List::MoreUtils qw(slideatatime);
 
 =head1 NAME
 
@@ -716,12 +717,7 @@ sub bulky_reminders {
     my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
 
     while (my $report = $collections->next) {
-        my $r1 = $report->get_extra_metadata('reminder_1');
-        my $r3 = $report->get_extra_metadata('reminder_3');
-        next if $r1; # No reminders left to do
-
         my $dt = $self->collection_date($report);
-
         # Shouldn't happen, but better to be safe.
         next unless $dt;
 
@@ -736,25 +732,32 @@ sub bulky_reminders {
             next;
         }
 
-        my $d1 = $dt->clone->subtract(days => 1);
-        my $d3 = $dt->clone->subtract(days => 3);
-
         my $h = {
             report => $report,
             cobrand => $self,
         };
-        if (!$r3 && $now >= $d3 && $now < $d1) {
-            $h->{days} = 3;
-            $self->_bulky_send_reminder_email($report, $h, $params);
-            $self->_bulky_send_reminder_text($report, $h, $params);
-            $report->set_extra_metadata(reminder_3 => 1);
-            $report->update;
-        } elsif ($now >= $d1 && $now < $dt) {
-            $h->{days} = 1;
-            $self->_bulky_send_reminder_email($report, $h, $params);
-            $self->_bulky_send_reminder_text($report, $h, $params);
-            $report->set_extra_metadata(reminder_1 => 1);
-            $report->update;
+
+        my @days = (3, 1);
+        # Merton discounted have weekly reminders
+        my $discounted = $report->get_extra_field_value('discounted') || '';
+        if ($discounted) {
+            unshift @days, 56, 49, 42, 35, 28, 21, 14, 7;
+        }
+
+        next if $report->get_extra_metadata("reminder_1"); # No reminders left to do
+
+        my $it = slideatatime 1, 2, @days;
+        while (my ($curr, $next) = $it->()) {
+            my $r = $report->get_extra_metadata("reminder_$curr");
+            my $dc = $dt->clone->subtract(days => $curr);
+            my $dn = $dt->clone->subtract(days => ($next || 0));
+            if (!$r && $now >= $dc && $now < $dn) {
+                $h->{days} = $curr;
+                $self->_bulky_send_reminder_email($report, $h, $params);
+                $self->_bulky_send_reminder_text($report, $h, $params);
+                $report->set_extra_metadata("reminder_$curr" => 1);
+                $report->update;
+            }
         }
     }
 }

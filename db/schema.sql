@@ -637,3 +637,8 @@ CREATE TABLE manifest_theme (
     wasteworks_name text,
     wasteworks_short_name text
 );
+
+CREATE TABLE property (
+    uprn text not null primary key,
+    discount_date date not null
+);
