@@ -16,8 +16,8 @@ END;
 
 [% enquiry_message = BLOCK %]
     [% IF service.escalations.missed.open %]
-        <p>Thank you for reporting an issue with this collection; we are investigating.
-        We aim to resolve this by [% date.format(service.escalations.missed.open.target, '%A, %-d %B') %].
+        <p>You escalated this missed collection report on [% date.format(service.escalations.missed.open.date, '%A, %-d %B') %].
+        We aim to resolve this by the end of [% date.format(service.escalations.missed.open.target, '%A, %-d %B') %].
         </p>
     [% ELSIF service.escalations.missed.event %]
         <p>A [% service.service_name FILTER lower %] collection was reported as missed

@@ -1022,9 +1022,9 @@ FixMyStreet::override_config {
                 } ] });
 
                 $mech->get_ok('/waste/12345/enquiry?template=problem&service_id=940');
-                $mech->content_contains("We aim to resolve this by Wednesday, 14 September", 'escalation target date within one working day displayed');
+                $mech->content_contains('You escalated this missed collection report on Tuesday, 13 September.');
+                $mech->content_contains("We aim to resolve this by the end of Wednesday, 14 September", 'escalation target date within one working day displayed');
                 $mech->content_lacks('redirect-missed', 'Report missed not present');
-                $mech->content_contains('Thank you for reporting an issue with this collection; we are investigating', "Message to resident displayed");
             };
 
             $e->mock('GetEventsForObject', sub { [ {
