@@ -166,6 +166,15 @@ sub new_report_detail_field_hint {
     "e.g. ‘This pothole has been here for two months and…’"
 }
 
+sub report_nearby_filter {
+    my ($self, $params, $mode) = @_;
+
+    if ($mode && $mode eq 'inspector') {
+        $params->{limit} = 10;
+        $params->{states} = FixMyStreet::DB::Result::Problem->open_states();
+    }
+}
+
 =head2 pin_colour
 
 BathNES uses the following pin colours:
