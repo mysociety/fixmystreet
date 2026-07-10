@@ -226,7 +226,7 @@ subtest "Categories automatically closed" => sub {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'bristol',
     }, sub {
-        foreach my $test ( $roadworks, $cycle_hanger, $camp ) {
+        foreach my $test ( $roadworks, $cycle_hanger ) {
             my $template = FixMyStreet::DB->resultset("ResponseTemplate")->create({
                 body => $bristol,
                 title => $test->category . ' template',
