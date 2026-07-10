@@ -680,7 +680,8 @@ FixMyStreet::override_config {
 
                 set_fixed_time('2022-09-14T00:01:00Z');
                 get_problem_page();
-                $mech->content_lacks($dispute_label, 'not allowed just after window closes');
+                $mech->content_like(qr/name="category" value="Missed collection dispute"[^>]+disabled/s);
+                $mech->content_contains($dispute_label, 'shown but disabled just after window closes');
             };
 
             subtest 'Follow dispute link' => sub {

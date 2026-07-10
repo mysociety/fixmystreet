@@ -247,7 +247,7 @@ around booked_check_missed_collection => sub {
 
             if ($open_dispute){
                 $missed->{$guid}{dispute}{open} = 1;
-            } elsif ($within_window && $resolution_valid) {
+            } elsif ($within_window eq 'within' && $resolution_valid) {
                 $missed->{$guid}{dispute}{allowed} = 1;
                 $missed->{$guid}{dispute}{missed_event} = $missed_event;
             }
@@ -263,7 +263,7 @@ around booked_check_missed_collection => sub {
             );
             if ($open_dispute) {
                 $missed->{$guid}{dispute}{open} = 1;
-            } elsif ($within_window && $resolution_valid) {
+            } elsif ($within_window eq 'within' && $resolution_valid) {
                 $missed->{$guid}{dispute}{allowed} = 1;
             }
         }
@@ -319,11 +319,13 @@ sub _check_date_within_dispute_window {
     my $start = $date;
     my $end = $wd->add_days( $start, $wd_count + 1 )->set_hour(0)->set_minute(0)->set_second(0);
 
-    if ($now >= $start && $now < $end) {
-        return 1;
+    if ($now >= $end) {
+        return 'after';
+    } elsif ($now >= $start && $now < $end) {
+        return 'within';
     }
 
-    return 0;
+    return '';
 }
 
 sub munge_bin_services_for_address {
@@ -425,7 +427,7 @@ sub _setup_missed_collection_disputes_for_service {
         # And no existing dispute since last collection
         && !$dispute_event
     ) {
-        if ( $self->_check_date_within_dispute_window( $missed_event->{date} ) ) {
+        if ( $self->_check_date_within_dispute_window( $missed_event->{date} ) eq 'within' ) {
             if ($self->waste_check_can_raise_dispute( type => 'missed_collection_report' )) {
                 $row->{dispute}{missed_event} = $missed_event;
                 $row->{dispute}{allowed} = 1;
@@ -552,10 +554,13 @@ sub _setup_scheduled_collection_disputes_for_service {
         if ($row->{last} && $row->{last}->{completed} && $row->{report_locked_out}) {
             if ($self->waste_check_can_raise_dispute(
                     resolution_key => $row->{last}{resolution_id}
-                ) && $self->_check_date_within_dispute_window(
-                    $row->{last}->{completed}
                 )) {
-                $row->{dispute}{allowed} = 1;
+                my $within = $self->_check_date_within_dispute_window($row->{last}->{completed});
+                if ($within eq 'within') {
+                    $row->{dispute}{allowed} = 1;
+                } elsif ($within eq 'after') {
+                    $row->{dispute}{too_late} = 1;
+                }
             }
         }
     } else {
@@ -683,7 +688,7 @@ sub waste_munge_enquiry_form_pages {
                     || $c->stash->{missed_events_by_guid}{$guid}{date};
 
             my $dispute_allowed = $date && $self->_check_date_within_dispute_window( $date );
-            unless ($dispute_allowed) {
+            unless ($dispute_allowed eq 'within') {
                 $c->stash->{first_page} = 'window_expired';
                 @$pages = (window_expired => {
                     title => _enquiry_nice_title($category),
