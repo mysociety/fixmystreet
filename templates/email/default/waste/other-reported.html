@@ -83,6 +83,10 @@ INCLUDE '_email_top.html';
       <p style="[% p_style %]">
         We will investigate and aim to respond in the next two working days.
       </p>
+    [% ELSIF report.category == 'Dispute container delivery' %]
+      <p style="[% p_style %]">
+        We will investigate what happened with your container delivery, and if we find that it was not delivered we will arrange a new delivery.
+      </p>
     [% END %]
 
 [% ELSIF cobrand.moniker == 'kingston'%]
