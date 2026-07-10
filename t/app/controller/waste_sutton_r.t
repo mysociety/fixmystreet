@@ -78,8 +78,9 @@ create_contact({ category => 'Escalate missed collection report', email => '3134
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
     { code => 'property_id', required => 1, automated => 'hidden_field' },
     { code => 'original_ref', required => 1, automated => 'hidden_field' },
+    { code => 'missed_guid', required => 1, automated => 'hidden_field' },
 );
-create_contact({ category => 'Failure to Deliver Bags/Containers', email => '3141' }, 'Waste',
+create_contact({ category => 'Failure to Deliver Bags/Containers', email => '3134' }, 'Waste',
     { code => 'Notes', required => 1, automated => 'hidden_field' },
     { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
@@ -405,6 +406,7 @@ FixMyStreet::override_config {
         is $report->title, 'Request replacement Mixed Recycling Green Box (55L)';
     };
 
+    my $missed_report;
     subtest 'Report missed collection' => sub {
         FixMyStreet::Script::Reports::send();
         $mech->clear_emails_ok;
@@ -421,6 +423,8 @@ FixMyStreet::override_config {
         is $report->detail, "Report missed Food Waste\n\n2 Example Street, Sutton, SM1 1AA";
         is $report->title, 'Report missed Food Waste';
         $report->update({ confirmed => '2022-09-09 16:30' }); # Was set by database, so current not override
+        # Save this for later
+        $missed_report = $report;
         FixMyStreet::Script::Reports::send();
         my $text = $mech->get_html_body_from_email;
         like $text, qr/Our crew will return by the end of Tuesday, 13 September to collect your bin/;
@@ -848,11 +852,13 @@ FixMyStreet::override_config {
 
             set_fixed_time('2022-09-14T19:00:00Z');
             $mech->get_ok($problem_url);
-            $mech->content_lacks($dispute_label, 'not allowed after window closes');
+            $mech->content_like(qr/name="category" value="Missed collection dispute"[^>]+disabled/s);
+            $mech->content_contains($dispute_label, 'shown but disabled after window closes');
 
             set_fixed_time('2022-09-14T00:01:00Z');
             $mech->get_ok($problem_url);
-            $mech->content_lacks($dispute_label, 'not allowed just after window closes');
+            $mech->content_like(qr/name="category" value="Missed collection dispute"[^>]+disabled/s);
+            $mech->content_contains($dispute_label, 'shown but disabled just after window closes');
 
             set_fixed_time('2022-09-13T23:59:00Z');
             $mech->get_ok($problem_url);
@@ -920,8 +926,6 @@ FixMyStreet::override_config {
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
 
-    my $missed_report;
-
     subtest 'Escalations of missed collections' => sub {
         subtest 'No missed collection' => sub {
             for my $date ('2022-09-10T19:00:00Z', '2022-09-13T19:00:00Z', '2022-09-15T17:00:00Z', '2022-09-15T19:00:00Z') {
@@ -954,6 +958,7 @@ FixMyStreet::override_config {
         subtest 'Open missed collection' => sub {
             $e->mock('GetEventsForObject', sub { [ {
                 Id => '112112321',
+                Guid => 'missed-collection-guid',
                 ClientReference => 'LBS-123',
                 EventTypeId => 3145, # Missed collection
                 EventStateId => 19240, # Allocated to Crew
@@ -982,8 +987,6 @@ FixMyStreet::override_config {
                 $mech->content_contains('Return to property details');
                 $mech->content_contains('/waste/12345"');
                 my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-                # save this for later
-                $missed_report = $report;
                 is $report->category, 'Escalate missed collection report', "Correct category";
                 is $report->title, 'Issue with collection';
                 is $report->detail, "Non-Recyclable Refuse\n\n2 Example Street, Sutton, SM1 1AA", "Details of report contain information about problem";
@@ -991,10 +994,17 @@ FixMyStreet::override_config {
                 is $report->name, 'Joe Schmoe', 'User details added to report';
                 is $report->get_extra_field_value('Notes'), 'Originally Echo Event #112112321';
                 is $report->get_extra_field_value('original_ref'), 'LBS-123';
+                is $report->get_extra_field_value('missed_guid'), 'missed-collection-guid';
+                # Give it the ID echo gives it
+                $report->update({
+                    external_id => 'missed-collection-escalation-guid',
+                });
 
+                # Now mock there is an existing escalation
                 $e->mock('GetEventsForObject', sub { [
                     {
                         Id => '112112321',
+                        Guid => 'missed-collection-guid',
                         ClientReference => 'LBS-123',
                         EventTypeId => 3145, # Missed collection
                         EventStateId => 19240, # Allocated to Crew
@@ -1003,8 +1013,9 @@ FixMyStreet::override_config {
                         EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
                     },
                     {
-                        Id => '112112321',
-                        ClientReference => 'LBS-123',
+                        Id => '112112322',
+                        Guid => 'missed-collection-escalation-guid',
+                        ClientReference => 'LBS-124',
                         EventTypeId => 3134, # Missed collection escalation
                         EventStateId => 19240, # Allocated to Crew
                         ServiceId => 940, # Refuse
@@ -1013,11 +1024,14 @@ FixMyStreet::override_config {
                 } ] });
 
                 $mech->get_ok('/waste/12345/enquiry?template=problem&service_id=940');
-                $mech->content_contains("We aim to resolve this by Wednesday, 14 September", 'escalation target date within one working day displayed');
+                $mech->content_contains('You escalated this missed collection report on Tuesday, 13 September.');
+                $mech->content_contains("We aim to resolve this by the end of Wednesday, 14 September", 'escalation target date within one working day displayed');
+                $mech->content_lacks('redirect-missed', 'Report missed not present');
             };
 
             $e->mock('GetEventsForObject', sub { [ {
                 Id => '112112321',
+                Guid => 'missed-collection-guid',
                 ClientReference => 'LBS-123',
                 EventTypeId => 3145, # Missed collection
                 EventStateId => 19240, # Allocated to Crew
@@ -1043,6 +1057,7 @@ FixMyStreet::override_config {
         subtest 'Completed missed collection - no escalation' => sub {
             $e->mock('GetEventsForObject', sub { [ {
                 Id => '112112321',
+                Guid => 'missed-collection-guid',
                 EventTypeId => 3145, # Missed collection
                 EventStateId => 19241, # Completed
                 ResolvedDate => { DateTime => "2022-09-10T17:00:00Z" },
@@ -1062,6 +1077,7 @@ FixMyStreet::override_config {
         subtest 'Not Completed missed collection' => sub {
             $e->mock('GetEventsForObject', sub { [ {
                 Id => '112112321',
+                Guid => 'missed-collection-guid',
                 EventTypeId => 3145, # Missed collection
                 EventStateId => 19242, # Not Completed
                 ResolvedDate => { DateTime => "2022-09-10T17:00:00Z" },
@@ -1076,31 +1092,6 @@ FixMyStreet::override_config {
                 $mech->follow_link_ok( { url_regex => qr/service_id=940/}, 'Follow "Report a problem" link for Non-Recyclable Waste collection' );
                 $mech->content_lacks('Escalate my missed collection report', 'No option to escalate missed collection');
             }
-        };
-
-        subtest 'Existing escalation event' => sub {
-            # Now mock there is an existing escalation
-            $e->mock('GetEventsForObject', sub { [ {
-                Id => '112112321',
-                EventTypeId => 3145, # Missed collection
-                EventStateId => 0,
-                ServiceId => 940, # Refuse
-                EventDate => { DateTime => "2022-09-10T17:00:00Z" },
-                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
-            }, {
-                Id => '112112322',
-                EventTypeId => 3134, # Complaint against time
-                EventStateId => 0,
-                ServiceId => 940, # Refuse
-                EventDate => { DateTime => "2022-09-13T19:00:00Z" },
-                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
-            } ] });
-
-            set_fixed_time('2022-09-14T19:00:00Z');
-            $mech->get_ok('/waste/12345');
-            $mech->follow_link_ok( { url_regex => qr/service_id=940/}, 'Follow "Report a problem" link for Non-Recyclable Waste collection' );
-            $mech->content_lacks('redirect-missed', 'Report missed not present');
-            $mech->content_contains('Thank you for reporting an issue with this collection; we are investigating', "Message to resident displayed");
         };
 
         $e->mock('GetEventsForObject', sub { [] }); # reset
@@ -1129,6 +1120,7 @@ FixMyStreet::override_config {
             # Mock missed collection report in Echo
             $e->mock('GetEventsForObject', sub { [ {
                 Id => '112112321',
+                Guid => 'missed-collection-guid',
                 EventTypeId => 3145, # Missed collection
                 EventStateId => 19242, # Not Completed
                 ResolvedDate => { DateTime => "2022-09-10T17:00:00Z" },
@@ -1155,6 +1147,7 @@ FixMyStreet::override_config {
             $mech->content_lacks($dispute_label);
         };
 
+        $missed_report->update({ external_id => 'missed-collection-guid' });
         my $comment = FixMyStreet::DB->resultset('Comment')->create(
             {
                 user          => $body_user,
@@ -1311,7 +1304,7 @@ FixMyStreet::override_config {
         };
         my $escalation_event = {
             Id => '112112323',
-            EventTypeId => 3141, # Failure to Deliver Bags/Containers
+            EventTypeId => 3134, # Complaint against time
             EventStateId => 0,
             ServiceId => 940, # Refuse
             EventDate => { DateTime => "2022-09-13T19:00:00Z" },
@@ -1327,7 +1320,6 @@ FixMyStreet::override_config {
         );
         $escalation_report->set_extra_fields({ name => 'container_request_guid', value => 'container-request-event-guid' });
         $escalation_report->update;
-
 
         $e->mock('GetEventsForObject', sub { [ $open_container_request_event, $escalation_event ] });
 
@@ -1345,6 +1337,7 @@ FixMyStreet::override_config {
                     $mech->content_contains('A non-recyclable refuse container request was made on Monday, 3 February');
                     $mech->follow_link_ok( { url_regex => qr/service_id=940/}, 'Follow "Report a problem" link for Non-Recyclable Waste collection' );
                     $mech->content_contains('Thank you for reporting an issue with this delivery; we are investigating');
+                    $mech->content_lacks('Escalate my missed collection report');
                 };
             }
         };

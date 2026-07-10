@@ -60,9 +60,10 @@ create_contact({ category => 'Escalate missed collection report', email => '3134
     { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
     { code => 'original_ref', required => 1, automated => 'hidden_field' },
+    { code => 'missed_guid', required => 1, automated => 'hidden_field' },
 );
 
-create_contact({ category => 'Failure to Deliver Bags/Containers', email => '3141' }, 'Waste',
+create_contact({ category => 'Failure to Deliver Bags/Containers', email => '3134' }, 'Waste',
     { code => 'Notes', required => 1, automated => 'hidden_field' },
     { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
@@ -713,7 +714,8 @@ FixMyStreet::override_config {
 
                 set_fixed_time('2022-09-14T00:01:00Z');
                 get_problem_page();
-                $mech->content_lacks($dispute_label, 'not allowed just after window closes');
+                $mech->content_like(qr/name="category" value="Missed collection dispute"[^>]+disabled/s);
+                $mech->content_contains($dispute_label, 'shown but disabled just after window closes');
             };
 
             subtest 'Follow dispute link' => sub {
@@ -1329,6 +1331,7 @@ FixMyStreet::override_config {
         subtest 'Open missed collection' => sub {
             $e->mock('GetEventsForObject', sub { [ {
                 Id => '112112321',
+                Guid => 'missed-collection-guid',
                 ClientReference => 'LBS-123',
                 EventTypeId => 3145, # Missed collection
                 EventStateId => 19240, # Allocated to Crew
@@ -1364,10 +1367,16 @@ FixMyStreet::override_config {
                 is $report->name, 'Joe Schmoe', 'User details added to report';
                 is $report->get_extra_field_value('Notes'), 'Originally Echo Event #112112321';
                 is $report->get_extra_field_value('original_ref'), 'LBS-123';
+                is $report->get_extra_field_value('missed_guid'), 'missed-collection-guid';
+                # Give it the ID echo gives it
+                $report->update({
+                    external_id => 'missed-collection-escalation-guid',
+                });
 
                 $e->mock('GetEventsForObject', sub { [
                     {
                         Id => '112112321',
+                        Guid => 'missed-collection-guid',
                         ClientReference => 'LBS-123',
                         EventTypeId => 3145, # Missed collection
                         EventStateId => 19240, # Allocated to Crew
@@ -1376,8 +1385,9 @@ FixMyStreet::override_config {
                         EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
                     },
                     {
-                        Id => '112112321',
-                        ClientReference => 'LBS-123',
+                        Id => '112112322',
+                        Guid => 'missed-collection-escalation-guid',
+                        ClientReference => 'LBS-124',
                         EventTypeId => 3134, # Missed collection escalation
                         EventStateId => 19240, # Allocated to Crew
                         ServiceId => 966, # Refuse
@@ -1387,7 +1397,8 @@ FixMyStreet::override_config {
                 ] });
                 $mech->get_ok('/waste/12345');
                 $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable refuse collection' });
-                $mech->content_contains("We aim to resolve this by Monday, 12 September");
+                $mech->content_contains("We aim to resolve this by the end of Monday, 12 September");
+                $mech->content_contains('You escalated this missed collection report on Saturday, 10 September.');
             };
 
             $e->mock('GetEventsForObject', sub { [ {
@@ -1465,30 +1476,6 @@ FixMyStreet::override_config {
             $mech->content_lacks('Escalate my missed collection');
         };
 
-        subtest 'Existing escalation event' => sub {
-            # Now mock there is an existing escalation
-            $e->mock('GetEventsForObject', sub { [ {
-                Id => '112112321',
-                EventTypeId => 3145, # Missed collection
-                EventStateId => 0,
-                ServiceId => 966, # Refuse
-                EventDate => { DateTime => "2022-09-10T17:00:00Z" },
-                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
-            }, {
-                Id => '112112322',
-                EventTypeId => 3134, # Complaint against time
-                EventStateId => 0,
-                ServiceId => 966, # Refuse
-                EventDate => { DateTime => "2022-09-13T19:00:00Z" },
-                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
-            } ] });
-
-            set_fixed_time('2022-09-14T19:00:00Z');
-            $mech->get_ok('/waste/12345');
-            $mech->get_ok('/waste/12345/enquiry?template=problem&service_id=966');
-            $mech->content_contains('Thank you for reporting an issue with this collection; we are investigating.');
-        };
-
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
 
@@ -1519,7 +1506,7 @@ FixMyStreet::override_config {
         };
         my $escalation_event = {
             Id => '112112323',
-            EventTypeId => 3141, # Failure to Deliver Bags/Containers
+            EventTypeId => 3134, # Complaint against time
             EventStateId => 0,
             ServiceId => 966, # Refuse
             EventDate => { DateTime => "2025-02-19T19:00:00Z" },

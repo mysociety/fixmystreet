@@ -247,7 +247,7 @@ around booked_check_missed_collection => sub {
 
             if ($open_dispute){
                 $missed->{$guid}{dispute}{open} = 1;
-            } elsif ($within_window && $resolution_valid) {
+            } elsif ($within_window eq 'within' && $resolution_valid) {
                 $missed->{$guid}{dispute}{allowed} = 1;
                 $missed->{$guid}{dispute}{missed_event} = $missed_event;
             }
@@ -263,7 +263,7 @@ around booked_check_missed_collection => sub {
             );
             if ($open_dispute) {
                 $missed->{$guid}{dispute}{open} = 1;
-            } elsif ($within_window && $resolution_valid) {
+            } elsif ($within_window eq 'within' && $resolution_valid) {
                 $missed->{$guid}{dispute}{allowed} = 1;
             }
         }
@@ -319,11 +319,13 @@ sub _check_date_within_dispute_window {
     my $start = $date;
     my $end = $wd->add_days( $start, $wd_count + 1 )->set_hour(0)->set_minute(0)->set_second(0);
 
-    if ($now >= $start && $now < $end) {
-        return 1;
+    if ($now >= $end) {
+        return 'after';
+    } elsif ($now >= $start && $now < $end) {
+        return 'within';
     }
 
-    return 0;
+    return '';
 }
 
 sub munge_bin_services_for_address {
@@ -364,16 +366,31 @@ sub _setup_missed_collection_escalations_for_service {
     }
 
     my $missed_event = ($events->filter({ type => 'missed' })->list)[0];
-    my $escalation_event = ($events->filter({ event_type => 3134 })->list)[0];
+    return unless $missed_event; # If there's a missed bin report
+
+    my $escalation_events = $events->filter({ event_type => 3134 });
+
+    foreach my $escalation_event ($escalation_events->list) {
+        my $escalation_event_report = $escalation_event->{report};
+        next unless $escalation_event_report;
+
+        my $guid = $escalation_event_report->get_extra_field_value('missed_guid') || '';
+        if ($guid eq $missed_event->{guid}) {
+            if ($self->waste_target_days->{missed_escalation}) {
+                $escalation_event->{target} = $wd->add_days($escalation_event->{date}, $self->waste_target_days->{missed_escalation})->set_hour($self->waste_day_end_hour);
+            }
+            $row->{escalations}{missed}{open} = $escalation_event;
+            # We've marked that there is already an escalation event,
+            # so there's nothing left to do
+            return;
+        }
+    }
+
     if (
-        # If there's a missed bin report
-        $missed_event
         # And report is still open
-        && !$missed_event->{closed}
+        !$missed_event->{closed}
         # And the event source is the same as the current property (for communal)
         && ($missed_event->{source} || 0) == $property->{id}
-        # And no existing escalation since last collection
-        && !$escalation_event
     ) {
         my $day_cfg = $self->waste_escalation_window;
         my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
@@ -386,11 +403,6 @@ sub _setup_missed_collection_escalations_for_service {
         } elsif ($now >= $end) {
             $row->{escalations}{missed}{too_late} = 1;
         }
-    } elsif ($escalation_event) {
-        if ($self->waste_target_days->{missed_escalation}) {
-            $escalation_event->{target} = $wd->add_days($escalation_event->{date}, $self->waste_target_days->{missed_escalation})->set_hour($self->waste_day_end_hour);
-        }
-        $row->{escalations}{missed}{open} = $escalation_event;
     }
 }
 
@@ -415,7 +427,7 @@ sub _setup_missed_collection_disputes_for_service {
         # And no existing dispute since last collection
         && !$dispute_event
     ) {
-        if ( $self->_check_date_within_dispute_window( $missed_event->{date} ) ) {
+        if ( $self->_check_date_within_dispute_window( $missed_event->{date} ) eq 'within' ) {
             if ($self->waste_check_can_raise_dispute( type => 'missed_collection_report' )) {
                 $row->{dispute}{missed_event} = $missed_event;
                 $row->{dispute}{allowed} = 1;
@@ -435,7 +447,7 @@ sub _setup_container_request_escalations_for_service {
 
     # We're only expecting one open container request per service
     my $open_request_event = (values %$open_requests)[0];
-    my $escalation_events = $row->{all_events}->filter({ event_type => 3141 });
+    my $escalation_events = $row->{all_events}->filter({ event_type => 3134 });
     my $wd = FixMyStreet::WorkingDays->new();
 
     foreach my $escalation_event ($escalation_events->list) {
@@ -542,10 +554,13 @@ sub _setup_scheduled_collection_disputes_for_service {
         if ($row->{last} && $row->{last}->{completed} && $row->{report_locked_out}) {
             if ($self->waste_check_can_raise_dispute(
                     resolution_key => $row->{last}{resolution_id}
-                ) && $self->_check_date_within_dispute_window(
-                    $row->{last}->{completed}
                 )) {
-                $row->{dispute}{allowed} = 1;
+                my $within = $self->_check_date_within_dispute_window($row->{last}->{completed});
+                if ($within eq 'within') {
+                    $row->{dispute}{allowed} = 1;
+                } elsif ($within eq 'after') {
+                    $row->{dispute}{too_late} = 1;
+                }
             }
         }
     } else {
@@ -673,7 +688,7 @@ sub waste_munge_enquiry_form_pages {
                     || $c->stash->{missed_events_by_guid}{$guid}{date};
 
             my $dispute_allowed = $date && $self->_check_date_within_dispute_window( $date );
-            unless ($dispute_allowed) {
+            unless ($dispute_allowed eq 'within') {
                 $c->stash->{first_page} = 'window_expired';
                 @$pages = (window_expired => {
                     title => _enquiry_nice_title($category),

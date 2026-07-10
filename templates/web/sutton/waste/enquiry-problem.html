@@ -16,8 +16,8 @@ END;
 
 [% enquiry_message = BLOCK %]
     [% IF service.escalations.missed.open %]
-        <p>Thank you for reporting an issue with this collection; we are investigating.
-        We aim to resolve this by [% date.format(service.escalations.missed.open.target, '%A, %-d %B') %].
+        <p>You escalated this missed collection report on [% date.format(service.escalations.missed.open.date, '%A, %-d %B') %].
+        We aim to resolve this by the end of [% date.format(service.escalations.missed.open.target, '%A, %-d %B') %].
         </p>
     [% ELSIF service.escalations.missed.event %]
         <p>A [% service.service_name FILTER lower %] collection was reported as missed
@@ -94,6 +94,9 @@ ELSIF service.dispute;
     IF service.dispute.open;
         field.hint = 'We are investigating the problem with this collection.';
         field.disabled = 1;
+    ELSIF service.dispute.too_late;
+        field.hint = 'You cannot dispute this as it has been more than 2 working days since the scheduled collection.';
+        field.disabled = 1;
     END;
     f.push(field);
 ELSE;
@@ -110,6 +113,9 @@ ELSE;
         field.disabled = 1;
     ELSIF service.next AND service.next.state == 'In progress';
         field.hint = 'Please wait until after 6pm to report a missed collection. Our crews may still be working in your area.';
+        field.disabled = 1;
+    ELSIF service.bulky_before_collection_date;
+        field.hint = 'Please wait until after 6pm on the day of collection to report a missed collection.';
         field.disabled = 1;
     ELSIF !service.report_allowed;
         field.hint = 'The 2 working day window for reporting a missed collection has closed.';
