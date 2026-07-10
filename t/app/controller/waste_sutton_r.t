@@ -79,7 +79,7 @@ create_contact({ category => 'Escalate missed collection report', email => '3134
     { code => 'property_id', required => 1, automated => 'hidden_field' },
     { code => 'original_ref', required => 1, automated => 'hidden_field' },
 );
-create_contact({ category => 'Failure to Deliver Bags/Containers', email => '3141' }, 'Waste',
+create_contact({ category => 'Failure to Deliver Bags/Containers', email => '3134' }, 'Waste',
     { code => 'Notes', required => 1, automated => 'hidden_field' },
     { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
@@ -1311,7 +1311,7 @@ FixMyStreet::override_config {
         };
         my $escalation_event = {
             Id => '112112323',
-            EventTypeId => 3141, # Failure to Deliver Bags/Containers
+            EventTypeId => 3134, # Complaint against time
             EventStateId => 0,
             ServiceId => 940, # Refuse
             EventDate => { DateTime => "2022-09-13T19:00:00Z" },
@@ -1327,7 +1327,6 @@ FixMyStreet::override_config {
         );
         $escalation_report->set_extra_fields({ name => 'container_request_guid', value => 'container-request-event-guid' });
         $escalation_report->update;
-
 
         $e->mock('GetEventsForObject', sub { [ $open_container_request_event, $escalation_event ] });
 

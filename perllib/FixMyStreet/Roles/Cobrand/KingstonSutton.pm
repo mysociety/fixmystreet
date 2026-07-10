@@ -435,7 +435,7 @@ sub _setup_container_request_escalations_for_service {
 
     # We're only expecting one open container request per service
     my $open_request_event = (values %$open_requests)[0];
-    my $escalation_events = $row->{all_events}->filter({ event_type => 3141 });
+    my $escalation_events = $row->{all_events}->filter({ event_type => 3134 });
     my $wd = FixMyStreet::WorkingDays->new();
 
     foreach my $escalation_event ($escalation_events->list) {
