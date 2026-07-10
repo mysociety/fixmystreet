@@ -852,11 +852,13 @@ FixMyStreet::override_config {
 
             set_fixed_time('2022-09-14T19:00:00Z');
             $mech->get_ok($problem_url);
-            $mech->content_lacks($dispute_label, 'not allowed after window closes');
+            $mech->content_like(qr/name="category" value="Missed collection dispute"[^>]+disabled/s);
+            $mech->content_contains($dispute_label, 'shown but disabled after window closes');
 
             set_fixed_time('2022-09-14T00:01:00Z');
             $mech->get_ok($problem_url);
-            $mech->content_lacks($dispute_label, 'not allowed just after window closes');
+            $mech->content_like(qr/name="category" value="Missed collection dispute"[^>]+disabled/s);
+            $mech->content_contains($dispute_label, 'shown but disabled just after window closes');
 
             set_fixed_time('2022-09-13T23:59:00Z');
             $mech->get_ok($problem_url);
