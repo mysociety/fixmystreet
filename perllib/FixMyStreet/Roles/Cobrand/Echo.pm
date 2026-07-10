@@ -1064,17 +1064,22 @@ sub booked_check_missed_collection {
             }
         }
 
+        my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+        if ($event->{date} > $today) {
+            $row->{bulky_before_collection_date} = 1;
+        }
+
         # Open events are coming through and we only want to continue under specific circumstances with an open event
-        next unless (!$event->{state} || $event->{state} ne 'open') || $self->{c}->cobrand->call_hook('bulky_open_overdue', $event);
+        if ((!$event->{state} || $event->{state} ne 'open') || $self->{c}->cobrand->call_hook('bulky_open_overdue', $event)) {
+            $row->{report_allowed} = $in_time && !$row->{report_locked_out};
 
-        $row->{report_allowed} = $in_time && !$row->{report_locked_out};
-
-        # Loop through the missed events and see if any of them is for this bulky event
-        foreach ($missed_events->list) {
-            next unless $_->{report};
-            my $reported_guid = $_->{report}->get_extra_field_value('Original_Event_ID');
-            next unless $reported_guid;
-            $row->{report_open} = $_ if $reported_guid eq $guid;
+            # Loop through the missed events and see if any of them is for this bulky event
+            foreach ($missed_events->list) {
+                next unless $_->{report};
+                my $reported_guid = $_->{report}->get_extra_field_value('Original_Event_ID');
+                next unless $reported_guid;
+                $row->{report_open} = $_ if $reported_guid eq $guid;
+            }
         }
 
         $self->{c}->stash->{booked_missed}{$guid} = $row;

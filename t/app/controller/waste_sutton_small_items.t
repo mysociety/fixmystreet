@@ -567,6 +567,26 @@ FixMyStreet::override_config {
     };
 
     subtest 'Reporting a missed collection' => sub {
+        $report->update({ external_id => '4ea70923-7151-11f0-aeea-cd51f3977c8c' });
+
+        subtest 'Before collection date' => sub {
+            # Event awaiting
+            $echo->mock(
+                'GetEventsForObject',
+                sub {
+                    [   {   Guid        => '4ea70923-7151-11f0-aeea-cd51f3977c8c',
+                            EventTypeId => 3144,
+                            EventDate => { DateTime => '2025-08-08T12:00:00Z' },
+                            EventStateId => 19234,
+                        }
+                    ]
+                }
+            );
+            set_fixed_time('2025-08-07T12:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->follow_link_ok( { url_regex => qr/service_id=952/}, 'Follow "Report a problem" link for the assisted collection' );
+            $mech->content_contains('Please wait until after 6pm on the day');
+        };
 
         # Monday after collection was due
         set_fixed_time('2025-08-11T12:00:00Z');
@@ -587,11 +607,7 @@ FixMyStreet::override_config {
             }
         );
 
-        $report->update(
-            {   state       => 'fixed - council',
-                external_id => '4ea70923-7151-11f0-aeea-cd51f3977c8c'
-            }
-        );
+        $report->update({ state => 'fixed - council' });
 
         $mech->get_ok('/waste/12345');
         $mech->follow_link_ok( { url_regex => qr/service_id=952/}, 'Follow "Report a problem" link for the assisted collection' );
