@@ -364,16 +364,31 @@ sub _setup_missed_collection_escalations_for_service {
     }
 
     my $missed_event = ($events->filter({ type => 'missed' })->list)[0];
-    my $escalation_event = ($events->filter({ event_type => 3134 })->list)[0];
+    return unless $missed_event; # If there's a missed bin report
+
+    my $escalation_events = $events->filter({ event_type => 3134 });
+
+    foreach my $escalation_event ($escalation_events->list) {
+        my $escalation_event_report = $escalation_event->{report};
+        next unless $escalation_event_report;
+
+        my $guid = $escalation_event_report->get_extra_field_value('missed_guid') || '';
+        if ($guid eq $missed_event->{guid}) {
+            if ($self->waste_target_days->{missed_escalation}) {
+                $escalation_event->{target} = $wd->add_days($escalation_event->{date}, $self->waste_target_days->{missed_escalation})->set_hour($self->waste_day_end_hour);
+            }
+            $row->{escalations}{missed}{open} = $escalation_event;
+            # We've marked that there is already an escalation event,
+            # so there's nothing left to do
+            return;
+        }
+    }
+
     if (
-        # If there's a missed bin report
-        $missed_event
         # And report is still open
-        && !$missed_event->{closed}
+        !$missed_event->{closed}
         # And the event source is the same as the current property (for communal)
         && ($missed_event->{source} || 0) == $property->{id}
-        # And no existing escalation since last collection
-        && !$escalation_event
     ) {
         my $day_cfg = $self->waste_escalation_window;
         my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
@@ -386,11 +401,6 @@ sub _setup_missed_collection_escalations_for_service {
         } elsif ($now >= $end) {
             $row->{escalations}{missed}{too_late} = 1;
         }
-    } elsif ($escalation_event) {
-        if ($self->waste_target_days->{missed_escalation}) {
-            $escalation_event->{target} = $wd->add_days($escalation_event->{date}, $self->waste_target_days->{missed_escalation})->set_hour($self->waste_day_end_hour);
-        }
-        $row->{escalations}{missed}{open} = $escalation_event;
     }
 }
 
