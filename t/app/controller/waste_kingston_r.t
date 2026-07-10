@@ -62,7 +62,7 @@ create_contact({ category => 'Escalate missed collection report', email => '3134
     { code => 'original_ref', required => 1, automated => 'hidden_field' },
 );
 
-create_contact({ category => 'Failure to Deliver Bags/Containers', email => '3141' }, 'Waste',
+create_contact({ category => 'Failure to Deliver Bags/Containers', email => '3134' }, 'Waste',
     { code => 'Notes', required => 1, automated => 'hidden_field' },
     { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
@@ -1485,7 +1485,7 @@ FixMyStreet::override_config {
         };
         my $escalation_event = {
             Id => '112112323',
-            EventTypeId => 3141, # Failure to Deliver Bags/Containers
+            EventTypeId => 3134, # Complaint against time
             EventStateId => 0,
             ServiceId => 966, # Refuse
             EventDate => { DateTime => "2025-02-19T19:00:00Z" },
