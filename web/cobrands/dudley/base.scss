@@ -1,0 +1,125 @@
+@import "../sass/h5bp";
+@import "_variables";
+@import "../sass/mixins";
+
+@import "../sass/base";
+
+/*TYPOGRAPHY */
+html {
+  font-size: 1.1875rem; 
+}
+
+h1, h2, h3 {
+  font-weight: 700;
+}
+
+/* BUTTONS */
+.btn {
+  transition: background-color .2s linear,color .2s linear,border .2s linear;
+}
+
+a#geolocate_link {
+  @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
+  text-decoration: none;
+}
+
+#report-cta {
+    @include button-variant(
+        $bg-top: $cobrand_blue_400,
+        $bg-bottom: $cobrand_blue_400,
+        $border: $cobrand_blue_400,
+        $text: $button-primary-text,
+        $hover-bg-top: $cobrand_blue_400,
+        $hover-bg-bottom: $cobrand_blue_400,
+        $hover-border: $cobrand_blue_400,
+        $hover-text: $button-primary-hover-text
+    );
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+}
+
+/* NAVBAR */
+#site-logo {
+  background-image: url("/cobrands/dudley/images/logo.svg");
+  background-size: auto 3.375rem;
+  height: $mappage-header-height;
+}
+
+.nav-menu--main {
+  a {
+    color: $primary;
+    text-decoration: none;
+
+    &:visited {
+      color: $primary;
+    }
+
+    &:hover {
+      color: $cobrand_teal;
+      text-decoration: underline;
+    }
+  }
+
+  span {
+    background-color: $primary;
+    color: $primary_text;
+  }
+}
+
+/* FRONTPAGE */
+#front-main {
+  #front-main-container {
+    box-sizing: border-box;
+
+    h1 {
+      font-size: 1.75rem;
+    }
+  }
+}
+
+.postcode-form-box {
+  input#sub {
+    background-color: $cobrand_lime;
+    color: $primary_b;
+
+    &:hover {
+      background-color: $cobrand_green;
+      color: $cobrand_white;
+    }
+  }
+}
+
+/* OTHERS */
+.item-list--reports__item {
+  a {
+    text-decoration: none;
+  }
+}
+
+.badge {
+  background-color: #edeff2;
+  border-color: #b2c0d5;
+  font-size: 0.75rem;
+}
+
+
+/* SITE MESSAGE */
+// Found here: https://www.dudley.gov.uk/schools/music-lessons/music-tuition
+.site-message {
+  color: $primary_b;
+  padding: 1.5rem;
+  background-color: $cobrand_white;
+  border: none;
+  border-left: 2px solid white;
+  word-wrap: break-word;
+}
+
+/* FOOTER */
+.cobrand-footer {
+  font-size: 1rem;
+}
+
+@import "../fixmystreet-uk-councils/societyworks-footer";
