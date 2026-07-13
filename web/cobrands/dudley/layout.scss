@@ -1,0 +1,41 @@
+@import "_variables";
+@import "../sass/layout";
+
+
+/*TYPOGRAPHY */
+.content {
+    color: $primary_b;
+}
+
+/* NAVBAR */
+
+.nav-menu--main {
+    a.report-a-problem-btn {
+        background-color: $cobrand_blue_400;
+
+        &:hover {
+            background-color: $cobrand_blue_400;
+            text-decoration: underline;
+        }
+    }
+
+    span {
+        color: $cobrand_teal;
+    }
+
+}
+
+/* FRONTPAGE */
+#front-main {
+    padding: 3em 1em;
+
+  #front-main-container {
+    h1 {
+      font-size: 2.25rem;
+    }
+  }
+}
+
+/* MAP PAGE */
+
+/* FOOTER */
