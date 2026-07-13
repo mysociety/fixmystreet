@@ -6,7 +6,7 @@ service_id = c.req.params.service_id;
 IF original_booking_report;
     SET booking_guid = original_booking_report.external_id;
     SET service = booked_missed.$booking_guid;
-    SET resolution = service.report_locked_out_reason;
+    SET resolution = service.report_locked_out_reason || service.report_open.resolution_reason;
 ELSE;
     SET service = services.$service_id;
     SET resolution = c.cobrand.resolution_text(service.last.resolution_id) || service.report_open.resolution_reason;
@@ -39,12 +39,27 @@ END;
     <div class="govuk-warning-text info">
         <div class="govuk-warning-text__content">
         [% IF NOT service.dispute.open %]
-        <p>The crew have closed your collection task as not collected[%
-            IF resolution %]: [% resolution | staff_html_markup({ is_body_user => 1 }) %]
+            [% IF service.dispute.missed_event && service.dispute.missed_event.completed %]
+                [% IF service.dispute.too_late %]
+                    <p>The crew have marked this collection as completed. You cannot dispute this as it has been more than 2 working days since the collection took place.</p>
+                [% ELSE %]
+                    [%
+                        SET type = service.service_name == 'Bulky waste'
+                            ? 'bulky'
+                            : service.service_name == 'Small items'
+                                ? 'small'
+                                : '';
+                    %]
+                    <p>The crew marked this collection as completed. If your [% IF type == 'bulky' %]bulky waste was not collected[% ELSIF type == 'small' %]small items were not collected[% ELSE %]bin has not been emptied[% END %], you can dispute this and we will investigate. If we find that the collection task was closed incorrectly, we will return to collect the [% IF !type %]bin[% ELSE %]waste[% END %].</p>
+                [% END %]
+            [% ELSE %]
+                <p>The crew have closed your collection task as not collected[%
+                    IF resolution %]: [% resolution | staff_html_markup({ is_body_user => 1 }) %]
+                    [% END %]
+                    Please resolve the issue so the bin can be collected on the next scheduled collection. <a href="https://www.sutton.gov.uk/waste-and-recycling/your-collection-service">Check our website</a> for more information on how your bin should be presented and what you can put in it.
+                </p>
+                <p>If it is less than 2 working days, you can dispute the reason given and we will investigate. If we find that the collection task was closed incorrectly, we will return to collect the bin.</p>
             [% END %]
-            Please resolve the issue so the bin can be collected on the next scheduled collection. <a href="https://www.sutton.gov.uk/waste-and-recycling/your-collection-service">Check our website</a> for more information on how your bin should be presented and what you can put in it.
-        </p>
-        <p>If it is less than 2 working days, you can dispute the reason given and we will investigate. If we find that the collection task was closed incorrectly, we will return to collect the bin.</p>
         [% END %]
         </div>
     </div>
@@ -82,7 +97,7 @@ END;
         If it has not been collected, you can report it as missed and we will return within 2 working days to collect it.
         </p>
         [% IF c.cobrand.moniker == 'kingston' AND fas_property %]
-             <p>If a spillage on a public highway occurred during a [% service.service_name FILTER lower %] collection, please report <a href="https://kingston-self.achieveservice.com/service/Request_a_street_clean_in_Kingston">a street cleaning issue</a>.</p>
+            <p>If a spillage on a public highway occurred during a [% service.service_name FILTER lower %] collection, please report <a href="https://kingston-self.achieveservice.com/service/Request_a_street_clean_in_Kingston">a street cleaning issue</a>.</p>
         [% END %]
         </div>
     </div>
@@ -112,7 +127,9 @@ IF service.escalations.missed;
 ELSIF service.dispute;
     SET field = {
         value = 'Missed collection dispute',
-        label = 'Dispute collection closure reason',
+        label = service.dispute.missed_event && service.dispute.missed_event.completed
+            ? 'Dispute collection completion'
+            : 'Dispute collection closure reason',
         hint_class = 'govuk-hint--unfaded',
     };
     IF service.dispute.open;
