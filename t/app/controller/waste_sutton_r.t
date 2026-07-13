@@ -1142,11 +1142,23 @@ FixMyStreet::override_config {
 
             set_fixed_time('2022-09-15T17:00:00Z');
             $mech->get_ok($problem_url);
-            $mech->content_lacks($dispute_label);
+            $mech->content_contains($dispute_label);
+            $mech->content_contains(
+                'You cannot dispute this as it has been more than 2 working days since the scheduled collection'
+            );
+            unlike $mech->text,
+                qr/The crew have marked this collection as completed/,
+                '"too late" messaging not shown';
 
             set_fixed_time('2022-09-15T19:00:00Z');
             $mech->get_ok($problem_url);
-            $mech->content_lacks($dispute_label);
+            $mech->content_contains($dispute_label);
+            $mech->content_contains(
+                'You cannot dispute this as it has been more than 2 working days since the scheduled collection'
+            );
+            unlike $mech->text,
+                qr/The crew have marked this collection as completed/,
+                '"too late" messaging not shown';
         };
 
         my $comment = FixMyStreet::DB->resultset('Comment')->create(
@@ -1275,7 +1287,10 @@ FixMyStreet::override_config {
 
             set_fixed_time('2022-09-14T19:00:00Z');
             $mech->get_ok($problem_url);
-            $mech->content_lacks($dispute_label);
+            $mech->text_contains('The crew have marked this collection as completed');
+            $mech->text_contains('Dispute collection completion');
+            $mech->content_like(qr/name="category" value="Missed collection dispute"[^>]+disabled/s);
+            $mech->text_contains('You cannot dispute this as it has been more than 2 working days');
         };
 
         $e->mock('GetEventsForObject', sub { [] }); # reset
