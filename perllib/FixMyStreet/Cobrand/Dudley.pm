@@ -27,8 +27,10 @@ sub council_url { 'dudley' }
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
+    my $town = 'Dudley';
     return {
         %{ $self->SUPER::disambiguate_location() },
+        town => $town,
         centre => '52.4828778776603,-2.1087441438586',
         span   => '0.132208941295367,0.180437882042669',
         bounds => [ 52.4260142691841, -2.19194291862399, 52.5582232104795, -2.01150503658132 ],
