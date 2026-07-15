@@ -238,12 +238,16 @@ function dvla_lookup(e) {
             if (field && vehicle_type) {
                 field.value = vehicle_type;
             }
-            field = document.querySelector('select[name*="' + fields.taxed + '"]');
-            if (field) {
+            if (fields.taxed) {
+                let val = '';
                 if (data.taxStatus == 'Taxed') {
-                    field.value = config.tax.yes;
+                    val = config.tax.yes;
                 } else if (data.taxStatus == 'Untaxed') {
-                    field.value = config.tax.no;
+                    val = config.tax.no;
+                }
+                if (field) {
+                    field = document.querySelector('[name*="' + fields.taxed + '"][value="' + val + '"]');
+                    field.checked = true;
                 }
             }
             fixmystreet.pageController.toPage('next');

@@ -746,6 +746,9 @@ $.extend(fixmystreet.set_up, {
                     $('#form_' + question.code).on('change.category', function() {
                         $(fixmystreet).trigger('report_new:category_change', { skip_duplicates: true } );
                     });
+                    $('input[name="' + question.code + '"][type="radio"]').on('change.category', function() {
+                        $(fixmystreet).trigger('report_new:category_change', { skip_duplicates: true } );
+                    });
                 }
             });
         }
