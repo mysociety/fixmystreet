@@ -44,7 +44,7 @@ describe('Abandoned vehicle behaviour', function() {
     cy.nextPageReporting();
     cy.wait('@dvla');
     cy.get('[name=NE02]').should('have.value', 'B4D');
-    cy.get('[name=NE01]').should('have.value', 'N');
+    cy.get('[name=NE01]:checked').should('have.value', 'N');
     cy.get('[name=NE03]').should('have.value', 'MM');
     cy.get('[name=NE04]').should('have.value', 'Kawasaki');
     cy.get('[name=NE06]').should('have.value', 'Black');

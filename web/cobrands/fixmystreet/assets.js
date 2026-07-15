@@ -1523,7 +1523,7 @@ fixmystreet.message_controller = (function() {
         }
 
         if (stopper.answers) {
-            var answer = $('#form_' + stopper.code).val();
+            var answer = $('#form_' + stopper.code).val() || $('input[name="' + stopper.code + '"]:checked').val();
             if (OpenLayers.Util.indexOf(stopper.answers, answer) > -1) {
                 return true;
             }
