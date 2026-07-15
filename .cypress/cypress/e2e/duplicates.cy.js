@@ -115,7 +115,7 @@ describe('Duplicate tests', function() {
       cy.get('.extra-category-questions').should('not.be.visible');
       cy.nextPageReporting(); // Go past duplicates
       cy.get('.extra-category-questions').should('be.visible');
-      cy.get('[id=form_hazardous]').select('No');
+      cy.get('[name=hazardous][value=no]').click();
       cy.get('.extra-category-questions').should('be.visible');
       cy.nextPageReporting();
       cy.visit('http://borsetshire.localhost:3001/_test/teardown/regression-duplicate-stopper'); // Server-side setup

@@ -54,10 +54,10 @@ describe('new report form', function() {
   it('is hidden when emergency option is yes', function() {
     cy.pickCategory('Fallen branch');
     cy.nextPageReporting();
-    cy.get('#form_emergency').select('yes');
+    cy.get('[name=emergency][value=yes]').click();
     cy.get('.pre-button-messaging:visible').should('contain', 'Please phone customer services to report this problem.');
     cy.get('.js-reporting-page--next:visible').should('be.disabled');
-    cy.get('#form_emergency').select('no');
+    cy.get('[name=emergency][value=no]').click();
     cy.get('.pre-button-messaging:visible').should('not.exist');
     cy.get('.js-reporting-page--next:visible').should('not.be.disabled');
   });
@@ -65,10 +65,10 @@ describe('new report form', function() {
   it('is hidden when private land option is yes', function() {
     cy.pickCategory('Fallen branch');
     cy.nextPageReporting();
-    cy.get('#form_private_land').select('yes');
+    cy.get('[name=private_land][value=yes]').click();
     cy.get('.pre-button-messaging:visible').should('contain', 'The council do not have powers to address issues on private land.');
     cy.get('.js-reporting-page--next:visible').should('be.disabled');
-    cy.get('#form_private_land').select('no');
+    cy.get('[name=private_land][value=no]').click();
     cy.get('.pre-button-messaging:visible').should('not.exist');
     cy.get('.js-reporting-page--next:visible').should('not.be.disabled');
   });
