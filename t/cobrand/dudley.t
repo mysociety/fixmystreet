@@ -1,13 +1,7 @@
 use CGI::Simple;
 use Test::MockModule;
-use Test::MockTime qw(:all);
-use File::Temp 'tempdir';
 use FixMyStreet::TestMech;
-use FixMyStreet::Script::Alerts;
 use FixMyStreet::Script::Reports;
-use Open311::GetServiceRequestUpdates;
-use Catalyst::Test 'FixMyStreet::App';
-use FixMyStreet::Script::CSVExport;
 
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
@@ -45,6 +39,13 @@ FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'dudley',
     MAPIT_URL => 'http://mapit.uk/',
     STAGING_FLAGS => { send_reports => 1, skip_checks => 0 },
+    COBRAND_FEATURES => {
+        open311_email => {
+            dudley => {
+                Potholes => 'potholes@example.org',
+            }
+        }
+    },
 }, sub {
     subtest 'cobrand displays council name' => sub {
         ok $mech->host("dudley.fixmystreet.com"), "change host to dudley";
@@ -60,6 +61,9 @@ FixMyStreet::override_config {
         is $c->param('attribute[NSGRef]'), 'Road ID';
         is $c->param('attribute[report_url]'),  "http://dudley.example.org/report/" . $report->id;
         like $c->param('description'), qr/@{[$report->title]}/;
+
+        my $email = $mech->get_email;
+        is $email->header('To'), 'FixMyStreet <potholes@example.org>';
     };
 };
 

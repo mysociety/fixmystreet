@@ -50,8 +50,6 @@ sub abuse_reports_only { 1 }
 
 =item * Fetch the nearest USRN if we don't have it already
 
-=back
-
 =cut
 
 sub open311_update_missing_data {
@@ -64,6 +62,10 @@ sub open311_update_missing_data {
     }
 }
 
+=item * Include the report URL in the Open311 submission
+
+=cut
+
 sub open311_extra_data_include {
     my ($self, $row, $h, $contact) = @_;
 
@@ -73,6 +75,34 @@ sub open311_extra_data_include {
     ];
 
     return $open311_only;
+}
+
+=item * Also send an email on Open311 categories, if email provided
+
+=back
+
+=cut
+
+sub open311_post_send {
+    my ($self, $row, $h) = @_;
+
+    return unless $row->external_id;
+    return if $row->get_extra_metadata('extra_email_sent');
+
+    my $emails = $self->feature('open311_email') or return;
+    my $dest = $emails->{$row->category} or return;
+    $dest = [ $dest, 'FixMyStreet' ];
+
+    $row->push_extra_fields({ name => 'fixmystreet_id', description => 'FMS reference', value => $row->id });
+
+    my $sender = FixMyStreet::SendReport::Email->new(
+        use_verp => 0, use_replyto => 1, to => [ $dest ] );
+    $sender->send($row, $h);
+    if ($sender->success) {
+        $row->set_extra_metadata(extra_email_sent => 1);
+    }
+
+    $row->remove_extra_field('fixmystreet_id');
 }
 
 1;
