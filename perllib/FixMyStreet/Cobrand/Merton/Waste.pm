@@ -710,6 +710,33 @@ sub bulky_pricing_strategy {
     return { %$out, json => $json };
 }
 
+sub bulky_last_discounted_date {
+    my ($self) = @_;
+    my $uprn = $self->{c}->stash->{property}{uprn};
+    my $property = FixMyStreet::DB->resultset("Property")->find($uprn);
+    return unless $property;
+    return $property->discount_date;
+}
+sub bulky_next_discounted_date {
+    my ($self) = @_;
+    my $cfg = $self->wasteworks_config;
+    my $DISCOUNT_MONTHS = $cfg->{discount_months} || 12;
+    my $last = $self->bulky_last_discounted_date;
+    return $last->add( months => $DISCOUNT_MONTHS ) if $last;
+
+    my $dt = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    my $holidays = $self->public_holidays();
+    my $wd = FixMyStreet::WorkingDays->new(public_holidays => $holidays);
+    $dt = $wd->add_days($dt, 2);
+    return $dt;
+}
+
+sub bulky_minimum_cost {
+    my $self = shift;
+    my $cfg = $self->wasteworks_config;
+    return $cfg->{discount_enabled} ? '0' : $cfg->{band1_price};
+}
+
 sub bulky_total_cost {
     my ($self, $data) = @_;
     my $c = $self->{c};
