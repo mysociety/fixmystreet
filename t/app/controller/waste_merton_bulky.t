@@ -1283,6 +1283,10 @@ FixMyStreet::override_config {
         $body->set_extra_metadata(wasteworks_config => $extra);
         $body->update;
 
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Last discounted collection: None');
+        $mech->content_contains('>Next discounted collection on or after: Friday 7 July 2023');
+
         $mech->get_ok('/waste/12345/bulky');
         $mech->submit_form_ok;
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
@@ -1318,6 +1322,10 @@ FixMyStreet::override_config {
 
     subtest 'Next booking is not discounted' => sub {
         # Config maintained from before
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Last discounted collection: Saturday 1 July 2023');
+        $mech->content_contains('Next discounted collection on or after: Monday 1 July 2024');
+
         $mech->get_ok('/waste/12345/bulky');
         $mech->submit_form_ok;
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
@@ -1331,6 +1339,10 @@ FixMyStreet::override_config {
     subtest 'Booking for a year later is discounted again' => sub {
         set_fixed_time('2024-06-04T05:44:59Z');
         # Config maintained from before
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Last discounted collection: Saturday 1 July 2023');
+        $mech->content_contains('Next discounted collection on or after: Monday 1 July 2024');
+
         $mech->get_ok('/waste/12345/bulky');
         $mech->submit_form_ok;
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
@@ -1511,6 +1523,10 @@ FixMyStreet::override_config {
         $body->set_extra_metadata(wasteworks_config => $extra);
         $body->update;
 
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Last discounted collection: None');
+        $mech->content_contains('Next discounted collection on or after: Friday 30 June 2023');
+
         $mech->get_ok('/waste/12345/bulky');
         $mech->submit_form_ok;
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
@@ -1575,6 +1591,10 @@ FixMyStreet::override_config {
     };
 
     subtest 'Next booking is discounted' => sub {
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Last discounted collection: None');
+        $mech->content_contains('Next discounted collection on or after: Tuesday 27 June 2023');
+
         $mech->get_ok('/waste/12345/bulky');
         $mech->submit_form_ok;
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
@@ -1614,6 +1634,10 @@ FixMyStreet::override_config {
         like $report->detail, qr/Cancelled at user request/, 'Original report detail field updated';
 
         subtest 'Next booking is NOT discounted' => sub {
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('Last discounted collection: Saturday 1 July 2023');
+            $mech->content_contains('Next discounted collection on or after: Monday 1 July 2024');
+
             $mech->get_ok('/waste/12345/bulky');
             $mech->submit_form_ok;
             $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
