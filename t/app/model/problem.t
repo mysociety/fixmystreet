@@ -39,6 +39,7 @@ is_deeply $visible_states, {
     'in progress'                 => 1,
     'planned'                     => 1,
     'action scheduled'            => 1,
+    'twin'                        => 1,
     'fixed'                       => 1,
     'fixed - council'             => 1,
     'fixed - user'                => 1,
