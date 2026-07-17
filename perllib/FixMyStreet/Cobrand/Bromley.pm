@@ -1010,6 +1010,8 @@ sub return_request_option {
 
     my $service_id = $c->get_param('service_id');
     my $service = $c->stash->{services}{$service_id};
+    return '' unless $service_id == $SERVICE_IDS{garden} || FixMyStreet->test_mode;
+
     my $last = $service->{last};
     my $next = $service->{next};
     my $next_state = $next->{state} || '';
