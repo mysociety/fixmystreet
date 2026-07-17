@@ -39,7 +39,7 @@
             OR report.get_extra_field_value('service_id') == cobrand.feature('echo').bulky_service_id
         %]
         <p>
-          <a href="[% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') %]/enquiry?category=Missed+collection+dispute&service_id=[% report.get_extra_field_value('service_id') %][% IF include_report_id %]&original_booking_id=[% report.id %][% END %]">Report a problem with this missed collection</a>
+          <a href="[% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') %]/enquiry?template=problem&service_id=[% report.get_extra_field_value('service_id') %][% IF include_report_id %]&original_booking_id=[% report.id %][% END %]">Report a problem with this missed collection</a>
         </p>
       [% END %]
     [% END %]

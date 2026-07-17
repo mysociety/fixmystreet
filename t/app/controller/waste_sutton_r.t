@@ -1188,6 +1188,7 @@ FixMyStreet::override_config {
             # need to strip the host otherwise we're not logged in
             my $l = URI->new($enq_links[0]);
             $mech->get_ok($l->path_query);
+            $mech->submit_form_ok({ with_fields => { category => 'Missed collection dispute' } });
             $mech->content_contains('Contaminated (builder’s waste)', 'details of missed bin collection displayed');
 
             # XXX Email link uses 'original_booking_id' param here to denote

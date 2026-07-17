@@ -302,7 +302,7 @@ FixMyStreet::override_config {
                 like $email_html, qr/Resolution text/, 'Reason pulled from comment';
                 unlike $email_html, qr/Report a problem with this missed collection/, 'Report a problem text not in html email';
                 unlike $email_html,
-                    qr{/12345/enquiry\?category=Missed\+collection\+dispute},
+                    qr{/12345/enquiry\?template=problem},
                     'HTML alert does not contain dispute link';
 
                 $comment->delete;
@@ -340,9 +340,9 @@ FixMyStreet::override_config {
 
             subtest 'Follow dispute link' => sub {
                 get_problem_page();
-                $mech->submit_form(
+                $mech->submit_form_ok({
                     with_fields => { category => 'Missed collection dispute' },
-                );
+                });
                 like $mech->uri->path_query,
                     qr/uprn=1000000002&service_id=986&event_id=8004/,
                     'redirects with correct params';
@@ -350,7 +350,7 @@ FixMyStreet::override_config {
                 # Check outside window
                 set_fixed_time('2023-08-28T22:59:59Z');
                 $mech->reload;
-                like $mech->uri->path_query, qr/waste\/12345/,
+                is $mech->uri->path_query, '/waste/12345',
                     'redirects to bin page if outside window';
             };
 
@@ -387,7 +387,7 @@ FixMyStreet::override_config {
                 like $email_html, qr/Resolution text/, 'Reason pulled from comment';
                 like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
                 like $email_html,
-                    qr{/12345/enquiry\?category=Missed\+collection\+dispute&service_id=986&original_booking_id=.+},
+                    qr{/12345/enquiry\?template=problem&service_id=986&original_booking_id=.+},
                     'HTML alert contains dispute link';
 
                 # we only want the HTML link as the text version does not contain the link
@@ -397,13 +397,15 @@ FixMyStreet::override_config {
                 my $l = URI->new($enq_links[0]);
 
                 $mech->get($l->path_query);
+                $mech->submit_form_ok({ with_fields => { category => 'Missed collection dispute' } });
                 like $mech->uri->path_query,
                     qr/uprn=1000000002&service_id=986&event_id=8004/,
                     'redirects with correct params';
 
                 set_fixed_time('2023-08-28T22:59:59Z');
                 $mech->get($l->path_query);
-                like $mech->uri->path_query, qr/waste\/12345/,
+                $mech->submit_form_ok({ with_fields => { category => 'Missed collection dispute' } });
+                is $mech->uri->path_query, '/waste/12345',
                     'redirects to bin page if outside window';
 
                 $comment->delete;
@@ -513,16 +515,16 @@ FixMyStreet::override_config {
 
             subtest 'Follow dispute link' => sub {
                 get_problem_page();
-                $mech->submit_form(
+                $mech->submit_form_ok({
                     with_fields => { category => 'Missed collection dispute' },
-                );
+                });
                 like $mech->uri->path_query,
                     qr/uprn=1000000002&service_id=986&event_id=112112321/,
                     'redirects with correct params';
 
                 set_fixed_time('2023-08-28T22:59:59Z');
                 $mech->reload;
-                like $mech->uri->path_query, qr/waste\/12345/,
+                is $mech->uri->path_query, '/waste/12345',
                     'redirects to bin page if outside window';
             };
 
@@ -560,7 +562,7 @@ FixMyStreet::override_config {
                 like $email_html, qr/Resolution text/, 'Reason pulled from comment';
                 like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
                 like $email_html,
-                    qr{/12345/enquiry\?category=Missed\+collection\+dispute&service_id=986&original_booking_id=.+},
+                    qr{/12345/enquiry\?template=problem&service_id=986&original_booking_id=.+},
                     'HTML alert contains dispute link';
 
                 # we only want the HTML link as the text version does not contain the link
@@ -570,13 +572,14 @@ FixMyStreet::override_config {
                 my $l = URI->new($enq_links[0]);
 
                 $mech->get($l->path_query);
+                $mech->submit_form_ok({ with_fields => { category => 'Missed collection dispute' } });
                 like $mech->uri->path_query,
                     qr/uprn=1000000002&service_id=986&event_id=112112321/,
                     'redirects with correct params';
 
                 set_fixed_time('2023-08-28T22:59:59Z');
                 $mech->get($l->path_query);
-                like $mech->uri->path_query, qr/waste\/12345/,
+                is $mech->uri->path_query, '/waste/12345',
                     'redirects to bin page if outside window';
 
                 $comment->delete;
@@ -596,16 +599,16 @@ FixMyStreet::override_config {
 
             subtest 'Follow dispute link' => sub {
                 get_problem_page();
-                $mech->submit_form(
+                $mech->submit_form_ok({
                     with_fields => { category => 'Missed collection dispute' },
-                );
+                });
                 like $mech->uri->path_query,
                     qr/uprn=1000000002&service_id=986&event_id=112112321/,
                     'redirects with correct params';
 
                 set_fixed_time('2023-08-28T22:59:59Z');
                 $mech->reload;
-                like $mech->uri->path_query, qr/waste\/12345/,
+                is $mech->uri->path_query, '/waste/12345',
                     'redirects to bin page if outside window';
             };
         };
