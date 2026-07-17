@@ -253,6 +253,13 @@
                     Please make sure you’ve read the <a href="https://www.sutton.gov.uk/w/bulky-waste-collections-terms-and-conditions">bulky goods collection page</a> before making a booking.
                   [% END %]
                 </p>
+              [% ELSIF c.cobrand.moniker == 'merton' AND c.cobrand.wasteworks_config.discount_enabled %]
+                <p>
+                Please read the <a href="[% c.cobrand.call_hook('bulky_tandc_link') %]">bulky waste collection</a> page on the council’s website.
+                <br>Any discount will automatically be applied to your booking.
+                <br>Last discounted collection: [% IF cobrand.bulky_last_discounted_date; date.format(cobrand.bulky_last_discounted_date, format='%A %-d %B %Y'); ELSE; 'None'; END %]
+                <br>Next discounted collection on or after: [% date.format(cobrand.bulky_next_discounted_date, format='%A %-d %B %Y') %]
+                </p>
               [% END %]
           </div>
           [% END %]

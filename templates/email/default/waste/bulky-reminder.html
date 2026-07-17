@@ -20,9 +20,9 @@ cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel
   <p style="[% p_style %]">[% email_summary %]</p>
 
   <p style="[% p_style %]">
-    [% IF days == 3 %]
+    [% IF days > 1 %]
     This is a reminder that your collection is in
-    <strong>3 days</strong>.
+    <strong>[% days %] days</strong>.
     [% ELSIF days == 1 %]
     This is a reminder that your collection is
     <strong>tomorrow</strong>.
