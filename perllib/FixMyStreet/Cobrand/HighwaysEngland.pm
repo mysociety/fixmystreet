@@ -464,7 +464,10 @@ sub _report_new_is_on_he_road_not_litter {
     return scalar @$features ? 0 : 1;
 }
 
-=item * Only Admin roles can access the dashboard
+=item * Make sure only permissioned staff can access the dashboard
+
+As this cobrand lacks a council_area_id, we currently need this to
+prevent all staff access.
 
 =cut
 
@@ -474,10 +477,8 @@ sub dashboard_permission {
 
     # Default behaviour if no user, or is a superuser
     return if !$c->user_exists || $c->user->is_superuser;
-    # Otherwise, check the roles
-    my $admin = grep { $_->name eq 'Admin' } $c->user->obj->roles->all;
-    return 0 unless $admin;
-    return undef;
+    # Otherwise, check the permission
+    return $c->user->from_body && $c->user->has_permission_to('view_dashboard', $self->body->id);
 }
 
 sub dashboard_export_problems_add_columns {
