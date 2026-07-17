@@ -1025,7 +1025,7 @@ FixMyStreet::override_config {
 
                 $mech->get_ok('/waste/12345/enquiry?template=problem&service_id=940');
                 $mech->content_contains('You escalated this missed collection report on Tuesday, 13 September.');
-                $mech->content_contains("We aim to resolve this by the end of Wednesday, 14 September", 'escalation target date within one working day displayed');
+                $mech->content_contains("We aim to resolve this by the end of Thursday, 15 September", 'escalation target date within one working day displayed');
                 $mech->content_lacks('redirect-missed', 'Report missed not present');
             };
 
@@ -1224,12 +1224,12 @@ FixMyStreet::override_config {
             like $report->get_extra_field_value('Notes'), qr"There was no problem with the bin";
             like $report->get_extra_field_value('Notes'), qr"Originally Echo Event #112112321";
             FixMyStreet::Script::Reports::send();
-            $mech->email_count_is(1);
             my $email = $mech->get_email;
             my $text_email = $mech->get_text_body_from_email($email);
             my $html_email = $mech->get_html_body_from_email($email);
             like $text_email, qr/respond in the next two working days/, 'Correct text email next steps';
             like $html_email, qr/respond in the next two working days/, 'Correct text email next steps';
+            $mech->clear_emails_ok;
         };
 
         subtest 'Existing dispute event' => sub {
@@ -1397,6 +1397,11 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('Notes'), 'Originally Echo Event #112112321';
             is $report->get_extra_field_value('container_request_guid'), 'container-request-event-guid';
             is $report->get_extra_field_value('original_ref'), 'LBS-789';
+            $report->update({ confirmed => $window_start_time }); # as was created with current_timestamp
+
+            FixMyStreet::Script::Reports::send();
+            my $email = $mech->get_html_body_from_email;
+            like $email, qr/aim to deliver the container by\s+Tuesday, 11 March/;
         };
 
         $e->mock('GetEventsForObject', sub { [] }); # reset

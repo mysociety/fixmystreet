@@ -353,6 +353,14 @@ sub missed_target_date {
     return $target->strftime('%A, %e %B');
 }
 
+sub container_escalation_target_date {
+    my ($self, $report) = @_;
+    my $wd = FixMyStreet::WorkingDays->new();
+    my $days = $self->waste_target_days->{container_escalation};
+    my $target = $wd->add_days($report->confirmed, $days);
+    return $target->strftime('%A, %e %B');
+}
+
 sub _setup_missed_collection_escalations_for_service {
     my ($self, $row) = @_;
     my $events = $row->{events} or return;

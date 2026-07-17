@@ -1397,7 +1397,7 @@ FixMyStreet::override_config {
                 ] });
                 $mech->get_ok('/waste/12345');
                 $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable refuse collection' });
-                $mech->content_contains("We aim to resolve this by the end of Monday, 12 September");
+                $mech->content_contains("We aim to resolve this by the end of Tuesday, 13 September");
                 $mech->content_contains('You escalated this missed collection report on Saturday, 10 September.');
             };
 

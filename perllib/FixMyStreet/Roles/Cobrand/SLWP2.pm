@@ -804,12 +804,19 @@ sub waste_bulky_missed_blocked_codes {
     return {
         # Not Completed
         19185 => \%RESOLUTION_CODES,
+        19236 => \%RESOLUTION_CODES,
         # Partially Completed
         19186 => {
             all => 'Partially Completed',
         },
+        19237 => {
+            all => 'Partially Completed',
+        },
         # Cancelled
         19187 => {
+            all => 'Cancelled',
+        },
+        19238 => {
             all => 'Cancelled',
         },
     };
