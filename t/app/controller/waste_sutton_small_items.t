@@ -601,7 +601,7 @@ FixMyStreet::override_config {
                             { DateTime => '2025-08-08T12:00:00Z' },
                         EventDate => { DateTime => '2025-08-08T12:00:00Z' },
                         ResolutionCodeId => 232,
-                        EventStateId     => 19184,
+                        EventStateId     => 19235,
                     }
                 ]
             }
@@ -648,7 +648,7 @@ FixMyStreet::override_config {
                             { DateTime => '2025-08-08T12:00:00Z' },
                         EventDate => { DateTime => '2025-08-08T12:00:00Z' },
                         ResolutionCodeId => 232,
-                        EventStateId     => 19184,
+                        EventStateId     => 19235,
                     },
                     # Event for missed collection
                     {   Guid        => '8d222528-4308-44c3-9981-ea6131a6b00f',
@@ -676,7 +676,7 @@ FixMyStreet::override_config {
             Guid => '4ea70923-7151-11f0-aeea-cd51f3977c8c',
             ServiceId => 952, # Small items
             EventTypeId => 3144, # small items collection
-            EventStateId => 19185, # Not Completed
+            EventStateId => 19236, # Not Completed
             EventDate => { DateTime => '2025-04-01T00:00:00Z' },
             ResolvedDate => { DateTime => '2025-04-08T16:30:00Z' },
             ResolutionCodeId => 466, # No access - Gate locked
