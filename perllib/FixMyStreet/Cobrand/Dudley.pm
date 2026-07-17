@@ -48,6 +48,24 @@ sub admin_user_domain { 'dudley.gov.uk' }
 
 sub abuse_reports_only { 1 }
 
+=item * Only open reports on map by default
+
+=cut
+
+sub on_map_default_status { 'open' }
+
+=item * Potholes category only at present
+
+=cut
+
+sub categories_restriction {
+    my ($self, $rs) = @_;
+    return $rs->search( { -or => [
+        'me.send_method' => undef, # Open311 categories, or National Highways
+        'me.send_method' => '', # Open311 categories that have been edited in the admin
+    ] } );
+}
+
 =item * Fetch the nearest USRN if we don't have it already
 
 =cut
