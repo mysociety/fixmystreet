@@ -1,0 +1,90 @@
+@import "_variables";
+@import "../sass/layout";
+
+/* NAVBAR */
+#site-logo {
+    background-size: contain;
+    height: $mappage-header-height;
+    width: 11.5625rem;
+}
+
+.nav-menu--main {
+  a, span {
+    font-weight: 800;
+    font-size: 0.8rem;
+    margin: 1rem 0.25rem;
+    padding: $button-padding-top 4px;
+    text-transform: uppercase;
+
+    border-bottom: .375rem solid transparent;
+    &:hover {
+      border-bottom: .375rem solid $primary;
+    }
+
+    &:hover {
+      color: $primary;
+    }
+  }
+
+  span {
+    color: $primary;
+    background-color: transparent;
+    border-color: $primary;
+    &:hover {
+      color: $primary;
+    }
+  }
+
+  a.report-a-problem-btn {
+    border-radius: $button-border-radius;
+    padding: $button-padding-top 1rem;
+    background-color: $button-primary-bg-top;
+    color: $primary_text;
+    border-width: 0;
+    margin: 1rem 0.5rem;
+    text-transform: none;
+
+    &:hover {
+      border-width: 0;
+      background-color: $button-primary-hover-bg-bottom;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    a, span {
+      margin: 1rem;
+      font-size: 1rem;
+    }
+  }
+
+}
+
+/* FRONTPAGE */
+#front_stats {
+  color: $cobrand_navy;
+  border-color: $cobrand_navy;
+}
+
+#front-main {
+  padding: 6em;
+}
+
+#front-main #front-main-container,
+.frontpage .content {
+  padding: 3em;
+  border-radius: 8px;
+}
+
+/* MAP PAGE */
+.big-green-banner {
+  font-size: 1.2rem;
+}
+
+.problem-back {
+  padding: 0 1em 0.9em;
+}
+
+/* FOOTER */
+.cobrand-footer {
+   font-size: 1rem;
+}
