@@ -87,6 +87,12 @@ INCLUDE '_email_top.html';
       <p style="[% p_style %]">
         We will investigate what happened with your container delivery, and if we find that it was not delivered we will arrange a new delivery.
       </p>
+    [% ELSIF report.category == 'Failure to Deliver Bags/Containers' %]
+      <p style="[% p_style %]">
+        You have reported that your container was not delivered.
+        We are investigating and aim to deliver the container by
+        [% cobrand.container_escalation_target_date(report) %]
+      </p>
     [% END %]
 
 [% ELSIF cobrand.moniker == 'kingston'%]
@@ -120,6 +126,12 @@ INCLUDE '_email_top.html';
     </p>
     <p style="[% p_style %]">
       Please note that we are unable to return to correct the problem, unless you are on the Assisted Collection service and you have indicated you require additional help.
+    </p>
+  [% ELSIF report.category == 'Failure to Deliver Bags/Containers' %]
+    <p style="[% p_style %]">
+      You have reported that your container was not delivered.
+      We are investigating and aim to deliver the container by
+      [% cobrand.container_escalation_target_date(report) %]
     </p>
   [% END %]
 
