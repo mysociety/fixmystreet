@@ -144,6 +144,12 @@ sub waste_munge_bin_services_open_requests {
     if ($open_requests->{$CONTAINERS{paper_140}}) {
         $open_requests->{$CONTAINERS{paper_240}} = $open_requests->{$CONTAINERS{paper_140}};
     }
+
+    my $wd = FixMyStreet::WorkingDays->new();
+    for my $req (values %$open_requests) {
+        next unless $req;
+        $req->{expected_date} = $wd->add_days($req->{date}, $self->wasteworks_config->{request_timeframe_raw})->set_hour(0);
+    }
 }
 
 sub image_for_unit {
@@ -603,6 +609,86 @@ sub waste_munge_request_data {
     }
 }
 
+=head2 waste_target_days
+
+Configure the number of days a waste event is expected to be resolved in.
+
+=cut
+
+sub waste_target_days {
+    {
+        container_escalation => 5,
+        missed => 2,
+        missed_escalation => 2,
+        missed_bulky => 2,
+        missed_bulky_escalation => 2,
+    }
+}
+
+=head2 waste_day_end_hour
+
+Time that the day ends for the purposes of calculating things like escalation windows
+
+=cut
+
+sub waste_day_end_hour { 18 }
+
+=head2 waste_escalation_window
+
+Configure when the escalation window for waste complaints starts/ends.
+
+=cut
+
+sub waste_escalation_window {
+    my $lengths = {
+        missed_start => 2,
+        missed_length_weekly => 2,
+        missed_length_fortnightly => 2,
+        container_start => 10,
+        container_length => 10,
+        bulky_start => 2,
+        bulky_length => 2,
+    };
+    # use smaller windows on staging for testing
+    if (FixMyStreet->config('STAGING_SITE') && !FixMyStreet->test_mode) {
+        for (keys %$lengths) {
+            $lengths->{$_} = 1;
+        }
+    }
+
+    return $lengths;
+}
+
+=head2 waste_allow_non_actionable_report
+
+Permit a non-actionable missed collection report if normal missed collection
+window has passed, and a report has not already been made for the given
+service within the current collection cycle.
+
+Non-actionable means Kingston receive the report but only for information
+purposes; they do not act on it and the report is automatically closed.
+
+This method assumes 'events' has been set on $service.
+
+=cut
+
+sub waste_allow_non_actionable_report {
+    my ( $self, $service ) = @_;
+
+    return
+        if $service->{report_allowed}
+        || $service->{report_open};
+
+    my $recent_non_actionable
+        = ( $service->{events}
+            ->filter( { event_type => $self->general_enquiry_event_id } )
+            ->list )[0];
+
+    $recent_non_actionable
+        ? ( $service->{report_open_non_actionable} = $recent_non_actionable )
+        : ( $service->{report_allowed_non_actionable} = 1 );
+}
+
 =head2 container_cost / admin_fee_cost
 
 Calculate how much, if anything, a request for a container should be.
@@ -685,5 +771,50 @@ sub bulky_location_text_prompt {
 sub bulky_show_location_field_mandatory { 0 }
 
 sub bulky_disabled_location_photo { 1 }
+
+sub bulky_dispute_window_days { 20 }
+
+# Earliest date to look back to for recent bulky collections - 20 working days
+sub bulky_recent_date {
+    my $today = DateTime->now( time_zone => FixMyStreet->local_time_zone )
+        ->truncate( to => 'day' );
+
+    my $wd = FixMyStreet::WorkingDays->new();
+
+    my $start = $wd->sub_days( $today, bulky_dispute_window_days() );
+
+    return $start;
+}
+
+=head2 Disputes
+
+=cut
+
+=head2 waste_check_can_raise_dispute
+
+Checks if disputes can be raised for the service and resolution text.
+
+=cut
+
+sub waste_check_can_raise_dispute {
+    my ($self, %args) = @_;
+
+    %args = (
+        resolution_key => '',
+        type => '',
+        %args,
+    );
+
+    # Can raise dispute against any resolution of a missed collection report
+    if ( $args{type} eq 'missed_collection_report' ) {
+        return 1;
+    }
+
+    # Can only raise dispute against original collection if the reason
+    # crew gave is 'Not presented'
+    if ( $args{resolution_key} eq 66 ) {
+        return 1;
+    }
+}
 
 1;

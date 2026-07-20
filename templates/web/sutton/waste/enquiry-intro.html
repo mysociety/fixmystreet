@@ -1,7 +1,57 @@
-[% SET service_id = c.req.params.service_id %]
-[% IF services.$service_id %]
+[%-
+SET service_id = c.req.params.service_id;
+SET category = c.req.params.category;
+SET booking_id = c.req.params.original_booking_id;
+
+# For ordinary services & their missed collection reports
+IF services.$service_id;
+    SET service = services.$service_id;
+    SET service_name = service.service_name;
+    SET resolution = c.cobrand.resolution_text(service.last.resolution_id) || service.report_open.resolution_reason;
+    SET image = service.last.image;
+END;
+
+IF missed_events_by_guid.$guid;
+    SET missed = missed_events_by_guid.$guid;
+    SET service_name = missed.service_name;
+    SET resolution = missed.resolution_reason;
+ELSIF booked_missed.$guid;
+    SET booked = 1;
+    SET missed = booked_missed.$guid;
+    SET service_name = missed.service_name;
+    SET resolution = missed.report_locked_out_reason;
+END -%]
+
+[%- IF service_name %]
 <dl class="waste__address">
     <dt class="waste__address__title">Service</dt>
-    <dd class="waste__address__property">[% services.$service_id.service_name %]</dd>
+    <dd class="waste__address__property">[% service_name %]</dd>
 </dl>
+[% END -%]
+
+[%- IF category == 'Missed collection dispute' %]
+    [%- IF service_name %]
+    <p>Our crews reported that your [% service_name %] collection was not made:</p>
+    [% ELSE %]
+    <p>Our crews reported that your collection was not made:</p>
+    [% END %]
+    [% IF resolution %]
+    [% resolution | staff_html_markup({ is_body_user => 1 }) %]
+    [% END -%]
+    [% IF image %]
+    <p><img src="[% image %]" alt=""></p>
+    [% END %]
+
+    <p>
+    If you are disputing the reasons for this missed collection please use this form. We will investigate using our onboard 360 degree video cameras and other photo evidence before making a decision.
+    </p>
+
+    [%- SET update = cobrand.waste_bulky_resolution_photo_update( booking_id) %]
+    [%- IF update %]
+    [% INCLUDE 'report/photo.html' object=update %]
+
+    <p>
+        This photo provides the evidence why your collection wasn’t made. If you agree with this, no further action is needed, if you don’t agree with this please continue to report the reason you are disputing this missed on this form.
+    </p>
+    [% END -%]
 [% END %]

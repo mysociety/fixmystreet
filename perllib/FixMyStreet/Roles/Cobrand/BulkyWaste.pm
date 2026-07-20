@@ -421,7 +421,10 @@ sub find_booked_collections {
         uprn => $uprn,
     })->order_by('-id')->all;
 
-    my $dt = DateTime->now( time_zone => FixMyStreet->local_time_zone )->truncate( to => 'day' )->subtract ( days => 10 );
+    my $recent_dt = $self->{c}->cobrand->call_hook('bulky_recent_date')
+        // DateTime->now( time_zone => FixMyStreet->local_time_zone )
+            ->truncate( to => 'day' )
+            ->subtract( days => 10 );
     my $out;
     foreach (@reports) {
         my $key
@@ -430,7 +433,7 @@ sub find_booked_collections {
             :                                            'bulky';
 
         my $date = $self->collection_date($_);
-        next if $recent && $date < $dt;
+        next if $recent && $date < $recent_dt;
 
         # If we've already sent it, and we want a full list for display, we don't
         # want to show ones without a reference

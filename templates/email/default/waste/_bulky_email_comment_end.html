@@ -4,6 +4,27 @@
 
 [% email_sanitize_html(update, 'item_text_original') | replace('<p>', '<p style="' _ list_item_p_style _ '">') %]
 
+[% IF cobrand.moniker == 'sutton' OR cobrand.moniker == 'kingston' %]
+    [% IF report.category == 'Small items collection' %]
+        <p>
+        Our crews reported your small items collection was not made for the reason above.
+        </p>
+    [% ELSE %]
+        <p>
+        Our crews reported your bulky waste collection was not made for the reason above.
+        </p>
+    [% END %]
+
+    [%
+        SET service_id = report.category == 'Small items collection'
+            ? cobrand.feature('echo').small_items_service_id
+            : cobrand.feature('echo').bulky_service_id
+    %]
+    <p>
+        <a href="[% cobrand.base_url %]/waste/[% property_id %]/enquiry?category=Missed+collection+dispute&service_id=[% service_id %]&original_booking_id=[% report.id %]">Report a problem with this missed collection</a>
+    </p>
+[% END %]
+
 <p style="[% p_style %]">
     Collection date: [% collection_date %]
 </p>

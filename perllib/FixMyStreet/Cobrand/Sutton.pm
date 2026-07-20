@@ -110,30 +110,6 @@ sub skip_alert_state_changed_to {
     return $report->category eq 'Small items collection' || $report->category eq 'Request new container';
 }
 
-=head2 waste_on_the_day_criteria
-
-If it's before 6pm on the day of collection, treat an Outstanding/Allocated
-task as if it's the next collection and in progress, do not allow missed
-collection reporting, and do not show the collected time.
-
-=cut
-
-sub waste_on_the_day_criteria {
-    my ($self, $completed, $state, $now, $row) = @_;
-
-    return unless $now->hour < 18;
-    if ($state eq 'Outstanding' || $state eq 'Allocated') {
-        $row->{next} = $row->{last};
-        $row->{next}{state} = 'In progress';
-        delete $row->{last};
-    }
-    $row->{report_allowed} = 0; # No reports pre-6pm, completed or not
-    if ($row->{last}) {
-        # Prevent showing collected time until reporting is allowed
-        $row->{last}{completed} = 0;
-    }
-}
-
 =head2 public_holidays
 
 The only Bank Holidays relevant to Sutton are Christmas, Boxing, New Year.
@@ -230,6 +206,19 @@ sub waste_munge_bin_services_open_requests {
     if ($open_requests->{$CONTAINERS{paper_140}}) {
         $open_requests->{$CONTAINERS{paper_240}} = $open_requests->{$CONTAINERS{paper_140}};
     }
+}
+
+=head2 waste_check_can_raise_dispute
+
+Checks if disputes can be raised for the service and resolution text.
+
+=cut
+
+sub waste_check_can_raise_dispute {
+    my ($self, %args) = @_;
+
+    # currently we allow disputes on all resolution codes
+    return 1;
 }
 
 =head2 image_for_unit
@@ -625,6 +614,54 @@ sub request_cost {
     }
 }
 
+=head2 waste_target_days
+
+Configure the number of days a waste event is expected to be resolved in.
+
+=cut
+
+sub waste_target_days {
+    {
+        container_escalation => 5,
+        missed => 2,
+        missed_escalation => 2,
+        missed_bulky => 2,
+        missed_bulky_escalation => 2,
+    }
+}
+
+=head2 waste_day_end_hour
+
+Time that the day ends for the purposes of calculating things like escalation windows
+
+=cut
+
+sub waste_day_end_hour { 18 }
+
+=head2 waste_escalation_window
+
+Configure when the escalation window for waste complaints starts/ends.
+
+=cut
+
+sub waste_escalation_window {
+    my $lengths = {
+        missed_start => 2,
+        missed_length_weekly => 2,
+        missed_length_fortnightly => 2,
+        container_start => 21,
+        container_length => 10,
+        bulky_start => 2,
+        bulky_length => 2,
+    };
+    # use smaller windows on staging for testing
+    if (FixMyStreet->config('STAGING_SITE') && !FixMyStreet->test_mode) {
+        for (keys %$lengths) {
+            $lengths->{$_} = 1;
+        }
+    }
+    return $lengths;
+}
 
 =head2 Bulky waste collection
 
@@ -690,6 +727,27 @@ sub bulky_show_individual_notes {
     return $self->{c}->stash->{small_items} ? 0 : 1;
 }
 
+=head2 waste_bulky_resolution_photo_update
+
+Given a report id get the update with the resolution photo for a bulky waste collection
+
+=cut
+
+sub waste_bulky_resolution_photo_update {
+    my ($self, $report_id) = @_;
+
+    if ($report_id) {
+        my $update = FixMyStreet::DB->resultset('Comment')->search({
+            problem_id => $report_id,
+            problem_state => 'unable to fix',
+            photo => { '!=' => undef },
+        })->first();
+        return $update if $update;
+    }
+}
+
+
+
 =head2 filter_booking_dates
 
 For small items, don't offer a date where there is already a small items booking
@@ -730,7 +788,7 @@ sub waste_munge_report_form_fields {
     push @$field_list, 'sutton_collection_note' => {
         type => 'Notice',
         widget => 'NoRender',
-        label => 'Once you’ve reported a missed collection, please leave the bin, box or caddy at the front of your property, ideally close to the pavement but not on it, ready for collection. Where this is not possible, bins, boxes, and caddies can be presented on the pavement, but must be removed as soon as possible after collection to avoid obstruction.',
+        label => 'We will return to collect your bin within 2 working days. Please leave the bin, box, or caddy at the front of your property ready for collection.',
     };
 }
 

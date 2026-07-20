@@ -1188,7 +1188,7 @@ FixMyStreet::override_config {
         } ] } );
         $mech->get_ok('/waste/12345');
         $mech->content_contains('A missed collection cannot be reported', 'Not completed');
-        $mech->content_contains('Gate locked');
+        $mech->content_contains('gate locked');
         $mech->get_ok('/waste/12345/report');
         $mech->content_lacks('Bulky waste collection');
         $echo->mock( 'GetEventsForObject', sub { [ {

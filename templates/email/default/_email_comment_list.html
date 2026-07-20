@@ -7,6 +7,8 @@
     [%~ END %]
     [% IF report.category == 'Bulky collection' AND (update.item_problem_state == 'closed' OR update.item_problem_state == 'fixed - council' OR update.item_problem_state == 'unable to fix') %]
       [% INCLUDE 'waste/_bulky_email_comment_end.html' %]
+    [% ELSIF cobrand.moniker == 'sutton' AND report.category == 'Small items collection' AND (update.item_problem_state == 'closed' OR update.item_problem_state == 'fixed - council' OR update.item_problem_state == 'unable to fix') %]
+      [% INCLUDE 'waste/_bulky_email_comment_end.html' %]
     [% ELSE %]
       [% email_sanitize_html(update, private_email ? "item_private_email_text" : undef) | replace('<p>', '<p style="' _ list_item_p_style _ '">') %]
       [% IF NOT private_email %]
@@ -18,6 +20,27 @@
         [%~ END %]
         [% '(' _ cobrand.prettify_dt(update.confirmed) _ ') ' IF cobrand.include_time_in_update_alerts -%]
       </p>
+      [% END %]
+      [% IF (cobrand.moniker == 'sutton' OR cobrand.moniker == 'kingston') AND (report.category == 'Report missed collection' OR report.category == 'Escalate missed collection report') AND (update.item_problem_state == 'closed' OR update.item_problem_state == 'unable to fix' OR update.item_problem_state == 'fixed') %]
+        [% IF report.category == 'Report missed collection' && update.item_problem_state != 'fixed' %]
+          <p>
+            Our crews reported your collection was not made for the reason above.
+          </p>
+        [% END %]
+
+        [%
+          # NOTE Sutton may use 'original_booking_id' to refer to a missed collection
+          # report associated with a standard collection, not just bookings
+          # and their associated missed collection reports.
+        %]
+        [%
+          SET include_report_id = cobrand.moniker == 'sutton'
+            OR report.get_extra_field_value('service_id') == cobrand.feature('echo').small_items_service_id
+            OR report.get_extra_field_value('service_id') == cobrand.feature('echo').bulky_service_id
+        %]
+        <p>
+          <a href="[% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') %]/enquiry?category=Missed+collection+dispute&service_id=[% report.get_extra_field_value('service_id') %][% IF include_report_id %]&original_booking_id=[% report.id %][% END %]">Report a problem with this missed collection</a>
+        </p>
       [% END %]
     [% END %]
     </div>

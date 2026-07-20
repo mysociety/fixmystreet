@@ -8,6 +8,7 @@ FixMyStreet::Roles::Cobrand::SLWP2 - shared code for Kingston and Sutton WasteWo
 
 package FixMyStreet::Roles::Cobrand::SLWP2;
 
+use utf8;
 use Moo::Role;
 with 'FixMyStreet::Roles::Cobrand::Echo';
 with 'FixMyStreet::Roles::Cobrand::BulkyWaste';
@@ -18,6 +19,30 @@ use JSON::MaybeXS;
 use LWP::Simple;
 use MIME::Base64;
 use WasteWorks::Costs;
+
+=head2 waste_on_the_day_criteria
+
+[Kingston/Sutton] [But not in their role as inheritance conflicts]
+If it's before 6pm on the day of collection, treat an Outstanding/Allocated
+task as if it's the next collection and in progress, and do not allow missed
+collection reporting if the task is not completed.
+
+=cut
+
+sub waste_on_the_day_criteria {
+    my ($self, $completed, $state, $now, $row) = @_;
+
+    return unless $now->hour < 18 || $self->moniker eq 'merton';
+    if ($state eq 'Outstanding' || $state eq 'Allocated') {
+        $row->{next} = $row->{last};
+        $row->{next}{state} = 'In progress';
+        delete $row->{last};
+    }
+    if (!$completed) {
+        $row->{report_allowed} = 0;
+        $row->{report_allowed_non_actionable} = 0;
+    }
+}
 
 sub waste_staff_choose_payment_method { 1 }
 around waste_cheque_payments => sub {
@@ -112,6 +137,7 @@ my %EVENT_TYPE_IDS = (
     garden_amend => 3163,
     bulky => 3130,
     small_items => 3144,
+    general_enquiry => 3140,
 );
 lock_hash(%EVENT_TYPE_IDS);
 
@@ -147,6 +173,53 @@ my %GARDEN_QUANTITIES = (
     sack => 11,
 );
 
+my %RESOLUTION_CODES = (
+    50 => 'Unable to find the location',
+    200 => 'Damaged bin',
+    1135 => 'Contaminated (builder’s waste)',
+    1134 => 'Contaminated (commercial waste)',
+    1368 => 'Contaminated (electrical items)',
+    1366 => 'Contaminated (food waste)',
+    1374 => 'Contaminated (garden waste)',
+    1373 => 'Contaminated (glass)',
+    1372 => 'Contaminated (hazardous waste)',
+    1376 => 'Contaminated (mixed)',
+    1369 => 'Contaminated (nappies)',
+    1371 => 'Contaminated (other)',
+    1365 => 'Contaminated (paper/card)',
+    1375 => 'Contaminated (plastic)',
+    1364 => 'Contaminated (refuse)',
+    1370 => 'Contaminated (rigid plastic)',
+    1377 => 'Contaminated (tetrapak)',
+    1367 => 'Contaminated (textiles)',
+    606 => 'Excess waste left',
+    1361 => 'Health and safety reasons',
+    1359 => 'Health and safety reasons (damaged bin)',
+    1358 => 'Health and safety reasons',
+    1378 => 'Health and safety reasons',
+    1362 => 'Health and safety reasons',
+    1360 => 'Health and safety reasons',
+    1146 => 'Health and safety reasons',
+    516 => 'Incorrect waste',
+    55 => 'Insufficient information',
+    913 => 'No access due to key or access code not working',
+    615 => 'No access due to dog outside',
+    466 => 'No access due to gate locked',
+    616 => 'No access due to weather conditions',
+    617 => 'No access due to parked vehicle',
+    614 => 'No access due to police incident',
+    613 => 'No access due to road works',
+    66 => 'Bin not presented',
+    646 => 'Various',
+);
+lock_hash(%RESOLUTION_CODES);
+
+sub resolution_text {
+    my ($self, $resolution_id) = @_;
+    return $RESOLUTION_CODES{$resolution_id} if exists $RESOLUTION_CODES{$resolution_id};
+    return '';
+}
+
 sub garden_service_id { $SERVICE_IDS{$_[0]->moniker}{garden} }
 
 sub waste_service_to_containers { () }
@@ -154,6 +227,8 @@ sub waste_service_to_containers { () }
 sub garden_subscription_event_id { $EVENT_TYPE_IDS{garden_add} }
 
 sub garden_renewal_reduction_sparks_container_removal { 1 }
+
+sub general_enquiry_event_id { $EVENT_TYPE_IDS{general_enquiry} }
 
 sub waste_show_garden_modify {
     my ($self, $unit) = @_;
@@ -256,6 +331,7 @@ sub waste_extra_service_info {
         }
         $self->{c}->stash->{communal_property} = 1 if $service_id == $service_ids->{communal_refuse} || $service_id == $service_ids->{communal_food} || $service_id == $service_ids->{communal_paper} || $service_id == $service_ids->{communal_mixed};
 
+        # detect flat above shop
         if ($service_id == $service_ids->{fas_refuse} || $service_id == $service_ids->{fas_mixed}) {
             $self->{c}->stash->{fas_property} = 1;
         }
@@ -663,6 +739,11 @@ sub open311_post_send {
             $row->discard_changes;
         }
     });
+
+    if ( $row->category eq 'Report out-of-time missed collection' ) {
+        $row->update( { state => 'no further action' } );
+    }
+
 }
 
 =item * Look for completion photos on updates, and ignore "Not Completed" without a resolution code
@@ -715,31 +796,20 @@ property types allowed to book collections.
 sub waste_bulky_missed_blocked_codes {
     return {
         # Not Completed
-        19185 => {
-            50 => 'Address incorrect',
-            1361 => 'H&S - Aggression / Violence',
-            1359 => 'H&S - Damaged container',
-            1358 => 'H&S - Heavy bin / bag',
-            1378 => 'H&S - Other',
-            1362 => 'H&S - Unsafe equipment',
-            1360 => 'H&S - Unsafe surroundings',
-            1146 => 'H&S - Vermin',
-            913 => 'No access - Changed key',
-            615 => 'No access - Dog out',
-            466 => 'No access - Gate locked',
-            616 => 'No access - Weather',
-            617 => 'No access - Parked vehicle',
-            614 => 'No access - Police incident',
-            613 => 'No access - Road works',
-            66 => 'Not presented',
-            646 => 'Various',
-        },
+        19185 => \%RESOLUTION_CODES,
+        19236 => \%RESOLUTION_CODES,
         # Partially Completed
         19186 => {
             all => 'Partially Completed',
         },
+        19237 => {
+            all => 'Partially Completed',
+        },
         # Cancelled
         19187 => {
+            all => 'Cancelled',
+        },
+        19238 => {
             all => 'Cancelled',
         },
     };
