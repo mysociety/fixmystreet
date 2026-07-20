@@ -16,10 +16,16 @@ END;
 
 [% enquiry_message = BLOCK %]
     [% IF service.escalations.missed.open %]
+    <div class="govuk-warning-text info">
+        <div class="govuk-warning-text__content">
         <p>You escalated this missed collection report on [% date.format(service.escalations.missed.open.date, '%A, %-d %B') %].
         We aim to resolve this by the end of [% date.format(service.escalations.missed.open.target, '%A, %-d %B') %].
         </p>
+        </div>
+    </div>
     [% ELSIF service.escalations.missed.event %]
+    <div class="govuk-warning-text info">
+        <div class="govuk-warning-text__content">
         <p>A [% service.service_name FILTER lower %] collection was reported as missed
         [% IF communal_property %]
             by yourself, a neighbour, or your Managing Agent
@@ -27,7 +33,11 @@ END;
         on [% date.format(service.report_open.date, '%A, %-d %B') %].
         If your bin has still not been collected, you can escalate the report now and a crew will be back to collect your bin within 2 working days.
         </p>
+        </div>
+    </div>
     [% ELSIF service.dispute %]
+    <div class="govuk-warning-text info">
+        <div class="govuk-warning-text__content">
         [% IF NOT service.dispute.open %]
         <p>The crew have closed your collection task as not collected[%
             IF resolution %]: [% resolution | staff_html_markup({ is_body_user => 1 }) %]
@@ -36,7 +46,11 @@ END;
         </p>
         <p>If it is less than 2 working days, you can dispute the reason given and we will investigate. If we find that the collection task was closed incorrectly, we will return to collect the bin.</p>
         [% END %]
+        </div>
+    </div>
     [% ELSIF service.report_open OR service.report_open_non_actionable %]
+    <div class="govuk-warning-text info">
+        <div class="govuk-warning-text__content">
         [% SET report_date = service.report_open.date || service.report_open_non_actionable.date %]
         <p>A [% service.service_name FILTER lower %] collection was reported as missed
         [% IF communal_property %]
@@ -47,14 +61,22 @@ END;
         We aim to resolve this by the end of the day on [% date.format(resolve_date, '%A, %-d %B') %].
         If it has still not been collected, you will be able to come back to this page to escalate the reported missed collection.
         </p>
+        </div>
+    </div>
     [% ELSIF service.report_locked_out %]
+    <div class="govuk-warning-text info">
+        <div class="govuk-warning-text__content">
         <p>The crew have closed your collection task as not collected[%
             IF resolution %]: [% resolution | staff_html_markup({ is_body_user => 1 }) %]
             [% END %]
             Please resolve the issue so the bin can be collected on the next scheduled collection. <a href="https://www.sutton.gov.uk/waste-and-recycling/your-collection-service">Check our website</a> for more information on how your bin should be presented and what you can put in it.
         </p>
         <p>If it is less than 2 working days since your collection day, you can dispute the reason given and we will investigate. If we find that the collection task was closed incorrectly, we will return to collect the bin.</p>
+        </div>
+    </div>
     [% ELSIF service.report_allowed %]
+    <div class="govuk-warning-text info">
+        <div class="govuk-warning-text__content">
         <p>Our records show this collection took place
         on [% date.format(service.last.date) | replace('~~~', service.last.ordinal) %].
         If it has not been collected, you can report it as missed and we will return within 2 working days to collect it.
@@ -62,6 +84,8 @@ END;
         [% IF c.cobrand.moniker == 'kingston' AND fas_property %]
              <p>If a spillage on a public highway occurred during a [% service.service_name FILTER lower %] collection, please report <a href="https://kingston-self.achieveservice.com/service/Request_a_street_clean_in_Kingston">a street cleaning issue</a>.</p>
         [% END %]
+        </div>
+    </div>
     [% END %]
 [% END %]
 [%
