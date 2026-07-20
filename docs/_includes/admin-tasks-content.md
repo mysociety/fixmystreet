@@ -1007,7 +1007,7 @@ above, ‘Creating a template’.
 
 To deactivate a template, select the 'Inactive' checkbox from the options toward the bottom of the page and then click 'Save changes'. When checked, this template will not be used for incoming Open311 updates, nor will it be available for selection by staff when adding updates manually.
 
-<img loading="lazy" alt="Templates marked as inactive will not be used for incoming Open311 updates, nor will it be available for selection by staff when adding updates manually" src="docs/assets/img/pro-user-guide/Marking template as inactive.png" class="admin-screenshot"/>
+<img loading="lazy" alt="Templates marked as inactive will not be used for incoming Open311 updates, nor will it be available for selection by staff when adding updates manually" src="/assets/img/pro-user-guide/Marking template as inactive.png" class="admin-screenshot"/>
 
 Marking a template as inactive is particularly useful for when responses to reports in certain categories change throughout the year. For example, you may want to have different versions of templates for reports about grit bins, disabling any that aren’t relevant within the summer months and vice versa.
 
