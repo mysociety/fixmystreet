@@ -87,6 +87,7 @@ my %RESOLUTION_CODES = (
     528 => 'contaminated', # Con - Rigid Plastics
     529 => 'contaminated', # Con - Other
     674 => 'contaminated', # Con - Refuse
+    801 => 'not-presented', # Item not at Location specified
     802 => 'contaminated', # Con - Clinical
 );
 lock_hash(%RESOLUTION_CODES);
