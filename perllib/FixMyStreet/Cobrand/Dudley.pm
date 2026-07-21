@@ -95,6 +95,18 @@ sub open311_extra_data_include {
     return $open311_only;
 }
 
+=item * Send a confirmation email once the report has been sent, quoting its FMS ID
+
+=cut
+
+sub report_sent_confirmation_email { 'id' }
+
+=item * Starts the map more zoomed in than the default
+
+=cut
+
+sub default_map_zoom { 5 }
+
 =item * Also send an email on Open311 categories, if email provided
 
 =back

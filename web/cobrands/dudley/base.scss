@@ -107,19 +107,85 @@ a#geolocate_link {
 
 
 /* SITE MESSAGE */
-// Found here: https://www.dudley.gov.uk/schools/music-lessons/music-tuition
+// Found here: https://www.dudley.gov.uk/residents/parking-and-roads/parking-in-dudley/car-parks/
 .site-message {
-  color: $primary_b;
+  color: $cobrand_white;
   padding: 1.5rem;
-  background-color: $cobrand_white;
+  background-color: $primary;
   border: none;
-  border-left: 2px solid white;
   word-wrap: break-word;
+
+  a {
+    color: $cobrand_white;
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
 }
 
 /* FOOTER */
 .cobrand-footer {
-  font-size: 1rem;
+  font-size: .7894736842rem;
+  padding-bottom: 80px;
+
+  a {
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+      color: $cobrand_green;
+    }
+  }
+
+  ul>li {
+    list-style: none;
+    margin-bottom: 15px;
+  }
+
+  &__background{
+    background: linear-gradient(to bottom,#ffffff 0%,#B9C7E3 100%);
+    margin-bottom: 60px;
+    margin-top: 10px;
+    padding-top: 60px;
+  }
+
+  &__nav {
+    border-bottom: 1px solid #333;
+    margin-bottom: 50px;
+    padding-bottom: 30px;
+  }
+
+  &__list,
+  &__strapline  {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
+    align-items: center;
+  }
+
+  &__logo--main {
+    width: 220px;
+  }
+
+  &__logo--secondary {
+    border-radius: 5px;
+    width: 150px;
+  }
+
+  &__strapline-title {
+    font-weight: 400;
+    font-size: 1.0526315789rem;
+    margin: 50px 0;
+  }
+
+  &__copyright {
+    margin: 20px 0;
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.2;
+  }
 }
 
 @import "../fixmystreet-uk-councils/societyworks-footer";

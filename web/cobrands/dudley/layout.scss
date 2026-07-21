@@ -42,3 +42,31 @@
 /* MAP PAGE */
 
 /* FOOTER */
+.cobrand-footer {
+  &__background {
+    margin-bottom: 30px;
+    padding-top: 30px;
+  }
+
+  &__nav {
+    padding-bottom: 0;
+  }
+
+  &__list,
+  &__strapline {
+    flex-direction: row;
+    align-items: end;
+  }
+
+  &__logo--main {
+    width: auto;
+    height: 89px;
+  }
+
+  &__strapline-title {
+    font-size: 1.5789473684rem;
+    margin: 0;
+  }
+
+}
+
