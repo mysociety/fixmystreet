@@ -5,7 +5,24 @@
 
 @import "../sass/base";
 
-/*TYPOGRAPHY */
+/* GENERAL */
+.container {
+  padding: 0 1.25rem;
+}
+
+ul {
+  li {
+    &::marker {
+      color: #d1d5db;
+    }
+  }
+}
+
+ul>li {
+  list-style-type: disc;
+}
+
+/* TYPOGRAPHY */
 h1 {
   font-size: 1.9rem;
 }
@@ -181,6 +198,10 @@ input[type="checkbox"],
   color: $primary !important; // Overrides .btn
 }
 
+.multi-select-menu {
+  box-shadow: none;
+}
+
 /* NAVBAR */
 #site-header {
   .js-nav-open & {
@@ -256,8 +277,9 @@ input[type="checkbox"],
   border-radius: 999px;
   outline: none !important;
 
-  .js-nav-open & {
-    background-image: url('/cobrands/canalrivertrust/images/close.svg');
+  html.js-nav-open & {
+    border: 1px solid $primary;
+    background-image: url('/cobrands/canalrivertrust/images/close-menu.svg');
     background-color: $cobrand_blue_600;
   }
 }
@@ -273,6 +295,10 @@ input[type="checkbox"],
 
 #front-main-container {
   border-radius: 0.375rem;
+}
+
+.report-forms-wrapper {
+  padding: 1rem 1.25rem;
 }
 
 .postcode-form-box {
