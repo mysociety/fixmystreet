@@ -677,6 +677,8 @@ FixMyStreet::override_config {
             subtest 'Raising a dispute never available' => sub {
                 set_fixed_time('2022-09-09T15:30:00Z');
                 get_problem_page();
+                like $mech->text,
+                    qr/The crew have closed your collection task as not collected:.*Unable to find the location/;
                 $mech->content_lacks($dispute_label, 'nothing before window opens');
 
                 set_fixed_time('2022-09-09T16:01:00Z');
@@ -716,12 +718,17 @@ FixMyStreet::override_config {
                 get_problem_page();
                 $mech->content_like(qr/name="category" value="Missed collection dispute"[^>]+disabled/s);
                 $mech->content_contains($dispute_label, 'shown but disabled just after window closes');
+                unlike $mech->text,
+                    qr/The crew have marked this collection as completed/,
+                    '"too late" messaging not shown';
             };
 
             subtest 'Follow dispute link' => sub {
                 set_fixed_time('2022-09-11T16:00:00Z');
 
                 get_problem_page();
+                like $mech->text,
+                    qr/The crew have closed your collection task as not collected:.*Bin not presented/;
                 $mech->submit_form(
                     with_fields => { category => 'Missed collection dispute' },
                 );
@@ -821,13 +828,18 @@ FixMyStreet::override_config {
 
                 set_fixed_time('2022-09-14T00:01:00Z');
                 get_problem_page();
-                $mech->content_lacks($dispute_label, 'not allowed just after window closes');
+                like $mech->text,
+                    qr/The crew have closed your collection task as not collected.*Health and safety reasons/;
+                $mech->content_like(qr/name="category" value="Missed collection dispute"[^>]+disabled/s);
+                $mech->content_contains($dispute_label, 'shown but disabled just after window closes');
             };
 
             subtest 'Follow dispute link' => sub {
                 set_fixed_time('2022-09-11T16:00:00Z');
 
                 get_problem_page();
+                like $mech->text,
+                    qr/The crew have closed your collection task as not collected:.*Health and safety reasons/;
                 $mech->submit_form(
                     with_fields => { category => 'Missed collection dispute' },
                 );
@@ -932,6 +944,12 @@ FixMyStreet::override_config {
 
             subtest 'Follow dispute link' => sub {
                 get_problem_page();
+                like $mech->text,
+                    qr/The crew marked this collection as completed/;
+                like $mech->text,
+                    qr/If your bin has not been emptied.*we will return to collect the bin/;
+                unlike $mech->text, qr/$dispute_label/;
+                like $mech->text, qr/Dispute collection completion/;
                 $mech->submit_form(
                     with_fields => { category => 'Missed collection dispute' },
                 );
@@ -943,6 +961,11 @@ FixMyStreet::override_config {
                 $mech->reload;
                 like $mech->uri->path_query, qr/waste\/12345/,
                     'redirects to bin page if outside window';
+                get_problem_page();
+                $mech->text_contains('The crew have marked this collection as completed');
+                $mech->text_contains('Dispute collection completion');
+                $mech->content_like(qr/name="category" value="Missed collection dispute"[^>]+disabled/s);
+                $mech->text_contains('You cannot dispute this as it has been more than 2 working days');
             };
 
             subtest 'Correct dispute link in email' => sub {

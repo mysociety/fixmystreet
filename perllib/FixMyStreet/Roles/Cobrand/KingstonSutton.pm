@@ -435,11 +435,18 @@ sub _setup_missed_collection_disputes_for_service {
         # And no existing dispute since last collection
         && !$dispute_event
     ) {
-        if ( $self->_check_date_within_dispute_window( $missed_event->{date} ) eq 'within' ) {
+        my $window = $self->_check_date_within_dispute_window(
+            $missed_event->{date} );
+
+        if ( $window eq 'within' ) {
             if ($self->waste_check_can_raise_dispute( type => 'missed_collection_report' )) {
                 $row->{dispute}{missed_event} = $missed_event;
                 $row->{dispute}{allowed} = 1;
             }
+        }
+        elsif ( $window eq 'after' ) {
+            $row->{dispute}{missed_event} = $missed_event;
+            $row->{dispute}{too_late} = 1;
         }
     } elsif ($dispute_event) {
         $row->{dispute}{open} = $dispute_event;
