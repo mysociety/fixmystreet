@@ -144,6 +144,15 @@ sub pin_colour {
     return 'yellow';
 }
 
+sub pin_colour_key {
+    [
+        [ 'orange', 'In progress' ],
+        [ 'green', 'Fixed' ],
+        [ 'grey', 'Closed' ],
+        [ 'yellow', 'Other' ],
+    ];
+}
+
 sub disambiguate_location {
     my $self = shift;
     my $string = shift;
