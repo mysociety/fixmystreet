@@ -129,19 +129,9 @@ body.frontpage {
       margin-#{$right}: 0;
     }
   }
-
-  .next-steps__step--goodies & {
-    min-height: 37px; // stop absolutely positioned img overlapping bottom of parent element
-
-    img {
-      // absolute positioning to overlap floated goodies image to the right
-      position: absolute;
-      max-width: none;
-    }
-  }
 }
 
-.next-steps__step--goodies {
+.next-steps__step--newsletter {
   @include clearfix;
 
   .goodies-preview {
