@@ -82,6 +82,13 @@ sub pin_colour {
     return 'yellow-cone';
 }
 
+sub pin_colour_key {
+    [
+        [ 'yellow-cone', 'Open' ],
+        [ 'green-tick', 'Fixed/closed' ],
+    ];
+}
+
 sub path_to_pin_icons { '/i/pins/whole-shadow-cone-spot/' }
 
 sub allow_photo_display {

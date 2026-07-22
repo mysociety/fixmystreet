@@ -116,6 +116,17 @@ sub pin_colour {
     return 'yellow';
 }
 
+sub pin_colour_key {
+    [
+        [ 'yellow', 'Open/other' ],
+        [ 'bexley/orange', 'Action scheduled' ],
+        [ 'bexley/aqua', 'Investigating' ],
+        [ 'green-tick', 'Fixed' ],
+        [ 'bexley/spring', 'Closed' ],
+        [ 'bexley/grape', 'Not responsible' ],
+    ];
+}
+
 =item * Report resending
 
 Report resend button is disabled. But we can resend reports upon category change, unless it will be going to the

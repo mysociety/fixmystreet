@@ -127,6 +127,14 @@ sub pin_colour {
     return 'orange'; # all the other `open_states` like "in progress"
 }
 
+sub pin_colour_key {
+    [
+        [ 'red', 'Confirmed' ],
+        [ 'green', 'Fixed/closed' ],
+        [ 'orange', 'Other' ], # all the other `open_states` like "in progress"
+    ];
+}
+
 =item * Superusers and TfL staff can access the TfL admin
 
 =cut
