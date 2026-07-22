@@ -374,6 +374,15 @@ sub pin_colour {
     return 'orange-work'; # all the other `open_states` like "in progress"
 }
 
+sub pin_colour_key {
+    [
+        [ 'yellow-cone', 'Confirmed' ],
+        [ 'green-tick', 'Fixed' ],
+        [ 'grey-cross', 'Closed' ],
+        [ 'orange-work', 'Other' ], # all the other `open_states` like "in progress"
+    ];
+}
+
 =head2 categories_restriction
 
 Doesn't show TfL's River Piers category as no piers in Brent.
