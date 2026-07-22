@@ -203,6 +203,20 @@ sub get_body_sender {
             return { method => 'Email', contact => $contact };
         }
     }
+
+    # Tree assets are routed by owner if present, or fall back to 'other'
+    if (my $split_emails = $self->_parse_split_emails($contact->email)) {
+        my $owner = $problem->get_extra_field_value('owner');
+        my $owner_key = $owner ? $self->_normalize_owner_key($owner) : '';
+        my $to = $split_emails->{$owner_key} || $split_emails->{other};
+        if ($to) {
+            $problem->set_extra_metadata(split_match => { $contact->email => $to });
+            if (is_valid_email($to)) {
+                return { method => 'Email', contact => $contact };
+            }
+        }
+    }
+
     return $self->SUPER::get_body_sender($body, $problem);
 }
 
@@ -285,15 +299,51 @@ sub open311_munge_update_params {
     $params->{service_code} = $contact->email;
 }
 
+sub _normalize_owner_key {
+    my ($self, $key) = @_;
+    # Normalize owner keys: lowercase and replace spaces with dashes
+    # This allows "Housing Individual" to match "housing-individual"
+    $key = lc($key);
+    $key =~ s/\s+/-/g;
+    return $key;
+}
+
+sub _parse_split_emails {
+    my ($self, $email) = @_;
+
+    # Generic parser for split email format: key1:email1;key2:email2;...
+    # Returns hashref: { key1 => email1, key2 => email2, ... }
+    # Keys are normalized (lowercased, spaces->dashes) for consistent matching
+
+    return unless $email =~ /:/; # Must contain colon to be split format
+
+    my %emails;
+    my @parts = split /\s*;\s*/, $email;
+
+    for my $part (@parts) {
+        if ($part =~ /^\s*([^:]+?)\s*:\s*(.+?)\s*$/) {
+            my ($key, $addr) = ($1, $2);
+            $emails{$self->_normalize_owner_key($key)} = $addr;
+        }
+    }
+
+    return %emails ? \%emails : ();
+}
+
 sub _split_emails {
     my ($self, $email) = @_;
 
-    my $parts = join '\s*', qw(^ park : (.*?) ; estate : (.*?) ; other : (.*?) $);
-    my $regex = qr/$parts/i;
+    # Parse park/estate/other format and return as list for backwards compatibility
+    # Uses the generic parser but extracts specific keys in expected order
 
-    if (my ($park, $estate, $other) = $email =~ $regex) {
-        return ($park, $estate, $other);
+    my $parsed = $self->_parse_split_emails($email);
+    return unless $parsed;
+
+    # Return park, estate, other in that order (as list for backwards compat)
+    if (exists $parsed->{park} && exists $parsed->{estate} && exists $parsed->{other}) {
+        return ($parsed->{park}, $parsed->{estate}, $parsed->{other});
     }
+
     return ();
 }
 
@@ -302,9 +352,13 @@ sub validate_contact_email {
 
     return 1 if is_valid_email_list($email);
 
-    my @emails = grep { $_ } $self->_split_emails($email);
-    return unless @emails;
-    return 1 if is_valid_email_list(join(",", @emails));
+    # Check if it's split email format (handles both park/estate/other and tree owner formats)
+    if (my $parsed = $self->_parse_split_emails($email)) {
+        my @emails = values %$parsed;
+        return 1 if @emails && is_valid_email_list(join(",", @emails));
+    }
+
+    return;
 }
 
 =item * Report detail can be a maximum of 256 characters in length.
