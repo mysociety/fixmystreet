@@ -94,6 +94,10 @@ body.mappage {
     a.report-a-problem-btn:hover {
         background: $primary/1.1;
     }
+
+    .nav-mysoc-links {
+        display: none;
+    }
 }
 
 #site-header {
@@ -113,10 +117,14 @@ body.mappage {
     }
 }
 
-#lang-switcher {
+.top-menu-wrapper { 
     z-index: 1;
-    #{$right}: 0;
+    #{$right}: 1.25rem;
     top: -1em;
+
+    .donate-link, .donate-newsletter {
+        display: inline-block;
+    }
 }
 
 #front-main {

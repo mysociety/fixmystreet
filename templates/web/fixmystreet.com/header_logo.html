@@ -12,17 +12,21 @@
     [% END %]
 [% END %]</a>
 
-<a id="lang-switcher" href="//[%
-    IF lang_code == 'en-gb';
-        IF c.cobrand.base_host.match('www');
-            c.cobrand.base_host.replace('www\.', 'cy.');
+<div class="top-menu-wrapper">
+    <a id="lang-switcher" href="//[%
+        IF lang_code == 'en-gb';
+            IF c.cobrand.base_host.match('www');
+                c.cobrand.base_host.replace('www\.', 'cy.');
+            ELSE;
+                'cy.' _ c.cobrand.base_host;
+            END;
         ELSE;
-            'cy.' _ c.cobrand.base_host;
+            c.cobrand.base_host;
         END;
-    ELSE;
-        c.cobrand.base_host;
-    END;
-%][% c.req.uri.path_query %]">[% IF lang_code == 'en-gb' %]Cymraeg[% ELSE %]English[% END %]
-</a>
+    %][% c.req.uri.path_query %]">[% IF lang_code == 'en-gb' %]Cymraeg[% ELSE %]English[% END %]
+    </a>
+    <a class="donate-link" href="https://www.mysociety.org/donate/support-fixmystreet-and-mysociety/?utm_source=fixmystreet.com&amp;utm_content=nav+donate+now&amp;utm_medium=link&amp;utm_campaign=fms_nav">Donate</a>
+    <a class="donate-newsletter" href="/about/newsletter">Newsletter</a>
+</div>
 
 <a href="/" id="report-cta" title="[%- loc('Report a problem') -%]">[%- loc('Report') -%]</a>

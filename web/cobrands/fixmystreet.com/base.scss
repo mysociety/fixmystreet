@@ -58,24 +58,33 @@ svg|g.site-logo__svg {
   }
 }
 
-// Similar to #report-cta for now
-#lang-switcher {
-  display: block;
+.top-menu-wrapper {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  #{$right}: 9em;
+  #{$right}: 7em;
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 1rem;
 
-  font-size: 0.8em;
-  line-height: 1em;
-  color: $nav_colour;
-  padding: 0.4em;
-  border-radius: 0.3em;
+  a {
+    display: block;
+    
+    font-size: 0.8em;
+    line-height: 1em;
+    color: $nav_colour;
+    padding: 0.4em;
+    border-radius: 0.3em;
+    
+    &:hover,
+    &:focus {
+      text-decoration: none;
+      background-color: $nav_hover_background_colour;
+    }
+  }
 
-  &:hover,
-  &:focus {
-    text-decoration: none;
-    background-color: $nav_hover_background_colour;
+  .donate-link, .donate-newsletter {
+    display: none;
   }
 }
 
