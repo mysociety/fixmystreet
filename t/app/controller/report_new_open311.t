@@ -126,7 +126,7 @@ foreach my $test (
         },
         changes => {
             number => '',
-            lamptype   => '',
+            lamptype   => undef,
         },
         errors  => [
             'This information is required',
@@ -252,11 +252,11 @@ foreach my $test (
 
         if ( $test->{fields}->{category} eq 'Street lighting' ) {
             my $result = scraper {
-                process 'select#form_lamptype option', 'option[]' => '@value';
+                process 'input[name="lamptype"]', 'option[]' => '@value';
             }
             ->scrape( $mech->response );
 
-            is_deeply $result->{option}, [ "", qw/old modern/], 'displayed streetlight type select';
+            is_deeply $result->{option}, [ qw/old modern/], 'displayed streetlight type select';
         }
 
         $new_values = {
