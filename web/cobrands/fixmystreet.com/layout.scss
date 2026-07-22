@@ -407,3 +407,53 @@ footer {
     display: none;
   }
 }
+
+// STICKY SIDEBAR
+.container--sidebar .sticky-sidebar {
+    &--cta-wrapper {
+        display: block;
+        padding: 1rem;
+        color: $primary_text;
+        border-top: 1px solid #d4c88d;
+        margin-top: 0.35rem;
+
+        a:not(.btn) {
+            display: inline-block;
+            padding: 0;
+            color: #005A9E;
+            &:hover {
+                text-decoration: underline;
+                background-color: transparent;
+                color: #005A9E;
+            }
+        }
+
+        h2 {
+            font-size: 1.15rem;
+            font-weight: bold;
+        }
+
+        .mc-field-group .inline-subscription-fields {
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: start;
+            min-width: auto;
+        }
+
+        .btn {
+            width: fit-content;
+            padding: 12px;
+        }
+
+        &:last-child > :last-child {
+            margin-bottom: 0;
+        }
+
+        &.is--newsletter {
+            body.newsletter-page & {
+                // There is already a newsletter in the page
+                display: none;
+            }
+        }
+    }
+}

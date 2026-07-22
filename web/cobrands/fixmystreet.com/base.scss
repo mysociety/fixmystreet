@@ -563,3 +563,14 @@ html.lazyload .js-lazyload {
     }
   }
 }
+
+// STICKY SIDEBAR
+.container--sidebar .sticky-sidebar {
+  &--cta-wrapper { 
+    display: none;
+
+    .btn {
+      width: fit-content;
+    }
+  }
+}
