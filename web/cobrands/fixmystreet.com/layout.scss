@@ -386,3 +386,16 @@ footer {
         margin-bottom: 1em;
     }
 }
+
+// NEWSLETTER PAGE
+
+.mysoc-team-picture {
+  &-desktop {
+    display: block;
+    margin-top: 1rem;
+  }
+
+  &-mobile {
+    display: none;
+  }
+}
