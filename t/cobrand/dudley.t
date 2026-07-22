@@ -68,8 +68,11 @@ FixMyStreet::override_config {
         is $c->param('attribute[report_url]'),  "http://dudley.example.org/report/" . $report->id;
         like $c->param('description'), qr/@{[$report->title]}/;
 
-        my $email = $mech->get_email;
-        is $email->header('To'), 'FixMyStreet <potholes@example.org>';
+        $mech->email_count_is(2);
+        my @emails = $mech->get_email;
+        ok scalar(grep {
+            $_->header('To') eq 'FixMyStreet <potholes@example.org>'
+        } @emails), 'email sent to configured address';
     };
 };
 
