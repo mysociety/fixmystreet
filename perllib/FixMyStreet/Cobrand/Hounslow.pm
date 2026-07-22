@@ -56,6 +56,13 @@ sub pin_colour {
     return 'yellow';
 }
 
+sub pin_colour_key {
+    [
+        [ 'yellow', 'Open' ],
+        [ 'green', 'Fixed/closed' ],
+    ];
+}
+
 sub send_questionnaires { 0 }
 
 sub categories_restriction {
