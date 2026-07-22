@@ -11,6 +11,14 @@
             <li>[% INCLUDE link h=c.cobrand.privacy_policy_url t=loc('Privacy and cookies') %]</li>
             <li>[% INCLUDE link h='/contact' t=tprintf(loc("Contact %s", "%s is the site name"), site_name) %]</li>
         </ul>
+        <div class="sticky-sidebar--cta-wrapper is--newsletter">
+            <h2>FixMyStreet is just one of the things we do</h2>
+            <p>Curious to know more? Sign up for our newsletter</p>
+            [% INCLUDE 'about/_newsletter-form.html' %]
+        </div>
+        <div class="sticky-sidebar--cta-wrapper">
+            [% INCLUDE 'about/_donation-cta.html' %]
+        </div>
     </aside>
 </div>
 
