@@ -272,6 +272,14 @@ sub pin_colour {
     return 'yellow-cone';
 }
 
+sub pin_colour_key {
+    [
+        [ 'yellow-cone', 'Open' ],
+        [ 'green-tick', 'Fixed/closed' ],
+        [ 'blue-work', 'Defect' ],
+    ];
+}
+
 sub path_to_pin_icons { '/i/pins/whole-shadow-cone-spot/' }
 
 =head2 open311_config
