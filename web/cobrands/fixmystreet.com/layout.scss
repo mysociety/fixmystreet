@@ -113,9 +113,9 @@ body.mappage {
     }
 }
 
-#lang-switcher {
+.top-menu-wrapper { 
     z-index: 1;
-    #{$right}: 0;
+    #{$right}: 1.25rem;
     top: -1em;
 }
 
