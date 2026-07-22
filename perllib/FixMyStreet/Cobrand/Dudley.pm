@@ -110,6 +110,19 @@ sub open311_extra_data_include {
           value => $h->{url} },
     ];
 
+    my $title = $row->title;
+    if ( $h->{closest_address} ) {
+        my $addr = $h->{closest_address}->summary;
+
+        $addr =~ s/, England//;
+        $addr =~ s/, United Kingdom$//;
+
+        $title .= '; Nearest calculated address = ' . $addr;
+    }
+
+    push @$open311_only, { name => 'title', value => $title };
+    push @$open311_only, { name => 'description', value => $row->detail };
+
     return $open311_only;
 }
 
