@@ -93,6 +93,13 @@ sub pin_colour {
     return 'yellow';
 }
 
+sub pin_colour_key {
+    [
+        [ 'yellow', 'Open' ],
+        [ 'green', 'Fixed/closed' ],
+    ];
+}
+
 =item * Do not allow email addresses in title or detail
 
 =back
