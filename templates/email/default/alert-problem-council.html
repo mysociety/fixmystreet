@@ -12,6 +12,8 @@ INCLUDE '_email_top.html';
   <h1 style="[% h1_style %]">New reports to [% area_name %]</h1>
   [%~ INCLUDE '_email_report_list.html' %]
 
+  [%~ TRY %][% INCLUDE '_email_cta.html' %][% CATCH file %][% END %]
+
   <p style="[% p_style %]"><a href="[% unsubscribe_url %]">Unsubscribe from alerts about new reports to this area</a></p>
 </th>
 
