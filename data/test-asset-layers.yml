@@ -488,6 +488,15 @@ peterborough:
     template: 'pcc_property_leased_out'
     no_asset_msg_id: '#js-grounds-maintenance-message'
 
+  - asset_group: ['Removal of debris']
+    asset_group_except_category: ['Road Traffic Accident']
+    template: 'pcc_property_combined'
+    no_asset_msg_id: '#js-debris-removal-message'
+  - asset_group: ['Removal of debris']
+    asset_group_except_category: ['Road Traffic Accident']
+    template: 'pcc_property_leased_out'
+    no_asset_msg_id: '#js-debris-removal-message'
+
 shropshire:
   - http_wfs_url: "https://tilma.mysociety.org/mapserver/shropshire"
     asset_type: 'spot'
