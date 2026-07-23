@@ -35,4 +35,13 @@ sub pin_colour {
     return 'yellow';
 }
 
+sub pin_colour_key {
+    [
+        [ 'red', 'Confirmed' ],
+        [ 'green', 'Fixed/closed' ],
+        [ 'grey', 'Not responsible' ],
+        [ 'yellow', 'Other' ],
+    ];
+}
+
 1;

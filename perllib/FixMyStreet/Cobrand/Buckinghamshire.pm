@@ -111,6 +111,26 @@ sub pin_colour {
     return 'orange-work'; # all the other `open_states` like "in progress"
 }
 
+sub pin_colour_key {
+    my ( $self, $context ) = @_;
+
+    my @key = (
+        [ 'yellow-cone', 'Confirmed' ],
+        [ 'green-tick', 'Fixed' ],
+    );
+
+    if ( $context ne 'reports' ) {
+        push @key, [ 'grey-cross', 'Closed or other council/authority' ];
+    } else {
+        push @key, [ 'grey-cross', 'Closed' ];
+    }
+
+    # all the other `open_states` like "in progress"
+    push @key, [ 'orange-work', 'Other' ];
+
+    return \@key;
+}
+
 sub path_to_pin_icons { '/i/pins/whole-shadow-cone-spot/' }
 
 =item * We use both their old and new domains for the admin_user_domain.

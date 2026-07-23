@@ -258,6 +258,14 @@ sub pin_colour {
     return 'blue-work';
 }
 
+sub pin_colour_key {
+    [
+        [ 'yellow-cone', 'Confirmed' ],
+        [ 'green-tick', 'Fixed/closed' ],
+        [ 'blue-work', 'Other' ],
+    ];
+}
+
 sub path_to_pin_icons { '/i/pins/whole-shadow-cone-spot/' }
 
 =head2 Reports by parishes

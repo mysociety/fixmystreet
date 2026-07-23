@@ -101,6 +101,15 @@ sub pin_colour {
     return 'yellow';
 }
 
+sub pin_colour_key {
+    [
+        [ 'red', 'Confirmed' ],
+        [ 'green', 'Fixed/closed' ],
+        [ 'grey', 'Not responsible' ],
+        [ 'yellow', 'Other' ],
+    ];
+}
+
 =head2 open311_extra_data_include
 
 When sending reports via Open311, we include an C<external_id> attribute, set
