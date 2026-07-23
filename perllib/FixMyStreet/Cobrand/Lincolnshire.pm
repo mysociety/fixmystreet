@@ -207,6 +207,17 @@ sub pin_colour {
     return 'red';
 }
 
+sub pin_colour_key {
+    [
+        [ 'yellow', 'Action scheduled/in progress' ],
+        [ 'orange', 'Investigating/for triage' ],
+        [ 'green', 'Fixed' ],
+        [ 'blue', 'Closed' ],
+        [ 'grey', 'Not responsible' ],
+        [ 'red', 'Other' ],
+    ];
+}
+
 =head2 open311_config
 
 Our Confirm integration can handle multiple photos and the direct
