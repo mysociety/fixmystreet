@@ -154,6 +154,20 @@ sub pin_colour {
     return 'yellow';
 }
 
+sub pin_colour_key {
+    my ( $self, $context ) = @_;
+
+    my @key = (
+        [ 'yellow', 'Open' ],
+        [ 'bromley/green', 'Fixed' ],
+        [ 'grey', 'Closed' ],
+    );
+
+    push @key, [ 'red', 'Other council/authority' ] if $context ne 'reports';
+
+    return \@key;
+}
+
 sub recent_photos {
     my ( $self, $area, $num, $lat, $lon, $dist ) = @_;
     $num = 3 if $num > 3 && $area eq 'alert';
