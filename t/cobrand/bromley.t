@@ -1043,4 +1043,19 @@ subtest 'redirecting of reports between backends' => sub {
     };
 };
 
+subtest 'Pin colour key - different contexts' => sub {
+    is_deeply +FixMyStreet::Cobrand::Bromley->pin_colour_key('reports'), [
+        [ 'yellow', 'Open' ],
+        [ 'bromley/green', 'Fixed' ],
+        [ 'grey', 'Closed' ],
+    ];
+
+    is_deeply +FixMyStreet::Cobrand::Bromley->pin_colour_key('around'), [
+        [ 'yellow', 'Open' ],
+        [ 'bromley/green', 'Fixed' ],
+        [ 'grey', 'Closed' ],
+        [ 'red', 'Other council/authority' ],
+    ]
+};
+
 done_testing();

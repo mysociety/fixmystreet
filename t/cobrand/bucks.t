@@ -975,4 +975,20 @@ subtest 'Unauthorised signs report' => sub {
 
 };
 
+subtest 'Pin colour key - different contexts' => sub {
+    is_deeply +FixMyStreet::Cobrand::Buckinghamshire->pin_colour_key('reports'), [
+        [ 'yellow-cone', 'Confirmed' ],
+        [ 'green-tick', 'Fixed' ],
+        [ 'grey-cross', 'Closed' ],
+        [ 'orange-work', 'Other' ],
+    ];
+
+    is_deeply +FixMyStreet::Cobrand::Buckinghamshire->pin_colour_key('around'), [
+        [ 'yellow-cone', 'Confirmed' ],
+        [ 'green-tick', 'Fixed' ],
+        [ 'grey-cross', 'Closed or other council/authority' ],
+        [ 'orange-work', 'Other' ],
+    ]
+};
+
 done_testing();
