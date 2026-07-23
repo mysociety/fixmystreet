@@ -690,7 +690,7 @@ FixMyStreet::override_config {
         is $report->category, 'Bin not returned', "Correct category";
         FixMyStreet::Script::Reports::send();
         my $text = $mech->get_text_body_from_email;
-        like $text, qr/apologise for any inconvenience/, 'Other problem text included in email';
+        like $text, qr/has still not been returned/, 'Other problem text included in email';
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
         is $cgi->param('api_key'), 'KEY';
@@ -723,7 +723,7 @@ FixMyStreet::override_config {
         is $report->detail, "Non-Recyclable Refuse\n\n2 Example Street, Sutton, SM1 1AA", "Details of report contain information about problem";
         FixMyStreet::Script::Reports::send();
         my $text = $mech->get_text_body_from_email;
-        like $text, qr/apologise for any inconvenience/, 'Other problem text included in email';
+        like $text, qr/has still not been returned/, 'Other problem text included in email';
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
         is $cgi->param('attribute[Exact_Location]'), 'hello';
@@ -756,7 +756,7 @@ FixMyStreet::override_config {
         is $report->detail, "Non-Recyclable Refuse\n\n2 Example Street, Sutton, SM1 1AA", "Details of report contain information about problem";
         FixMyStreet::Script::Reports::send();
         my $text = $mech->get_text_body_from_email;
-        like $text, qr/apologise for any inconvenience/, 'Other problem text included in email';
+        like $text, qr/bin has still not been returned/, 'Other problem text included in email';
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
         is $cgi->param('attribute[Exact_Location]'), 'hello';
