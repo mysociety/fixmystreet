@@ -60,9 +60,11 @@ We apologise for any inconvenience caused and appreciate your feedback.  We're c
 
 The issue has been logged and a clean up has been organised for within the next 24 hours.
 [% ELSIF report.category == 'Bin not returned' %]
-We apologise for any inconvenience this may have caused and appreciate your feedback. We're committed to using it to improve our customer service.
+If you are on assisted collections and have told us the bin has still not been returned, our crew will be back to return it.
 
-Please note that we are unable to return to correct the problem, unless you are on the Assisted Collection service and you have indicated you require additional help.
+If you are not on assisted collections, we cannot return to collect your bin, but your report will be recorded and used to improve our service.
+
+We appreciate your feedback and are committed to using it to improve our customer service.
 [% ELSIF report.category == 'Missed collection dispute' %]
 We apologise for any inconvenience this may have caused and appreciate your feedback. We're committed to using it to improve our customer service.
 
