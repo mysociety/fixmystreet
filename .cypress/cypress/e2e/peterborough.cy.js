@@ -1,19 +1,24 @@
 var landTypeCases = [
-    { private: false, category: 'General fly tipping', message: null },
-    { private: false, category: 'Non offensive graffiti', message: null },
-    { private: false, category: 'Abandoned vehicles', message: null },
-    { private: false, group: 'Street cleansing', category: 'Street sweeping', message: null },
-    { private: false, group: 'Grounds maintenance', category: 'Grass cutting', message: null },
-    { private: true, category: 'General fly tipping',
+    { block: false, private: false, category: 'General fly tipping', message: null },
+    { block: false, private: false, category: 'Non offensive graffiti', message: null },
+    { block: false, private: false, category: 'Abandoned vehicles', message: null },
+    { block: false, private: false, group: 'Street cleansing', category: 'Street sweeping', message: null },
+    { block: false, private: false, group: 'Grounds maintenance', category: 'Grass cutting', message: null },
+    { block: false, private: false, group: 'Removal of debris', category: 'Broken glass', message: null },
+    { block: false, private: false, group: 'Removal of debris', category: 'Road Traffic Accident', message: null },
+    { block: true, private: true, category: 'General fly tipping',
       message: 'The area selected is not owned or maintained by Peterborough City Council' },
-    { private: true, category: 'Non offensive graffiti',
+    { block: true, private: true, category: 'Non offensive graffiti',
       message: 'For graffiti on private land this would be deemed' },
-    { private: true, category: 'Abandoned vehicles',
+    { block: true, private: true, category: 'Abandoned vehicles',
       message: 'Unfortunately, as this car is on private land' },
-    { private: true, group: 'Street cleansing', category: 'Street sweeping',
+    { block: true, private: true, group: 'Street cleansing',
       message: 'it is not the responsibility of the Council to provide Street Cleansing services' },
-    { private: true, group: 'Grounds maintenance', category: 'Grass cutting',
+    { block: true, private: true, group: 'Grounds maintenance',
       message: 'it is not the responsibility of the Council to provide Grounds Maintenance services' },
+    { block: true, private: true, group: 'Removal of debris', category: 'Broken glass',
+      message: 'it is not the responsibility of the Council to provide Debris Removal services' },
+    { block: false, private: true, group: 'Removal of debris', category: 'Road Traffic Accident', message: null },
 ];
 
 function checkLandTypeMessages(host) {
@@ -23,13 +28,19 @@ function checkLandTypeMessages(host) {
             'longitude=-0.242007&latitude=52.571903';
         cy.visit('http://' + host + '/report/new?' + coords);
         cy.wait('@report-ajax');
-        cy.pickCategory(testCase.group || testCase.category);
+        if (testCase.category && testCase.group) {
+            cy.pickCategory(testCase.group);
+            cy.nextPageReporting();
+            cy.pickSubcategory(testCase.group, testCase.category);
+        } else {
+            cy.pickCategory(testCase.category || testCase.group);
+        }
         if (testCase.message) {
             cy.get('.pre-button-messaging:visible').should('contain', testCase.message);
         } else {
             cy.get('.pre-button-messaging:visible').should('not.exist');
         }
-        if (testCase.private) {
+        if (testCase.block) {
             cy.get('.js-reporting-page--next:visible').should('be.disabled');
         } else {
             cy.get('.js-reporting-page--next:visible').should('not.be.disabled');
