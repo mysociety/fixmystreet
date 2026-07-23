@@ -71,10 +71,15 @@ INCLUDE '_email_top.html';
       </p>
     [% ELSIF report.category == 'Bin not returned' %]
       <p style="[% p_style %]">
-        We apologise for any inconvenience this may have caused and appreciate your feedback. We're committed to using it to improve our customer service.
+      If you are on assisted collections and have told us the bin has still not been returned, our crew will be back to return it.
       </p>
+
       <p style="[% p_style %]">
-        Please note that we are unable to return to correct the problem, unless you are on the Assisted Collection service and you have indicated you require additional help.
+      If you are not on assisted collections, we cannot return to collect your bin, but your report will be recorded and used to improve our service.
+      </p>
+
+      <p style="[% p_style %]">
+      We appreciate your feedback and are committed to using it to improve our customer service.
       </p>
     [% ELSIF report.category == 'Missed collection dispute' %]
       <p style="[% p_style %]">
