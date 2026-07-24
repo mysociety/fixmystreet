@@ -213,6 +213,8 @@ if ($opt->test_fixtures) {
                 { group => 'Street cleansing', category => 'Dead animal' },
                 { group => 'Grounds maintenance', category => 'Grass cutting' },
                 { group => 'Grounds maintenance', category => 'Hedge cutting' },
+                { group => 'Removal of debris', category => 'Broken glass' },
+                { group => 'Removal of debris', category => 'Road Traffic Accident' },
                 'General fly tipping', 'Fallen branch', 'Pothole', 'Non offensive graffiti',
                 'Abandoned vehicles'
             ], name => 'Peterborough City Council', cobrand => 'peterborough' },

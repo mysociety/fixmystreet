@@ -87,6 +87,7 @@ my %RESOLUTION_CODES = (
     528 => 'contaminated', # Con - Rigid Plastics
     529 => 'contaminated', # Con - Other
     674 => 'contaminated', # Con - Refuse
+    801 => 'not-presented', # Item not at Location specified
     802 => 'contaminated', # Con - Clinical
 );
 lock_hash(%RESOLUTION_CODES);
@@ -1021,7 +1022,7 @@ We are using an enquiry form to report a disputed missed collection.
 So we add an extra page to inform whether a dispute can be raised and an extra page
 for the user to confirm they would like to raise a dispute with a declaration
 their container was correctly placed, which they only reach
-if they they are able to dispute the missed collection
+if they are able to dispute the missed collection
 
 =cut
 
@@ -1031,6 +1032,8 @@ sub return_request_option {
 
     my $service_id = $c->get_param('service_id');
     my $service = $c->stash->{services}{$service_id};
+    return '' unless $service_id == $SERVICE_IDS{garden} || FixMyStreet->test_mode;
+
     my $last = $service->{last};
     my $next = $service->{next};
     my $next_state = $next->{state} || '';
