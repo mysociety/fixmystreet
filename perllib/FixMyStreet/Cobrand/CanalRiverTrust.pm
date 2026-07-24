@@ -48,6 +48,7 @@ sub enter_postcode_text { 'Enter a location, bridge number or postcode' }
 sub example_places { ['Lock 47, Fazeley', 'Bridge 33, Kennet and Avon'] }
 sub admin_user_domain { 'canalrivertrust.org.uk' }
 sub abuse_reports_only { 1 }
+sub contact_extra_fields { [ 'display_name' ] }
 
 =item * Single sign on is enabled from the cobrand feature 'oidc_login'
 
