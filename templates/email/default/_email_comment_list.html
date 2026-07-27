@@ -10,14 +10,17 @@
     [% ELSE %]
       [% email_sanitize_html(update, private_email ? "item_private_email_text" : undef) | replace('<p>', '<p style="' _ list_item_p_style _ '">') %]
       [% IF NOT private_email %]
-      <p class="user-name" style="[% list_item_date_style %]">
-        [%~ IF update.item_anonymous %]
-          [%~ loc('Posted anonymously') -%]
-        [%~ ELSE %]
-          [%~ update.item_name | html IF update.item_name -%]
-        [%~ END %]
-        [% '(' _ cobrand.prettify_dt(update.confirmed) _ ') ' IF cobrand.include_time_in_update_alerts -%]
-      </p>
+    <p class="user-name" style="[% list_item_date_style %]">
+      [%~ IF update.item_anonymous %]
+        <p style="[% warning_message_style %]">
+          <img width="16" height="16" alt="" style="vertical-align: text-bottom; margin-right: 4px;" src="[% inline_image('web/cobrands/fixmystreet/images/notice-icon.png') %]">
+          [%~ loc('Please be aware this update was posted anonymously by another FixMyStreet user, not by %s. Any official response from %s will be marked as such.') | replace('%s', report.body) | safe -%]
+        </p>
+      [%~ ELSE %]
+        [%~ update.item_name | html IF update.item_name -%]
+      [%~ END %]
+      [% '(' _ cobrand.prettify_dt(update.confirmed) _ ') ' IF cobrand.include_time_in_update_alerts -%]
+    </p>
       [% END %]
     [% END %]
     </div>
