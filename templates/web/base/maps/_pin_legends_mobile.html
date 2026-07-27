@@ -12,7 +12,7 @@
             [% FOR colour IN colours %]
                 <li class="pin-legend__item">
                     <img src='/i/pins/[% colour.0 %]/mini.png' alt="[% colour.0 %]"/>
-                    <span>[% loc( colour.1 ) %]</span>
+                    <span>[% loc( colour.1 ) | html_para %]</span>
                 </li>
             [% END %]
         </ul>
