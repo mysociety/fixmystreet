@@ -83,6 +83,28 @@ sub pin_colour {
     return $self->SUPER::pin_colour($p, $context);
 }
 
+sub pin_colour_key {
+    my ( $self, $context ) = @_;
+
+    my @keys = (
+        [ 'blue', 'Defect' ],
+    );
+
+    # From UKCouncils.pm & Default.pm
+    if ( $context eq 'around' || $context eq 'reports' || $context eq 'report' ) {
+        push @keys, [ 'yellow', 'Other' ];
+    } else {
+        push @keys, [ 'green', 'Fixed' ];
+        push @keys, [ 'red', 'Other' ];
+    }
+
+    if ( $context ne 'reports' ) {
+        push @keys, [ 'grey', 'Other council/authority' ];
+    }
+
+    return \@keys;
+}
+
 =item * We have aerial maps
 
 =cut
