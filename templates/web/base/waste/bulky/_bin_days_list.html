@@ -129,6 +129,7 @@ END;
     [% END %]
 
   [% IF type == 'bulky' %]
+  [% IF c.cobrand.moniker != 'merton' # No line for Merton %]
   <dl class="govuk-summary-list govuk-!-margin-bottom-3 govuk-!-padding-bottom-0">
     <div class="govuk-summary-list__row">
       <dt class="govuk-summary-list__key">Cost</dt>
@@ -151,6 +152,7 @@ END;
       </dd>
     </div>
   </dl>
+  [% END %]
   [% END %]
 [% END %]
 
