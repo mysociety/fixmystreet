@@ -90,6 +90,24 @@ sub pin_colour {
     return 'orange-work'; # all the other `open_states` like "in progress"
 }
 
+sub pin_colour_key {
+    my ( $self, $context ) = @_;
+
+    my @keys = (
+        [ 'yellow-cone', 'Confirmed' ],
+        [ 'green-tick', 'Fixed' ],
+    );
+
+    push @keys,
+        $context ne 'reports'
+        ? [ 'grey-cross', 'Closed or other council/authority' ]
+        : [ 'grey-cross', 'Closed' ];
+
+    push @keys, [ 'orange-work', 'Other' ];
+
+    return \@keys;
+}
+
 sub pin_new_report_colour {
     return 'yellow-cone';
 }

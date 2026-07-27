@@ -103,6 +103,15 @@ sub pin_colour {
     return 'orange-work'; # all the other `open_states` like "in progress"
 }
 
+sub pin_colour_key {
+    [
+        [ 'yellow-cone', 'Confirmed' ],
+        [ 'green-tick', 'Fixed' ],
+        [ 'grey-cross', 'Closed' ],
+        [ 'orange-work', 'Other' ], # all the other `open_states` like "in progress"
+    ];
+}
+
 sub path_to_pin_icons { '/i/pins/whole-shadow-cone-spot/' }
 
 =head2 body_disallows_state_change

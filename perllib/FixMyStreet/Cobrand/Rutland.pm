@@ -161,4 +161,13 @@ sub pin_colour {
     return 'orange-work'; # all the other `open_states` like "in progress"
 }
 
+sub pin_colour_key {
+    [
+        [ 'yellow-cone', 'Confirmed' ],
+        [ 'green-tick', 'Fixed' ],
+        [ 'grey-cross', 'Closed or other council/authority' ],
+        [ 'orange-work', 'Other' ], # all the other `open_states` like "in progress"
+    ];
+}
+
 1;
