@@ -208,6 +208,23 @@ FixMyStreet::override_config {
         test_table($mech->content, 1, 0, 0, 1, 0, 0, 0, 0, 7, 3, 0, 10, 2, 0, 4, 6, 1, 0, 0, 1, 11, 3, 4, 18);
     };
 
+    subtest 'category display names used in filter and table' => sub {
+        my $litter = FixMyStreet::DB->resultset('Contact')->find({ body_id => $body->id, category => 'Litter' });
+        $litter->set_extra_metadata(display_name => 'Litter and rubbish');
+        $litter->update;
+
+        $mech->get_ok("/dashboard");
+        $mech->content_contains("<option value='Litter'>Litter and rubbish</option>");
+        $mech->content_contains('<th class="contact-category" scope="row">Litter and rubbish</th>');
+        $mech->content_lacks('<th class="contact-category" scope="row">Litter</th>');
+        # Filtering still uses the underlying category name
+        $mech->get_ok("/dashboard?category=Litter");
+        test_table($mech->content, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1);
+
+        $litter->unset_extra_metadata('display_name');
+        $litter->update;
+    };
+
     subtest 'test filters' => sub {
         $mech->get_ok("/dashboard");
         $mech->submit_form_ok({ with_fields => { category => 'Litter' } });
