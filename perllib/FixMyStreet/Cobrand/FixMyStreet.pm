@@ -84,6 +84,24 @@ sub pin_colour {
     return $self->next::method($p, $context);
 }
 
+sub pin_colour_key {
+    my ( $self, $context ) = @_;
+
+    my @keys = (
+        [ 'grey', 'Responsibility of TfL' ],
+    );
+
+    # From Default.pm
+    if ( $context eq 'around' || $context eq 'reports' || $context eq 'report' ) {
+        push @keys, [ 'yellow', 'Other' ];
+    } else {
+        push @keys, [ 'green', 'Fixed' ];
+        push @keys, [ 'red', 'Other' ];
+    }
+
+    return \@keys;
+}
+
 # Special extra
 sub path_to_web_templates {
     my $self = shift;
