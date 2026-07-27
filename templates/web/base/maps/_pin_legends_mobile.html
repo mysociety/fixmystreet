@@ -6,14 +6,13 @@
         [% INCLUDE 'icons/pin.html' width='1.5em' height='1.5em' %]
         <span>[% loc('Display map legend') %]</span>
     </button>
-
     <div id="pin-legend-panel-mobile" class="pin-legend__panel">
         <p id="pin-legend-heading-mobile" class="pin-legend__heading">[% loc('Map pin key') %]</p>
         <ul class="pin-legend__list">
             [% FOR colour IN colours %]
                 <li class="pin-legend__item">
                     <img src='/i/pins/[% colour.0 %]/mini.png' alt="[% colour.0 %]"/>
-                    <span>[% loc( colour.1 ) %]</span>
+                    <span>[% loc( colour.1 ) | html_para %]</span>
                 </li>
             [% END %]
         </ul>
