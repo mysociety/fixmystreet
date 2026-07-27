@@ -65,6 +65,15 @@ sub pin_colour {
     return 'yellow';
 }
 
+sub pin_colour_key {
+    [
+        [ 'green-tick', 'Fixed' ],
+        [ 'grey-cross', 'Closed/unable to fix' ],
+        [ 'grey', 'Not responsible' ],
+        [ 'yellow', 'Other' ],
+    ];
+}
+
 =item * Add display_name as an extra contact field
 
 =cut
