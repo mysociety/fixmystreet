@@ -167,6 +167,9 @@ fixmystreet.staff_set_up = {
 
     function updateTemplates(opts) {
         opts.category = opts.category || $inspect_form.find('[name=category]').val();
+        if (!opts.category) {
+            return;
+        }
         // Remove group from category
         opts.category = opts.category.replace( /.*__/, '' );
         opts.state = opts.state || $inspect_form.find('[name=state]').val();
