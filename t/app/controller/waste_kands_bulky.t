@@ -874,7 +874,8 @@ FixMyStreet::override_config {
 
         $mech->follow_link_ok({ text => 'Report a problem with a bulky waste collection' }, 'In time, normal completion');
         $mech->content_contains('The crew have closed your collection task as not collected', 'Not completed');
-        $mech->content_contains('Bin not presented');
+        $mech->content_contains('Not presented');
+        $mech->content_lacks('Bin not presented');
 
         $mech->get_ok('/waste/12345/report');
         $mech->content_lacks('Bulky waste collection');
