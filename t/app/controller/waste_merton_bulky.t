@@ -1499,7 +1499,7 @@ FixMyStreet::override_config {
             is $report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
             is $report->get_extra_field_value('Collection_Date_-_Bulky_Items'), '2023-07-01T00:00:00';
             is $report->get_extra_field_value('TEM_-_Bulky_Collection_Item'), '83::6::84::85', 'updated items';
-            is $report->get_extra_field_value('discounted'), 'yes';
+            is $report->get_extra_field_value('discounted'), 'previously';
 
             my $comment = $report->comments->order_by('-id')->first;
             is $comment->text, 'Booking amended';
@@ -1513,7 +1513,7 @@ FixMyStreet::override_config {
             $mech->content_contains('please use the reference:&nbsp;' . $report->id);
 
             $mech->get_ok($base_path);
-            $mech->content_contains('Last discounted collection: Saturday 1 July 2023'); # This is wrong, it should be none TODO
+            $mech->content_contains('Last discounted collection: None');
         };
     };
 
@@ -1523,8 +1523,6 @@ FixMyStreet::override_config {
 
     subtest 'Amending discounted booking, different date' => sub {
         my $base_path = '/waste/12345';
-        # Reset discount table
-        FixMyStreet::DB->resultset("Property")->delete; # Shouldn't be needed TODO
         subtest 'Make a new booking' => sub {
             $mech->get_ok('/waste/12345');
             $mech->content_contains('Last discounted collection: None');
@@ -1620,7 +1618,7 @@ FixMyStreet::override_config {
             $mech->content_contains('please use the reference:&nbsp;' . $report->id);
 
             $mech->get_ok($base_path);
-            $mech->content_contains('Last discounted collection: Saturday 1 July 2023'); # This should be 15th TODO
+            $mech->content_contains('Last discounted collection: Saturday 15 July 2023');
         };
 
         $report->external_id('Echo-456');
