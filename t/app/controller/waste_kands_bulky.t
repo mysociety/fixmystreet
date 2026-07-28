@@ -1800,6 +1800,37 @@ FixMyStreet::override_config {
             $mech->content_contains('We are investigating the problem with this collection.');
         };
 
+        subtest 'Complete missed collection' => sub {
+            $echo->mock('GetEventsForObject', sub { [ {
+                Id => '8004',
+                Guid => 'booking-guid',
+                ServiceId => 960, # Bulky
+                EventTypeId => 3130, # Bulky collection
+                EventStateId => 19184, # Completed
+                EventDate => { DateTime => '2025-04-01T00:00:00Z' },
+                ResolvedDate => { DateTime => '2025-04-08T00:00:00Z' },
+                ResolutionCodeId => 232, # Completed on Scheduled Day (dunno if used, doesn't matter)
+            }, {
+                Id => '315530',
+                Guid => 'missed-guid',
+                ServiceId => 960, # Bulky
+                EventTypeId => 3145, # Missed collection
+                EventStateId => 19241, # Completed
+                ResolvedDate => { DateTime => "2025-04-08T17:00:00Z" },
+                EventDate => { DateTime => "2025-04-08T17:00:00Z" },
+            } ] });
+
+            set_fixed_time('2025-04-10T19:00:00Z');
+            $mech->get_ok($problem_url);
+            $mech->text_contains('The crew marked this collection as completed');
+            $mech->text_contains('Dispute collection completion');
+            $mech->submit_form_ok(
+                { with_fields => { category => 'Missed collection dispute' } }
+            );
+            $mech->text_contains('The crew marked this collection as completed');
+            $mech->text_contains('If your bulky waste was not collected');
+        };
+
         $echo->mock('GetEventsForObject', sub { [] }); # reset
     };
 
