@@ -343,7 +343,7 @@ FixMyStreet::override_config {
             subtest 'Follow dispute link' => sub {
                 get_problem_page();
                 like $mech->text,
-                    qr/The crew have closed your collection task as not collected:.*Bin not presented/;
+                    qr/The crew have closed your collection task as not collected:.*Not presented/;
                 $mech->submit_form(
                     with_fields => { category => 'Missed collection dispute' },
                 );

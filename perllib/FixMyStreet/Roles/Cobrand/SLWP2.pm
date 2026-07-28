@@ -794,10 +794,13 @@ property types allowed to book collections.
 =cut
 
 sub waste_bulky_missed_blocked_codes {
+    # Normally this says Bin not presented which doesn't make sense for bulky
+    my %codes = %RESOLUTION_CODES;
+    $codes{66} = 'Not presented';
     return {
         # Not Completed
-        19185 => \%RESOLUTION_CODES,
-        19236 => \%RESOLUTION_CODES,
+        19185 => \%codes,
+        19236 => \%codes,
         # Partially Completed
         19186 => {
             all => 'Partially Completed',
