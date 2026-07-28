@@ -805,9 +805,24 @@ FixMyStreet::override_config {
     };
 
     subtest 'Missed collections' => sub {
-        $report->update({ state => 'fixed - council', external_id => 'a-guid' });
+        $echo->mock( 'GetEventsForObject', sub { [ {
+            Guid => 'a-guid',
+            EventTypeId => 3130,
+            EventDate => { DateTime => '2023-07-05T00:00:00Z' },
+            EventStateId => 19183, # Allocated to crew
+        } ] } );
 
-        # Fixed date still set to 5th July
+        $mech->get_ok('/waste/12345');
+        $mech->follow_link_ok( { url_regex => qr/service_id=986/}, 'Follow "Report a problem" link for the bulky collection' );
+        $mech->content_contains('Please wait until after 6pm', 'Before 6pm on day');
+
+        set_fixed_time('2023-07-05T18:44:59Z');
+        $mech->get_ok('/waste/12345');
+        $mech->follow_link_ok( { url_regex => qr/service_id=986/}, 'Follow "Report a problem" link for the bulky collection' );
+        $mech->content_contains('Report a missed collection', "can report an incomplete collection as missed after 6pm");
+
+        $report->update({ state => 'fixed - council', external_id => 'a-guid' });
+        set_fixed_time('2023-07-05T05:44:59Z');
         $mech->get_ok('/waste/12345');
         $mech->content_lacks('Report a bulky waste collection as missed');
         $mech->get_ok('/waste/12345/report');
