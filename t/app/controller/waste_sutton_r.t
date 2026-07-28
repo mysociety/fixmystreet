@@ -1108,7 +1108,6 @@ FixMyStreet::override_config {
         $e->mock('GetTasks', sub { [ {
             Ref => { Value => { anyType => [ 17430692, 8287 ] } },
             State => { Name => 'Completed' },
-            # Resolution => { Name => 'Contaminated builder waste', Ref => { Value => { 'anyType' => 1135 } } },
             CompletedDate => { DateTime => '2022-09-09T16:00:00Z' }
         } ] });
 
@@ -1273,6 +1272,7 @@ FixMyStreet::override_config {
         subtest 'Complete missed collection' => sub {
             $e->mock('GetEventsForObject', sub { [ {
                 Id => '112112321',
+                Guid => 'missed-collection-guid',
                 EventTypeId => 3145, # Missed collection
                 EventStateId => 19241, # Completed
                 ResolvedDate => { DateTime => "2022-09-10T17:00:00Z" },
@@ -1280,6 +1280,16 @@ FixMyStreet::override_config {
                 EventDate => { DateTime => "2022-09-10T17:00:00Z" },
                 EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
             } ] });
+
+            set_fixed_time('2022-09-11T19:00:00Z');
+            $mech->get_ok($problem_url);
+            $mech->text_contains('The crew marked this collection as completed');
+            $mech->text_contains('Dispute collection completion');
+            $mech->submit_form_ok(
+                { with_fields => { category => 'Missed collection dispute' } }
+            );
+            $mech->text_contains('The crew marked this collection as completed');
+            $mech->text_contains('If your bin has not been emptied');
 
             set_fixed_time('2022-09-14T19:00:00Z');
             $mech->get_ok($problem_url);
