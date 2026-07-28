@@ -1066,9 +1066,13 @@ sub booked_check_missed_collection {
             }
         }
 
+        # set a Kingston/Sutton specific flag (hence hardcoding time) if the current time
+        # is before the end of the possible collection window. Used to determine if a
+        # collection can be reported as missed
         my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-        if ($event->{date} > $today) {
-            $row->{bulky_before_collection_date} = 1;
+        my $event_is_today = $today->clone->truncate(to => 'day') == $event->{date}->clone->truncate(to => 'day');
+        if ($event->{date} > $today || ($event_is_today && $today->hour < 18)) {
+            $row->{bulky_before_collection_date} = 1 if $event->{state} eq 'open';
         }
 
         # Open events are coming through and we only want to continue under specific circumstances with an open event
