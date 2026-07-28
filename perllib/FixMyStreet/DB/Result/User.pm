@@ -200,6 +200,24 @@ around password => sub {
     $self->$orig(@_);
 };
 
+around insert => sub {
+    my ($orig, $self) = (shift, shift);
+    my $email = $self->get_column('email');
+    $self->set_column(email => lc $email) if defined $email;
+    $self->$orig(@_);
+};
+
+around update => sub {
+    my ($orig, $self) = (shift, shift);
+    if (@_ && ref $_[0] eq 'HASH' && defined $_[0]->{email}) {
+        $_[0]->{email} = lc $_[0]->{email};
+    } else {
+        my $email = $self->get_column('email');
+        $self->set_column(email => lc $email) if defined $email;
+    }
+    $self->$orig(@_);
+};
+
 =head2 username
 
 Returns a verified email or phone for this user, preferring email,
