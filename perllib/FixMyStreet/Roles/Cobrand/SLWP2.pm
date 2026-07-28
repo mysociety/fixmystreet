@@ -786,6 +786,8 @@ sub waste_amend_amendment_update {
         fms_extra_amend_items => $p->get_extra_field_value('TEM_-_Bulky_Collection_Item'),
         fms_extra_amend_notes => $p->get_extra_field_value('TEM_-_Bulky_Collection_Description'),
         fms_extra_amend_location => $p->get_extra_field_value('Exact_Location'),
+        fms_extra_amend_payment_ref => $p->get_extra_metadata('payment_reference'),
+        fms_extra_amend_payment_amount => $p->get_extra_field_value('payment'),
     );
     $update->photo($p->photo);
 }

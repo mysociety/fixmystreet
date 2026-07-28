@@ -646,6 +646,8 @@ FixMyStreet::override_config {
             is $comment->get_extra_metadata('fms_extra_amend_items'), '83::6';
             is $comment->get_extra_metadata('fms_extra_amend_notes'), '::';
             is $comment->get_extra_metadata('fms_extra_amend_location'), 'in the middle of the drive';
+            is $comment->get_extra_metadata('fms_extra_amend_payment_ref'), '54321';
+            is $comment->get_extra_metadata('fms_extra_amend_payment_amount'), '3700';
 
             $mech->content_contains('Bulky collection booking confirmed');
             $mech->content_contains('please use the reference:&nbsp;' . $report->id);
@@ -1009,6 +1011,8 @@ FixMyStreet::override_config {
             is $update->get_extra_metadata('fms_extra_amend_items'), '83::6::84::83', 'Correct items';
             is $update->get_extra_metadata('fms_extra_amend_notes'), '::::::';
             is $update->get_extra_metadata('fms_extra_amend_location'), 'in the middle of the drive';
+            is $update->get_extra_metadata('fms_extra_amend_payment_ref'), '54321';
+            is $update->get_extra_metadata('fms_extra_amend_payment_amount'), 2375;
 
             $mech->content_contains('Bulky collection booking confirmed');
             $mech->content_contains('please use the reference:&nbsp;' . $report->id);
@@ -1372,7 +1376,7 @@ FixMyStreet::override_config {
         }
     };
 
-    subtest 'Amending discounted booking' => sub {
+    subtest 'Amending discounted booking, same date' => sub {
         set_fixed_time('2023-06-28T12:13:14');
         my $base_path = '/waste/12345';
         $report->external_id('Echo-123');
@@ -1384,7 +1388,7 @@ FixMyStreet::override_config {
         $mech->content_contains("Before you amend your booking");
         $mech->submit_form_ok;
 
-        subtest 'Amend the items, same date' => sub {
+        subtest 'Amend the items, still below limit' => sub {
             $mech->get_ok("$base_path/bulky/amend/" . $report->id);
             $mech->submit_form_ok;
             $mech->submit_form_ok(
@@ -1436,10 +1440,191 @@ FixMyStreet::override_config {
             is $comment->get_extra_metadata('fms_extra_amend_items'), '83::6';
             is $comment->get_extra_metadata('fms_extra_amend_notes'), '::';
             is $comment->get_extra_metadata('fms_extra_amend_location'), 'in the middle of the drive';
+            is $comment->get_extra_metadata('fms_extra_amend_payment_ref'), 'free';
+            is $comment->get_extra_metadata('fms_extra_amend_payment_amount'), '';
 
             $mech->content_contains('Bulky collection booking confirmed');
             $mech->content_contains('please use the reference:&nbsp;' . $report->id);
+
+            $mech->get_ok($base_path);
+            $mech->content_contains('Last discounted collection: Saturday 1 July 2023');
         };
+
+        subtest 'Amend the items above lower limit' => sub {
+            $mech->get_ok("$base_path/bulky/amend/" . $report->id);
+            $mech->submit_form_ok;
+            $mech->submit_form_ok(
+                { with_fields => { chosen_date => '2023-07-01T00:00:00;reserveA==;2023-06-25T10:10:00' } }
+            );
+            $mech->submit_form_ok({
+                form_number => 1,
+                fields => {
+                    'item_1' => 'Bath',
+                    'item_2' => 'Bookcase, Shelving Unit',
+                    'item_3' => 'Bathroom Cabinet /Shower Screen',
+                    'item_4' => 'Bicycle',
+                },
+            });
+            $mech->submit_form_ok({ form_number => 2 }); # Location page
+            $mech->content_contains('4 items requested for collection');
+            $mech->content_contains('£60.75');
+            $mech->content_contains("<dd>Saturday 01 July 2023</dd>");
+        };
+
+        subtest 'Pay and confirm amendment' => sub {
+            my $count = FixMyStreet::DB->resultset("Problem")->count;
+
+            my $mech2 = $mech->clone;
+            $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
+            is $mech2->res->previous->code, 302, 'payments issues a redirect';
+            is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+
+            my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+            is $report->id, $new_report->id;
+
+            is +FixMyStreet::DB->resultset("Problem")->count, $count, 'no new report';
+            is $report->comments->count, 3; # Confirmation and then two amendments
+
+            $mech->get_ok("/waste/pay_complete/$report_id/$token");
+
+            my $email = $mech->get_email;
+            is $email->header('Subject'), 'Bulky waste collection service - reference ' . $report->id;
+            $mech->clear_emails_ok;
+
+            FixMyStreet::Script::Alerts::send_updates();
+            $mech->email_count_is(0); # No cancellation update on original
+
+            $report->discard_changes;
+            is $report->get_extra_field_value('payment_method'), 'csc', 'correct payment method on report';
+            is $report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+            is $report->get_extra_field_value('Collection_Date_-_Bulky_Items'), '2023-07-01T00:00:00';
+            is $report->get_extra_field_value('TEM_-_Bulky_Collection_Item'), '83::6::84::85', 'updated items';
+            is $report->get_extra_field_value('discounted'), 'yes';
+
+            my $comment = $report->comments->order_by('-id')->first;
+            is $comment->text, 'Booking amended';
+            is $comment->get_extra_metadata('fms_extra_amend_items'), '83::6::84::85';
+            is $comment->get_extra_metadata('fms_extra_amend_notes'), '::::::';
+            is $comment->get_extra_metadata('fms_extra_amend_location'), 'in the middle of the drive';
+            is $comment->get_extra_metadata('fms_extra_amend_payment_ref'), '54321';
+            is $comment->get_extra_metadata('fms_extra_amend_payment_amount'), 6075;
+
+            $mech->content_contains('Bulky collection booking confirmed');
+            $mech->content_contains('please use the reference:&nbsp;' . $report->id);
+
+            $mech->get_ok($base_path);
+            $mech->content_contains('Last discounted collection: Saturday 1 July 2023'); # This is wrong, it should be none TODO
+        };
+    };
+
+    # Get rid of this one now, as we're making a new one below
+    $report->comments->delete;
+    $report->delete;
+
+    subtest 'Amending discounted booking, different date' => sub {
+        my $base_path = '/waste/12345';
+        # Reset discount table
+        FixMyStreet::DB->resultset("Property")->delete; # Shouldn't be needed TODO
+        subtest 'Make a new booking' => sub {
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('Last discounted collection: None');
+            $mech->content_contains('>Next discounted collection on or after: Friday 30 June 2023');
+
+            $mech->get_ok('/waste/12345/bulky');
+            $mech->submit_form_ok;
+            $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
+            $mech->submit_form_ok({ with_fields => { chosen_date => '2023-07-01T00:00:00;reserveA==;2023-06-25T10:10:00' } });
+            $mech->submit_form_ok({ form_number => 1, fields => { 'item_1' => 'BBQ', 'item_2' => 'Bicycle', 'item_3' => 'Bath' } });
+            $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
+            $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+
+            $mech->content_contains('Bulky collection booking confirmed');
+            $mech->content_lacks('payment reference');
+
+            $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+            is $report->category, 'Bulky collection', 'correct category on report';
+            is $report->get_extra_field_value('discounted'), 'yes';
+            is $report->get_extra_field_value('payment'), '';
+            is $report->state, 'confirmed', 'report confirmed';
+
+            is $report->comments->count, 1;
+            my $update = $report->comments->first;
+            is $update->state, 'confirmed';
+            is $update->text, 'Payment confirmed, reference free, amount £0.00';
+            is $update->get_extra_metadata('fms_extra_payments'), 'free|0.00';
+
+            my $confirmation_email_html = $mech->get_html_body_from_email();
+            unlike $confirmation_email_html, qr/Total cost/;
+
+            FixMyStreet::Script::Reports::send();
+            $mech->email_count_is(1); # Only email is 'email' to council
+            $mech->clear_emails_ok;
+        };
+
+        $report->external_id('Echo-456');
+        $report->update;
+
+        subtest 'Amend the items, still below limit' => sub {
+            $mech->get_ok("$base_path/bulky/amend/" . $report->id);
+            $mech->submit_form_ok;
+            $mech->submit_form_ok(
+                { with_fields => { chosen_date => '2023-07-15T00:00:00;reserveA==;2023-06-25T10:10:00' } }
+            );
+            $mech->submit_form_ok({
+                with_fields => {
+                    'item_1' => 'Bath',
+                    'item_2' => 'Bookcase, Shelving Unit',
+                    'item_3' => '',
+                },
+            });
+            $mech->submit_form_ok({ form_number => 2 }); # Location page
+            $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bath/s);
+            $mech->content_lacks('>BBQ<');
+            $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bookcase, Shelving Unit/s);
+            $mech->content_contains('2 items requested for collection');
+            $mech->content_contains('£0.00');
+            $mech->content_contains("<dd>Saturday 15 July 2023</dd>");
+        };
+
+        subtest 'Confirm amendment' => sub {
+            $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+
+            $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+
+            my $email = $mech->get_email;
+            is $email->header('Subject'), 'Bulky waste collection service - reference ' . $report->id;
+            $mech->clear_emails_ok;
+
+            FixMyStreet::Script::Reports::send();
+            $mech->email_count_is(1); # Only email is 'email' to council
+            $mech->clear_emails_ok;
+
+            FixMyStreet::Script::Alerts::send_updates();
+            $mech->email_count_is(0); # No cancellation update on original
+
+            $report->discard_changes;
+            is $report->category, 'Bulky collection', 'correct category on report';
+            is $report->title, 'Bulky goods collection', 'correct title on report';
+            is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
+            is $report->state, 'confirmed', 'report confirmed';
+            is $report->get_extra_metadata('payment_reference'), 'free', 'correct payment reference on report';
+            is $report->uprn, 1000000002;
+            is $report->get_extra_field_value('Collection_Date_-_Bulky_Items'), '2023-07-15T00:00:00';
+            is $report->get_extra_field_value('TEM_-_Bulky_Collection_Item'), '83::6', 'updated items';
+            is $report->get_extra_field_value('discounted'), 'yes';
+
+            my $update = $report->comments->order_by('-id')->first;
+            is $update->text, 'Payment confirmed, reference free, amount £0.00';
+
+            $mech->content_contains('Bulky collection booking confirmed');
+            $mech->content_contains('please use the reference:&nbsp;' . $report->id);
+
+            $mech->get_ok($base_path);
+            $mech->content_contains('Last discounted collection: Saturday 1 July 2023'); # This should be 15th TODO
+        };
+
+        $report->external_id('Echo-456');
+        $report->update;
 
         subtest 'Amend the date and items, above the lower limit' => sub {
             $mech->get_ok("$base_path/bulky/amend/" . $report->id);
@@ -1500,12 +1685,15 @@ FixMyStreet::override_config {
             is $new_report->comments->count, 1; # Payment confirmed update
             my $update = $new_report->comments->first;
             is $update->text, 'Payment confirmed, reference 54321, amount £60.75';
-            is $update->get_extra_metadata('fms_extra_payments'), '54321|60.75|free|0.00';
+            is $update->get_extra_metadata('fms_extra_payments'), '54321|60.75|free|0.00|free|0.00';
             FixMyStreet::Script::Alerts::send_updates();
             $mech->email_count_is(0);
 
             $mech->content_contains('Bulky collection booking confirmed');
             $mech->content_contains('please use the reference:&nbsp;' . $new_report->id);
+
+            $mech->get_ok($base_path);
+            $mech->content_contains('Last discounted collection: None');
         };
     };
 
