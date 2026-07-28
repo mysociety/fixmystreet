@@ -44,6 +44,7 @@ subtest "check owner of report can view non public reports" => sub {
     ok $mech->get("/report/$report_id"), "get '/report/$report_id'";
     is $mech->res->code, 200, "report can be viewed";
     is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
+    $mech->content_lacks('This report is private', 'private status not shown to reporter');
     $mech->log_out_ok;
 
     $mech->log_in_ok( $user2->email );
@@ -63,6 +64,7 @@ subtest 'check staff with report_view_private can view non-public, but not edit'
     is $mech->res->code, 200, "report can be viewed";
     is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
     $mech->content_lacks('id="side-inspect"', 'inspect bar is not shown');
+    $mech->content_contains('This report is private', 'private status is shown in report meta');
     $mech->log_out_ok;
 };
 
