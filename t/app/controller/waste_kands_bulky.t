@@ -789,7 +789,7 @@ FixMyStreet::override_config {
         $mech->email_count_is(0);
         my $completion_comment
             = $mech->create_comment_for_problem( $report, $body_user, 'User',
-            'Things collected', undef, 'confirmed', 'fixed - council' );
+            'Your bulky waste has successfully been collected', undef, 'confirmed', 'fixed - council' );
         # otherwise alert will not send because uses current_timestamp in query
         $completion_comment->confirmed(\'current_timestamp');
         $completion_comment->update;
@@ -802,6 +802,12 @@ FixMyStreet::override_config {
         my $email_html = $mech->get_html_body_from_email($email);
         like $email_text, qr/BBQ/, 'collection completed text email contains item list';
         like $email_html, qr/BBQ/, 'collection completed html email contains item list';
+
+        my $report_id = $report->id;
+        like $email_text, qr/To report a problem with this collection visit your bin page/, 'collection completed text has problem instructions';
+        like $email_html, qr/Your bulky waste has successfully been collected/, 'collection completed html email has completed text';
+        like $email_html, qr/Report a problem with this bulky waste collection/, 'collection completed html email has problem link';
+        like $email_html, qr#waste/12345/enquiry\?template=problem&service_id=986&original_booking_id=$report_id#, 'collection completed html email has problem link';
     };
 
     subtest 'Missed collections' => sub {
@@ -1490,10 +1496,10 @@ FixMyStreet::override_config {
             my $email_text = $mech->get_text_body_from_email($email);
             my $email_html = $mech->get_html_body_from_email($email);
             like $email_text, qr/No access due to gate locked/, 'Reason pulled from comment';
-            like $email_text, qr/report a problem with this missed collection/, 'Report a problem text in text email';
+            like $email_text, qr/report a problem with this collection/, 'Report a problem text in text email';
             like $email_html, qr/No access due to gate locked/, 'Reason pulled from comment';
             like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
-            like $email_html, qr{waste/12345/enquiry}, 'HTML alert contains report link';
+            like $email_html, qr{waste/12345/enquiry\?category=Missed\+collection\+dispute}, 'HTML alert contains report link';
 
             # we only want the HTML link as the text version does not contain the link
             my @links = $email_html =~ m{https?://[^"]+}g;
