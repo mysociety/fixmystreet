@@ -690,8 +690,15 @@ sub bulky_pricing_strategy {
     my $cfg = $self->wasteworks_config;
     my $c = $self->{c};
 
-    my $data = $c->stash->{form}->saved_data;
-    my $discount = $self->bulky_discount_available_by_date($data);
+    my $previous = $c->stash->{amending_booking};
+    my $discount;
+    if ($previous) {
+        my $discounted = $previous->get_extra_field_value('discounted') || '';
+        $discount = 1 if $discounted eq 'yes';
+    } else {
+        my $data = $c->stash->{form}->saved_data;
+        $discount = $self->bulky_discount_available_by_date($data);
+    }
     my $DISCOUNT_MAX_ITEMS = $cfg->{discount_max_items} || 3;
 
     my $base_price = $cfg->{base_price};
