@@ -783,12 +783,14 @@ sub waste_munge_bulky_amend {
 
 sub waste_amend_amendment_update {
     my ($self, $p, $update) = @_;
+    my $payment = $p->get_extra_field_value('payment') || 0;
+    $payment = sprintf( '%.2f', $payment / 100 );
     $update->set_extra_metadata(
         fms_extra_amend_items => $p->get_extra_field_value('TEM_-_Bulky_Collection_Item'),
         fms_extra_amend_notes => $p->get_extra_field_value('TEM_-_Bulky_Collection_Description'),
         fms_extra_amend_location => $p->get_extra_field_value('Exact_Location'),
         fms_extra_amend_payment_ref => $p->get_extra_metadata('payment_reference'),
-        fms_extra_amend_payment_amount => $p->get_extra_field_value('payment'),
+        fms_extra_amend_payment_amount => $payment,
     );
     $update->photo($p->photo);
     $self->call_hook('bulky_extra_confirmation_step', $p);

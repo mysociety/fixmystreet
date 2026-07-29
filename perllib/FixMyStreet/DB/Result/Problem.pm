@@ -1643,12 +1643,6 @@ sub waste_confirm_payment {
     my $db = $self->result_source->storage;
     my $no_reporter_alert = ($self->get_extra_metadata('contributed_as') || '') eq 'anonymous_user';
 
-    if ($cobrand->suppress_report_sent_email($self)) {
-        # Send bulky confirmation email after report confirmation (see
-        # the suppress_report_sent_email for SLWP)
-        $self->send_logged_email({ report => $self, cobrand => $cobrand }, 0, $cobrand);
-    }
-
     if (my $amendment = $self->get_extra_metadata('amendment_update')) {
         $amendment = FixMyStreet::DB->resultset("Comment")->find($amendment);
         my $data = $amendment->get_extra_metadata('fms_extra_amend');
@@ -1661,7 +1655,18 @@ sub waste_confirm_payment {
         $amendment->confirm;
         $amendment->update;
         $self->update;
+        if ($cobrand->suppress_report_sent_email($self)) {
+            # Send bulky confirmation email after report confirmation (see
+            # the suppress_report_sent_email for SLWP)
+            $self->send_logged_email({ report => $self, cobrand => $cobrand }, 0, $cobrand);
+        }
         return;
+    }
+
+    if ($cobrand->suppress_report_sent_email($self)) {
+        # Send bulky confirmation email after report confirmation (see
+        # the suppress_report_sent_email for SLWP)
+        $self->send_logged_email({ report => $self, cobrand => $cobrand }, 0, $cobrand);
     }
 
     my @problems = ($self);
