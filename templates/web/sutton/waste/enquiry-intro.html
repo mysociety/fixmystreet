@@ -22,7 +22,7 @@ ELSIF booked_missed.$guid;
     SET booked = 1;
     SET service = booked_missed.$guid; # Original bulky/small booking
     SET service_name = service.service_name;
-    SET resolution = service.report_locked_out_reason;
+    SET resolution = service.report_locked_out_reason || service.report_open.resolution_reason;
     SET missed = service.dispute.missed_event; # May have a missed collection report against it
 END -%]
 
