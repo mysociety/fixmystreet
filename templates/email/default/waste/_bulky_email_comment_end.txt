@@ -3,7 +3,7 @@
 [% email_summary %]
 
 [% IF cobrand.moniker == 'sutton' OR cobrand.moniker == 'kingston' %]
-To report a problem with this missed collection visit your bin page
+To report a problem with this collection visit your bin page
 [% END %]
 
 [% email_sanitize_text(row, 'item_text_original') %]

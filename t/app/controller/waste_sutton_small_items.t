@@ -832,7 +832,7 @@ FixMyStreet::override_config {
             my $email_text = $mech->get_text_body_from_email($email);
             my $email_html = $mech->get_html_body_from_email($email);
             like $email_text, qr/No access due to gate locked/, 'Reason pulled from comment';
-            like $email_text, qr/report a problem with this missed collection/, 'Report a problem text in text email';
+            like $email_text, qr/report a problem with this collection/, 'Report a problem text in text email';
             like $email_html, qr/No access due to gate locked/, 'Reason pulled from comment';
             like $email_html, qr/Our crews reported your small items collection was not made/, 'extra bulky waste text included';
             like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
