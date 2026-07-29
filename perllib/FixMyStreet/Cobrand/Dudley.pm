@@ -38,6 +38,8 @@ sub disambiguate_location {
     };
 }
 
+sub enter_postcode_text { 'Enter a Dudley postcode, street name and area, or report reference number' }
+
 =over 4
 
 =item * dudley.gov.uk users can always be found in the admin
