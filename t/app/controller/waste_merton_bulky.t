@@ -647,7 +647,7 @@ FixMyStreet::override_config {
             is $comment->get_extra_metadata('fms_extra_amend_notes'), '::';
             is $comment->get_extra_metadata('fms_extra_amend_location'), 'in the middle of the drive';
             is $comment->get_extra_metadata('fms_extra_amend_payment_ref'), '54321';
-            is $comment->get_extra_metadata('fms_extra_amend_payment_amount'), '3700';
+            is $comment->get_extra_metadata('fms_extra_amend_payment_amount'), '37.00';
 
             $mech->content_contains('Bulky collection booking confirmed');
             $mech->content_contains('please use the reference:&nbsp;' . $report->id);
@@ -1014,7 +1014,7 @@ FixMyStreet::override_config {
             is $update->get_extra_metadata('fms_extra_amend_notes'), '::::::';
             is $update->get_extra_metadata('fms_extra_amend_location'), 'in the middle of the drive';
             is $update->get_extra_metadata('fms_extra_amend_payment_ref'), '54321';
-            is $update->get_extra_metadata('fms_extra_amend_payment_amount'), 2375;
+            is $update->get_extra_metadata('fms_extra_amend_payment_amount'), '23.75';
 
             $mech->content_contains('Bulky collection booking confirmed');
             $mech->content_contains('please use the reference:&nbsp;' . $report->id);
@@ -1443,7 +1443,7 @@ FixMyStreet::override_config {
             is $comment->get_extra_metadata('fms_extra_amend_notes'), '::';
             is $comment->get_extra_metadata('fms_extra_amend_location'), 'in the middle of the drive';
             is $comment->get_extra_metadata('fms_extra_amend_payment_ref'), 'free';
-            is $comment->get_extra_metadata('fms_extra_amend_payment_amount'), '';
+            is $comment->get_extra_metadata('fms_extra_amend_payment_amount'), '0.00';
 
             $mech->content_contains('Bulky collection booking confirmed');
             $mech->content_contains('please use the reference:&nbsp;' . $report->id);
@@ -1509,7 +1509,7 @@ FixMyStreet::override_config {
             is $comment->get_extra_metadata('fms_extra_amend_notes'), '::::::';
             is $comment->get_extra_metadata('fms_extra_amend_location'), 'in the middle of the drive';
             is $comment->get_extra_metadata('fms_extra_amend_payment_ref'), '54321';
-            is $comment->get_extra_metadata('fms_extra_amend_payment_amount'), 6075;
+            is $comment->get_extra_metadata('fms_extra_amend_payment_amount'), '60.75';
 
             $mech->content_contains('Bulky collection booking confirmed');
             $mech->content_contains('please use the reference:&nbsp;' . $report->id);
