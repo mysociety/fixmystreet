@@ -1659,7 +1659,7 @@ FixMyStreet::override_config {
                 Guid => 'missed-guid',
                 ServiceId => 960, # Bulky
                 EventTypeId => 3145, # Missed collection
-                EventStateId => 19242, # Not Completed
+                EventStateId => 19185, # Not Completed
                 ResolvedDate => { DateTime => "2025-04-08T17:00:00Z" },
                 EventDate => { DateTime => "2025-04-08T17:00:00Z" },
                 ResolutionCodeId => 617, # No access - Parked vehicle
@@ -1747,6 +1747,8 @@ FixMyStreet::override_config {
             );
 
             subtest 'actually make the report' => sub {
+                $mech->content_contains('No access due to parked vehicle', 'details of missed bin collection displayed');
+                $mech->content_contains('collection was not made');
                 $mech->submit_form_ok( { with_fields => { 'extra_Notes' => 'There was no problem with the bin' } }, 'submitted reasons');
                 $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
                 $mech->submit_form_ok( { with_fields => { submit => '1' } });
@@ -1782,7 +1784,7 @@ FixMyStreet::override_config {
                 Guid => 'missed-guid',
                 ServiceId => 960, # Bulky
                 EventTypeId => 3145, # Missed collection
-                EventStateId => 19242, # Not Completed
+                EventStateId => 19185, # Not Completed
                 ResolvedDate => { DateTime => "2025-04-08T17:00:00Z" },
                 EventDate => { DateTime => "2025-04-08T17:00:00Z" },
             }, {
