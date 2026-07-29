@@ -991,6 +991,8 @@ FixMyStreet::override_config {
             is $sent_params->{reference}, 12345, 'correct scpReference sent';
 
             my $email = $mech->get_email;
+            my $text = $mech->get_text_body_from_email($email);
+            like $text, qr/Bathroom Cabinet/;
             is $email->header('Subject'), 'Bulky waste collection service - reference ' . $report->id;
             $mech->clear_emails_ok;
 
