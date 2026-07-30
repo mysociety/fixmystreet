@@ -1123,6 +1123,11 @@ sub enquiry : Chained('property') : Args(0) {
         = $c->cobrand->problems->find( { id => $c->get_param('original_booking_id') } )
         if $c->get_param('original_booking_id');
 
+    $c->stash->{original_booking_report}
+        = $c->cobrand->problems->find( { external_id => $c->get_param('original_booking_event') } )
+        if $c->get_param('original_booking_event');
+
+
     if (my $template = $c->get_param('template')) {
         $c->stash->{template} = "waste/enquiry-$template.html";
         $c->detach;
