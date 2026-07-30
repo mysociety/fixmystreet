@@ -661,6 +661,12 @@ sub bulky_location_text_prompt {
   "Do not give any personal information or access codes."
 }
 
+=item * Bulky item notes are mandatory
+
+=cut
+
+sub bulky_item_notes_field_mandatory { 1 }
+
 =head2 Discounted bulky collections
 
 Overriding default pricing code, assume is two-banded pricing.

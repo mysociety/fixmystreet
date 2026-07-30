@@ -235,6 +235,11 @@ FixMyStreet::override_config {
                         'item_3' => 'Bath',
                         'item_4' => 'Bath',
                         'item_5' => 'Bath',
+                        'item_notes_1' => 'Note',
+                        'item_notes_2' => 'Note',
+                        'item_notes_3' => 'Note',
+                        'item_notes_4' => 'Note',
+                        'item_notes_5' => 'Note',
                     },
                 },
             );
@@ -253,6 +258,9 @@ FixMyStreet::override_config {
                     'item_photo_1' => [ $sample_file, undef, Content_Type => 'image/jpeg' ],
                     'item_2' => 'Bicycle',
                     'item_3' => 'Bath',
+                    'item_notes_1' => 'Note',
+                    'item_notes_2' => 'Note',
+                    'item_notes_3' => 'Note',
                 },
             },
         );
@@ -639,7 +647,7 @@ FixMyStreet::override_config {
             my $comment = $report->comments->order_by('-id')->first;
             is $comment->text, 'Booking amended';
             is $comment->get_extra_metadata('fms_extra_amend_items'), '83::6';
-            is $comment->get_extra_metadata('fms_extra_amend_notes'), '::';
+            is $comment->get_extra_metadata('fms_extra_amend_notes'), 'Note::Note';
             is $comment->get_extra_metadata('fms_extra_amend_location'), 'in the middle of the drive';
             is $comment->get_extra_metadata('fms_extra_amend_payment_ref'), '54321';
             is $comment->get_extra_metadata('fms_extra_amend_payment_amount'), '37.00';
@@ -682,6 +690,7 @@ FixMyStreet::override_config {
                     'item_photo_1_fileid' => '', # Photo removed
                     'item_2' => 'Bookcase, Shelving Unit',
                     'item_3' => 'Bathroom Cabinet /Shower Screen',
+                    'item_notes_3' => 'Note',
                 },
             });
             $mech->submit_form_ok({ form_number => 2 }); # Location page
@@ -794,6 +803,7 @@ FixMyStreet::override_config {
                     'item_2' => 'Bookcase, Shelving Unit',
                     'item_3' => 'Bath',
                     'item_4' => 'Bath',
+                    'item_notes_4' => 'Note',
                 },
             });
             $mech->submit_form_ok({ form_number => 2 }); # Location page
@@ -1006,7 +1016,7 @@ FixMyStreet::override_config {
             is $update->state, 'confirmed';
             is $update->text, 'Booking amended';
             is $update->get_extra_metadata('fms_extra_amend_items'), '83::6::84::83', 'Correct items';
-            is $update->get_extra_metadata('fms_extra_amend_notes'), '::::::';
+            is $update->get_extra_metadata('fms_extra_amend_notes'), 'Note::Note::Note::Note';
             is $update->get_extra_metadata('fms_extra_amend_location'), 'in the middle of the drive';
             is $update->get_extra_metadata('fms_extra_amend_payment_ref'), '54321';
             is $update->get_extra_metadata('fms_extra_amend_payment_amount'), '23.75';
@@ -1242,7 +1252,10 @@ FixMyStreet::override_config {
         $mech->submit_form_ok;
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
         $mech->submit_form_ok({ with_fields => { chosen_date => '2023-07-01T00:00:00;reserveA==;2023-06-25T10:10:00' } });
-        $mech->submit_form_ok({ form_number => 1, fields => { 'item_1' => 'BBQ', 'item_2' => 'Bicycle', 'item_3' => 'Bath' } });
+        $mech->submit_form_ok({ form_number => 1, fields => {
+            'item_1' => 'BBQ', 'item_2' => 'Bicycle', 'item_3' => 'Bath',
+            'item_notes_1' => 'Note', 'item_notes_2' => 'Note', 'item_notes_3' => 'Note',
+        } });
         $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
         $mech->content_contains('3 items requested for collection');
         $mech->content_contains('£0.00');
@@ -1292,7 +1305,10 @@ FixMyStreet::override_config {
         $mech->submit_form_ok;
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
         $mech->submit_form_ok({ with_fields => { chosen_date => '2023-07-01T00:00:00;reserveA==;2023-06-25T10:10:00' } });
-        $mech->submit_form_ok({ form_number => 1, fields => { 'item_1' => 'BBQ', 'item_2' => 'Bicycle', 'item_3' => 'Bath' } });
+        $mech->submit_form_ok({ form_number => 1, fields => {
+            'item_1' => 'BBQ', 'item_2' => 'Bicycle', 'item_3' => 'Bath',
+            'item_notes_1' => 'Note', 'item_notes_2' => 'Note', 'item_notes_3' => 'Note',
+        } });
         $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
         $mech->content_contains('3 items requested for collection');
         $mech->content_contains('£0.00');
@@ -1331,7 +1347,10 @@ FixMyStreet::override_config {
         $mech->submit_form_ok;
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
         $mech->submit_form_ok({ with_fields => { chosen_date => '2023-07-01T00:00:00;reserveA==;2023-06-25T10:10:00' } });
-        $mech->submit_form_ok({ form_number => 1, fields => { 'item_1' => 'BBQ', 'item_2' => 'Bicycle', 'item_3' => 'Bath' } });
+        $mech->submit_form_ok({ form_number => 1, fields => {
+            'item_1' => 'BBQ', 'item_2' => 'Bicycle', 'item_3' => 'Bath',
+            'item_notes_1' => 'Note', 'item_notes_2' => 'Note', 'item_notes_3' => 'Note',
+        } });
         $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
         $mech->content_contains('3 items requested for collection');
         $mech->content_contains('£37.00');
@@ -1348,7 +1367,10 @@ FixMyStreet::override_config {
         $mech->submit_form_ok;
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
         $mech->submit_form_ok({ with_fields => { chosen_date => '2024-07-01T00:00:00;reserveA==;2023-06-25T10:10:00' } });
-        $mech->submit_form_ok({ form_number => 1, fields => { 'item_1' => 'BBQ', 'item_2' => 'Bicycle', 'item_3' => 'Bath' } });
+        $mech->submit_form_ok({ form_number => 1, fields => {
+            'item_1' => 'BBQ', 'item_2' => 'Bicycle', 'item_3' => 'Bath',
+            'item_notes_1' => 'Note', 'item_notes_2' => 'Note', 'item_notes_3' => 'Note',
+        } });
         $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
         $mech->content_contains('3 items requested for collection');
         $mech->content_contains('£0.00');
@@ -1435,7 +1457,7 @@ FixMyStreet::override_config {
             my $comment = $report->comments->order_by('-id')->first;
             is $comment->text, 'Booking amended';
             is $comment->get_extra_metadata('fms_extra_amend_items'), '83::6';
-            is $comment->get_extra_metadata('fms_extra_amend_notes'), '::';
+            is $comment->get_extra_metadata('fms_extra_amend_notes'), 'Note::Note';
             is $comment->get_extra_metadata('fms_extra_amend_location'), 'in the middle of the drive';
             is $comment->get_extra_metadata('fms_extra_amend_payment_ref'), 'free';
             is $comment->get_extra_metadata('fms_extra_amend_payment_amount'), '0.00';
@@ -1460,6 +1482,8 @@ FixMyStreet::override_config {
                     'item_2' => 'Bookcase, Shelving Unit',
                     'item_3' => 'Bathroom Cabinet /Shower Screen',
                     'item_4' => 'Bicycle',
+                    'item_notes_3' => 'Note',
+                    'item_notes_4' => 'Note',
                 },
             });
             $mech->submit_form_ok({ form_number => 2 }); # Location page
@@ -1501,7 +1525,7 @@ FixMyStreet::override_config {
             my $comment = $report->comments->order_by('-id')->first;
             is $comment->text, 'Booking amended';
             is $comment->get_extra_metadata('fms_extra_amend_items'), '83::6::84::85';
-            is $comment->get_extra_metadata('fms_extra_amend_notes'), '::::::';
+            is $comment->get_extra_metadata('fms_extra_amend_notes'), 'Note::Note::Note::Note';
             is $comment->get_extra_metadata('fms_extra_amend_location'), 'in the middle of the drive';
             is $comment->get_extra_metadata('fms_extra_amend_payment_ref'), '54321';
             is $comment->get_extra_metadata('fms_extra_amend_payment_amount'), '60.75';
@@ -1529,7 +1553,10 @@ FixMyStreet::override_config {
             $mech->submit_form_ok;
             $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
             $mech->submit_form_ok({ with_fields => { chosen_date => '2023-07-01T00:00:00;reserveA==;2023-06-25T10:10:00' } });
-            $mech->submit_form_ok({ form_number => 1, fields => { 'item_1' => 'BBQ', 'item_2' => 'Bicycle', 'item_3' => 'Bath' } });
+            $mech->submit_form_ok({ form_number => 1, fields => {
+                'item_1' => 'BBQ', 'item_2' => 'Bicycle', 'item_3' => 'Bath',
+                'item_notes_1' => 'Note', 'item_notes_2' => 'Note', 'item_notes_3' => 'Note',
+            } });
             $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
             $mech->submit_form_ok({ with_fields => { tandc => 1 } });
 
@@ -1634,6 +1661,8 @@ FixMyStreet::override_config {
                     'item_2' => 'Bookcase, Shelving Unit',
                     'item_3' => 'Bathroom Cabinet /Shower Screen',
                     'item_4' => 'BBQ',
+                    'item_notes_3' => 'Note',
+                    'item_notes_4' => 'Note',
                 },
             });
             $mech->submit_form_ok({ form_number => 2 }); # Location page
@@ -1714,7 +1743,10 @@ FixMyStreet::override_config {
         $mech->submit_form_ok;
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
         $mech->submit_form_ok({ with_fields => { chosen_date => '2023-07-01T00:00:00;reserveA==;2023-06-25T10:10:00' } });
-        $mech->submit_form_ok({ form_number => 1, fields => { 'item_1' => 'BBQ', 'item_2' => 'Bicycle', 'item_3' => 'Bath' } });
+        $mech->submit_form_ok({ form_number => 1, fields => {
+            'item_1' => 'BBQ', 'item_2' => 'Bicycle', 'item_3' => 'Bath',
+            'item_notes_1' => 'Note', 'item_notes_2' => 'Note', 'item_notes_3' => 'Note',
+        } });
         $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
         $mech->content_contains('3 items requested for collection');
         $mech->content_contains('£10.00');
@@ -1782,7 +1814,10 @@ FixMyStreet::override_config {
         $mech->submit_form_ok;
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
         $mech->submit_form_ok({ with_fields => { chosen_date => '2023-07-01T00:00:00;reserveA==;2023-06-25T10:10:00' } });
-        $mech->submit_form_ok({ form_number => 1, fields => { 'item_1' => 'BBQ', 'item_2' => 'Bicycle', 'item_3' => 'Bath' } });
+        $mech->submit_form_ok({ form_number => 1, fields => {
+            'item_1' => 'BBQ', 'item_2' => 'Bicycle', 'item_3' => 'Bath',
+            'item_notes_1' => 'Note', 'item_notes_2' => 'Note', 'item_notes_3' => 'Note',
+        } });
         $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
         $mech->content_contains('3 items requested for collection');
         $mech->content_contains('£10.00');
@@ -1825,7 +1860,10 @@ FixMyStreet::override_config {
             $mech->submit_form_ok;
             $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
             $mech->submit_form_ok({ with_fields => { chosen_date => '2023-07-01T00:00:00;reserveA==;2023-06-25T10:10:00' } });
-            $mech->submit_form_ok({ form_number => 1, fields => { 'item_1' => 'BBQ', 'item_2' => 'Bicycle', 'item_3' => 'Bath' } });
+            $mech->submit_form_ok({ form_number => 1, fields => {
+                'item_1' => 'BBQ', 'item_2' => 'Bicycle', 'item_3' => 'Bath',
+                'item_notes_1' => 'Note', 'item_notes_2' => 'Note', 'item_notes_3' => 'Note',
+            } });
             $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
             $mech->content_contains('3 items requested for collection');
             $mech->content_contains('£37.00');
@@ -1893,6 +1931,7 @@ sub add_extra_metadata {
             items_per_collection_max => 6,
             per_item_costs => 0,
             show_location_page => 'users',
+            show_individual_notes => 1,
             item_list => [
                 { bartec_id => '83', name => 'Bath' },
                 { bartec_id => '84', name => 'Bathroom Cabinet /Shower Screen' },
