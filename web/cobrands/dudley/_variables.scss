@@ -106,9 +106,10 @@ $mobile-sticky-sidebar-button-bg: $cobrand_blue;
 $front-main-color: $primary_b;
 $postcodeform-background: $base_bg;
 $postcodeform-color: $primary_b;
+$postcodeform-max-width: 50%;
 
 $postcodeform-color-desktop: $primary_b;
 $front-main-color-desktop: $primary_b;
 $front-main-background-desktop: white url("/cobrands/dudley/images/hero.jpg") no-repeat center / cover;
 $front-main-container-background-desktop: transparentize($cobrand_white, 0.1);
-$report-forms-wrapper-flex-column-gap: 5rem;
+$report-forms-wrapper-flex-column-gap: 3rem;
