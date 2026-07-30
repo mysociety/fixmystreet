@@ -7,14 +7,6 @@
 [% PROCESS errors %]
 [% PROCESS title %]
 
-[% IF c.cobrand.moniker == 'merton' %]
-<p class="govuk-body">
-Please add each item individually.
-e.g. if you have 2 Armchairs and a sofa to be collected, add each Armchair and then add the sofa.
-<strong>Do not</strong> add just one armchair and state 2 in the description. Only one will be collected.
-</p>
-[% END %]
-
 [% IF property AND NOT (c.cobrand.moniker == 'sutton' || c.cobrand.moniker == 'kingston') %]
   [% INCLUDE 'waste/_address_display.html' %]
 [% END %]
@@ -49,6 +41,9 @@ e.g. if you have 2 Armchairs and a sofa to be collected, add each Armchair and t
   <div class="govuk-warning-text__content">
     <span class="govuk-warning-text__assistive">Information</span>
     <p class="govuk-!-margin-bottom-1"><strong>Note</strong></p>
+  [% IF c.cobrand.moniker == 'merton' %]
+    <p>Add one item at a time.</p>
+  [% END %]
   [% IF c.cobrand.moniker == 'bexley' %]
     <p>We can only collect items that are on the list.</p>
     <p>If your item is not on the list please check using a different name for the same thing.</p>
@@ -143,7 +138,7 @@ END; END %]
   <p id="band-pricing-info"></p>
   [% END %]
   <button type="submit" id="add-new-item" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-7" aria-label="Add item" name="goto-same-page" value="1">
-    [% IF c.cobrand.moniker == 'kingston' OR c.cobrand.moniker == 'sutton' ~%]
+    [% IF c.cobrand.moniker == 'kingston' OR c.cobrand.moniker == 'sutton' OR c.cobrand.moniker == 'merton' ~%]
       Add another item
     [%~ ELSE ~%]
       Add item

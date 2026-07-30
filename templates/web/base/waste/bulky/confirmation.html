@@ -62,6 +62,11 @@ END ~%]
       [% IF report.user.email AND report.get_extra_metadata('contributed_as') != 'anonymous_user' %]
       <p>We have emailed confirmation of your booking to [% report.user.email %].</p>
       [% END %]
+
+      [% IF c.cobrand.moniker == 'merton' %]
+      <p>You must follow the instructions in your confirmation email about how to put your items out for collection.</p>
+      [% END %]
+
       [% IF c.cobrand.moniker == 'bromley' %]
           <p>Your reference number is reference:&nbsp;[% report_id %]</p>
       [% ELSE %]
