@@ -31,6 +31,7 @@ $contact->update;
 
 my $contact_centre_user = $mech->create_user_ok('contact@example.org', from_body => $body, email_verified => 1, name => 'Contact 1');
 $contact_centre_user->user_body_permissions->create({ body => $body, permission_type => 'report_view_private' });
+$contact_centre_user->user_body_permissions->create({ body => $body, permission_type => 'wasteworks_config' });
 
 for ($body) {
     add_extra_metadata($_);
@@ -44,6 +45,7 @@ FixMyStreet::override_config {
         waste => { merton => 1 },
         waste_features => {
             merton => {
+                admin_config_enabled => 1,
                 bulky_enabled => 1,
                 bulky_amend_enabled => 'staff',
                 bulky_cancel_enabled => 'staff',
@@ -1286,17 +1288,23 @@ FixMyStreet::override_config {
         $report->delete;
     };
 
-    subtest 'Bulky goods booking with discounted (but still zero) payment' => sub {
-        my $extra = $body->get_extra_metadata('wasteworks_config');
-        $extra->{base_price} = 6075;
-        $extra->{band1_price} = 3700;
-        $extra->{discount_enabled} = 1;
-        $extra->{discount_price} = 0;
-        $extra->{discount_max_items} = 3;
-        $extra->{discount_months} = 12;
-        $body->set_extra_metadata(wasteworks_config => $extra);
-        $body->update;
+    subtest 'Update the waste configuration in the admin' => sub {
+        $mech->log_in_ok( $contact_centre_user->email );
+        $mech->get_ok('/admin/waste');
+        $mech->content_like(qr/waste_discount_enabled"  data-show/);
+        $mech->content_like(qr/waste_discount_months"\s+value=""/);
+        $mech->content_like(qr/waste_discount_max_items"\s+value=""/);
+        $mech->content_like(qr/waste_discount_price"\s+value=""/);
+        $mech->submit_form_ok({ with_fields => { discount_enabled => 1, discount_max_items => 4 } });
+        $mech->content_contains('cannot exceed small collection');
+        $mech->submit_form_ok({ with_fields => { discount_enabled => 1, discount_price => 0, discount_max_items => 3, discount_months => 12, base_price => 6075, band1_price => 3700 } });
+        $mech->content_like(qr/waste_discount_enabled" checked/);
+        $mech->content_like(qr/waste_discount_months"\s+value="12"/);
+        $mech->content_like(qr/waste_discount_max_items"\s+value="3"/);
+        $mech->content_like(qr/waste_discount_price"\s+value="0"/);
+    };
 
+    subtest 'Bulky goods booking with discounted (but still zero) payment' => sub {
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Last discounted collection: None');
         $mech->content_contains('>Next discounted collection on or after: Friday 7 July 2023');
