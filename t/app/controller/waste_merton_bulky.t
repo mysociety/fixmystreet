@@ -177,7 +177,7 @@ FixMyStreet::override_config {
 
         $mech->content_contains('Bulky waste');
         $mech->submit_form_ok; # 'Book Collection'
-        $mech->content_contains( 'Before you book',
+        $mech->content_contains( 'Before you start',
             'Should be able to access the booking form' );
     };
 
@@ -212,14 +212,9 @@ FixMyStreet::override_config {
 
         subtest 'Intro page' => sub {
             $mech->content_contains('Book a bulky waste collection');
-            $mech->content_contains('Before you book');
-            $mech->content_contains('There are <strong>six</strong> stages you need to complete to make a booking');
-            for my $subheading ('Your details', 'Choose date for collection', 'Add items for collection', 'Add location details', 'Booking Summary', 'Make payment') {
-                $mech->content_contains($subheading . ':', "Merton specific sections appear");
-            }
-            $mech->content_contains('The price depends on how many items you would like collected');
-            $mech->content_contains('1 to 3 items cost £37.00');
-            $mech->content_contains('4 to 6 items cost £60.75');
+            $mech->content_contains('Before you start');
+            $mech->content_contains('You will need to:');
+            $mech->content_contains('Tell us what you want us to collect');
             $mech->submit_form_ok;
         };
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
