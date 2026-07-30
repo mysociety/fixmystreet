@@ -50,6 +50,24 @@ sub admin_user_domain { 'canalrivertrust.org.uk' }
 sub abuse_reports_only { 1 }
 sub contact_extra_fields { [ 'display_name' ] }
 
+=item * Uses its own privacy policy
+
+=cut
+
+sub privacy_policy_url {
+    'https://canalrivertrust.org.uk/the-publication-scheme/making-a-request-for-information/privacy-notice'
+}
+
+=item * Include all reports in duplicate spotting, not just open ones
+
+=cut
+
+sub around_nearby_filter {
+    my ($self, $params) = @_;
+
+    delete $params->{states};
+}
+
 sub fetch_area_children {
     my $self = shift;
 
@@ -61,6 +79,8 @@ sub fetch_area_children {
     };
     return $areas;
 }
+
+=back
 
 =head2 Report categories
 
