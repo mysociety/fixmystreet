@@ -64,8 +64,8 @@ sub user_from_oidc {
     my ($self, $payload) = @_;
 
     # Extract the user's name and email address from the payload.
-    my $name = $payload->{name};
-    my $email = $payload->{email};
+    my $name = lc $payload->{name};
+    my $email = lc $payload->{email};
 
     return ($name, $email);
 }
