@@ -63,8 +63,11 @@ sub social_auth_enabled {
 sub user_from_oidc {
     my ($self, $payload) = @_;
 
-    # TODO
-    return ( 'name', 'email@example.org' );
+    # Extract the user's name and email address from the payload.
+    my $name = $payload->{name};
+    my $email = $payload->{email};
+
+    return ($name, $email);
 }
 
 =item * Uses its own privacy policy
