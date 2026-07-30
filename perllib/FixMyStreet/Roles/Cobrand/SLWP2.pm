@@ -801,10 +801,13 @@ property types allowed to book collections.
 =cut
 
 sub waste_bulky_missed_blocked_codes {
+    # Normally this says Bin not presented which doesn't make sense for bulky
+    my %codes = %RESOLUTION_CODES;
+    $codes{66} = 'Not presented';
     return {
         # Not Completed
-        19185 => \%RESOLUTION_CODES,
-        19236 => \%RESOLUTION_CODES,
+        19185 => \%codes,
+        19236 => \%codes,
         # Partially Completed
         19186 => {
             all => 'Partially Completed',
@@ -1003,6 +1006,27 @@ sub suppress_report_sent_email {
 
 sub bulky_location_photo_prompt {
     'Help us find your items by attaching a photo of where the items will be left for collection.';
+}
+
+=item bulky_open_overdue
+
+Returns true if the booking is open and after 6pm on the day of the collection.
+
+=cut
+
+sub bulky_open_overdue {
+    my ($self, $event) = @_;
+
+    if ($event->{state} eq 'open' && $self->_bulky_collection_overdue($event)) {
+        return 1;
+    }
+}
+
+sub _bulky_collection_overdue {
+    my $collection_due_date = $_[1]->{date};
+    $collection_due_date->truncate(to => 'day')->set_hour(18);
+    my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    return $today > $collection_due_date;
 }
 
 1;

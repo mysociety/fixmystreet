@@ -669,6 +669,47 @@ FixMyStreet::override_config {
         # subtest 'Assisted collection' => sub {};
     };
 
+    subtest 'Reporting a missed collection after 6pm, no resolution' => sub {
+        $report->update({ external_id => '4ea70923-7151-11f0-aeea-cd51f3977c8c' });
+
+        $echo->mock(
+            'GetEventsForObject',
+            sub {
+                [   {   Guid        => '4ea70923-7151-11f0-aeea-cd51f3977c8c',
+                        EventTypeId => 3144,
+                        EventDate => { DateTime => '2025-08-08T12:00:00Z' },
+                        EventStateId => 19234,
+                    }
+                ]
+            }
+        );
+        set_fixed_time('2025-08-12T12:00:00Z');
+        $mech->get_ok('/waste/12345');
+        $mech->follow_link_ok( { url_regex => qr/service_id=952/}, 'Follow "Report a problem" link for the assisted collection' );
+        $mech->content_contains('Please wait until after 6pm on the day');
+
+        # after 6pm, day collection was due
+        set_fixed_time('2025-08-12T19:00:00Z');
+
+        $mech->get_ok('/waste/12345');
+        $mech->follow_link_ok( { url_regex => qr/service_id=952/}, 'Follow "Report a problem" link for the assisted collection' );
+        $mech->content_contains('Report a missed collection');
+        $mech->submit_form_ok({ with_fields => { category => 'redirect-missed' }});
+        $mech->content_contains('Select your missed collection');
+        $mech->submit_form_ok( { with_fields => { 'service-952' => 1 } } );
+        $mech->content_contains('Please supply any additional information');
+        $mech->submit_form_ok(
+            { with_fields => { extra_detail => 'You left a sock' } } );
+        $mech->content_contains('About you');
+        $mech->submit_form_ok(
+            { with_fields => { name => 'Mary Kay', email => $user->email } }
+        );
+        $mech->content_contains('Submit missed small items collection');
+        $mech->submit_form_ok( { form_number => 3 } );
+        $mech->content_contains(
+            'Thank you for reporting a missed collection');
+    };
+
     subtest 'Dispute of failed collections' => sub {
         $echo->mock('GetEventsForObject', sub { [ {
             Id => '8004',
