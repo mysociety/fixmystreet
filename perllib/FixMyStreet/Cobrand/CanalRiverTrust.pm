@@ -49,6 +49,26 @@ sub example_places { ['Lock 47, Fazeley', 'Bridge 33, Kennet and Avon'] }
 sub admin_user_domain { 'canalrivertrust.org.uk' }
 sub abuse_reports_only { 1 }
 
+=item * Single sign on is enabled from the cobrand feature 'oidc_login'
+
+=cut
+
+sub social_auth_enabled {
+    my $self = shift;
+
+    return $self->feature('oidc_login') ? 1 : 0;
+}
+
+sub user_from_oidc {
+    my ($self, $payload) = @_;
+
+    # Extract the user's name and email address from the payload.
+    my $name = $payload->{name};
+    my $email = lc $payload->{email};
+
+    return ($name, $email);
+}
+
 =item * Uses its own privacy policy
 
 =cut
