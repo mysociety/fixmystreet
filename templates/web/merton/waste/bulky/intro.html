@@ -3,31 +3,31 @@ USE pounds = format('%.2f');
 SET cfg = c.cobrand.wasteworks_config;
 ~%]
 
-<h2>Before you book</h2>
-
-<p class="govuk-body">
-Requesting a bulky waste collection usually takes around <strong>10 minutes</strong>.
+<p>
+Booking a bulky waste collection takes around 10 minutes.
 </p>
 
-<p class="govuk-body">
-<strong>Please make sure you have read the <a href="[% c.cobrand.call_hook('bulky_tandc_link') %]"> bulky waste collection</a> page on the council’s website</strong>.
+<p>
+<strong>Bookings cannot be refunded once confirmed.</strong>
 </p>
 
-<p class="govuk-body">
-<strong>Bookings are final and non-refundable</strong>.
+<h2>Before you start</h2>
+
+<p>
+Please read the <a href="[% c.cobrand.call_hook('bulky_tandc_link') %]"> bulky waste collection</a> page on the council’s website.
 </p>
 
-<p class="govuk-body">There are <strong>six</strong> stages you need to complete to make a booking</p>
+<h2>How to book</h2>
+
+<p>You will need to:</p>
 
 <ol>
-  <li><strong>Your details:</strong> Your address, email address and telephone number.</li>
-  <li><strong>Choose date for collection:</strong> Pick an available collection date from the list provided.</li>
-  <li><strong>Add items for collection:</strong> You can request up to six items per collection. The price depends on how many items you would like collected
-  [% PROCESS waste/bulky/_band1_pricing.html %]
-  You can also add a helpful description and pictures of each item to be collected.
-  <li><strong>Add location details:</strong> Describe where the item(s) will be located. A picture of the location can also be added.</li>
-  <li><strong>Booking Summary:</strong> Before confirming your booking, check all the information provided is correct. You can make changes if necessary.</li>
-  <li><strong>Make payment:</strong> You will be redirected to the council’s card payments provider.</li>
+  <li>Enter your name, email address and telephone number.</li>
+  <li>Choose a collection date.</li>
+  <li>Tell us what you want us to collect.
+      You can also add a description and upload photos of each item.
+  <li>Tell us where to collect the items from.</li>
+  <li>Pay online by card, if there is a charge.</li>
 </ol>
 
 
