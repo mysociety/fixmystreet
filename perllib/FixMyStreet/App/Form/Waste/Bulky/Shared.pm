@@ -228,9 +228,12 @@ sub _get_dates {
     $pattern = '%F' if $c->cobrand->moniker eq 'bexley'; # Move more to this over time?
     my $parser = DateTime::Format::Strptime->new( pattern => $pattern );
     my $slots = $c->stash->{booking_class}->find_available_slots($last_earlier_date);
+
     if ($existing_date) {
-        unshift @$slots, { date => $existing_date };
+        my $present = grep { $existing_date eq $_->{date} } @$slots;
+        unshift @$slots, { date => $existing_date } if !$present;
     }
+
     my @dates  = grep {$_} map {
         my $dt = $parser->parse_datetime( $_->{date} );
         my $label = $c->cobrand->moniker eq 'brent' ? '%d %B' : '%A %e %B';
