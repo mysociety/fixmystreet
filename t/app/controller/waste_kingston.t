@@ -163,7 +163,7 @@ sub garden_waste_two_bins {
 sub _garden_waste_service_units {
     my ($bin_count, $type) = @_;
 
-    my $bin_type_id = $type eq 'sack' ? 1928 : 1915;
+    my $bin_type_id = $type eq 'sack' ? 1910 : 1915;
 
     return [ {
         Id => 1002,
@@ -840,7 +840,7 @@ FixMyStreet::override_config {
 
         is $sent_params->{items}[0]{amount}, 4100, 'correct amount used';
         is $sent_params->{items}[1]{amount}, undef, 'correct amount used';
-        check_extra_data_pre_confirm($new_report, bin_type => 1928, quantity => 11, new_bins => 11);
+        check_extra_data_pre_confirm($new_report, bin_type => 1910, quantity => 11, new_bins => 11);
 
         $mech->get('/waste/pay/xx/yyyyyyyyyyy');
         ok !$mech->res->is_success(), "want a bad response";
@@ -943,7 +943,7 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        check_extra_data_pre_confirm($new_report, type => 'Renew', bin_type => 1928, quantity => 11, new_bins => 11);
+        check_extra_data_pre_confirm($new_report, type => 'Renew', bin_type => 1910, quantity => 11, new_bins => 11);
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
@@ -969,7 +969,7 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        check_extra_data_pre_confirm($new_report, type => 'Amend', quantity => 1, bin_type => 1928, quantity => 11, new_bins => 11);
+        check_extra_data_pre_confirm($new_report, type => 'Amend', quantity => 1, bin_type => 1910, quantity => 11, new_bins => 11);
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';

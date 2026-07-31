@@ -27,6 +27,7 @@ subtest 'Landscaping form submission - smoke test' => sub {
         PHONE_COUNTRY => 'GB',
         COBRAND_FEATURES => {
             licencing_forms => { tfl => 1 },
+            licencing_payment_links => { tfl => { landscaping => 'LINK2' } },
         },
         PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     }, sub {
@@ -114,10 +115,7 @@ subtest 'Landscaping form submission - smoke test' => sub {
         }}, 'Upload page');
 
         # Payment page
-        TODO: {
-            local $TODO = "do not have link details yet";
-            $mech->content_contains('1S1H8a', 'Correct payment link');
-        }
+        $mech->content_contains('LINK2', 'Correct payment link');
         $mech->submit_form_ok({ with_fields => {
             payment_amount => 100,
             payment_transaction_id => 'TEST-TRANSACTION-12345',

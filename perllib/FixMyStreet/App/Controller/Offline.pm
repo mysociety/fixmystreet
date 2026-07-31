@@ -22,13 +22,13 @@ Offline pages Catalyst Controller - service worker handling
 
 sub service_worker : Path("/service-worker.js") {
     my ($self, $c) = @_;
+    $c->res->content_type('application/javascript');
     if (FixMyStreet->test_mode && FixMyStreet->test_mode eq 'cypress') {
-        $c->res->status(404);
+        $c->res->status(200);
         $c->res->body('');
         return;
     }
     $c->res->headers->header('Cache-Control' => 'max-age=0');
-    $c->res->content_type('application/javascript');
 }
 
 sub fallback : Local {

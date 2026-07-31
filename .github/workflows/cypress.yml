@@ -2,40 +2,45 @@ name: Cypress
 
 on: [push, pull_request]
 
+permissions:
+  contents: read
+
 jobs:
   test:
     name: Run Cypress tests
     runs-on: ubuntu-24.04
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       with:
         submodules: true
+        persist-credentials: false
 
     - name: Setup node
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
       with:
-        node-version: 12.x
+        node-version: 24
 
     - name: Setup cache (carton)
-      uses: actions/cache@v3
+      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
       with:
         path: local
         key: ubuntu-24-carton-${{ hashFiles('cpanfile.snapshot') }}
 
     - name: Setup cache (cypress)
-      uses: actions/cache@v3
+      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
       with:
         path: |
           ~/.npm
           node_modules
-        key: ubuntu-24-node-12-cypress-3.8.3-coverage
+          ~/.cache/Cypress
+        key: ubuntu-24-node-24-cypress-15.17.0-plus-coverage
 
     - name: Install packages
       run: |
         sudo apt update
         sudo apt install -y gettext jhead language-pack-en libreadline-dev libpng-dev
-        npm install cypress@3.8.3 @cypress/code-coverage@3.9.4
+        npm install cypress@15.17.0 @cypress/code-coverage@4.0.3
         vendor/bin/carton install --deployment
         commonlib/bin/gettext-makemo FixMyStreet
         echo "$(npm bin)" >> $GITHUB_PATH
@@ -49,14 +54,10 @@ jobs:
     - name: Upload code coverage results
       if: success()
       continue-on-error: true
-      uses: Wandalen/wretry.action@master
+      uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
       with:
-        action: codecov/codecov-action@v3
-        with: |
-          files: ./coverage/lcov.info
-          fail_ci_if_error: true
-        attempt_limit: 5
-        attempt_delay: 10000
+        files: ./coverage/lcov.info
+        fail_ci_if_error: true
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 

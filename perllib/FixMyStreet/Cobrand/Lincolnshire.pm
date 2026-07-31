@@ -308,6 +308,20 @@ sub _get_notes_prefix {
     }
 }
 
+=head2 Dashboard export
+
+=over 4
+
+=item * dashboard_export_include_hidden
+
+Include reports with a state of 'hidden' in CSV export
+
+=back
+
+=cut
+
+sub dashboard_export_include_hidden { 1 }
+
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
 

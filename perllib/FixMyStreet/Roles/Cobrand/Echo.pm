@@ -343,7 +343,9 @@ sub bin_services_for_address {
             my $ref = join(',', @{$row->{last}{ref}});
             $task_ref_to_row{$ref} = $row;
 
-            $row->{report_allowed} = $self->within_working_days($row->{last}{date}, 2);
+            my $within = $self->within_working_days($row->{last}{date}, 2);
+            $row->{report_within_time} = $within;
+            $row->{report_allowed} = $within; # This may be overridden by task resolutions
 
             my $events_unit = $self->_parse_events($calls->{"GetEventsForObject ServiceUnit $_->{Id}"});
             $row->{events} = $events->combine($events_unit)->filter({ service => $service_id, since => $row->{last}{date} });
@@ -1192,9 +1194,6 @@ sub send_bulky_payment_echo_update_failed {
 
 sub per_photo_size_limit_for_report_in_bytes {
     my ($self, $report, $image_count) = @_;
-
-    # We only need to check bulky collections at present.
-    return 0 unless $report->cobrand_data eq 'waste' && $report->contact->category eq 'Bulky collection';
 
     my $cfg = FixMyStreet->config('COBRAND_FEATURES');
     return 0 unless $cfg;

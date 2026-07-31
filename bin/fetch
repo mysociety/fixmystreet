@@ -36,7 +36,7 @@ my ($opts, $usage) = describe_options(
     ['report-ids|r:s', 'comma-separated list of service request IDs to fetch (use with --reports and --body)'],
     ['skip-existing', 'skip report IDs that already exist in the database (use with --report-ids)'],
     ['body|b:s@', 'body name(s) to only fetch these bodies' ],
-    ['exclude|e:s@', 'body name(s) to exclude from fetching' ],
+    ['exclude|x:s@', 'body name(s) to exclude from fetching' ],
     ['verbose|v+', 'more verbose output', { default => 0 }],
     ['help|h', "print usage message and exit" ],
 );

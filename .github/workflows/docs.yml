@@ -7,8 +7,6 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: "pages"
@@ -16,14 +14,17 @@ concurrency:
 
 jobs:
   build:
+    name: Build documents
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/cache@v3
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ~/perl5
           key: perl-pod
-      - uses: actions/configure-pages@v2
+      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
       - name: Install packages
         run: bin/cpanm -l ~/perl5 --quiet --notest Pod::ProjectDocs
       - name: Generate documentation
@@ -31,7 +32,7 @@ jobs:
         env:
           PERL5LIB: /home/runner/perl5/lib/perl5
       - name: Deploy to GitHub Pages
-        uses: mysociety/github-action-push-to-another-repository@main
+        uses: mysociety/github-action-push-to-another-repository@f3e924905417e6a0b50636095202e0bbdb2e4361 # main
         env:
           SSH_DEPLOY_KEY: ${{ secrets.POD_DEPLOY_KEY }}
         with:

@@ -53,6 +53,7 @@ $mech->create_contact_ok(email => 'testareaemail@nh', body_id => $highways->id, 
 my $superuser = $mech->create_user_ok('super@example.com', name => 'Admin', from_body => $highways, password => 'password', is_superuser => 1);
 
 my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $highways, password => 'password');
+my $staffuser2 = $mech->create_user_ok('counciluser2@example.com', name => 'Council User', from_body => $highways, password => 'password');
 
 $staffuser->alerts->create({
     alert_type => 'council_problems',
@@ -225,12 +226,17 @@ FixMyStreet::override_config {
     };
 };
 
-subtest 'Dashboard can be accessed by superuser' => sub {
-    $mech->log_in_ok( $superuser->email );
+subtest 'Dashboard access' => sub {
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'highwaysengland',
     }, sub {
+        $mech->log_in_ok( $superuser->email );
+        $mech->get_ok('/dashboard');
+        $mech->log_in_ok( $staffuser2->email );
+        $mech->get('/dashboard');
+        is $mech->res->code, 404;
+        $mech->log_in_ok( $staffuser->email );
         $mech->get_ok('/dashboard');
     };
 };

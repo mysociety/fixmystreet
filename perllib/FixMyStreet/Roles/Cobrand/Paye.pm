@@ -77,6 +77,10 @@ around waste_cc_get_redirect_url => sub {
                 lineId => $self->waste_cc_payment_admin_fee_line_item_ref($p),
             };
         }
+        my $email = $p->get_extra_metadata('contributed_as')
+          && ($p->get_extra_metadata('contributed_as') eq 'another_user' || $p->get_extra_metadata('contributed_as') eq 'anonymous_user')
+          ? ''
+          : $p->user->email;
         my %args = (
             returnUrl => $c->uri_for_action('/waste/pay_complete', [ $p->id, $redirect_id ] ) . '',
             backUrl => $backUrl,
@@ -84,7 +88,7 @@ around waste_cc_get_redirect_url => sub {
             request_id => $p->id,
             description => $p->title,
             name => $p->name,
-            email => $p->user->email,
+            email => $email,
             uprn => $p->uprn,
             address1 => shift @parts,
             address2 => shift @parts,

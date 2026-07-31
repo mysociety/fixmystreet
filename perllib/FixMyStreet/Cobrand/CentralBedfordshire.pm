@@ -164,6 +164,7 @@ sub should_skip_sending_update {
     return 1 unless $code; # No category found
     $code = $code->email;
     return 1 if $code =~ /^Jadu/;
+    return 1 if !$update->text && $code !~ /@/; # Aurora with no text
     return 0;
 }
 

@@ -59,12 +59,12 @@ FixMyStreet::override_config {
             is $cobrand->per_photo_size_limit_for_report_in_bytes($bulky_report, 4), 50;
         };
 
-        subtest 'No size limit for non-bulky reports' => sub {
+        subtest 'Size limit also applied to non-bulky reports' => sub {
             my ($non_bulky_report) = $mech->create_problems_for_body(1, $body->id, 'report', {
                 category => $non_bulky_contact->category,
                 cobrand_data => 'waste',
             });
-            is $cobrand->per_photo_size_limit_for_report_in_bytes($non_bulky_report, 1), 0;
+            is $cobrand->per_photo_size_limit_for_report_in_bytes($non_bulky_report, 1), 100;
         };
     };
 };

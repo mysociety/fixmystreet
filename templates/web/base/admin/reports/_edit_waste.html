@@ -255,8 +255,8 @@ INCLUDE show_fields fields=[
     [ 'Admin fee', 'admin_fee', 'field', 'pence' ],
     [ 'Payment explanation', 'payment_explanation', 'meta' ],
     [ 'DD reference', 'payerReference', 'meta' ],
-    [ 'SCP reference', 'scpReference', 'meta' ],
-    [ 'Payment code', 'payment_reference', 'meta', '', sutton ],
+    [ 'Transaction (pre-payment) reference', 'scpReference', 'meta' ],
+    [ 'Payment confirmation reference', 'payment_reference', 'meta', '', sutton ],
     [ 'DD collection date', 'dd_date', 'meta' ],
     # AccessPay
     [ 'DD customer ID', 'direct_debit_customer_id', 'meta' ],
@@ -267,8 +267,11 @@ INCLUDE show_fields fields=[
 # Old Bromley direct debits stored PaymentCode and not payment_reference
 IF NOT problem.get_extra_metadata('payment_reference');
     INCLUDE show_fields fields=[
-        [ 'Payment code', 'PaymentCode' ]
+        [ 'Payment confirmation reference', 'PaymentCode' ]
     ];
+    IF NOT problem.get_extra_field_value('PaymentCode');
+        '<li>Payment confirmation reference: <i>None</i>';
+    END;
 END;
 
 SET payment_method = problem.get_extra_field_value('payment_method');

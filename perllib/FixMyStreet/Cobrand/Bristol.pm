@@ -39,7 +39,6 @@ sub council_url { return 'bristol'; }
 
 use constant ROADWORKS_CATEGORY => 'Inactive roadworks';
 use constant CYCLE_HANGERS_CATEGORY => 'Damaged cycle hanger (Street furniture)';
-use constant VEHICLE_DWELLING_CATEGORY => 'Vehicle dwelling encampment';
 
 =item * Users with a bristol.gov.uk email can always be found in the admin.
 
@@ -366,9 +365,7 @@ category are automatically closed, with an update with explanatory text added.
 sub post_report_sent {
     my ($self, $problem) = @_;
 
-    if ($problem->category eq ROADWORKS_CATEGORY
-        || $problem->category eq VEHICLE_DWELLING_CATEGORY
-        || $problem->category eq CYCLE_HANGERS_CATEGORY) {
+    if ($problem->category eq ROADWORKS_CATEGORY || $problem->category eq CYCLE_HANGERS_CATEGORY) {
         if (my $existing = $problem->comments->search({ external_id => 'auto-internal' })->first) {
             $existing->update({ problem_state => 'closed' });
         }

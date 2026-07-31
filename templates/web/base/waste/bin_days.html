@@ -184,7 +184,7 @@
                   <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">Next collection</dt>
                     <dd class="govuk-summary-list__value">
-                      [% IF unit.next %]
+                      [% IF unit.next.size %]
                         [% IF unit.next.already_collected %]
                           [% IF unit.report_locked_out %]
                             <strong>Could not be collected today because it was red-tagged. See reason below.</strong>

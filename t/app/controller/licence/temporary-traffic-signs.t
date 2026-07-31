@@ -43,6 +43,7 @@ subtest 'Temporary Traffic Signs form submission - smoke test' => sub {
             borough => 'camden',
             postcode => 'NW1 1AA',
         }});
+        $mech->content_contains('Location of the temporary traffic signs (2)');
 
         $mech->submit_form_ok({ with_fields => {
             street_name_2 => 'Test Street 2',

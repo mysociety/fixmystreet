@@ -37,11 +37,18 @@ subtest 'Banner form submission - smoke test' => sub {
         $mech->submit_form_ok({ button => 'start' });
 
         # Location page
-        $mech->submit_form_ok({ with_fields => {
+        $mech->submit_form_ok({ button => 'add_another', with_fields => {
             street_name => 'Test Street',
             building_name_number => '123',
             borough => 'camden',
             postcode => 'NW1 1AA',
+        }});
+        $mech->content_contains('Location of the banners (2)');
+        $mech->submit_form_ok({ with_fields => {
+            street_name_2 => 'Test Street 2',
+            building_name_number_2 => '123',
+            borough_2 => 'camden',
+            postcode_2 => 'NW1 1AA',
         }});
 
         # Dates page (using dynamic dates calculated at test start)

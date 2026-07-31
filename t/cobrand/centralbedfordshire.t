@@ -6,6 +6,7 @@ use FixMyStreet::TestMech;
 use FixMyStreet::Script::Alerts;
 use FixMyStreet::Script::Reports;
 use Open311::GetServiceRequestUpdates;
+use Open311::PostServiceRequestUpdates;
 use Catalyst::Test 'FixMyStreet::App';
 use FixMyStreet::Script::CSVExport;
 
@@ -283,6 +284,41 @@ for my $cobrand ( "centralbedfordshire", "fixmystreet") {
         };
     };
 }
+
+subtest "Skips sending Aurora updates without text" => sub {
+    my ($report) = $mech->create_problems_for_body(1, $body->id, 'Test Report', {
+        latitude => 52.030695,
+        longitude => -0.357033,
+        areas => ',117960,11804,135257,148868,21070,37488,44682,59795,65718,83582,',
+        category => 'Bridges',
+        cobrand => 'centralbedfordshire',
+        send_method_used => 'Open311',
+        whensent => 'now()',
+        send_state => 'sent',
+        external_id => '456',
+    });
+    my $comment = FixMyStreet::DB->resultset('Comment')->find_or_create( {
+        problem_state => 'unable to fix',
+        problem_id => $report->id,
+        user_id    => $staffuser->id,
+        name       => 'User',
+        mark_fixed => 'f',
+        text       => "",
+        state      => 'confirmed',
+        confirmed  => 'now()',
+        anonymous  => 'f',
+    } );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'centralbedfordshire',
+    }, sub {
+        my $updates = Open311::PostServiceRequestUpdates->new();
+        $updates->send;
+    };
+
+    $comment->discard_changes;
+    is $comment->send_fail_count, 0, "comment sending not attempted";
+    is $comment->send_state, 'skipped', "skipped sending comment";
+};
 
 subtest 'check geolocation overrides' => sub {
     my $cobrand = FixMyStreet::Cobrand::CentralBedfordshire->new;

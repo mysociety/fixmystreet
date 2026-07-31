@@ -775,6 +775,8 @@ sub _nearby_json :Private {
 
             $params->{limit} = 5;
 
+            $c->cobrand->call_hook('report_nearby_filter', $params, $c->get_param('mode'));
+
             my $nearby = $c->model('DB::Nearby')->nearby($c, %$params);
 
             # Want to treat these as if they were on map

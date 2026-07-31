@@ -73,7 +73,7 @@ to [% report.user.email %].
 </p>
 
 [% FOR unit IN service_data %]
-  [% NEXT UNLESS unit.service_id == 545 AND unit.next %]
+  [% NEXT UNLESS unit.service_id == 545 AND unit.next.size %]
   [% next_waste = date.format(unit.next.date) | replace('~~~', unit.next.ordinal) %]
 [% END %]
 [% IF next_waste %]

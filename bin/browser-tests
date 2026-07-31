@@ -114,7 +114,7 @@ BEGIN {
 
 sub coverage_setup {
     # Add instrumentation to all JS files under web/
-    if (system('nyc', 'instrument', '--exclude', 'vendor', '--compact', 'false', 'web', 'webO') >> 8) {
+    if (system('npx', 'nyc', 'instrument', '--exclude', 'vendor', '--compact', 'false', 'web', 'webO') >> 8) {
         print 'Could not instrument JS files - are @cypress/code-coverage and nyc installed?';
         exit 1;
     }
@@ -132,7 +132,7 @@ sub coverage_teardown {
     remove_tree('.nyc_output', '.cypress/coverage', { safe => 1 }); # Remove old data and incorrect report
     rename '.cypress/.nyc_output', './.nyc_output'; # Move to top level so nyc can find JS files
     system('git', 'checkout', 'web'); # Remove instrumented JS files
-    system('nyc', 'report', '--reporter=lcov'); # Generate correct report
+    system('npx', 'nyc', 'report', '--reporter=lcov'); # Generate correct report
     print "The JS coverage report is at coverage/lcov-report/index.html\n";
 }
 
@@ -185,11 +185,11 @@ sub run {
 
     if (($run_cypress && !$run_server) || $pid) {
         # Parent, run the test runner (then kill the child)
-        my @cypress = ('cypress');
+        my @cypress = ('npx', 'cypress');
         if ($wsl) {
             @cypress = ('cmd.exe', '/c', $node, $wsl);
         }
-        my @config = $coverage ? () : ('--config', 'pluginsFile=false,supportFile=cypress/support/commands.js');
+        my @config = $coverage ? () : ('--expose', 'coverage=false');
         my $exit = system(@cypress, $cmd, @config, '--project', '.cypress', @ARGV);
         kill 'TERM', $pid if $pid;
 
