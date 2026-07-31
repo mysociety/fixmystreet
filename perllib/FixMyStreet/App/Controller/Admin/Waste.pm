@@ -55,7 +55,7 @@ sub edit : Chained('body') : PathPart('') : Args(0) {
         $c->forward('/auth/check_csrf_token');
 
         my $new_cfg;
-        if (my $cfg = $c->get_param("body_config")) {
+        if ((my $cfg = $c->get_param("body_config")) && $c->user->is_superuser) {
             try {
                 $new_cfg = JSON->new->utf8(1)->allow_nonref(0)->decode($cfg);
             } catch {
@@ -80,17 +80,26 @@ sub edit : Chained('body') : PathPart('') : Args(0) {
                 per_item_min_collection_price => 'ints',
                 base_price => 'int',
                 base_pop_price => 'int',
-                daily_slots => 'int',
                 items_per_collection_max => 'int',
                 small_items_per_collection_max => 'int',
                 band1_price => 'int',
                 band1_pop_price => 'int',
                 band1_max => 'int',
-                free_mode => 'bool',
-                food_bags_disabled => 'sel',
                 show_location_page => 'sel',
                 show_individual_notes => 'bool',
             );
+            my $cobrand = $c->stash->{body}->cobrand;
+            if ($cobrand eq 'merton') {
+                $keys{discount_enabled} = 'bool';
+                $keys{discount_months} = 'int';
+                $keys{discount_max_items} = 'int';
+                $keys{discount_price} = 'int';
+            }
+            if ($cobrand eq 'peterborough') {
+                $keys{daily_slots} = 'int';
+                $keys{free_mode} = 'bool';
+                $keys{food_bags_disabled} = 'sel';
+            }
             foreach (keys %keys) {
                 my $val = $c->get_param($_);
                 if ($keys{$_} eq 'bool') {
@@ -115,6 +124,11 @@ sub edit : Chained('body') : PathPart('') : Args(0) {
                     $new_cfg->{$_} = $val;
                 }
             }
+
+            if ($new_cfg->{discount_max_items} && $new_cfg->{band1_max} && $new_cfg->{discount_max_items} > $new_cfg->{band1_max}) {
+                $c->stash->{errors}->{site_wide} = "Maximum items per discounted collection cannot exceed small collection";
+            }
+
             if ($c->stash->{errors}) {
                 $c->detach;
             }
@@ -252,7 +266,7 @@ sub stash_body_config_json : Private {
     } else {
         $c->stash->{body_config_json} = JSON->new->utf8(1)->pretty->canonical->encode($cfg);
     }
-    foreach (qw(free_mode per_item_costs pop_costs per_item_min_collection_price base_price base_pop_price daily_slots small_items_per_collection_max items_per_collection_max food_bags_disabled show_location_page band1_price band1_pop_price band1_max show_individual_notes)) {
+    foreach (qw(free_mode per_item_costs pop_costs per_item_min_collection_price base_price base_pop_price daily_slots small_items_per_collection_max items_per_collection_max food_bags_disabled show_location_page band1_price band1_pop_price band1_max show_individual_notes discount_enabled discount_months discount_max_items discount_price)) {
         $c->stash->{$_} = $c->get_param($_) || $cfg->{$_};
     }
 }

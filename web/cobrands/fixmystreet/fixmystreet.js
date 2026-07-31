@@ -1654,13 +1654,33 @@ $.extend(fixmystreet.set_up, {
           }
       });
 
+      function update_visibility(selector) {
+          var $showTarget = $( selector.attr('data-show') );
+          var $hideTarget = $( selector.attr('data-hide') );
+          $showTarget.removeClass('hidden-js');
+          $hideTarget.addClass('hidden-js');
+      }
+
       $('input[type="radio"][data-show], input[type="radio"][data-hide]').each(function(){
           var update = function(){
               if ( this.checked ) {
+                  update_visibility($(this));
+              }
+          };
+          // off/on to make sure event handler is only bound once.
+          $(this).off('change.togglevisibility').on('change.togglevisibility', update);
+          update.call(this); // pass DOM element as `this`
+      });
+
+      $('input[type="checkbox"][data-show], input[type="checkbox"][data-hide]').each(function(){
+          var update = function(){
+              if ( this.checked ) {
+                  update_visibility($(this));
+              } else {
                   var $showTarget = $( $(this).attr('data-show') );
                   var $hideTarget = $( $(this).attr('data-hide') );
-                  $showTarget.removeClass('hidden-js');
-                  $hideTarget.addClass('hidden-js');
+                  $hideTarget.removeClass('hidden-js');
+                  $showTarget.addClass('hidden-js');
               }
           };
           // off/on to make sure event handler is only bound once.
@@ -1672,10 +1692,7 @@ $.extend(fixmystreet.set_up, {
           var $select = $(this).parent();
           var update = function(){
               var $option = $(this).find('option:selected');
-              var $showTarget = $( $option.attr('data-show') );
-              var $hideTarget = $( $option.attr('data-hide') );
-              $showTarget.removeClass('hidden-js');
-              $hideTarget.addClass('hidden-js');
+              update_visibility($option);
           };
           // off/on to make sure event handler is only bound once.
           $select.off('change.togglevisibility').on('change.togglevisibility', update);
