@@ -919,6 +919,14 @@ $.extend(fixmystreet.set_up, {
         }
     });
 
+    function fuzzy_search(uf, haystack, search) {
+        var results = uf.search(haystack, search, 1);
+        if (results) {
+            return results[0];
+        }
+        return [];
+    }
+
     /* Update when key lifted in search box */
     var filter_keyup = function() {
         var items = category_row.querySelectorAll(".govuk-radios__item");
@@ -931,11 +939,13 @@ $.extend(fixmystreet.set_up, {
                 haystack.push(txt);
             });
             var uf = new uFuzzy();
-            var results = uf.search(haystack, this.value, 1);
+            var spaceless = this.value.replace(/[^\w]+/g, '');
+            var results1 = fuzzy_search(uf, haystack, this.value);
+            var results2 = fuzzy_search(uf, haystack, spaceless);
             var subcats_to_show = {};
             for (i = 0; i<items.length; i++) {
                 var input = items[i].querySelector('input'),
-                    match = !(results[0] && results[0].indexOf(i) < 0),
+                    match = !(results1.indexOf(i) < 0 && results2.indexOf(i) < 0),
                     in_matching_subcat = subcats_to_show[input.name];
                 items[i].classList.toggle('hidden-category-filter', !(in_matching_subcat || match));
                 if (match && input.name !== 'category') {
