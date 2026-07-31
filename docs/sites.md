@@ -24,6 +24,11 @@ Launched: 2017
 <br>
 Run by: Democracy Plus
 
+<h3>Spain</h3>
+Site: <a href="https://cuidomiprovincia.diputaciondevalladolid.es/">CuidoMiProvincia, Valladolid</a>
+<br>
+Run by: Diputación Provincial de Valladolid
+
 <h3>Sweden</h3>
 Site: <a href="https://www.fixamingata.se/">FixaMinGata</a>
 <br>
