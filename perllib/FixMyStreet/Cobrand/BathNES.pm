@@ -314,6 +314,10 @@ backends.
 sub category_change_force_resend {
     my ($self, $old, $new) = @_;
 
+    my $PROW = 'Public Rights of Way';
+    # Okay if we're switching to/from PROW category
+    return 1 if $old eq $PROW || $new eq $PROW;
+
     # Get the Open311 identifiers
     my $contacts = $self->{c}->stash->{contacts};
     ($old) = map { $_->email } grep { $_->category eq $old } @$contacts;
