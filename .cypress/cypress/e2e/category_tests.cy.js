@@ -93,7 +93,7 @@ describe('Basic categories', function() {
         cy.get('#category-filter').type('{selectAll}Fly-t');
         is_visible("Flytipping");
         is_visible("Fly-tipping");
-        is_visible("Flyposting");
+        is_not_visible("Flyposting");
 
         cy.get('#category-filter').type('{selectAll}Abad');
         is_visible('Abandoned vehicles');
@@ -116,8 +116,8 @@ describe('Basic categories', function() {
 
         cy.get('#category-filter').type('{selectAll}L');
         is_not_visible("Bus stops");
-        is_visible('Abandoned vehicles');
-        is_visible("Dog fouling");
+        is_not_visible('Abandoned vehicles');
+        is_not_visible("Dog fouling");
         is_visible("G|Licensing");
         is_visible("Dropped Kerbs");
         is_visible("Skips");

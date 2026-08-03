@@ -249,7 +249,7 @@ sub open311_get_user {
         my $domain = $self->admin_user_domain;
         last if $request->{contact_email} =~ /[@]$domain$/;
         last if FixMyStreet::DB->resultset('User')->find({
-            email => $request->{contact_email},
+            email => lc $request->{contact_email},
             email_verified => 1,
             is_superuser => 1,
         });
@@ -259,7 +259,7 @@ sub open311_get_user {
     my $user = FixMyStreet::DB->resultset('User')->find_or_create(
         {
             name => $request->{contact_name},
-            email => $request->{contact_email},
+            email => lc $request->{contact_email},
             email_verified => 1,
         },
         { key => 'users_email_verified_key' },

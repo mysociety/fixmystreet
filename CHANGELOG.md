@@ -29,6 +29,7 @@
         - Population lookup size for radius alert can be configured per cobrand
         - Split original report_mark_private permission into a view-only permission (report_view_private) and an edit permission (report_mark_private) #5973
         - Require view dashboard permission in order to view the dashboard
+        - Ensure OIDC email addresses are stored as lowercase.
         - Select correct category group on report inspect dropdowns, and allow updating of category group
     - Development improvements
         - More logging when `page_error` is called, to aid troubleshooting. #5279

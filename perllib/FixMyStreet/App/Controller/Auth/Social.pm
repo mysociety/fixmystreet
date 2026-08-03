@@ -354,6 +354,7 @@ sub oidc_callback: Path('/auth/OIDC') : Args(0) {
     # Cobrands can use different fields for name and email
     my ($name, $email, $phone) = $c->cobrand->call_hook(user_from_oidc => $id_token->payload, $access_token);
     $name = '' if $name && $name !~ /\w/;
+    $email = lc $email if $email;
 
     # There's a chance that a user may have multiple OIDC logins, so build a namespaced uid to prevent collisions
     my $uid = join(":", $c->cobrand->moniker, $c->forward('oidc_config')->{client_id}, $id_token->payload->{sub});

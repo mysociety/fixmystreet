@@ -259,6 +259,13 @@ for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
                 }
             }
 
+            if ($state eq 'okay' && $test->{type} eq 'oidc') {
+                # IdP might give us a mixed-case email; check that we store, and
+                # can look it up, lowercase
+                my $user = FixMyStreet::DB->resultset('User')->find( { email => $test->{email} } );
+                is $user->email, $test->{email}, 'User email stored lowercase';
+            }
+
             $mech->get('/auth/sign_out');
             if ($test->{type} eq 'oidc' && $test->{logout_redirect_pattern} && $state ne 'refused' && $state ne 'no email') {
                 # XXX the 'no email' situation is skipped because of some confusion
