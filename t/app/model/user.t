@@ -7,6 +7,30 @@ use Test::Exception;
 my $mech = FixMyStreet::TestMech->new();
 $mech->log_in_ok('test@example.com');
 
+subtest 'email addresses are stored lowercase' => sub {
+    my $users = FixMyStreet::DB->resultset('User');
+    my $user = $users->create({
+        email => 'Sam.Sample.Create@Example.COM',
+        email_verified => 1,
+    });
+    $user->discard_changes;
+    is $user->email, 'sam.sample.create@example.com', 'email lowercased on creation';
+
+    $user->update({ email => 'Sam.Sample.Update@Example.COM' });
+    $user->discard_changes;
+    is $user->email, 'sam.sample.update@example.com', 'email lowercased in update parameters';
+
+    $user->email('Sam.Sample.Accessor@Example.COM');
+    $user->update;
+    $user->discard_changes;
+    is $user->email, 'sam.sample.accessor@example.com', 'email lowercased when updating changed columns';
+
+    is $users->find({ email => 'SAM.SAMPLE.ACCESSOR@EXAMPLE.COM' })->id,
+        $user->id, 'email lookup is case insensitive';
+    is $users->find_or_create({ email => 'SAM.SAMPLE.ACCESSOR@EXAMPLE.COM' })->id,
+        $user->id, 'find_or_create does not create a differently cased duplicate';
+};
+
 my ($problem) = $mech->create_problems_for_body(1, '2504', 'Title', { anonymous => 'f' });
 is $problem->user->latest_anonymity, 0, "User's last report was not anonymous";
 

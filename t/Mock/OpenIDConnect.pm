@@ -79,7 +79,8 @@ sub dispatch_request {
         if ($self->cobrand eq 'brent') {
             $payload->{givenName} = "Andy";
             $payload->{surname} = "Dwyer";
-            $payload->{email} = 'pkg-tappcontrollerauth_socialt-oidc@example.org' if $self->returns_email;
+            # Deliberately mixed case, to check we store it lowercased
+            $payload->{email} = 'Pkg-TAppControllerAuth_SocialT-OIDC@Example.org' if $self->returns_email;
         } elsif ($self->cobrand eq 'tfl') {
             $payload->{given_name} = "Andy";
             $payload->{family_name} = "Dwyer";

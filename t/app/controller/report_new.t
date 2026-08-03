@@ -250,6 +250,55 @@ foreach my $test (
   };
 }
 
+subtest "test report creation for a user who gives a mixed case email address" => sub {
+    $mech->log_out_ok;
+    $mech->clear_emails_ok;
+
+    my $test_email = 'gregory.coleman@example.com';
+    my $mixed_case_email = 'Gregory.Coleman@Example.COM';
+    my $user = FixMyStreet::DB->resultset('User')->create({
+        email => $test_email,
+        email_verified => 1,
+        name => 'Gregory Coleman',
+    });
+
+    $mech->get_ok('/around');
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB', } },
+            "submit location" );
+        $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
+            "follow 'skip this step' link" );
+        $mech->submit_form_ok(
+            {
+                button      => 'submit_register_mobile',
+                with_fields => {
+                    title         => 'Test Report',
+                    detail        => 'Test report details.',
+                    photo1        => '',
+                    name          => 'Gregory Coleman',
+                    may_show_name => '1',
+                    username_register => $mixed_case_email,
+                    category      => 'Street lighting',
+                }
+            },
+            "submit good details"
+        );
+    };
+    is_deeply $mech->page_errors, [], "check there were no errors";
+
+    my $report = $user->problems->first;
+    ok $report, "report created against the existing user";
+    is $report->user->email, $test_email, 'user email still stored lowercased';
+    my $users = FixMyStreet::DB->resultset('User');
+    is $users->search( { email => $mixed_case_email } )->count, 0,
+        'no second user created with the mixed case email';
+
+    $mech->delete_user($user);
+};
+
 foreach my $test (
   { two_factor => '', desc => '', },
   { two_factor => 'yes', desc => ' with two-factor', },

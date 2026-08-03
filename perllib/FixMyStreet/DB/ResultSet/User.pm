@@ -24,6 +24,9 @@ sub text_search_translate { '@.' }
 
 around find => sub {
     my ($orig, $self) = (shift, shift);
+    if (ref $_[0] eq 'HASH' && defined $_[0]->{email} && !ref $_[0]->{email}) {
+        $_[0]->{email} = lc $_[0]->{email};
+    }
     # If there's already a key, assume caller knows what they're doing
     if (ref $_[0] eq 'HASH' && !$_[1]->{key}) {
         if ($_[0]->{id}) {
