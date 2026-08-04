@@ -256,8 +256,10 @@ subtest 'check staff can filter on waste reports' => sub {
         $mech->log_in_ok($staffuser->email);
         $mech->get_ok( '/reports/Bromley');
         $mech->content_contains('<optgroup label="Waste"');
+        # Cannot change to waste category
         $mech->get_ok( '/report/' . $report->id );
-        $mech->content_contains('<option value="Report missed collection">');
+        $mech->content_contains('<option value="Pothole">');
+        $mech->content_lacks('<option value="Report missed collection">');
     };
 };
 

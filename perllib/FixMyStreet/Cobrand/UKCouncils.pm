@@ -449,11 +449,7 @@ sub munge_report_new_contacts {
         return;
     }
 
-    if ($self->{c}->stash->{categories_for_point}) {
-        # Have come from an admin tool
-    } else {
-        @$contacts = grep { !$_->get_extra_metadata('type') } @$contacts;
-    }
+    @$contacts = grep { !$_->get_extra_metadata('type') } @$contacts;
 
     my %bodies = map { $_->body->get_column('name') => $_->body } @$contacts;
     if ( $bodies{'TfL'} ) {

@@ -187,7 +187,7 @@ sub create_contact {
     $contact->update;
 }
 
-$contact = $mech->create_contact_ok(body => $brent, category => 'Fly-tip Small - Less than one bag', email => 'flytipping@brent.example.org');
+$contact = $mech->create_contact_ok(body => $brent, category => 'Fly-tip Small - Less than one bag', email => 'Echo-flytipping');
 $contact->set_extra_fields(
     { code => 'Did_you_see_the_Flytip_take_place?_', required => 1, values => [
         { name => 'Yes', key => 1 }, { name => 'No', key => 0 }
@@ -401,7 +401,7 @@ subtest 'Brent templates provide external_status_code for non-waste reports' => 
         areas => ",2488,", category => 'Overgrown grass', send_state => 'sent' });
         $mech->log_in_ok($super_user->email);
         $mech->get_ok('/admin/report_edit/' . $problem->id);
-        $mech->submit_form_ok({ with_fields => { category => 'Report missed collection' } });
+        $mech->submit_form_ok({ with_fields => { category => 'Fly-tip Small - Less than one bag' } });
         $problem->discard_changes;
         is $problem->send_state, 'unprocessed', "Marked for resending";
         $problem->comments->delete;
