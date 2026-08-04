@@ -786,7 +786,6 @@ FixMyStreet::override_config {
 
     subtest 'Bulky goods collection completed email' => sub {
         $report->update({ state => 'fixed - council', external_id => 'a-guid' });
-        $mech->email_count_is(0);
         my $completion_comment
             = $mech->create_comment_for_problem( $report, $body_user, 'User',
             'Things collected', undef, 'confirmed', 'fixed - council' );
@@ -802,6 +801,12 @@ FixMyStreet::override_config {
         my $email_html = $mech->get_html_body_from_email($email);
         like $email_text, qr/BBQ/, 'collection completed text email contains item list';
         like $email_html, qr/BBQ/, 'collection completed html email contains item list';
+
+        my $report_id = $report->id;
+        like $email_text, qr/To report a problem with this collection visit your bin page/, 'collection completed text has problem instructions';
+        like $email_html, qr/Your bulky waste has successfully been collected/, 'collection completed html email has completed text';
+        like $email_html, qr/Report a problem with this bulky waste collection/, 'collection completed html email has problem link';
+        like $email_html, qr#waste/12345/enquiry\?template=problem&service_id=986&original_booking_id=$report_id#, 'collection completed html email has problem link';
     };
 
     subtest 'Missed collections' => sub {
@@ -811,6 +816,9 @@ FixMyStreet::override_config {
             EventDate => { DateTime => '2023-07-05T00:00:00Z' },
             EventStateId => 19183, # Allocated to crew
         } ] } );
+
+        $report->update({ state => 'fixed - council', external_id => 'a-guid' });
+        $mech->clear_emails_ok;
 
         $mech->get_ok('/waste/12345');
         $mech->follow_link_ok( { url_regex => qr/service_id=986/}, 'Follow "Report a problem" link for the bulky collection' );
@@ -862,6 +870,22 @@ FixMyStreet::override_config {
         is $missed->get_extra_field_value('Notes'), 'They left the mattress';
 
         $missed->update({ external_id => 'guid' });
+        # Was set by database, so set to current time not override and is used for working out
+        # collection date
+        $missed->update({ confirmed => '2023-07-05 05:44' });
+
+        FixMyStreet::Script::Reports::send();
+        # report is sent as email as well as confirmation email hence 2 emails
+        $mech->email_count_is(2);
+        my @email = $mech->get_email;
+        my $email_text = $mech->get_text_body_from_email($email[1]);
+        my $email_html = $mech->get_html_body_from_email($email[1]);
+        like $email_text, qr/We will arrange another collection/, 'collection message in text email';
+        like $email_html, qr/Our crew will return by the end of Friday,  7 July/, 'collection details in html email';
+
+        my $external_id = $report->external_id;
+        like $email_html, qr/escalate the missed collection online/, 'missed collection html email has reporting instructions';
+        like $email_html, qr#waste/12345/enquiry\?template=problem&amp;service_id=986&amp;original_booking_event=$external_id#, 'missed collection html email has problem link';
 
         $echo->mock( 'GetEventsForObject', sub { [ {
             Guid => 'a-guid',
@@ -1490,11 +1514,11 @@ FixMyStreet::override_config {
             my $email_text = $mech->get_text_body_from_email($email);
             my $email_html = $mech->get_html_body_from_email($email);
             like $email_text, qr/No access due to gate locked/, 'Reason pulled from comment';
-            like $email_text, qr/report a problem with this missed collection/, 'Report a problem text in text email';
+            like $email_text, qr/report a problem with this collection/, 'Report a problem text in text email';
             like $email_html, qr/No access due to gate locked/, 'Reason pulled from comment';
             like $email_html, qr/Our crews reported your bulky waste collection was not made/, 'extra bulky waste text included';
             like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
-            like $email_html, qr{waste/12345/enquiry}, 'HTML alert contains report link';
+            like $email_html, qr{waste/12345/enquiry\?category=Missed\+collection\+dispute}, 'HTML alert contains report link';
 
             # we only want the HTML link as the text version does not contain the link
             my @links = $email_html =~ m{https?://[^"]+}g;
