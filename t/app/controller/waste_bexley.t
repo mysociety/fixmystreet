@@ -29,6 +29,12 @@ my $body = $mech->create_body_ok(
         cobrand => 'bexley'
     },
 );
+$mech->create_contact_ok(
+    body => $body,
+    category => 'In the road',
+    email => 'roadpothole@example.org',
+    group => ['Pothole'],
+);
 my $contact = $mech->create_contact_ok(
     body => $body,
     category => 'Report missed collection',
@@ -1241,7 +1247,7 @@ FixMyStreet::override_config {
             );
             $mech->log_in_ok( $superuser->email );
             $mech->get( '/report/' . $report->id );
-            $mech->content_contains('value="Waste__Replacement bin enquiry" selected');
+            $mech->content_contains('value="Pothole__In the road"');
         };
     }
 };
