@@ -501,7 +501,18 @@ sub open311_extra_data {
     return ($include, $exclude);
 };
 
-sub open311_get_update_munging_template_variables {
+=head2 open311_get_update_template_variables
+
+Some councils (e.g. Dumfries, Aberdeenshire) want certain fields shown in updates on FMS.
+
+These values, if present, are passed back from open311-adapter in the <extras>
+element. If the template being used for this update has placeholders matching
+any field configured in the 'response_template_variables' Config entry, they
+get replaced with the value from extras, or an empty string otherwise.
+
+=cut
+
+sub open311_get_update_template_variables {
     my ($self, $text, $request) = @_;
 
     my $vars = FixMyStreet::DB->resultset("Config")->get('response_template_variables');

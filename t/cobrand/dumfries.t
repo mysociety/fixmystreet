@@ -621,7 +621,7 @@ subtest 'response_template_for with wildcard matching' => sub {
         subtest 'exact match beats wildcards' => sub {
             my $template = $test_problem->response_template_for(
                 $body, 'investigating', 'confirmed',
-                'status1:outcome1:priority1', ''
+                'status1:outcome1:priority1'
             );
             is $template->title, 'Exact Match Template',
                 'Exact match template selected over wildcards';
@@ -630,7 +630,7 @@ subtest 'response_template_for with wildcard matching' => sub {
         subtest 'more specific wildcard beats less specific' => sub {
             my $template = $test_problem->response_template_for(
                 $body, 'investigating', 'confirmed',
-                'status1:outcome1:priorityX', ''
+                'status1:outcome1:priorityX'
             );
             is $template->title, 'One Wildcard Template',
                 'One wildcard template beats two wildcard template';
@@ -639,7 +639,7 @@ subtest 'response_template_for with wildcard matching' => sub {
         subtest 'two wildcards beats three wildcards' => sub {
             my $template = $test_problem->response_template_for(
                 $body, 'investigating', 'confirmed',
-                'status1:outcomeX:priorityX', ''
+                'status1:outcomeX:priorityX'
             );
             is $template->title, 'Two Wildcard Template',
                 'Two wildcard template beats all wildcard template';
@@ -648,7 +648,7 @@ subtest 'response_template_for with wildcard matching' => sub {
         subtest 'star wildcard matches empty segment' => sub {
             my $template = $test_problem->response_template_for(
                 $body, 'investigating', 'confirmed',
-                'status1::', ''
+                'status1::'
             );
             is $template->title, 'Two Wildcard Template',
                 'Star wildcard matches empty segments';
@@ -657,7 +657,7 @@ subtest 'response_template_for with wildcard matching' => sub {
         subtest 'star wildcard fallback works for unmatched statuses' => sub {
             my $template = $test_problem->response_template_for(
                 $body, 'investigating', 'confirmed',
-                'status_fallback:outcomeX:priorityX', ''
+                'status_fallback:outcomeX:priorityX'
             );
             is $template->title, 'Fallback Template',
                 'Fallback star template matches when nothing more specific exists';
@@ -666,7 +666,7 @@ subtest 'response_template_for with wildcard matching' => sub {
         subtest 'plus wildcard matches non-empty segments' => sub {
             my $template = $test_problem->response_template_for(
                 $body, 'investigating', 'confirmed',
-                'status_plus:outcome1:priority1', ''
+                'status_plus:outcome1:priority1'
             );
             is $template->title, 'Plus Wildcard Template',
                 'Plus wildcard template matches when segments are non-empty';
@@ -675,22 +675,21 @@ subtest 'response_template_for with wildcard matching' => sub {
         subtest 'plus wildcard does not match empty segments' => sub {
             my $template = $test_problem->response_template_for(
                 $body, 'investigating', 'confirmed',
-                'status_plus::', ''
+                'status_plus::'
             );
             is $template->title, 'Star Wildcard Template',
                 'Plus wildcard does not match empty segments, star does';
         };
 
-        subtest 'no match when external_status_code unchanged' => sub {
+        subtest 'match when external_status_code unchanged' => sub {
             $test_problem->set_extra_metadata(external_status_code => 'status1:outcome1:priority1');
             $test_problem->update;
 
             my $template = $test_problem->response_template_for(
                 $body, 'investigating', 'confirmed',
-                'status1:outcome1:priority1', 'status1:outcome1:priority1'
+                'status1:outcome1:priority1'
             );
-            is $template, undef,
-                'No template when external_status_code has not changed';
+            is $template->title, 'Exact Match Template';
         };
 
         $template_exact->delete;
