@@ -94,29 +94,15 @@ sub problems_on_map_restriction {
     ]);
 }
 
-
 =head2 open311_get_update_munging
 
-Dumfries want certain fields shown in updates on FMS.
-
-These values, if present, are passed back from open311-adapter in the <extras>
-element. If the template being used for this update has placeholders matching
-any field configured in the 'response_template_variables' Config entry, they
-get replaced with the value from extras, or an empty string otherwise.
+Store latest inspection time on the report if present,
+and ignore any photos that we already know about.
 
 =cut
 
 sub open311_get_update_munging {
     my ($self, $comment, $state, $request) = @_;
-
-    my $text = $self->open311_get_update_munging_template_variables($comment->text, $request);
-    $comment->text($text);
-
-    if ( $text = $comment->private_email_text ) {
-        $text = $self->open311_get_update_munging_template_variables(
-            $text, $request );
-        $comment->private_email_text($text);
-    }
 
     # If the update includes a latest_inspection_time, store it on the problem
     # If the value is 'NOT COMPLETE', unset the metadata

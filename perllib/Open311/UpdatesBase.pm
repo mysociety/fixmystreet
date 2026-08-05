@@ -164,6 +164,7 @@ sub _process_update {
     my ($self, $request, $p) = @_;
     my $open311 = $self->current_open311;
     my $body = $self->current_body;
+    my $cobrand = $body->get_cobrand_handler;
 
     $self->_handle_assigned_user($request, $p);
     $self->_handle_category_change($request, $p);
@@ -173,11 +174,25 @@ sub _process_update {
     my $old_state = $p->state;
     my $external_status_code = $request->{external_status_code} || '';
     my $customer_reference = $request->{customer_reference} || '';
-    my $old_external_status_code = $p->get_extra_metadata('external_status_code') || '';
-    my $template = $p->response_template_for(
-        $body, $state, $old_state, $external_status_code, $old_external_status_code
-    );
-    my ($text, $email_text) = $self->comment_text_for_request($template, $request, $p);
+
+    my $template = $p->response_template_for($body, $state, $old_state, $external_status_code);
+
+    # The above will return a template for an external status code, even if
+    # that's the same as the current external status code. This is because
+    # variable replacement in comment_text_for_request could create different
+    # output for the same external status code. There shouldn't be an update
+    # with the same variables+code, but if there is we can fall back on the
+    # text comparison later.
+    my $state_changed = $state ne $old_state
+        && !( $p->is_fixed && FixMyStreet::DB::Result::Problem->fixed_states()->{$state} );
+    my $old_ext_code = $p->get_extra_metadata('external_status_code') || '';
+    my $ext_code_changed = $external_status_code && $external_status_code ne $old_ext_code;
+    # So if there are no variables involved, and no state/code change, remove the template
+    if ($template && !$state_changed && !$ext_code_changed && $template->text !~ /\{\{/) {
+        $template = undef;
+    }
+
+    my ($text, $email_text) = $self->comment_text_for_request($template, $request, $p, $cobrand);
     if (!$email_text && $request->{email_text}) {
         $email_text = $request->{email_text};
     };
@@ -274,7 +289,6 @@ sub _process_update {
     my $state_change = $comment->problem_state && $state ne $old_state;
     $comment->state('hidden') unless $text_change || $photo_change || $state_change;
 
-    my $cobrand = $body->get_cobrand_handler;
     $cobrand->call_hook(open311_get_update_munging => $comment, $state, $request)
         if $cobrand;
 
@@ -300,7 +314,7 @@ sub _process_update {
 }
 
 sub comment_text_for_request {
-    my ($self, $template, $request, $problem) = @_;
+    my ($self, $template, $request, $problem, $cobrand) = @_;
 
     my $email_text = $template ? ($template->email_text||'') : '';
     $template = $template->text if $template;
@@ -308,6 +322,11 @@ sub comment_text_for_request {
     my $desc = $request->{description} || '';
     if ($desc && (!$template || ($template !~ /\{\{description}}/ && !$request->{prefer_template}))) {
         return ($desc, undef);
+    }
+
+    if ($template && $cobrand && $cobrand->can('open311_get_update_template_variables')) {
+        $template = $cobrand->open311_get_update_template_variables($template, $request);
+        $email_text = $cobrand->open311_get_update_template_variables($email_text, $request);
     }
 
     if ($template) {
