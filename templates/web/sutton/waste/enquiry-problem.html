@@ -88,6 +88,14 @@ END;
         </p>
         </div>
     </div>
+    [% # this handles missed bulky collections where it's not collected at the end of the day %]
+    [% ELSIF (type == 'bulky' OR type == 'small') AND service.report_allowed AND original_booking_report.is_open %]
+    <div class="govuk-warning-text info">
+        <div class="govuk-warning-text__content">
+        <p>This collection was scheduled for [% date.format(original_booking_report.get_extra_field_value('Collection_Date_-_Bulky_Items'), '%A, %-d %B') %].
+        If it has not been collected, you can report it as missed and we will return within 2 working days to collect it.</p>
+        </div>
+    </div>
     [% ELSIF service.report_allowed %]
     <div class="govuk-warning-text info">
         <div class="govuk-warning-text__content">
