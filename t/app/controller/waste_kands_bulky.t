@@ -1,5 +1,6 @@
 use Test::MockModule;
 use Test::MockTime qw(:all);
+use Storable qw(dclone);
 use FixMyStreet::TestMech;
 use Path::Tiny;
 use FixMyStreet::Script::Reports;
@@ -1259,6 +1260,86 @@ FixMyStreet::override_config {
         like $email->header('Subject'), qr/Your bulky waste collection - reference LBS/, "Confirmation booking email sent after staff payment process";
     };
 
+    subtest 'Missed collection link visibility' => sub {
+        my $mock = [ {
+            Id => '8004',
+            ClientReference => 'LBS-123',
+            Guid => 'booking-guid',
+            ServiceId => 960, # Bulky
+            EventTypeId => 3130, # Bulky collection
+            EventStateId => 19184, # Completed
+            EventDate => { DateTime => '2025-04-01T00:00:00Z' },
+            ResolvedDate => { DateTime => '2025-04-08T00:00:00Z' },
+            ResolutionCodeId => 232, # Completed on Scheduled Day (dunno if used, doesn't matter)
+        } ];
+        my $tests = {
+            "Not visible before 6pm on collection day" => {
+                date => '2025-04-08T16:30:00Z',
+                visible => 0,
+                not_complete => 1,
+                msg => 'Please wait until after 6pm',
+                estate => 19183, # Allocated
+                pstate => 'confirmed',
+            },
+            "Visible after 6pm on collection day even if not complete" => {
+                date => '2025-04-08T18:30:00Z',
+                visible => 1,
+                not_complete => 1,
+                msg => 'This collection was scheduled for Tuesday, 8 April',
+                estate => 19183, # Allocated
+                pstate => 'confirmed',
+            },
+            "Visible if marked as completed" => {
+                date => '2025-04-08T18:30:00Z',
+                visible => 1,
+                msg => 'Our records show this collection took place',
+                estate => 19184, # Completed
+                pstate => 'fixed - council',
+            },
+            "Not visible if marked as incomplete" => {
+                date => '2025-04-08T18:30:00Z',
+                visible => 0,
+                failed => 1,
+                msg => 'No access due to gate locked',
+                estate => 19185, # Not Complete
+                pstate => 'unable to fix',
+            },
+        };
+        $report->update_extra_field({ name => 'Collection_Date_-_Bulky_Items', value => '2025-04-08T00:00:00' });
+        $report->set_extra_metadata(payment_reference => 'payref');
+        for my $test (keys %$tests) {
+            subtest $test => sub {
+                my $conf = $tests->{$test};
+                set_fixed_time($conf->{date});
+                $report->update({ external_id => 'booking-guid', state => $conf->{pstate} });
+
+                my @dupe = @{dclone($mock)};
+                if ($conf->{not_complete}) {
+                    delete $dupe[0]->{ResolvedDate};
+                    delete $dupe[0]->{ResolutionCodeId};
+                }
+                if ($conf->{failed}) {
+                    $dupe[0]->{ResolutionCodeId} = 466; # No access - gate locked
+                }
+                $dupe[0]->{EventStateId} = $conf->{estate};
+
+                $echo->mock( 'GetEventsForObject', sub {\@dupe} );
+                $mech->get_ok('/waste/12345');
+                $mech->follow_link_ok( { url_regex => qr/service_id=960/}, 'Follow "Report a problem" link for bulky collection' );
+
+                if ($conf->{visible}) {
+                    $mech->content_contains('you can report it as missed');
+                } elsif ($conf->{failed}) {
+                    $mech->content_lacks('you can report it as missed');
+                    $mech->content_contains('Dispute collection closure');
+                } else {
+                    $mech->content_lacks('you can report it as missed');
+                }
+
+                $mech->content_contains($conf->{msg})
+            };
+        }
+    };
     subtest 'Missed collections' => sub {
         # Update the bulky collection to have been done (at right time)
         $report->update_extra_field({ name => 'Collection_Date_-_Bulky_Items', value => '2025-04-08T00:00:00' });
