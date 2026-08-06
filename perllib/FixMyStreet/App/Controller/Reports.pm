@@ -789,7 +789,10 @@ sub stash_report_filter_status : Private {
         $filter_status{unshortlisted} = 1;
     }
 
-    my $body_user = $c->user_exists && $c->stash->{body} && $c->user->belongs_to_body($c->stash->{body}->id);
+    # The body isn't stashed on e.g. /around, so fall back to the cobrand's
+    # body, matching what reports/_list-filter-status.html does
+    my $body = $c->stash->{body} ||= $c->cobrand->body;
+    my $body_user = $c->user_exists && $body && $c->user->belongs_to_body($body->id);
     my $staff_user = $c->user_exists && ($c->user->is_superuser || $body_user);
     my $planned_page = $c->action eq 'my/planned';
     if ($staff_user || $planned_page || $c->cobrand->call_hook('filter_show_all_states')) {
