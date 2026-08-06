@@ -302,7 +302,7 @@ sub _process_update {
 sub comment_text_for_request {
     my ($self, $template, $request, $problem) = @_;
 
-    my $template_email_text = $template ? $template->email_text : undef;
+    my $email_text = $template ? ($template->email_text||'') : '';
     $template = $template->text if $template;
 
     my $desc = $request->{description} || '';
@@ -312,13 +312,13 @@ sub comment_text_for_request {
 
     if ($template) {
         $template =~ s/\{\{description}}/$desc/;
-        return ($template, $template_email_text);
+        return ($template, $email_text);
     }
 
-    return ("", undef) if $self->blank_updates_permitted;
+    return ("", "") if $self->blank_updates_permitted;
 
     print STDERR "Couldn't determine update text for $request->{update_id} (report " . $problem->id . ")\n";
-    return ("", undef);
+    return ("", "");
 }
 
 sub _handle_assigned_user {

@@ -1563,7 +1563,7 @@ sub create_related_things {
             external_id => 'auto-internal',
             send_state => 'processed',
             text => $description,
-            private_email_text => $email_text,
+            $email_text ? (private_email_text => $email_text) : (),
             problem_state => 'confirmed',
             state => 'unconfirmed',
             confirmed => \'current_timestamp', # So that it will always be first
