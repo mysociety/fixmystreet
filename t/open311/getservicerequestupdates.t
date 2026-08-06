@@ -608,6 +608,23 @@ subtest 'Check Aberdeenshire template interpolation' => sub {
     is $c->text, "Job start date: 15/11/2025\nTarget date: 31/12/2025", 'template correctly interpolated with jobStartDate';
 
     $aber_problem->comments->delete;
+    # another update that only changes the extra data/response variables and leaves state/external status alone
+    $local_requests_xml = setup_xml($aber_problem->external_id, $aber_problem->id, 'ACTION_SCHEDULED', '',
+        '<jobStartDate>2026-01-20T09:00:00</jobStartDate><targetDate>2026-02-28T10:30:00</targetDate>');
+    $local_requests_xml =~ s#</request_update>#<external_status_code>39</external_status_code></request_update>#;
+    Open311->_inject_response('/servicerequestupdates.xml', $local_requests_xml);
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'aberdeenshire',
+    }, sub {
+        $update->process_body;
+    };
+    $aber_problem->discard_changes;
+    $c = $aber_problem->comments->first;
+    is $aber_problem->comments->count, 1, 'comment count';
+    is $c->state, 'confirmed', 'comment is visible';
+    is $c->text, "Job start date: 20/01/2026\nTarget date: 28/02/2026", 'new template vars used';
+
+    $aber_problem->comments->delete;
     $aber_problem->delete;
     $tpl->delete;
 };

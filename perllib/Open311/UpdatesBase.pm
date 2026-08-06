@@ -188,7 +188,7 @@ sub _process_update {
     my $old_ext_code = $p->get_extra_metadata('external_status_code') || '';
     my $ext_code_changed = $external_status_code && $external_status_code ne $old_ext_code;
     # So if there are no variables involved, and no state/code change, remove the template
-    if ($template && !$state_changed && !$ext_code_changed && $template !~ /\{\{/) {
+    if ($template && !$state_changed && !$ext_code_changed && $template->text !~ /\{\{/) {
         $template = undef;
     }
 
