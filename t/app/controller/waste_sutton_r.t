@@ -406,8 +406,95 @@ FixMyStreet::override_config {
         is $report->title, 'Request replacement Mixed Recycling Green Box (55L)';
     };
 
+    subtest 'Missed collection links visiblity' => sub {
+        my $mock_results_in_progress = [ {
+            Ref => { Value => { anyType => [ 22244305, 8287 ] } },
+            State => { Name => 'Allocated' },
+            CompletedDate => undef
+        } ];
+        my $mock_results_complete = [ {
+            Ref => { Value => { anyType => [ 22244305, 8287 ] } },
+            State => { Name => 'Completed' },
+            CompletedDate => { DateTime => '2022-09-09T16:00:00Z' }
+        } ];
+        my $mock_results_not_complete = [ {
+            Ref => { Value => { anyType => [ 22244305, 8287 ] } },
+            State => { Name => 'Not Completed' },
+            CompletedDate => { DateTime => '2022-09-09T16:00:00Z' }
+        } ];
+        $e->mock('GetTasks', sub { [ {
+            Ref => { Value => { anyType => [ 22244305, 8287 ] } },
+            State => { Name => 'Completed' },
+            CompletedDate => { DateTime => '2022-09-09T16:00:00Z' }
+        }, {
+            Ref => { Value => { anyType => [ 22244305, 8287 ] } },
+            State => { Name => 'Allocated' },
+            CompletedDate => undef
+        } ] });
+
+        my $tests = {
+            "Not visible before 6pm on collection day" => {
+                date => '2022-09-09T16:30:00Z',
+                visible => 0,
+                not_complete => 1,
+                mock => $mock_results_in_progress,
+                msg => 'Please wait until after 6pm',
+            },
+            "Visible after 6pm on collection day even if not complete" => {
+                date => '2022-09-09T18:30:00Z',
+                visible => 1,
+                not_complete => 1,
+                mock => $mock_results_in_progress,
+                status => 'Allocated',
+                msg => 'this collection took place',
+            },
+            "Visible if marked as completed" => {
+                date => '2022-09-09T18:30:00Z',
+                visible => 1,
+                status => 'Completed',
+                mock => $mock_results_complete,
+                msg => 'this collection took place',
+            },
+            "Not visible if marked as incomplete" => {
+                date => '2022-09-09T18:30:00Z',
+                visible => 0,
+                failed => 1,
+                status => 'Not Completed',
+                mock => $mock_results_not_complete,
+                msg => 'task as not collected',
+            },
+        };
+
+        for my $test (keys %$tests) {
+            subtest $test => sub {
+                my $conf = $tests->{$test};
+                set_fixed_time($conf->{date});
+                my @dupe = @$bin_data;
+                if ($conf->{not_complete}) {
+                    $dupe[1]->{ServiceTasks}->{ServiceTask}->[0]->{ServiceTaskSchedules}->{ServiceTaskSchedule}->[0]->{LastInstance}->{CompletedDate} = undef;
+                    $dupe[1]->{ServiceTasks}->{ServiceTask}->[0]->{ServiceTaskSchedules}->{ServiceTaskSchedule}->[0]->{LastInstance}->{State} = { CoreState => "Outstanding", Name => "Outstanding" };
+                }
+                $e->mock('GetServiceUnitsForObject', sub { \@dupe });
+                $e->mock('GetTasks', sub { $conf->{mock} });
+
+                $mech->get_ok('/waste/12345');
+                $mech->follow_link_ok( { url_regex => qr/service_id=954/}, 'Follow "Report a problem" link for food waste' );
+                $mech->content_contains($conf->{msg});
+                if ($conf->{visible}) {
+                    $mech->content_contains('you can report it as missed');
+                } elsif ($conf->{failed}) {
+                    $mech->content_contains('Dispute collection closure');
+                } else {
+                    $mech->content_lacks('you can report it as missed');
+                }
+            };
+        }
+        $e->mock('GetTasks', sub { [] });
+    };
+    $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     my $missed_report;
     subtest 'Report missed collection' => sub {
+        set_fixed_time('2022-09-09T16:30:00Z');
         FixMyStreet::Script::Reports::send();
         $mech->clear_emails_ok;
 
