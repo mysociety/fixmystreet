@@ -57,6 +57,7 @@ sub export_json {
             categories => [ sort map { $_->category } $_->contacts->all ],
             auto_response => $_->auto_response,
             external_status_code => $_->external_status_code,
+            deleted => $_->deleted,
         };
     }
 
@@ -139,6 +140,7 @@ sub import_json {
             state => $_->{state},
             auto_response => $_->{auto_response},
             external_status_code => $_->{external_status_code},
+            deleted => $_->{deleted} || 0,
         });
         $template->insert unless $template->in_storage;
         foreach (@{$_->{categories}}) {

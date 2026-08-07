@@ -64,6 +64,7 @@ my $template_output = <<'EOF';
       {
          "auto_response" : 0,
          "categories" : [],
+         "deleted" : 0,
          "email_text" : null,
          "external_status_code" : null,
          "state" : null,
@@ -130,6 +131,7 @@ EOF
     is $pothole->email, 'newpothole@example.org';
     $template->discard_changes;
     is $template->state, 'in progress';
+    is $template->deleted, 1;
 };
 
 done_testing;

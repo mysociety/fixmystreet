@@ -31,6 +31,7 @@
       {
          "auto_response" : 0,
          "categories" : [],
+         "deleted" : 1,
          "email_text" : null,
          "external_status_code" : null,
          "state" : "in progress",
@@ -40,6 +41,7 @@
       {
          "auto_response" : 0,
          "categories" : [],
+         "deleted" : 0,
          "email_text" : null,
          "external_status_code" : null,
          "state" : null,
