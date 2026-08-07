@@ -117,6 +117,8 @@ Category Pothole already exists, skipping
 Template with title Ack already exists, skipping
 Role Admin already exists; skipping
 EOF
+    my $flytipping = FixMyStreet::DB->resultset("Contact")->find({ category => "Flytipping" });
+    is $flytipping->send_method, 'Email';
     isnt +FixMyStreet::DB->resultset("Contact")->find({ category => "Flytipping" }), undef;
     isnt +FixMyStreet::DB->resultset("Role")->find({ name => "Nothing much" }), undef;
     isnt +FixMyStreet::DB->resultset("ResponseTemplate")->find({ title => "Fixed" }), undef;
