@@ -37,8 +37,15 @@ sub update_reports {
         $request->{description} = $request->{status_notes};
 
         my $p = $self->find_problem($request) or next;
-        next if $request->{comment_time} < $p->lastupdate;
-        # But what if update at our end later than update their end...
+        # Can do a better check for our fetching of Dudley updates
+        if ($self->current_body->name eq 'Dudley Borough Council' && $request->{account_id}) {
+            $request->{update_id} = $request->{account_id};
+            my $c = $p->comments->search( { external_id => $request->{update_id} } );
+            next if $c->first;
+        } else {
+            next if $request->{comment_time} < $p->lastupdate;
+            # But what if update at our end later than update their end...
+        }
 
         $self->process_update($request, $p);
     }
