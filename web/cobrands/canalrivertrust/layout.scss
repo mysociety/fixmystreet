@@ -1,0 +1,196 @@
+@import "_variables";
+@import "../sass/layout";
+
+/* GENERAL */
+html {
+    font-size: 1.25rem;
+}
+
+.container {
+  padding: 0 2rem;
+}
+
+.content,
+.council_sent_info {
+  color: $primary_b;
+}
+
+/* BUTTONS */
+.btn-crt, .btn,
+.dz-clickable .dz-message u {
+  height: 60px;
+  line-height: 28px;
+}
+
+.my-account-preferences-list--email a.btn, .my-account-preferences-list--phone a.btn {
+  padding: $button-padding-top $button-padding-right;
+}
+
+/* NAVBAR */
+#site-logo {
+  background-image: url("/cobrands/canalrivertrust/images/logo-desktop.svg");
+    background-size: auto 5rem;
+    height: $mappage-header-height;
+    width: 18.875rem;
+}
+
+.crt-logo-wrapper {
+  position: relative;
+  .strapline {
+    display: block;
+    position: absolute;
+    font-size: .875rem;
+    font-weight: 400;
+    left: 114px;
+    letter-spacing: 0;
+    line-height: .75rem;
+    margin-top: -1.75rem;
+  }
+}
+
+.strapline-mobile {
+  display: none;
+}
+
+.nav-menu--main {
+  a, span, a.report-a-problem-btn {
+    font-size: 0.9rem;
+    padding: 0.2em 0.5em;
+    margin: 0;
+  }
+
+  a {
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  span {
+    text-decoration: underline;
+    color: $primary_text;
+    text-underline-offset: 0.5rem;
+    &:hover {
+      color: $primary_text;
+    }
+  }
+
+  @media (min-width: 1440px) {
+    max-width: 100%;
+  }
+}
+
+/* FRONTPAGE */
+#front-main {
+  padding: 6em 1em;
+  margin-bottom: 5rem;
+
+  #front-main-container {
+    max-width: fit-content;
+    padding: 2em;
+  }
+}
+
+#front_stats {
+  border-color: $primary;
+  color: $primary;
+}
+
+.js #photoForm,
+.js #photoForm .dropzone {
+  border-radius: 0;
+}
+
+/* MAP PAGE */
+.big-green-banner {
+  border-top: 1px solid $cobrand_white;
+  text-transform: none;
+  background: #1e29f5 url('/cobrands/canalrivertrust/images/right-chevron.svg') right center no-repeat;
+  background-size: 3.5rem;
+}
+
+/* CONTACT FORM */
+@media (min-width: 1180px) {
+  // Applying same media query rule than CRT website, otherwise the form looks too squashed on smaller screen.
+  .help-contact-form {
+    .govuk-form-group {
+      margin-bottom: 2rem;
+      display: flex;
+      flex-direction: row;
+      gap: 1rem;
+      align-items: center;
+
+      &:has(textarea) {
+        align-items: flex-start;
+      }
+    }
+
+    .govuk-label {
+      font-size: 1rem;
+      width: 20rem;
+      margin: 0;
+    }
+
+    .govuk-textarea {
+      font-size: 1rem;
+    }
+  }
+}
+
+// /* DARK THEME */
+// @media (prefers-color-scheme: dark) {
+//   body {
+//     @include true-black();
+//   }
+
+//   #front-main {
+//     position: relative;
+//     box-sizing: border-box;
+
+//     &::after {
+//       content: "";
+//       position: absolute;
+//       background-color: rgba(0, 0, 0, 0.5);
+//       height: 100%;
+//       width: 100%;
+//       top: 0;
+//       left: 0;
+//       z-index: 0;
+//     }
+
+//     #front-main-container {
+//       position: relative;
+//       z-index: 1;
+//       @include true-black();
+//       h1 {
+//         color: $cobrand_white;
+//       }
+//       h2 {
+//         color: rgba($cobrand_white, 0.9);
+//       }
+//       .report-forms-wrapper {
+//         color: $cobrand_white;
+  
+//         .form-hint {
+//           color: rgba($cobrand_white, 0.9);
+//         }
+//       }
+//     }
+//   }
+
+//   .keyboard-instructions-wrapper {
+//     background-color: #000;
+//   }
+
+//   .frontpage {
+//     .content {
+//       @include true-black();
+//     }
+//     h2 {
+//       color: $cobrand_white;
+//     }
+//   }
+
+//   .content, #map_sidebar  {
+//     @include true-black;
+//   }
+// }
