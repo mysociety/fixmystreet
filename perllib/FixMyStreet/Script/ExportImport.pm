@@ -84,6 +84,19 @@ sub export_json {
     return $J->encode(\%out);
 }
 
+sub _import_category_fields {
+    my $category = shift;
+    (
+        editor => 'export-import-data',
+        whenedited => \'current_timestamp',
+        email => $category->{email},
+        state => $category->{state},
+        send_method => $category->{send_method},
+        non_public => $category->{non_public},
+        extra => $category->{extra},
+    );
+};
+
 sub import_json {
     my ($self, $file, $update_templates, $update_contacts) = @_;
     my $body = $self->body;
@@ -100,13 +113,7 @@ sub import_json {
             if ($update_contacts) {
                 $existing->update({
                     note => "Updated from $file",
-                    editor => 'export-import-data',
-                    whenedited => \'current_timestamp',
-                    email => $_->{email},
-                    state => $_->{state},
-                    send_method => $_->{send_method},
-                    non_public => $_->{non_public},
-                    extra => $_->{extra},
+                    _import_category_fields($_),
                 });
             } else {
                 warn "Category $_->{category} already exists, skipping\n";
@@ -115,13 +122,8 @@ sub import_json {
         } else {
             my $contact = $body->contacts->new({
                 note => "Imported from $file",
-                editor => 'export-import-data',
-                whenedited => \'current_timestamp',
                 category => $_->{category},
-                email => $_->{email},
-                state => $_->{state},
-                non_public => $_->{non_public},
-                extra => $_->{extra},
+                _import_category_fields($_),
             });
             $contact->insert;
         }

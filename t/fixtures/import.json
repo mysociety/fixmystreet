@@ -13,7 +13,7 @@
          "email" : "flytipping@example.org",
          "extra" : null,
          "non_public" : false,
-         "send_method" : "",
+         "send_method" : "Email",
          "state" : "confirmed"
       }
     ],
