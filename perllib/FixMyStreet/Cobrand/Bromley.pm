@@ -267,9 +267,12 @@ Sets options for what data will be sent to the open311 integrations.
 
 Bromley require all images to be sent for Echo reports, as binaries for upload.
 
-We do not 'always_send_latlong' or 'extended_description'
+We do not 'always_send_latlong' or 'extended_description'.
 
-We do 'send_notpinpointed'
+We do 'send_notpinpointed'.
+
+We always send email when sending to the passthrough endpoint as
+it's required.
 
 =cut
 
@@ -280,6 +283,8 @@ sub open311_config {
         $params->{multi_photos} = 1;
         $params->{upload_files} = 1;
         $params->{always_upload_photos} = 1; # So open311_munge_uploads always gets called
+    } else {
+        $params->{always_send_email} = 1;
     }
 
     $params->{always_send_latlong} = 0;
