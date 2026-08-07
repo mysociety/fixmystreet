@@ -56,6 +56,19 @@ sub abuse_reports_only { 1 }
 
 sub on_map_default_status { 'open' }
 
+=item * Some customised pins (yellow/blue/green/grey)
+
+=cut
+
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+
+    return 'grey-cross' if $p->is_closed;
+    return 'green-tick' if $p->is_fixed;
+    return 'yellow-cone' if $p->state eq 'confirmed';
+    return 'blue-work'; # all the other `open_states` like "in progress"
+}
+
 =item * Send a confirmation email once the report has been sent, quoting its FMS ID
 
 =cut
