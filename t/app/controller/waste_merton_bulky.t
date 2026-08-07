@@ -1266,7 +1266,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Bulky collection booking confirmed');
         $mech->content_lacks('payment reference');
 
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->category, 'Bulky collection', 'correct category on report';
         is $report->get_extra_field_value('discounted'), '';
         is $report->get_extra_field_value('payment'), '';
@@ -1284,8 +1284,6 @@ FixMyStreet::override_config {
         FixMyStreet::Script::Reports::send();
         $mech->email_count_is(1); # Only email is 'email' to council
         $mech->clear_emails_ok;
-        $update->delete;
-        $report->delete;
     };
 
     subtest 'Update the waste configuration in the admin' => sub {
@@ -1304,10 +1302,42 @@ FixMyStreet::override_config {
         $mech->content_like(qr/waste_discount_price"\s+value="0"/);
     };
 
+    subtest 'Amend this old free booking now we have the new discount system...' => sub {
+        set_fixed_time('2023-06-28T12:13:14');
+        my $base_path = '/waste/12345';
+        $report->external_id('Echo-123');
+        $report->update;
+        $mech->log_in_ok( $contact_centre_user->email );
+        $mech->get_ok($base_path);
+        $mech->content_contains('Amend booking');
+        $mech->get_ok("$base_path/bulky/amend/" . $report->id);
+        $mech->content_contains("Before you amend your booking");
+        $mech->submit_form_ok;
+        $mech->submit_form_ok(
+            { with_fields => { chosen_date => '2023-07-01T00:00:00;reserveA==;2023-06-25T10:10:00' } }
+        );
+        $mech->submit_form_ok({
+            with_fields => {
+                'item_1' => 'Bath',
+                'item_2' => 'Bookcase, Shelving Unit',
+                'item_3' => '',
+            },
+        });
+        $mech->submit_form_ok({ form_number => 2 }); # Location page
+        $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bath/s);
+        $mech->content_lacks('>BBQ<');
+        $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bookcase, Shelving Unit/s);
+        $mech->content_contains('2 items requested for collection');
+        $mech->content_contains('£0.00');
+        $mech->content_contains("<dd>Saturday 01 July 2023</dd>");
+    };
+    $report->comments->delete;
+    $report->delete;
+
     subtest 'Bulky goods booking with discounted (but still zero) payment' => sub {
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Last discounted collection: None');
-        $mech->content_contains('>Next discounted collection on or after: Friday 7 July 2023');
+        $mech->content_contains('>Next discounted collection on or after: Friday 30 June 2023');
 
         $mech->get_ok('/waste/12345/bulky');
         $mech->submit_form_ok;
