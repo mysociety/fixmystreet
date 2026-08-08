@@ -74,6 +74,15 @@ $footer-main-nav-color: #fff !default;
 // Invisble when there is not enough space
 $is-mobile-menu-visible: true !default;
 
+// Badge variables
+$badge-background-color: mix($primary, #fff, 20%) !default;
+$badge-border-color: $badge-background-color !default;
+$badge-padding: 2px 5px !default;
+$badge-border-radius: 0px !default;
+// Ensures the font-size doesn't go down below 14px for accessibility purposes and at the same time we can reuse the component in other elements like headings.
+$badge-font-size: clamp(14px,0.75em, 0.75em) !default;
+
+
 @import "_mixins";
 @import "_report_list";
 
@@ -3655,15 +3664,15 @@ $site-message-border: 1px solid #525252 !default;
 }
 
 .badge {
-  padding: 0.25em 0.35em;
+  padding: $badge-padding;
   margin-right: 0.25em;
   text-transform: uppercase;
-  font-weight: 600;
-  background-color: mix($primary, #fff, 30%);
-  border: 1px solid darken($primary, 10%);
-  font-size: 0.85rem;
+  font-weight: 500;
+  background-color: $badge-background-color;
+  border: 1px solid $badge-border-color;
+  font-size: $badge-font-size;
   color: #222;
-  border-radius: 4px;
+  border-radius: $badge-border-radius;
   vertical-align: middle;
 }
 
