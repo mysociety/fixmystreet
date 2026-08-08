@@ -1,0 +1,32 @@
+<div class="pin-legend pin-legend--mobile">
+    <button type="button" class="js-pin-legend-toggle btn btn--primary has-inline-svg" aria-expanded="false" aria-controls="pin-legend-panel-mobile">
+        [% INCLUDE 'icons/pin.html' width='1.5em' height='1.5em' %]
+        <span>[% loc('Display map legend') %]</span>
+    </button>
+
+    <div id="pin-legend-panel-mobile" class="pin-legend__panel" hidden>
+        <h2 id="pin-legend-heading-mobile" class="pin-legend__heading">[% loc('Map pin key') %]</h2>
+        <ul class="pin-legend__list">
+            <li class="pin-legend__item">
+                <img src="/i/pins/yellow/pin.png" alt="">
+                <span>[% loc('In progress') %]</span>
+            </li>
+            <li class="pin-legend__item">
+                <img src="/i/pins/green/pin.png" alt="">
+                <span>[% loc('Fixed') %]</span>
+            </li>
+            <li class="pin-legend__item">
+                <img src="/i/pins/bromley/green/pin.png" alt="">
+                <span>[% loc('Closed') %]</span>
+            </li>
+            <li class="pin-legend__item">
+                <img src="/i/pins/orange/pin.png" alt="">
+                <span>[% loc('Action scheduled') %]</span>
+            </li>
+            <li class="pin-legend__item">
+                <img src="/i/pins/bexley/aqua/pin.png" alt="">
+                <span>[% loc('Investigating') %]</span>
+            </li>
+        </ul>
+    </div>
+</div>
