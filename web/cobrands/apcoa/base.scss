@@ -1,0 +1,106 @@
+@import "../sass/h5bp";
+@import "_variables";
+@import "../sass/mixins";
+
+@import "../sass/base";
+
+/*TYPOGRAPHY */
+h1, .h1,
+h2, .h2,
+h3, .h3, 
+.item-list__heading {
+    font-weight: 800;
+    color: $cobrand_navy;
+}
+
+/* BUTTONS */
+.btn {
+  font-weight: 700;
+}
+
+a#geolocate_link,
+#report-cta {
+  @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+/* NAVBAR */
+#site-logo {
+  background-image: url("/cobrands/apcoa/images/logo.svg");
+  background-size: auto 2.25rem;
+}
+
+.nav-menu--main {
+  a, span {
+    font-size: 1rem;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  span {
+    background-color: $primary;
+    color: $primary_text;
+  }
+}
+
+/* FRONTPAGE */
+.postcode-form-box {
+  div {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0px 0px 12px 4px rgba(0, 0, 0, .1);
+    border-width: 0;
+  }
+
+  input#pc {
+    border-radius: 8px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  input#sub {
+    font-weight: 700;
+    background-color: $button-primary-bg-top;
+
+    &:hover {
+      background-color: $button-primary-hover-bg-top;
+      color: $button-primary-text;
+    }
+  }
+}
+
+#front-main #front-main-container {
+  box-sizing: border-box;
+
+  h2 {
+    font-weight: 400;
+  }
+}
+
+#front_stats {
+  background: $cobrand_navy;
+}
+
+/* OTHERS */
+.item-list__item {
+  a {
+    text-decoration: none;
+  }
+}
+
+/* SITE MESSAGE */
+// .site-message {
+//   color: $primary_b;
+//   padding: 1.5rem;
+//   background-color: $cobrand_white;
+//   border: none;
+//   border-left: 2px solid white;
+//   word-wrap: break-word;
+// }
+
+/* FOOTER */
+
+@import "../fixmystreet-uk-councils/societyworks-footer";
