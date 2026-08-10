@@ -372,13 +372,16 @@ sub open311_post_send {
     my $emails = $self->feature('open311_email') || {};
     my %flytipping_cats = map { $_ => 1 } @{ $self->_flytipping_categories };
     if ( $emails->{flytipping} && $flytipping_cats{$row->category} ) {
-        my $dest = [ [ $emails->{flytipping}, "Environmental Services" ] ];
-        $self->_send_extra_flytipping_email(
-            $row,
-            $h,
-            dest => $dest,
-            send_context => { flytipping_extra => 1 },
-        );
+        if (!$row->get_extra_metadata('contributed_by')) {
+            # We only want to send this email for non-staff reporters.
+            my $dest = [ [ $emails->{flytipping}, "Environmental Services" ] ];
+            $self->_send_extra_flytipping_email(
+                $row,
+                $h,
+                dest => $dest,
+                send_context => { flytipping_extra => 1 },
+            );
+        }
         if ($emails->{flytipping_witnessed} && $self->_witnessed_general_flytipping($row)) {
             my $dest2 = [ [ $emails->{flytipping_witnessed}, "Environmental Enforcement" ] ];
             $self->_send_extra_flytipping_email(
