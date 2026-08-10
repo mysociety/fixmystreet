@@ -406,6 +406,23 @@ subtest 'basic request update post parameters' => sub {
     is $c->param('media_url'), undef, 'no media url';
 };
 
+subtest 'test always_send_email_for_updates' => sub {
+    my $email = $user->email;
+    my $comment = make_comment();
+    $comment->user->email(undef);
+    my $results = make_update_req(
+        $comment,
+        '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>',
+        { always_send_email_for_updates => 1 }
+    );
+
+    is $results->{ res }, 248, 'got update id';
+
+    my $c = CGI::Simple->new( $results->{ req }->content );
+    is $c->param('email'), 'do-not-reply@example.org', 'email correct';
+    $comment->user->email($email);
+};
+
 subtest 'extended request update post parameters' => sub {
     my $comment = make_comment('bromley');
     my $results;
