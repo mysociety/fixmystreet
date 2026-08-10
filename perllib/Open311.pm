@@ -33,6 +33,7 @@ has extended_description => ( is => 'ro', isa => Str, default => 1 );
 has use_service_as_deviceid => ( is => 'ro', isa => Bool, default => 0 );
 has extended_statuses => ( is => 'ro', isa => Bool, default => 0 );
 has always_send_email => ( is => 'ro', isa => Bool, default => 0 );
+has always_send_email_for_updates => ( is => 'ro', isa => Bool, default => 0 );
 has multi_photos => ( is => 'ro', isa => Bool, default => 0 );
 has upload_files => ( is => 'ro', isa => Bool, default => 0 );
 has upload_files_for_updates => ( is => 'ro', isa => Bool, default => 0 );
@@ -531,6 +532,12 @@ sub _populate_service_request_update_params {
     $params->{phone} = $comment->user->phone if $comment->user->phone;
     $params->{email} = $comment->user->email if $comment->user->email;
     $params->{update_id} = $comment->id;
+
+    # Some endpoints don't follow the Open311 spec correctly and require an
+    # email address for service request updates.
+    if ($self->always_send_email_for_updates && !$params->{email}) {
+        $params->{email} = FixMyStreet->config('DO_NOT_REPLY_EMAIL');
+    }
 
     my $cobrand = $self->fixmystreet_body->get_cobrand_handler || $comment->get_cobrand_logged;
     $cobrand->call_hook(open311_munge_update_params => $params, $comment, $self->fixmystreet_body);

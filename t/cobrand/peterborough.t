@@ -355,6 +355,48 @@ subtest "flytipping on PCC land is sent by open311 and email" => sub {
     };
 };
 
+subtest "flytipping on PCC land by staff does not send censorship checking email" => sub {
+    FixMyStreet::override_config {
+        STAGING_FLAGS => { send_reports => 1 },
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'peterborough',
+        COBRAND_FEATURES => { open311_email => { peterborough => {
+            flytipping => 'flytipping@example.org',
+            flytipping_witnessed => 'witnessed@example.org',
+        } } },
+    }, sub {
+        $mech->clear_emails_ok;
+
+        my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', {
+            category => 'General fly tipping',
+            latitude => 52.57146,
+            longitude => -0.24201,
+            areas => ',2566,',
+            cobrand => 'peterborough',
+            geocode => {
+                display_name => '12 A Street, XX1 1SZ',
+                address => {
+                    house_number => '12',
+                    road => 'A Street',
+                    postcode => 'XX1 1SZ'
+                }
+            },
+            extra => {
+                contributed_by => $staffuser->id,
+                _fields => [
+                    { name => 'site_code', value => '12345', },
+                    { name => 'Land_Type', value => 'Highway - L01', },
+                    { name => 'Primary_Waste_Type', value => 'Tyres - W06', },
+                    { name => 'Incident_Size', value => 'Small Van Load - S03', },
+                ],
+            },
+        } );
+
+        FixMyStreet::Script::Reports::send();
+        $mech->email_count_is(0);
+    };
+};
+
 subtest "flytipping on PCC land witnessed is sent by open311 and two emails" => sub {
     FixMyStreet::override_config {
         STAGING_FLAGS => { send_reports => 1 },
