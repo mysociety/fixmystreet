@@ -15,11 +15,7 @@
 
         SET enquiry_type = 'template=problem';
     %]
-    [% IF update.item_problem_state == 'fixed - council' %]
-        <p>
-        Your [% collection_description %] has successfully been collected.
-        </p>
-    [% ELSIF update.item_problem_state == 'unable to fix' %]
+    [% IF update.item_problem_state == 'unable to fix' %]
         <p>
         Our crews reported your [% collection_description %] collection was not made for the reason above.
         </p>
