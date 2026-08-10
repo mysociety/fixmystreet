@@ -699,8 +699,7 @@ sub bulky_pricing_strategy {
     my $previous = $c->stash->{amending_booking};
     my $discount;
     if ($previous) {
-        my $discounted = $previous->get_extra_field_value('discounted') || '';
-        $discount = 1 if $discounted eq 'yes';
+        $discount = 1 if $self->bulky_previous_was_discounted($previous);
     } else {
         my $data = $c->stash->{form}->saved_data;
         $discount = $self->bulky_discount_available_by_date($data);
@@ -750,6 +749,18 @@ sub bulky_minimum_cost {
     return $cfg->{discount_enabled} ? '0' : $cfg->{band1_price};
 }
 
+# If we are amending a booking, we need to maintain the discount - which is if
+# the booking was marked as discounted, or it has never had any payment on it
+# (so was made under a non-discouned system with a price of £0)
+sub bulky_previous_was_discounted {
+    my ($self, $previous) = @_;
+    my $discounted = $previous->get_extra_field_value('discounted') || '';
+    return 1 if $discounted eq 'yes';
+    my $already_paid = $self->get_total_paid($previous);
+    return 1 if !$already_paid;
+    return 0;
+}
+
 sub bulky_total_cost {
     my ($self, $data) = @_;
     my $c = $self->{c};
@@ -767,8 +778,7 @@ sub bulky_total_cost {
     my $discount_allowed;
     my $previous = $c->stash->{amending_booking};
     if ($previous) {
-        my $discounted = $previous->get_extra_field_value('discounted') || '';
-        if ($discounted eq 'yes') {
+        if ($self->bulky_previous_was_discounted($previous)) {
             if ($count <= $DISCOUNT_MAX_ITEMS) {
                 $data->{extra_discounted} = 'yes';
                 $discount_allowed = 1;
