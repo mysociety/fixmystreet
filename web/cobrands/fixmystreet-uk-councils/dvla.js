@@ -32,6 +32,15 @@ const FIELDS = {
             'yes': 'Y',
             'no': 'N'
         }
+    },
+    'merton': {
+        'block': true,
+        'categories': [
+            'Abandoned Vehicles',
+        ],
+        'reg': 'vehicle_registration_number',
+        'make': 'vehicle_make_model', // DVLA doesn't give us model
+        'colour': 'vehicle_colour'
     }
 };
 
@@ -47,6 +56,12 @@ const TYPES = {
         'Van': 'V',
         'Car': 'C',
         'Other': 'O',
+    },
+    'merton': {
+        'Motorbike': 'Motorbike',
+        'Van': 'Van',
+        'Car': 'Car',
+        'Other': 'Other',
     }
 };
 
@@ -210,11 +225,11 @@ function dvla_lookup(e) {
                 }
             });
 
-            let field = document.querySelector('select[name*="' + fields.type + '"]');
+            let field = fields.type ? document.querySelector('select[name*="' + fields.type + '"]') : null;
             if (field && vehicle_type) {
                 field.value = vehicle_type;
             }
-            field = document.querySelector('select[name*="' + fields.taxed + '"]');
+            field = fields.taxed ? document.querySelector('select[name*="' + fields.taxed + '"]') : null;
             if (field) {
                 if (data.taxStatus == 'Taxed') {
                     field.value = config.tax.yes;
