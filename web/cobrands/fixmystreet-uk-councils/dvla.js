@@ -79,6 +79,20 @@ function esc(strings, ...params) {
     });
 }
 
+/* Re-enable the disabled 'Continue' button if the user changes an answer/input */
+function dvla_clear_block() {
+    const stopper = document.getElementById('js-dvla-stopper');
+    if (!stopper) {
+        return;
+    }
+    const page = stopper.closest('.js-reporting-page');
+    stopper.remove();
+    document.querySelectorAll('.js-reporting-page--next').forEach(b => b.disabled = false);
+    if (page) {
+        page.style.paddingBottom = null;
+    }
+}
+
 function dvla_lookup(e) {
     const fields = FIELDS[fixmystreet.cobrand];
     const yesno = document.querySelector('input[name=dvla_reg_have]:checked');
@@ -185,7 +199,7 @@ function dvla_lookup(e) {
                 wrapper.insertAdjacentHTML('afterbegin', msg);
             }
             const height = wrapper.getBoundingClientRect().height;
-            document.querySelector('.js-reporting-page--active').style.paddingBottom = height;
+            document.querySelector('.js-reporting-page--active').style.paddingBottom = height + 'px';
         } else {
             ['make', 'colour', 'reg', 'make_and_colour'].forEach(name => {
                 if (fields[name] && data[name]) {
@@ -257,6 +271,7 @@ function dvla_setup() {
         }
         div.innerHTML = msg;
         div.querySelector('button').addEventListener('click', dvla_lookup);
+        div.querySelectorAll('input').forEach(input => input.addEventListener('input', dvla_clear_block));
         div.querySelector('input[type=text]').addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
