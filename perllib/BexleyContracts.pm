@@ -26,8 +26,8 @@ package BexleyContracts;
 use strict;
 use warnings;
 
-use DBI;
 use FixMyStreet;
+use FixMyStreet::Roles::SQLite;
 
 =head2 database_file
 
@@ -37,13 +37,6 @@ Database is in C<../data/bexley-contracts.sqlite>
 
 sub database_file {
     FixMyStreet->path_to('../data/bexley-contracts.sqlite');
-}
-
-sub connect_db {
-    die $! unless -e database_file();
-
-    return DBI->connect( 'dbi:SQLite:dbname=' . database_file(),
-        undef, undef );
 }
 
 =head2 contract_ids_for_uprn
@@ -59,7 +52,7 @@ subscriptions over time.
 sub contract_ids_for_uprn {
     my $uprn = shift;
 
-    my $db = connect_db() or return [];
+    my $db = FixMyStreet::Roles::SQLite::db_connect_readonly(database_file()) or return [];
 
     my $contracts = $db->selectall_arrayref(
         <<"SQL",
