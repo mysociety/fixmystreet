@@ -1,3 +1,6 @@
+[% # Only show if more than one pin colour %]
+[% SET colours = c.cobrand.pin_colour_key(context) %]
+[% IF colours.size > 1 %]
 <div class="pin-legend pin-legend--desktop">
     <button type="button" class="pin-legend__preview js-pin-legend-desktop-toggle" aria-expanded="false" aria-controls="pin-legend-panel-desktop">
         <span class="visuallyhidden">[% loc('Show map pin key') %]</span>
@@ -13,7 +16,7 @@
             </button>
         </div>
         <ul class="pin-legend__list">
-            [% FOR colour IN c.cobrand.pin_colour_key(context) %]
+            [% FOR colour IN colours %]
                 <li class="pin-legend__item">
                     <img src='/i/pins/[% colour.0 %]/mini.png' alt="[% colour.0 %]"/>
                     <span>[% loc( colour.1 ) %]</span>
@@ -22,3 +25,4 @@
         </ul>
     </div>
 </div>
+[% END %]
