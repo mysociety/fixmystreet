@@ -261,6 +261,11 @@ sub available_permissions {
     return $perms;
 }
 
+sub _is_contact_echo {
+    my ($self, $contact) = @_;
+    return $contact->email =~ /^\d+$/;
+}
+
 =item * open311_config
 
 Sets options for what data will be sent to the open311 integrations.
@@ -271,20 +276,15 @@ We do not 'always_send_latlong' or 'extended_description'.
 
 We do 'send_notpinpointed'.
 
-We always send email when sending updates to the passthrough endpoint as
-it's required.
-
 =cut
 
 sub open311_config {
     my ($self, $row, $h, $params, $contact) = @_;
 
-    if ($contact->email =~ /^\d+$/) {
+    if ($self->_is_contact_echo($contact)) {
         $params->{multi_photos} = 1;
         $params->{upload_files} = 1;
         $params->{always_upload_photos} = 1; # So open311_munge_uploads always gets called
-    } else {
-        $params->{always_send_email_for_updates} = 1;
     }
 
     $params->{always_send_latlong} = 0;
@@ -360,11 +360,22 @@ sub open311_extra_data_exclude {
 }
 
 sub open311_config_updates {
-    my ($self, $params) = @_;
+    my ($self, $params, $comment) = @_;
+    return unless $comment;
     $params->{endpoints} = {
         service_request_updates => 'update.xml',
         update => 'update.xml'
     } if $params->{endpoint} =~ /bromley.gov.uk/;
+
+    my $contact = FixMyStreet::DB->resultset('Contact')->find({
+        body_id => $self->body->id,
+        category => $comment->problem->category,
+    });
+    # We always send email when sending updates to the passthrough endpoint as
+    # updates are rejected without one.
+    if ($contact && !$self->_is_contact_echo($contact)) {
+        $params->{always_send_email_for_updates} = 1;
+    }
 }
 
 sub open311_pre_send {
