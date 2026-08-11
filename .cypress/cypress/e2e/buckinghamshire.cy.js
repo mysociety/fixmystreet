@@ -32,7 +32,7 @@ describe('buckinghamshire cobrand', function() {
     cy.wait('@around-ajax');
 
     cy.nextPageReporting();
-    cy.get('#form_road-placement').select('off-road');
+    cy.get('[name=road-placement][value=off-road]').click();
     cy.nextPageReporting();
     cy.nextPageReporting(); // No photo
     cy.get('[name=title]').type('Title');
@@ -216,7 +216,7 @@ describe('Abandoned vehicle behaviour', function() {
 //    cy.contains('White Audi car, Petrol, 2016');
 //    cy.contains('that are taxed or have a valid MOT');
     cy.get('[name=VEHICLE_REGISTRATION]').should('have.value', 'G00D');
-    cy.get('[name=ABANDONED_VEHICLE_TAXED]').should('have.value', 'Yes');
+    cy.get('[name=ABANDONED_VEHICLE_TAXED]:checked').should('have.value', 'Yes');
     cy.get('[name=ABANDONED_SELECT_TYPE]').should('have.value', 'Car');
     cy.get('[name="MAKE_/_COLOUR_OF_THE_VEHI"]').should('have.value', 'Audi / White');
   });
@@ -228,7 +228,7 @@ describe('Abandoned vehicle behaviour', function() {
     cy.nextPageReporting();
     cy.wait('@dvla');
     cy.get('[name=VEHICLE_REGISTRATION]').should('have.value', 'B4D');
-    cy.get('[name=ABANDONED_VEHICLE_TAXED]').should('have.value', 'No');
+    cy.get('[name=ABANDONED_VEHICLE_TAXED]:checked').should('have.value', 'No');
     cy.get('[name=ABANDONED_SELECT_TYPE]').should('have.value', 'Motorbike');
     cy.get('[name="MAKE_/_COLOUR_OF_THE_VEHI"]').should('have.value', 'Kawasaki / Black');
   });

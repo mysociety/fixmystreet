@@ -22,7 +22,7 @@ use Open311::GetUpdates;
 
 my ($opts, $usage) = describe_options(
     '%c %o',
-    ['body|b:s', 'body name to only fetch this body' ],
+    ['body|b:s@', 'body name(s) to only fetch these bodies' ],
     ['verbose|v', 'more verbose output'],
     ['help|h', "print usage message and exit" ],
 );
@@ -30,7 +30,7 @@ $usage->die if $opts->help;
 
 my %params = (
     verbose => $opts->verbose,
-    body => $opts->body,
+    bodies => $opts->body || [],
 );
 
 my $updates = Open311::GetUpdates->new(%params);
