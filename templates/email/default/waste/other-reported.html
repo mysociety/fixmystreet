@@ -116,6 +116,9 @@ INCLUDE '_email_top.html';
       If you&apos;ve requested a collection of your old bin, we'll schedule a specific date for our crew
       to remove it. We aim for this to be the same day as we deliver your new bin, but it could be a different day.
     </p>
+    <p style="[% p_style %]">
+    We aim to deliver your new container within 20 working days. If you haven't received your container in that time, you can <a href="[% cobrand.base_url _ '/waste/' _ report.waste_property_id _ '/enquiry?template=problem&service_id=' _ report.get_extra_field_value('service_id') %]">report a problem</a>.
+    </p>
   [% ELSIF report.category == 'Report missed collection' OR report.category == 'Report missed assisted collection' %]
     [% # can't just concatenate on to end of shorter version as you end up double encoding & %]
     [% IF report.get_extra_field_value('Original_Event_ID');
@@ -133,7 +136,7 @@ INCLUDE '_email_top.html';
       We apologise for any inconvenience caused and appreciate your feedback.  We're committed to using it to improve our customer service.
     </p>
     <p style="[% p_style %]">
-      The issue has been logged and a clean up has been organised for within the next 24 hours.
+      Our crews cannot return to clean the spillage, but if you feel the area needs prompt attention from one of our street cleansing teams you can report a <a href="https://www.kingston.gov.uk/environmental-health-and-public-issues/report-street-cleaning-problems">street cleaning issue</a>.
     </p>
   [% ELSIF report.category == 'Bin not returned' %]
     <p style="[% p_style %]">

@@ -228,6 +228,7 @@ FixMyStreet::override_config {
         { id => 15, name => 'Green recycling bin (240L)', service => 970, price => 4200 },
     ) {
         subtest "Request a new $_->{name}" => sub {
+            $mech->clear_emails_ok;
             my $ordered = $_->{ordered} || $_->{id};
             $mech->get_ok('/waste/12345/request');
             # 27 (1), 46 (1), 12 (1), 3 (1)
@@ -269,6 +270,11 @@ FixMyStreet::override_config {
             is $cgi->param('attribute[Container_Type]'), $ordered;
             is $cgi->param('attribute[Action]'), '1';
             is $cgi->param('attribute[Reason]'), '1';
+
+            my $email = $mech->get_email;
+            my $html = $mech->get_html_body_from_email($email);
+            like $html, qr/We aim to deliver your new container within 20 working days/, "HTML email contains delivery window";
+            like $html, qr/enquiry\?template=problem&service_id=$_->{service}/, "HTML email contains report a problem link";
         };
     }
 
@@ -1247,8 +1253,13 @@ FixMyStreet::override_config {
         is $report->photo, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
         $mech->clear_emails_ok;
         FixMyStreet::Script::Reports::send();
-        my $text = $mech->get_text_body_from_email;
+        my $email = $mech->get_email;
+        my $text = $mech->get_text_body_from_email($email);
+        my $html = $mech->get_html_body_from_email($email);
         like $text, qr/apologise for any inconvenienc/, 'Other problem text included in email';
+        like $text, qr/cannot return to clean the spillage/, 'Cannot return text included in email';
+        like $html, qr/apologise for any inconvenienc/, 'Other problem text included in html email';
+        like $text, qr/cannot return to clean the spillage/, 'Cannot return text included in html email';
         my $req = Open311->test_req_used;
         foreach ($req->parts) {
             my $cd = $_->header('Content-Disposition');
