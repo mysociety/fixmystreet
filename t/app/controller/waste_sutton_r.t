@@ -45,7 +45,7 @@ my $params = {
     comment_user => $body_user,
 };
 my $body = $mech->create_body_ok(2498, 'Sutton Council', $params, {
-    wasteworks_config => { request_timeframe => '20 working days' }
+    wasteworks_config => { request_timeframe => '10 working days' }
 });
 my $kingston = $mech->create_body_ok(2480, 'Kingston Council', { %$params, cobrand => 'kingston' });
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
@@ -229,7 +229,7 @@ FixMyStreet::override_config {
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
 
         $mech->content_contains('request has been sent');
-        $mech->content_contains('Containers typically arrive within 20 working days');
+        $mech->content_contains('Containers typically arrive within 10 working days');
 
         is $report->uprn, 1000000002;
         is $report->detail, "2 Example Street, Sutton, SM1 1AA\n\nReason: Damaged\n\n1x Paper and Cardboard Green Wheelie Bin (240L) to deliver\n\n1x Paper and Cardboard Green Wheelie Bin (240L) to collect";
@@ -245,7 +245,7 @@ FixMyStreet::override_config {
 
         FixMyStreet::Script::Reports::send();
         my $email = $mech->get_text_body_from_email;
-        like $email, qr/please allow up to 20 working days/;
+        like $email, qr/please allow up to 10 working days/;
         like $email, qr/cancel your request/, 'include cancel link text';
         like $email, qr/A refund will not be issued/, 'include no refund text for paid request';
         like $email, qr/waste\/12345\/request\/cancel\//, 'include cancel link';
@@ -277,7 +277,7 @@ FixMyStreet::override_config {
         my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         $mech->content_contains('request has been sent');
-        $mech->content_contains('Containers typically arrive within 20 working days');
+        $mech->content_contains('Containers typically arrive within 10 working days');
 
         is $report->uprn, 1000000002;
         is $report->title, 'Request exchange for Larger Brown General Waste Wheelie Bin (240L)';
@@ -326,7 +326,7 @@ FixMyStreet::override_config {
         my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         $mech->content_contains('request has been sent');
-        $mech->content_contains('Containers typically arrive within 20 working days');
+        $mech->content_contains('Containers typically arrive within 10 working days');
 
         is $report->uprn, 1000000002;
         is $report->title, 'Request exchange for Paper and Cardboard Green Wheelie Bin (240L)';
@@ -352,7 +352,7 @@ FixMyStreet::override_config {
         my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         $mech->content_contains('request has been sent');
-        $mech->content_contains('Containers typically arrive within 20 working days');
+        $mech->content_contains('Containers typically arrive within 10 working days');
 
         is $report->uprn, 1000000002;
         is $report->title, 'Request exchange for Paper and Cardboard Green Wheelie Bin (360L)';
@@ -380,7 +380,7 @@ FixMyStreet::override_config {
         my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         $mech->content_contains('request has been sent');
-        $mech->content_contains('Containers typically arrive within 20 working days');
+        $mech->content_contains('Containers typically arrive within 10 working days');
 
         is $report->uprn, 1000000002;
         is $report->title, 'Request exchange for Paper and Cardboard Green Wheelie Bin (240L)';
@@ -1392,11 +1392,11 @@ FixMyStreet::override_config {
     subtest 'Escalations of container delivery failure' => sub {
         my $request_time = "2025-02-03T08:00:00Z";
 
-        my $window_start_time = "2025-03-04T00:00:00Z";
-        my $just_before_window = "2025-03-03T23:59:59Z";
+        my $window_start_time = "2025-02-17T00:00:00Z";
+        my $just_before_window = "2025-02-16T23:59:59Z";
 
-        my $window_end_time = "2025-03-18T23:59:59Z";
-        my $just_after_window = "2025-03-19T00:00:00Z";
+        my $window_end_time = "2025-03-03T23:59:59Z";
+        my $just_after_window = "2025-03-04T00:00:00Z";
 
         my $open_container_request_event = {
             Id => '112112321',
@@ -1513,7 +1513,7 @@ FixMyStreet::override_config {
 
             FixMyStreet::Script::Reports::send();
             my $email = $mech->get_html_body_from_email;
-            like $email, qr/aim to deliver the container by\s+Tuesday, 11 March/;
+            like $email, qr/aim to deliver the container by\s+Monday, 24 February/;
         };
 
         $e->mock('GetEventsForObject', sub { [] }); # reset

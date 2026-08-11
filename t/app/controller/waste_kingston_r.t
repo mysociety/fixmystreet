@@ -28,7 +28,7 @@ my $params = {
     cobrand => 'kingston',
 };
 my $kingston = $mech->create_body_ok(2480, 'Kingston Council', $params, {
-        wasteworks_config => { request_timeframe_raw => 10, request_timeframe => '10 working days' }
+        wasteworks_config => { request_timeframe_raw => 20, request_timeframe => '20 working days' }
     });
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
 my $body_user = $mech->create_user_ok('systemuser@example.org');
@@ -1471,11 +1471,11 @@ FixMyStreet::override_config {
     subtest 'Escalations of container delivery failure' => sub {
         my $request_time = "2025-02-03T08:00:00Z";
 
-        my $window_start_time = "2025-02-17T00:00:00Z";
-        my $just_before_window = "2025-02-16T23:59:59Z";
+        my $window_start_time = "2025-03-03T00:00:00Z";
+        my $just_before_window = "2025-03-02T23:59:59Z";
 
-        my $window_end_time = "2025-03-03T23:59:59Z";
-        my $just_after_window = "2025-03-04T00:00:00Z";
+        my $window_end_time = "2025-03-17T23:59:59Z";
+        my $just_after_window = "2025-03-18T00:00:00Z";
 
         my $open_container_request_event = {
             Id => '112112321',
@@ -1562,7 +1562,7 @@ FixMyStreet::override_config {
                     $mech->get_ok('/waste/12345');
                     $mech->content_lacks('Request a non-recyclable refuse container');
                     $mech->content_contains('A non-recyclable refuse container request was made on Monday, 3 February');
-                    $mech->content_contains('We expect to deliver your container on or before Monday, 17 February');
+                    $mech->content_contains('We expect to deliver your container on or before Monday, 3 March');
                     $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable refuse collection' });
                     $mech->content_contains('My container / bags have not been delivered');
                     $mech->content_lacks('Thank you for reporting an issue with this delivery');
