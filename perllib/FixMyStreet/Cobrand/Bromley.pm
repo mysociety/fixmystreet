@@ -362,11 +362,6 @@ sub open311_extra_data_exclude {
 sub open311_config_updates {
     my ($self, $params, $comment) = @_;
     return unless $comment;
-    $params->{endpoints} = {
-        service_request_updates => 'update.xml',
-        update => 'update.xml'
-    } if $params->{endpoint} =~ /bromley.gov.uk/;
-
     my $contact = FixMyStreet::DB->resultset('Contact')->find({
         body_id => $self->body->id,
         category => $comment->problem->category,

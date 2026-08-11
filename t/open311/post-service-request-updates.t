@@ -35,15 +35,7 @@ subtest 'Check Open311 params' => sub {
         api_key => 'KEY',
         extended_statuses => undef,
     };
-    my %conf = $o->open311_params($bromley);
-    is_deeply \%conf, {
-        %$result,
-        endpoint => '//www.bromley.gov.uk/',
-        extended_statuses => 1,
-        endpoints => { service_request_updates => 'update.xml', update => 'update.xml' },
-        fixmystreet_body => $bromley,
-    }, 'Bromley params match';
-    %conf = $o->open311_params($oxon);
+    my %conf = $o->open311_params($oxon);
     is_deeply \%conf, {
         %$result,
         use_customer_reference => 1,
