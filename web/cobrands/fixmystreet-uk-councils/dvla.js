@@ -32,6 +32,15 @@ const FIELDS = {
             'yes': 'Y',
             'no': 'N'
         }
+    },
+    'merton': {
+        'block': true,
+        'categories': [
+            'Abandoned Vehicles',
+        ],
+        'reg': 'vehicle_registration_number',
+        'make': 'vehicle_make_model', // DVLA doesn't give us model
+        'colour': 'vehicle_colour'
     }
 };
 
@@ -47,6 +56,12 @@ const TYPES = {
         'Van': 'V',
         'Car': 'C',
         'Other': 'O',
+    },
+    'merton': {
+        'Motorbike': 'Motorbike',
+        'Van': 'Van',
+        'Car': 'Car',
+        'Other': 'Other',
     }
 };
 
@@ -77,6 +92,20 @@ function esc(strings, ...params) {
         p = p.replace(/[^\w. ]/gi, c => '&#' + c.charCodeAt(0) + ';');
         return acc + p + lit;
     });
+}
+
+/* Re-enable the disabled 'Continue' button if the user changes an answer/input */
+function dvla_clear_block() {
+    const stopper = document.getElementById('js-dvla-stopper');
+    if (!stopper) {
+        return;
+    }
+    const page = stopper.closest('.js-reporting-page');
+    stopper.remove();
+    document.querySelectorAll('.js-reporting-page--next').forEach(b => b.disabled = false);
+    if (page) {
+        page.style.paddingBottom = null;
+    }
 }
 
 function dvla_lookup(e) {
@@ -185,7 +214,7 @@ function dvla_lookup(e) {
                 wrapper.insertAdjacentHTML('afterbegin', msg);
             }
             const height = wrapper.getBoundingClientRect().height;
-            document.querySelector('.js-reporting-page--active').style.paddingBottom = height;
+            document.querySelector('.js-reporting-page--active').style.paddingBottom = height + 'px';
         } else {
             ['make', 'colour', 'reg', 'make_and_colour'].forEach(name => {
                 if (fields[name] && data[name]) {
@@ -196,11 +225,11 @@ function dvla_lookup(e) {
                 }
             });
 
-            let field = document.querySelector('select[name*="' + fields.type + '"]');
+            let field = fields.type ? document.querySelector('select[name*="' + fields.type + '"]') : null;
             if (field && vehicle_type) {
                 field.value = vehicle_type;
             }
-            field = document.querySelector('select[name*="' + fields.taxed + '"]');
+            field = fields.taxed ? document.querySelector('select[name*="' + fields.taxed + '"]') : null;
             if (field) {
                 if (data.taxStatus == 'Taxed') {
                     field.value = config.tax.yes;
@@ -257,6 +286,7 @@ function dvla_setup() {
         }
         div.innerHTML = msg;
         div.querySelector('button').addEventListener('click', dvla_lookup);
+        div.querySelectorAll('input').forEach(input => input.addEventListener('input', dvla_clear_block));
         div.querySelector('input[type=text]').addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
