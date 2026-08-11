@@ -938,7 +938,7 @@ sub add_update_to_assisted_request : Private {
     };
 
     my $body = $c->cobrand->body;
-    my $template = $report->response_template_for($body, $status, 'confirmed', '', '');
+    my $template = $report->response_template_for($body, $status, 'confirmed', '');
     $text = $template->text if $template;
 
     my $comment = $report->add_to_comments({

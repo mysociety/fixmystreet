@@ -371,7 +371,7 @@ sub edit : Path('/admin/report_edit') : Args(1) {
 
             my ($description, $email_text);
             foreach my $body (values %{$problem->bodies}) {
-                my $template = $problem->response_template_for($body, $problem->state, $old_state, '', '');
+                my $template = $problem->response_template_for($body, $problem->state, $old_state, '');
                 ($description, $email_text) = $updates->comment_text_for_request($template, {}, $problem);
             }
 
