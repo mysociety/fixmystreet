@@ -1146,11 +1146,27 @@ Returns the colour of pin to be used for a particular report
 (so perhaps different depending upon the age of the report).
 
 =cut
+
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
     #return 'green' if time() - $p->confirmed->epoch < 7 * 24 * 60 * 60;
     return 'yellow' if $context eq 'around' || $context eq 'reports' || $context eq 'report';
     return $p->is_fixed ? 'green' : 'red';
+}
+
+sub pin_colour_key {
+    my ( $self, $context ) = @_;
+
+    my @keys;
+
+    if ( $context eq 'around' || $context eq 'reports' || $context eq 'report' ) {
+        push @keys, [ 'yellow', 'Other' ];
+    } else {
+        push @keys, [ 'green', 'Fixed' ];
+        push @keys, [ 'red', 'Other' ];
+    }
+
+    return \@keys;
 }
 
 =item pin_new_report_colour
