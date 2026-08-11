@@ -84,7 +84,7 @@ We will arrange another collection as soon as possible over the next 2 working d
 [% ELSIF report.category == 'Waste spillage' %]
 We apologise for any inconvenience caused and appreciate your feedback.  We're committed to using it to improve our customer service.
 
-The issue has been logged and a clean up has been organised for within the next 24 hours.
+Our crews cannot return to clean the spillage, but if you feel the area needs prompt attention from one of our street cleansing teams you can report a street cleaning issue.
 [% ELSIF report.category == 'Bin not returned' %]
 We apologise for any inconvenience this may have caused and appreciate your feedback. We're committed to using it to improve our customer service.
 
