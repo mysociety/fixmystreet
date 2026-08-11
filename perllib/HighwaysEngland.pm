@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use FixMyStreet;
-use DBI;
+use FixMyStreet::Roles::SQLite;
 use Utils;
 
 sub database_file { FixMyStreet->path_to('../data/roads.sqlite') }
@@ -43,8 +43,7 @@ sub junction_lookup {
 
 sub _lookup_db {
     my ($road, $table, $thing, $thing_name) = @_;
-    return unless -e database_file();
-    my $db = DBI->connect("dbi:SQLite:dbname=".database_file(), undef, undef) or return;
+    my $db = FixMyStreet::Roles::SQLite::db_connect_readonly(database_file()) or return;
     $thing = "J$thing" if $table eq 'junction' && $thing =~ /^[1-9]/;
     my $results;
     if ( $thing_name eq 'guess' ) {
