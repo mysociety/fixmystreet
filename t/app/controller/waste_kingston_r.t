@@ -1213,8 +1213,13 @@ FixMyStreet::override_config {
         is $report->photo, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
         $mech->clear_emails_ok;
         FixMyStreet::Script::Reports::send();
-        my $text = $mech->get_text_body_from_email;
+        my $email = $mech->get_email;
+        my $text = $mech->get_text_body_from_email($email);
+        my $html = $mech->get_html_body_from_email($email);
         like $text, qr/apologise for any inconvenienc/, 'Other problem text included in email';
+        like $text, qr/cannot return to clean the spillage/, 'Cannot return text included in email';
+        like $html, qr/apologise for any inconvenienc/, 'Other problem text included in html email';
+        like $text, qr/cannot return to clean the spillage/, 'Cannot return text included in html email';
         my $req = Open311->test_req_used;
         foreach ($req->parts) {
             my $cd = $_->header('Content-Disposition');
