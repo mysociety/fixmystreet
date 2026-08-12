@@ -311,27 +311,45 @@ sub _build_items_extra {
 }
 
 has_field tandc => (
-    type => 'Checkbox',
-    required => 1,
+    type => 'Multiple',
+    widget => 'CheckboxGroup',
     label => 'Terms and conditions',
-    build_option_label_method => sub {
-        my $form = $_[0]->form;
-        my $c = $form->c;
-        my $link = $c->stash->{small_items} ? 'small_items_tandc_link' : 'bulky_tandc_link';
-        $link = $c->cobrand->call_hook($link);
-        my $label;
-        if ($c->cobrand->moniker eq 'sutton' || $c->cobrand->moniker eq 'kingston') {
-            $label = 'I have read the <a href="' . $link . '" target="_blank">bulky waste terms and conditions</a>.';
-        } elsif ($c->cobrand->moniker eq 'bromley') {
-            $label = '&bull; I confirm that the bulky waste items will be available from 7.00am on the day of collection
-<br>&bull; I confirm the bulky waste items will be left outside at the front of the property but not on the public highway, in an easy accessible location.
-<br>&bull; I confirm I understand that items cannot be collected from inside the property
-<br>&bull; I confirm I have read the information for the <a href="' . $link . '" target="_blank">bulky waste service</a>';
-        } elsif ($c->cobrand->moniker eq 'brent') {
-            $label = 'I have read and agree to the <a href="' . $link . '" target="_blank">terms and conditions</a> and understand any additional items presented that do not meet the terms and conditions will not be collected';
-        } elsif ($c->cobrand->moniker eq 'bexley') {
-            if ( $c->stash->{sharps} ) {
-                $label = << 'HERE';
+    required => 1,
+    validate_method => sub {
+        my $self = shift;
+        my $vals = $self->value;
+        $self->add_error('Please confirm all statements') if @$vals < $self->num_options;
+    },
+);
+
+sub options_tandc {
+    my $form = $_[0]->form;
+    my $c = $form->c;
+
+    my $link = $c->stash->{small_items} ? 'small_items_tandc_link' : 'bulky_tandc_link';
+    $link = $c->cobrand->call_hook($link);
+
+    my @options;
+    if ($c->cobrand->moniker eq 'bromley') {
+        push @options,
+            { label => 'I confirm that the bulky waste items will be available from 7.00am on the day of collection', value => 1 },
+            { label => 'I confirm the bulky waste items will be left outside at the front of the property but not on the public highway, in an easy accessible location.', value => 2 },
+            { label => 'I confirm I understand that items cannot be collected from inside the property', value => 3 },
+            { label => 'I confirm I have read the information for the <a href="' . $link . '" target="_blank">bulky waste service</a>', value => 4 };
+        foreach (@options) {
+            $_->{label} = FixMyStreet::Template::SafeString->new($_->{label});
+        }
+        return @options;
+    }
+
+    my $label;
+    if ($c->cobrand->moniker eq 'sutton' || $c->cobrand->moniker eq 'kingston') {
+        $label = 'I have read the <a href="' . $link . '" target="_blank">bulky waste terms and conditions</a>.';
+    } elsif ($c->cobrand->moniker eq 'brent') {
+        $label = 'I have read and agree to the <a href="' . $link . '" target="_blank">terms and conditions</a> and understand any additional items presented that do not meet the terms and conditions will not be collected';
+    } elsif ($c->cobrand->moniker eq 'bexley') {
+        if ( $c->stash->{sharps} ) {
+            $label = << 'HERE';
 Please tick the box to confirm that you agree to the terms and conditions before submitting your booking.
 <br>
 <br>
@@ -347,8 +365,8 @@ Please tick the box to confirm that you agree to the terms and conditions before
 <br>
 &bull; This service is for residents who are self-treating at home. We cannot collect sharps that are produced by healthcare practitioners who visit your home to treat you. Healthcare practitioners are responsible for removing and disposing of this waste.
 HERE
-            } else {
-                $label = << 'HERE';
+        } else {
+            $label = << 'HERE';
 &bull; I understand that collections can take place any time after 6am on the chosen collection day. Items must be accessible at the location given and left in a neat and safe manner. Items cannot be left for collection on the public highway.
 <br>
 &bull; I understand that cancellations are accepted up to one working day before the chosen collection day. Bookings cannot be altered once payment is taken so changes can only be made by cancelling and rebooking.
@@ -359,14 +377,15 @@ HERE
 <br>
 &bull; I confirm that the submitted information is current and correct, and any misrepresentations could lead to a cancellation of the arranged service without refund.
 HERE
-            }
-        } else {
-            $label = 'I have read the <a href="' . $link . '" target="_blank">bulky waste collection</a> page on the council’s website';
         }
-        $label = FixMyStreet::Template::SafeString->new($label);
-        return $label;
-    },
-);
+    } else {
+        $label = 'I have read the <a href="' . $link . '" target="_blank">bulky waste collection</a> page on the council’s website';
+    }
+    $label = FixMyStreet::Template::SafeString->new($label);
+    push @options,
+        { label => $label, value => 1 };
+    return @options;
+}
 
 has_field location => (
     type => 'Text',
