@@ -108,18 +108,12 @@ END;
             IF resolution %]: [% resolution | staff_html_markup({ is_body_user => 1 }) %]
             [% END %]
             </p>
-
-            <p>If it is less than 2 working days since your collection day, you can dispute the reason given
-            and we will investigate. If we find that the collection task was closed incorrectly,
-            we will return to collect the [% IF type == 'bulky' %]bulky waste[% ELSE %]small items[% END %]. Our website gives more information
-            on [% IF type == 'bulky' %]<a href="[% bulky_url %]">bulky waste collections</a>[% ELSE %]<a href="[% small_items_url %]">small items collections</a>[% END %]</p>
         [% ELSE %]
         <p>The crew have closed your collection task as 'not collected' because[%
             IF resolution %]: [% resolution | staff_html_markup({ is_body_user => 1 }) %]
             [% END %]
             Please resolve the issue so the bin can be collected on the next scheduled collection. <a href="[% your_collection_url %]">Check our website</a> for more information on how your bin should be presented and what you can put in it.
         </p>
-        <p>If it is less than 2 working days since your collection day, you can dispute the reason given and we will investigate. If we find that the collection task was closed incorrectly, we will return to collect the bin.</p>
         [% END %]
         </div>
     </div>
