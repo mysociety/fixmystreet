@@ -899,7 +899,10 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345');
 
         $mech->follow_link_ok({ text => 'Report a problem with a bulky waste collection' }, 'In time, normal completion');
-        $mech->content_contains('The crew have closed your collection task as not collected', 'Not completed');
+        $mech->content_contains("The crew have closed your collection task as 'not collected'", 'Not completed');
+        $mech->content_lacks('Please resolve the issue', 'No please resolve message for bulky collections');
+        $mech->content_contains('https://www.kingston.gov.uk/bins-and-recycling/collections/book-bulky-waste-collection', 'links to bulky information');
+        $mech->content_lacks('https://www.sutton.gov.uk/', 'no sutton links');
         $mech->content_contains('Not presented');
         $mech->content_lacks('Bin not presented');
 
@@ -1261,6 +1264,35 @@ FixMyStreet::override_config {
         like $email->header('Subject'), qr/Your bulky waste collection - reference LBS/, "Confirmation booking email sent after staff payment process";
     };
 
+    subtest 'Collection completed date take from event' => sub {
+        my $mock = [ {
+            Id => '8004',
+            ClientReference => 'LBS-123',
+            Guid => 'booking-guid',
+            ServiceId => 960, # Bulky
+            EventTypeId => 3130, # Bulky collection
+            EventStateId => 19184, # Completed
+            EventDate => { DateTime => '2025-04-01T00:00:00Z' },
+            ResolvedDate => { DateTime => '2025-04-08T00:00:00Z' },
+            ResolutionCodeId => 232, # Completed on Scheduled Day (dunno if used, doesn't matter)
+        } ];
+
+        set_fixed_time('2025-04-08T18:30:00Z');
+        $report->update_extra_field({ name => 'Collection_Date_-_Bulky_Items', value => '2025-04-08T00:00:00' });
+        $report->set_extra_metadata(payment_reference => 'payref');
+        $report->update({ external_id => 'booking-guid', state => 'fixed - council' });
+
+        $echo->mock( 'GetEventsForObject', sub {$mock} );
+        $mech->get_ok('/waste/12345');
+        $mech->follow_link_ok( { url_regex => qr/service_id=960/}, 'Follow "Report a problem" link for bulky collection' );
+        $mech->content_like(qr/took place.*on Tuesday, 8 April/s);
+
+        $mock->[0]->{ResolvedDate} = { DateTime => '2025-04-09T00:00:00Z' };
+        $echo->mock( 'GetEventsForObject', sub {$mock} );
+        $mech->get_ok('/waste/12345');
+        $mech->follow_link_ok( { url_regex => qr/service_id=960/}, 'Follow "Report a problem" link for bulky collection' );
+        $mech->content_like(qr/took place.*on Wednesday, 9 April/s);
+    };
     subtest 'Missed collection link visibility' => sub {
         my $mock = [ {
             Id => '8004',
@@ -1293,7 +1325,7 @@ FixMyStreet::override_config {
             "Visible if marked as completed" => {
                 date => '2025-04-08T18:30:00Z',
                 visible => 1,
-                msg => 'Our records show this collection took place',
+                msg => 'Our records show this collection took place.*on Tuesday, 8 April',
                 estate => 19184, # Completed
                 pstate => 'fixed - council',
             },
@@ -1337,7 +1369,7 @@ FixMyStreet::override_config {
                     $mech->content_lacks('you can report it as missed');
                 }
 
-                $mech->content_contains($conf->{msg})
+                $mech->content_like(qr/$conf->{msg}/s);
             };
         }
     };
@@ -1523,6 +1555,10 @@ FixMyStreet::override_config {
         subtest 'Open collection dispute' => sub {
             set_fixed_time('2025-04-10T19:00:00Z');
             $mech->get_ok($problem_url);
+            $mech->content_contains('If it is less than 2 working days since your collection day, you can dispute the reason', 'details of how to dispute displayed');
+            $mech->content_lacks('Please resolve the issue so the bin can be collected on the next scheduled collection', 'scheduled collection message not displayed');
+            $mech->content_contains('https://www.sutton.gov.uk/w/bulky-waste-collections', 'links to bulky information');
+            $mech->content_lacks('https://www.kingston.gov.uk/', 'no kingston links');
             $mech->submit_form_ok(
                 { with_fields => { category => 'Missed collection dispute' } }
             );

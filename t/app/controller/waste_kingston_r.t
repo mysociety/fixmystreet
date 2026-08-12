@@ -684,7 +684,7 @@ FixMyStreet::override_config {
                 set_fixed_time('2022-09-09T15:30:00Z');
                 get_problem_page();
                 like $mech->text,
-                    qr/The crew have closed your collection task as not collected:.*Unable to find the location/;
+                    qr/The crew have closed your collection task as 'not collected' because:.*Unable to find the location/;
                 $mech->content_lacks($dispute_label, 'nothing before window opens');
 
                 set_fixed_time('2022-09-09T16:01:00Z');
@@ -734,7 +734,7 @@ FixMyStreet::override_config {
 
                 get_problem_page();
                 like $mech->text,
-                    qr/The crew have closed your collection task as not collected:.*Bin not presented/;
+                    qr/The crew have closed your collection task as 'not collected' because:.*Bin not presented/;
                 $mech->submit_form(
                     with_fields => { category => 'Missed collection dispute' },
                 );
@@ -835,7 +835,7 @@ FixMyStreet::override_config {
                 set_fixed_time('2022-09-14T00:01:00Z');
                 get_problem_page();
                 like $mech->text,
-                    qr/The crew have closed your collection task as not collected.*Health and safety reasons/;
+                    qr/The crew have closed your collection task as 'not collected'.*Health and safety reasons/;
                 $mech->content_like(qr/name="category" value="Missed collection dispute"[^>]+disabled/s);
                 $mech->content_contains($dispute_label, 'shown but disabled just after window closes');
             };
@@ -845,7 +845,7 @@ FixMyStreet::override_config {
 
                 get_problem_page();
                 like $mech->text,
-                    qr/The crew have closed your collection task as not collected:.*Health and safety reasons/;
+                    qr/The crew have closed your collection task as 'not collected'.*Health and safety reasons/;
                 $mech->submit_form(
                     with_fields => { category => 'Missed collection dispute' },
                 );
@@ -1189,7 +1189,7 @@ FixMyStreet::override_config {
         is $report->detail, "Non-recyclable Refuse\n\n2 Example Street, Kingston, KT1 1AA", "Details of report contain information about problem";
         FixMyStreet::Script::Reports::send();
         my $text = $mech->get_text_body_from_email;
-        like $text, qr/apologise for any inconvenience/, 'Other problem text included in email';
+        like $text, qr/If you are on assisted collections/, 'Other problem text included in email';
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
         is $cgi->param('attribute[Exact_Location]'), 'hello';
@@ -1222,7 +1222,8 @@ FixMyStreet::override_config {
         is $report->detail, "Non-recyclable Refuse\n\n2 Example Street, Kingston, KT1 1AA", "Details of report contain information about problem";
         FixMyStreet::Script::Reports::send();
         my $text = $mech->get_text_body_from_email;
-        like $text, qr/apologise for any inconvenience/, 'Other problem text included in email';
+        #
+        like $text, qr/If you are on assisted collections/, 'Other problem text included in email';
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
         is $cgi->param('attribute[Exact_Location]'), 'hello';

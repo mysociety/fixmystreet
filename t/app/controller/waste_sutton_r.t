@@ -461,7 +461,7 @@ FixMyStreet::override_config {
                 failed => 1,
                 status => 'Not Completed',
                 mock => $mock_results_not_complete,
-                msg => 'task as not collected',
+                msg => "task as 'not collected'",
             },
         };
 
@@ -965,6 +965,7 @@ FixMyStreet::override_config {
             set_fixed_time('2022-09-11T18:01:00Z');
             $mech->get_ok($problem_url);
             $mech->content_contains('Contaminated (builder’s waste)', 'details of missed bin collection displayed');
+            $mech->content_contains('Please resolve the issue', 'please resolve message shown');
             $mech->submit_form_ok(
                 { with_fields => { category => 'Missed collection dispute' } }
             );
