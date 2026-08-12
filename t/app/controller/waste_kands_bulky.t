@@ -1264,6 +1264,35 @@ FixMyStreet::override_config {
         like $email->header('Subject'), qr/Your bulky waste collection - reference LBS/, "Confirmation booking email sent after staff payment process";
     };
 
+    subtest 'Collection completed date take from event' => sub {
+        my $mock = [ {
+            Id => '8004',
+            ClientReference => 'LBS-123',
+            Guid => 'booking-guid',
+            ServiceId => 960, # Bulky
+            EventTypeId => 3130, # Bulky collection
+            EventStateId => 19184, # Completed
+            EventDate => { DateTime => '2025-04-01T00:00:00Z' },
+            ResolvedDate => { DateTime => '2025-04-08T00:00:00Z' },
+            ResolutionCodeId => 232, # Completed on Scheduled Day (dunno if used, doesn't matter)
+        } ];
+
+        set_fixed_time('2025-04-08T18:30:00Z');
+        $report->update_extra_field({ name => 'Collection_Date_-_Bulky_Items', value => '2025-04-08T00:00:00' });
+        $report->set_extra_metadata(payment_reference => 'payref');
+        $report->update({ external_id => 'booking-guid', state => 'fixed - council' });
+
+        $echo->mock( 'GetEventsForObject', sub {$mock} );
+        $mech->get_ok('/waste/12345');
+        $mech->follow_link_ok( { url_regex => qr/service_id=960/}, 'Follow "Report a problem" link for bulky collection' );
+        $mech->content_like(qr/took place.*on Tuesday, 8 April/s);
+
+        $mock->[0]->{ResolvedDate} = { DateTime => '2025-04-09T00:00:00Z' };
+        $echo->mock( 'GetEventsForObject', sub {$mock} );
+        $mech->get_ok('/waste/12345');
+        $mech->follow_link_ok( { url_regex => qr/service_id=960/}, 'Follow "Report a problem" link for bulky collection' );
+        $mech->content_like(qr/took place.*on Wednesday, 9 April/s);
+    };
     subtest 'Missed collection link visibility' => sub {
         my $mock = [ {
             Id => '8004',
@@ -1296,7 +1325,7 @@ FixMyStreet::override_config {
             "Visible if marked as completed" => {
                 date => '2025-04-08T18:30:00Z',
                 visible => 1,
-                msg => 'Our records show this collection took place',
+                msg => 'Our records show this collection took place.*on Tuesday, 8 April',
                 estate => 19184, # Completed
                 pstate => 'fixed - council',
             },
@@ -1340,7 +1369,7 @@ FixMyStreet::override_config {
                     $mech->content_lacks('you can report it as missed');
                 }
 
-                $mech->content_contains($conf->{msg})
+                $mech->content_like(qr/$conf->{msg}/s);
             };
         }
     };

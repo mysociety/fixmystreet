@@ -1052,6 +1052,7 @@ sub booked_check_missed_collection {
             service_name => $type eq 'small_items' ? 'Small items' : 'Bulky waste',
             service_id => $service_id_missed || $service_id,
             $self->{c}->cobrand->moniker eq 'kingston' ? ( event_id => $event->{id} ) : (),
+            date => $event->{date},
         };
         my $in_time = $self->within_working_days($event->{date}, 2);
         foreach my $state_id (keys %$blocked_codes) {
