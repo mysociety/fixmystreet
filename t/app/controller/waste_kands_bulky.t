@@ -899,7 +899,10 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345');
 
         $mech->follow_link_ok({ text => 'Report a problem with a bulky waste collection' }, 'In time, normal completion');
-        $mech->content_contains('The crew have closed your collection task as not collected', 'Not completed');
+        $mech->content_contains("The crew have closed your collection task as 'not collected'", 'Not completed');
+        $mech->content_lacks('Please resolve the issue', 'No please resolve message for bulky collections');
+        $mech->content_contains('https://www.kingston.gov.uk/bins-and-recycling/collections/book-bulky-waste-collection', 'links to bulky information');
+        $mech->content_lacks('https://www.sutton.gov.uk/', 'no sutton links');
         $mech->content_contains('Not presented');
         $mech->content_lacks('Bin not presented');
 
@@ -1523,6 +1526,10 @@ FixMyStreet::override_config {
         subtest 'Open collection dispute' => sub {
             set_fixed_time('2025-04-10T19:00:00Z');
             $mech->get_ok($problem_url);
+            $mech->content_contains('If it is less than 2 working days since your collection day, you can dispute the reason', 'details of how to dispute displayed');
+            $mech->content_lacks('Please resolve the issue so the bin can be collected on the next scheduled collection', 'scheduled collection message not displayed');
+            $mech->content_contains('https://www.sutton.gov.uk/w/bulky-waste-collections', 'links to bulky information');
+            $mech->content_lacks('https://www.kingston.gov.uk/', 'no kingston links');
             $mech->submit_form_ok(
                 { with_fields => { category => 'Missed collection dispute' } }
             );
