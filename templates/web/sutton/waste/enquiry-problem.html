@@ -129,7 +129,7 @@ END;
     <div class="govuk-warning-text info">
         <div class="govuk-warning-text__content">
         <p>Our records show this collection took place
-        on [% date.format(service.last.date) | replace('~~~', service.last.ordinal) %].
+        on [% IF service.last.date %][% date.format(service.last.date) | replace('~~~', service.last.ordinal) %][% ELSIF original_booking_report %][% date.format(service.date, '%A, %-d %B') %][% END %].
         If it has not been collected, you can report it as missed and we will return within 2 working days to collect it.
         </p>
         [% IF c.cobrand.moniker == 'kingston' AND fas_property %]
