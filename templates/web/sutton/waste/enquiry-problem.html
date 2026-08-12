@@ -252,7 +252,7 @@ ELSIF service.escalations.container;
     field.hint = 'If your bin has not been delivered you can report this delivery as not completed.';
     f.push(field);
 ELSIF service.requests_open.size;
-    field.hint = 'It can take up to 10 working days for us to deliver your container, please wait until 10 working days have passed to report this delivery as not completed.';
+    field.hint = 'It can take up to ' _ c.cobrand.wasteworks_config.request_timeframe _ ' for us to deliver your container, please wait until ' _ c.cobrand.wasteworks_config.request_timeframe _ ' have passed to report this delivery as not completed.';
     field.disabled = 1;
     f.push(field);
 END;
