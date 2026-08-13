@@ -1,0 +1,33 @@
+[% SET title = 'Application is pending' %]
+
+[% INCLUDE header.html %]
+
+<div class="govuk-panel govuk-panel--confirmation">
+  <h1 class="govuk-panel__title">Application is pending</h1>
+  <div class="govuk-panel__body">
+    Thank you; your application is being reviewed, your reference is <strong>[% reference %]</strong>
+  </div>
+</div>
+
+<p>
+  <a href="/form/switchout/pdf/[% problem.id %]?token=[% problem.confirmation_token %]"
+     download="switchout-application-[% reference %].pdf"
+     target="_blank">
+    Download a PDF copy of your application
+  </a>
+</p>
+
+<h2>What happens next</h2>
+
+<p>
+You will receive an acknowledgement email from us and we will begin reviewing your application.
+Please allow up to 24 hours for an update.
+We will contact you sooner if we require any further information.
+</p>
+
+<p>
+If you need to cancel this request or make changes before this is approved please email your FMS reference to our team
+<a href="mailto:TLSO@tfl.gov.uk">TLSO@tfl.gov.uk</a>.
+</p>
+
+[% INCLUDE footer.html %]

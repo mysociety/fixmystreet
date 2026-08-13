@@ -32,8 +32,6 @@ has index_template => (
 sub auto : Private {
     my ( $self, $c ) = @_;
 
-    $self->SUPER::auto($c);
-
     # The check will exist by this point - let push endpoint through if needed
     my $cobrand_check = $c->cobrand->feature( $self->feature );
     $c->detach( '/page_error_404_not_found' )
