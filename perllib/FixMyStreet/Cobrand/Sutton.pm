@@ -788,7 +788,7 @@ sub waste_munge_report_form_fields {
     push @$field_list, 'sutton_collection_note' => {
         type => 'Notice',
         widget => 'NoRender',
-        label => 'We will return to collect your bin within 2 working days. Please leave the bin, box, or caddy at the front of your property ready for collection.',
+        label => 'We will return to collect your bin or items within 2 working days. Please leave the bin, box, caddy or items at the front of your property ready for collection.',
     };
 }
 
