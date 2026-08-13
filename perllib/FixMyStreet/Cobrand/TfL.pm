@@ -33,6 +33,7 @@ use Path::Tiny;
 
 use FixMyStreet::MapIt;
 use FixMyStreet::App::Form::Licence;
+use FixMyStreet::App::Form::TfL::SwitchOut;
 use mySociety::ArrayUtils;
 use Utils;
 
@@ -722,13 +723,23 @@ around 'munge_sendreport_params' => sub {
     $params->{From} = [ $self->do_not_reply_email, $self->contact_name ];
     delete $params->{'Reply-To'} if $params->{'Reply-To'};
 
-    if ($row->cobrand_data eq 'licence') {
+    if ($row->cobrand_data eq 'licence' || $row->cobrand_data eq 'switchout') {
         my @attachments;
 
         my $type = $row->get_extra_metadata('licence_type');
-        my $pdf = FixMyStreet::App::Form::Licence->generate_pdf($row);
+        my $pdf;
+        if ($row->cobrand_data eq 'licence') {
+            $pdf = FixMyStreet::App::Form::Licence->generate_pdf($row);
+        } elsif ($row->cobrand_data eq 'switchout') {
+            $pdf = FixMyStreet::App::Form::TfL::SwitchOut->generate_pdf($row);
+        }
         if ($pdf) {
-            my $filename = $type . '-licence-application-' . $row->id . '.pdf';
+            my $filename;
+            if ($row->cobrand_data eq 'licence') { 
+                $filename = $type . '-licence-application-' . $row->id . '.pdf';
+            } elsif ($row->cobrand_data eq 'switchout') {
+                $filename = 'switchout-application-' . $row->id . '.pdf';
+            }
             push @attachments, {
                 body => $pdf,
                 attributes => {
@@ -740,7 +751,12 @@ around 'munge_sendreport_params' => sub {
             };
         }
 
-        my $subdir = 'tfl-licence-' . $type;
+        my $subdir;
+        if ($row->cobrand_data eq 'licence') { 
+            $subdir = 'tfl-licence-' . $type;
+        } elsif ($row->cobrand_data eq 'switchout') {
+            $subdir = 'tfl-switchout';
+        }
         # Attach documents
         my $mime_types = MIME::Types->new;
         # Any field beginning upload_ is perhaps a file
@@ -780,7 +796,7 @@ with from our point of view.
 sub post_report_sent {
     my ($self, $problem) = @_;
 
-    if ($problem->cobrand_data eq 'licence') {
+    if ($problem->cobrand_data eq 'licence' || $problem->cobrand_data eq 'switchout') {
         $problem->update({ state => 'internal referral' });
     }
 }
