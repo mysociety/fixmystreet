@@ -91,7 +91,7 @@ sub display :PathPart('') :Chained('id') :Args(0) {
         $c->detach('/waste/bulky/view');
     }
 
-    if ($problem->cobrand_data eq 'licence') {
+    if ($problem->cobrand_data eq 'licence' || $problem->cobrand_data eq 'switchout') {
         $c->detach('/licence/view');
     }
 
