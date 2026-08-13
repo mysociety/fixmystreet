@@ -1,6 +1,12 @@
 [%
 IF report.cobrand_data == 'licence';
     SET subject = 'New ' _ report.category _ ' application received';
+ELSIF report.cobrand_data == 'switchout';
+    SET first_date = report.get_extra_metadata('switch_out_date_1');
+    first_date = first_date.day _ '/' _ first_date.month _ '/' _ first_date.year;
+    SET site_id = report.get_extra_metadata('asset_site_id');
+    SET behalf = report.get_extra_metadata('payment_behalf') OR 'Not provided';
+    SET subject = 'Switch out application - ' _ site_id _ ' ' _ first_date _ ' ' _ behalf;
 ELSE;
     IF report.get_extra_field_value('safety_critical') == 'yes';
         SET subject = 'Dangerous ' _ report.category _ ' Report: ' _ report.title;

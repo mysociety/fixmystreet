@@ -19,17 +19,16 @@ BEGIN { extends 'Catalyst::Controller' }
 
 use mySociety::AuthToken;
 
-=head2 auto
+=head2 begin
 
 By default, this checks that the controller's feature is turned on in the
-cobrand features, and sets up a unique ID for the form. A subclass will need to
-call its C<SUPER::auto> as that will not happen automatically (unlike when a
-controller is a subpath of another controller).
+cobrand features, and sets up a unique ID for the form.
 
 =cut
 
-sub auto : Private {
+sub begin : Private {
     my ( $self, $c ) = @_;
+    $c->forward('/begin'); # Make sure the parent function is called as well
     my $cobrand_check = $c->cobrand->feature( $self->feature );
     $c->detach( '/page_error_404_not_found' ) if !$cobrand_check;
     $c->session->{form_unique_id} ||= mySociety::AuthToken::random_token();
