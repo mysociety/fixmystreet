@@ -23,6 +23,18 @@ fixmystreet.assets.add(defaults, {
     non_interactive: true,
     road: true,
     usrn: [
+        {
+            attribute: 'name',
+            field: 'canal_name',
+        },
+        {
+            attribute: 'region',
+            field: 'canal_region',
+        },
+        {
+            attribute: 'functional', // functionallocation in fixmystreet.com/layers/crt.map
+            field: 'canal_functional_location',
+        },
     ],
 
     // canals are wide and the lines to define them are narrow so we
