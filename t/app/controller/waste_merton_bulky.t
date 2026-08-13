@@ -1304,6 +1304,37 @@ FixMyStreet::override_config {
         $mech->content_like(qr/waste_discount_price"\s+value="0"/);
     };
 
+    subtest 'Large bulky goods booking with discounted (but still zero) payment does NOT get discount flagged' => sub {
+        # Make a large booking that is therefore paid
+        $mech->get_ok('/waste/12345/bulky');
+        $mech->submit_form_ok;
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
+        $mech->submit_form_ok({ with_fields => { chosen_date => '2023-07-01T00:00:00;reserveA==;2023-06-25T10:10:00' } });
+        $mech->submit_form_ok({ form_number => 1, fields => {
+            'item_1' => 'BBQ', 'item_2' => 'Bicycle', 'item_3' => 'Bath',
+            'item_4' => 'BBQ', 'item_5' => 'Bicycle',
+            'item_notes_1' => 'Note', 'item_notes_2' => 'Note', 'item_notes_3' => 'Note',
+            'item_notes_4' => 'Note', 'item_notes_5' => 'Note',
+        } });
+        $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
+        $mech->content_contains('5 items requested for collection');
+        $mech->content_contains('£60.75');
+
+        my $mech2 = $mech->clone;
+        $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
+        is $mech2->res->previous->code, 302, 'payments issues a redirect';
+        is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        is +FixMyStreet::DB->resultset("Property")->find(1000000002), undef, 'property not marked as having had discount';
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+        is +FixMyStreet::DB->resultset("Property")->find(1000000002), undef, 'property still not marked as having had discount';
+
+        $mech->clear_emails_ok;
+        $new_report->comments->delete;
+        $new_report->delete;
+    };
+
     subtest 'Bulky goods booking with discounted (but still zero) payment' => sub {
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Last discounted collection: None');
