@@ -23,7 +23,7 @@
   [% IF c.cobrand.moniker == 'bromley' %]
     <li>Call our customer service team on 0300 303 8658 who will be pleased to assist you
   [% ELSIF c.cobrand.moniker == 'kingston' %]
-    <li>Call our customer service team on 020 8547 5002 who will be pleased to assist you
+    <li><a href="[% waste_features.missing_address_url %]?postcode=[% postcode %]">Let us know about a missing address</a>
   [% ELSIF c.cobrand.moniker == 'sutton' %]
     <li>Call our customer service team on 020 8770 5000 who will be pleased to assist you or email <a href="mailto:neighbourhoodservices&#64;sutton.gov.uk">neighbourhoodservices&#64;sutton.gov.uk</a> for support
   [% ELSIF c.cobrand.moniker == 'peterborough' %]
