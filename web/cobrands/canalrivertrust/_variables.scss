@@ -22,7 +22,7 @@ $cobrand_yellow: #FFD400; // Secondary button --brand-dawn
 $cobrand_yellow_400: #ffdd33; // --brand-dawn-400 obtained from their donation button in the homepage
 $cobrand_orange: #FF8700; // Orange button
 $cobrand_grey: #F9F7F5; // Lightest shade of gravel
-$cobrand_towpath_100: #ecf0f2;
+$cobrand_towpath_100: #ecf0f2; // Instructed in notes slide 10 second round of feedback (Brand Towpath Tint 80%). https://docs.google.com/presentation/d/1oemEgW6TobPT8Vp1Yl5kXFjzqYYX1neY/edit?slide=id.p10#slide=id.p10
 $cobrand_towpath: #a0b4be;
 
 $primary: $cobrand_blue;
@@ -133,16 +133,16 @@ $dropzone-background-color-frontpage--awakened: $cobrand_blue_200;
 
 $dropzone-background-color-frontpage--full: $cobrand_blue_200;
 
-// $pagination_background: #f6f6f6;
+$pagination_background: $cobrand_towpath_100;
 $itemlist_item_background:  $base_bg;
-$itemlist_item_background_hover: $cobrand_blue_100;
+$itemlist_item_background_hover: $cobrand_white;
 $col_big_numbers: $primary;
 
 // $form-control-border-color: #aaaaaa;
 $mobile-sticky-sidebar-button-menu-image: "menu-white";
 
 $front-main-color: $primary_b;
-$postcodeform-background: #ecf0f2;
+$postcodeform-background: $cobrand_towpath_100;
 $postcodeform-color: $primary_b;
 
 $postcodeform-color-desktop: $primary_b;
@@ -150,8 +150,8 @@ $front-main-color-desktop: $primary_b;
 $front-main-background-desktop: white url("/cobrands/canalrivertrust/images/crt-hero.webp") no-repeat center / cover;
 $front-main-container-background-desktop: $cobrand_white;
 
-$sticky-sidebar-bg-color: #ecf0f2;
-
+$sticky-sidebar-bg-color: $cobrand_towpath_100;
+$sticky-sidebar-link-color: $primary;
 $report-forms-wrapper-flex-column-gap: 5rem;
 
 @mixin true-black {

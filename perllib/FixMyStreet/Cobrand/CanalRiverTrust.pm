@@ -45,6 +45,7 @@ sub users_staff_admin { FixMyStreet::Cobrand::UKCouncils::users_staff_admin($_[0
 sub admin_allow_user { FixMyStreet::Cobrand::UKCouncils::admin_allow_user($_[0], $_[1]) }
 
 sub enter_postcode_text { 'Enter a location, bridge number or postcode' }
+sub report_a_problem_label { 'Report' }
 sub example_places { ['Lock 47, Fazeley', 'Bridge 33, Kennet and Avon'] }
 sub admin_user_domain { 'canalrivertrust.org.uk' }
 sub abuse_reports_only { 1 }

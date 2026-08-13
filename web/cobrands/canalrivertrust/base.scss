@@ -46,17 +46,14 @@ small, .small-print {
 }
 
 /* BUTTONS */
+// Focus yellow outline has been added again according to feedback v3 slide 14.
+// This focus state(yellow outline and black box-shadow) is not part of their branding, but they asked: "ensure the same yellow highlight style across all input and link elements"
 
 .btn-crt, .btn {
   width: fit-content;
   height: 46px;
   line-height: 90%;
   box-sizing: border-box;
-
-  &:focus {
-    outline: none;
-    box-shadow: none;
-  }
   border-radius: 50px;
   text-decoration: none;
 }
@@ -65,13 +62,15 @@ small, .small-print {
 .postcode-form-box input#sub {
   &:focus {
     background-color: $button-primary-hover-bg-bottom;
-    outline: none;
-    box-shadow: none;
   }
 }
 
 .dz-clickable .dz-message u {
   padding: $button-padding-top $button-padding-left;
+}
+
+.dz-clickable:hover, .dz-drag-hover {
+  background-color: $dropzone-background-color;
 }
 
 .js #photoForm {
@@ -86,6 +85,14 @@ a#geolocate_link,
   @extend .btn-crt;
 }
 
+.dz-clickable .dz-message u,
+#key-tools a {
+  @media screen and (max-width: 360px) {
+    white-space: normal;
+    height: auto;
+  }
+}
+
 $btn-heigh-navbar: 36px;
 
 #report-cta {
@@ -98,6 +105,10 @@ $btn-heigh-navbar: 36px;
   right: 4.5rem;
   box-sizing: border-box;
   height: $btn-heigh-navbar;
+
+  @media (max-width: 360px) {
+    display: none;
+  }
 }
 
 a,
@@ -105,6 +116,10 @@ a,
   &:focus-visible {
     outline: 3px solid $cobrand_yellow;
   }
+}
+
+.item-list--wards a, .item-list--reports a {
+  color: $primary_link_color;
 }
 
 .segmented-control .btn, .segmented-control .skiplink {
@@ -126,11 +141,6 @@ a,
 
 .form-control {
   box-shadow: none;
-
-  &:focus {
-    border-color: $cobrand_black;
-    outline: none;
-  }
 }
 
 .multi-select-button,
@@ -168,11 +178,20 @@ input[type="checkbox"],
   box-shadow: inset 0px 0px 0 2px $cobrand_black;
 }
 
-.govuk-select, .multi-select-button {
+.govuk-select, .multi-select-button,
+.govuk-input__suffix {
   border-width: 1px;
   border-color: $cobrand_towpath;
+  line-height: 1.5;
   &:focus {
     border-color: $cobrand_black;
+  }
+}
+
+#rss_local_alt {
+  input {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
   }
 }
 
@@ -220,27 +239,6 @@ input[type="checkbox"],
   }
 }
 
-.crt-logo-wrapper {
-  width: fit-content;
-  .strapline {
-    display: none;
-  }
-}
-
-.strapline-mobile {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 300;
-  letter-spacing: -.05em;
-  text-align: center;
-  height: 2rem;
-  padding-bottom: .25rem;
-  padding-top: .25rem;
-  background-color: #fff;
-  color: $primary;
-}
-
 .nav-menu--main {
   a {
     background-color: $cobrand_white;
@@ -284,11 +282,24 @@ input[type="checkbox"],
   }
 }
 
+.nav-menu {
+  a:hover {
+    background-color: #fff;
+    color: #333;
+  }
+}
+
 #main-nav {
   top: 5rem;
 }
 
 /* FRONTPAGE */
+.frontpage {
+  #report-cta {
+    display: none;
+  }
+}
+
 #front-main {
   margin: 2em 0;
 }
@@ -308,7 +319,9 @@ input[type="checkbox"],
     border-radius: 0.5rem 0 0 0.5rem;
     
     &:focus {
-      border-color: $cobrand_black;
+      border-color: $cobrand_yellow;
+      outline: 3px solid $cobrand_yellow;
+      box-shadow: 0px 0px 0px 5px #000;
     }
   }
 
@@ -320,6 +333,11 @@ input[type="checkbox"],
     &:hover {
       background-color: $button-primary-hover-bg-top;
       color: $button-primary-text;
+    }
+
+    &:focus {
+      outline: 3px solid $cobrand_yellow;
+      box-shadow: 0px 0px 0px 5px #000;
     }
   }
 
@@ -336,6 +354,11 @@ input[type="checkbox"],
 .dropzone {
   border-radius: 0;
   border: none;
+
+  &:focus {
+    outline: 3px solid $cobrand_yellow;
+    box-shadow: 0px 0px 0px 5px #000;
+  }
 }
 
 .js #photoForm,
@@ -375,6 +398,12 @@ input[type="checkbox"],
   color: $primary_b;
 }
 
+.mobile-filters-active .report-list-filters-wrapper, .mobile-filters-active #bulk-assign-form {
+  .report-list-filters {
+    color: $cobrand_white;
+  }
+}
+
 #mobile-sticky-sidebar-button {
   z-index: 2; // Avoids footer overlapping
 }
@@ -399,6 +428,15 @@ input[type="checkbox"],
   }
 }
 
+.big-green-banner {
+  @media screen and (max-width: 480px) {
+    top: 0.25em;
+    background-color: $cobrand_towpath_100;
+    color: $primary_b;
+    text-transform: none;
+  }
+}
+
 .mobile-map-banner, 
 .map-mobile-report-button, .sub-map-links, 
 .map-mobile-report-button:hover, 
@@ -417,6 +455,20 @@ html.js .form-section-preview,
 .problem-back:link, .problem-back:visited, .problem-back:hover {
   color: $cobrand_black;
   border-color: $cobrand_gravel_500;
+}
+
+/* AUTH PAGE */
+
+body.authpage {
+  .form-box  {
+    margin: 0 0 0.25em;
+    background: $cobrand_white;
+    padding: 0;
+  }
+
+  .content {
+    margin: 0 auto;
+  }
 }
 
 /* SITE MESSAGE */
@@ -439,8 +491,11 @@ html.js .form-section-preview,
   }
 }
 
-.pre-button-messaging {
-  background-color: $cobrand_blue_100;
+.pre-button-messaging, 
+.box-warning,
+.extra-category-questions,
+.alerts__cta-box {
+  background-color: $cobrand_towpath_100;
 }
 
 /* DARK THEME */
