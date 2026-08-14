@@ -688,6 +688,14 @@ fixmystreet.assets.camden.filter_column = new OpenLayers.Filter.Comparison({
 
 fixmystreet.assets.canalrivertrust = {};
 
+fixmystreet.assets.canalrivertrust.asset_found = function(asset) {
+    fixmystreet.message_controller.asset_found.call(this, asset);
+    fixmystreet.assets.named_select_action_found.call(this, asset);
+};
+fixmystreet.assets.canalrivertrust.asset_not_found = function() {
+    fixmystreet.message_controller.asset_not_found.call(this);
+};
+
 // Tunnels (treated as 'road' assets) and tunnel portals (spot assets).
 // Follow same pattern as Bucks PROWs and spot assets on those PROWs.
 
