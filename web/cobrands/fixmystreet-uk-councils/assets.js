@@ -728,14 +728,14 @@ fixmystreet.assets.canalrivertrust.tunnel_found = function(layer, feature) {
 };
 
 fixmystreet.assets.canalrivertrust.tunnel_not_found = function(layer) {
-    fixmystreet.message_controller.road_not_found(layer);
+    // 'return true' criterion forces trigger of responsibility_on()
+    fixmystreet.message_controller.road_not_found(layer, function() {return true;});
+
     if ( fixmystreet.assets.selectedFeature() ) {
         // This may never be reached, as selecting a spot asset implies
         // a road has also been found
         return;
     }
-
-    fixmystreet.assets.named_select_action_not_found.call(layer);
 };
 
 /* Central Bedfordshire */
