@@ -109,6 +109,7 @@ sub dashboard_export_problems_add_columns {
         how_much => 'How much waste',
         location => 'Location',
         assigned_to => "Assigned to",
+        assigned_at => "Assigned at",
     );
 
     # Pre-gen export will already be calculating this
@@ -124,8 +125,12 @@ sub dashboard_export_problems_add_columns {
             type_of_waste => $csv->_extra_field($report, 'type_of_waste'),
             how_much => $csv->_extra_field($report, 'how_much'),
             location => $csv->_extra_field($report, 'location'),
-            $csv->dbi ? () : (assigned_to => $problems_to_user->{$report->id} || ''),
         };
+        unless ($csv->dbi) {
+            my $assigned = $problems_to_user->{$report->id} || {};
+            $data->{assigned_to} = $assigned->{name} || '';
+            $data->{assigned_at} = $assigned->{added} || '';
+        }
         return $data;
     });
 }
