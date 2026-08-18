@@ -57,12 +57,20 @@ sub string {
     }
 
     my ( $error, @valid_locations, $latitude, $longitude, $address );
+    my %same_bar_last_letter;
     foreach (@$js) {
         next if $params->{result_only_if} && $_->{display_name} !~ /$params->{result_only_if}/;
         $_->{display_name} =~ s/$params->{result_strip}//g if $params->{result_strip};
 
         $cobrand->call_hook(geocoder_munge_results => $_);
         next unless $_->{display_name};
+
+        # Ignore results same apart from last postcode letter
+        $_->{display_name} =~ s/, United Kingdom$//;
+        my $no_last_letter = substr $_->{display_name}, 0, -1;
+        next if $same_bar_last_letter{$no_last_letter};
+        $same_bar_last_letter{$no_last_letter} = 1;
+
         ( $latitude, $longitude ) =
             map { Utils::truncate_coordinate($_) }
             ( $_->{lat}, $_->{lon} );
