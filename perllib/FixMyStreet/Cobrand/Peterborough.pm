@@ -77,7 +77,7 @@ sub disambiguate_location {
         %{ $self->SUPER::disambiguate_location() },
         centre => '52.6085234396978,-0.253091266573947',
         bounds => [ 52.5060949603654, -0.497663559599628, 52.6752139533306, -0.0127696975457487 ],
-        result_only_if => 'City of Peterborough',
+        result_only_if => 'City of Peterborough|Peterborough, Cambridgeshire',
         result_strip => ', City of Peterborough, (East of England|Cambridgeshire and Peterborough), England',
     };
 }
