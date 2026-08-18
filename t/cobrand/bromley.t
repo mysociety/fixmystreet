@@ -6,6 +6,7 @@ use Test::Warn;
 use DateTime;
 use JSON::MaybeXS;
 use Test::Output;
+use FixMyStreet;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::CSVExport;
 use FixMyStreet::Script::Reports;
@@ -29,6 +30,7 @@ LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => qr/tilma/);
 # Create test data
 my $user = $mech->create_user_ok( 'bromley@example.com', name => 'Bromley' );
 my $standard_user = $mech->create_user_ok('test@example.com', name => 'Bob Betts');
+my $standard_phone_user = $mech->create_user_ok('+447700900002', name => "Charlie Cell");
 my $body = $mech->create_body_ok( 2482, 'Bromley Council', {
     can_be_devolved => 1, send_extended_statuses => 1, comment_user => $user,
     send_method => 'Open311', endpoint => 'http://endpoint.example.com', jurisdiction => 'FMS', api_key => 'test', send_comments => 1,
@@ -311,6 +313,31 @@ subtest 'ensure flytip information is added to open311 description' => sub {
     my $req = Open311->test_req_used;
     my $c = CGI::Simple->new($req->content);
     like $c->param('description'), qr/Flytip information: Large sofa and household waste/, 'flytip information included in description';
+};
+
+subtest 'email is always sent for open311 updates to passthrough endpoint' => sub {
+    $report->comments->delete;
+    my ($comment) = $mech->create_comment_for_problem(
+        $report,
+        $standard_phone_user,
+        'Name',
+        'Text',
+        0,
+        'confirmed',
+        'open'
+    );
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['bromley'],
+    }, sub {
+        my $updates = Open311::PostServiceRequestUpdates->new;
+        $updates->send;
+        my $req = Open311->test_req_used;
+        my $c = CGI::Simple->new($req->content);
+        my $dnp_email = FixMyStreet->config('DO_NOT_REPLY_EMAIL');
+        is $c->param('email'), FixMyStreet->config('DO_NOT_REPLY_EMAIL'), 'Fallback email used';
+    };
+    $report->comments->delete;
 };
 
 for my $test (

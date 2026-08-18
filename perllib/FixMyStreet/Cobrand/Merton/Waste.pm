@@ -793,6 +793,8 @@ sub bulky_total_cost {
             if ($count <= $DISCOUNT_MAX_ITEMS) {
                 $data->{extra_discounted} = 'yes';
                 $discount_allowed = 1;
+            } else {
+                delete $data->{extra_discounted};
             }
         }
     }

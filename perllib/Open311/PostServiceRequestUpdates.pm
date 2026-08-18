@@ -110,7 +110,7 @@ sub open311_params {
     );
 
     my $cobrand = $body->get_cobrand_handler;
-    $cobrand->call_hook(open311_config_updates => \%open311_conf)
+    $cobrand->call_hook(open311_config_updates => \%open311_conf, $comment)
         if $cobrand;
 
     return %open311_conf;

@@ -785,6 +785,13 @@ sub csv_staff_roles {
     return \%userroles;
 }
 
+=head2 csv_active_planned_reports
+
+Returns a hashref of report ID to a hashref of the name of the user the report
+is currently assigned (shortlisted) to, and when it was assigned to them.
+
+=cut
+
 sub csv_active_planned_reports {
     my ($self) = @_;
 
@@ -795,7 +802,12 @@ sub csv_active_planned_reports {
     );
 
     for my $user (@cobrand_users) {
-        map { $reports_to_user{$_->report_id} = $user->name } $user->active_user_planned_reports->all;
+        map {
+            $reports_to_user{$_->report_id} = {
+                name => $user->name,
+                added => $_->added,
+            };
+        } $user->active_user_planned_reports->all;
     }
     return \%reports_to_user;
 }

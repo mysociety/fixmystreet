@@ -489,9 +489,10 @@ sub dashboard_export_problems_add_columns {
         $closure_email_at = DateTime->from_epoch(
             epoch => $closure_email_at, time_zone => FixMyStreet->local_time_zone
         ) if $closure_email_at;
+        my $assigned = $problems_to_user->{$report->id} || {};
         my $fields = {
             acknowledged => $report->whensent,
-            assigned_to => $problems_to_user->{$report->id} || '',
+            assigned_to => $assigned->{name} || '',
             user_name_display => $user_name_display,
             safety_critical => $safety_critical,
             delivered_to => join(',', @$delivered_to),
