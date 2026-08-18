@@ -74,6 +74,24 @@ $footer-main-nav-color: #fff !default;
 // Invisble when there is not enough space
 $is-mobile-menu-visible: true !default;
 
+// meta-box styling for report updates
+$meta-color: $primary_b !default;
+$meta-border-radius: 0 !default;
+$meta-border: 1px solid transparent !default;
+
+// Two styles in case cobrands want to make them different from each other
+$meta-anonymous-color: $meta-color !default;
+$meta-anonymous-svg-color: inherit !default;
+// Same as emails
+$meta-anonymous-background-color: #FEF6D5;
+$meta-anonymous-border-color: #FEF6D5;
+
+$meta-verified-color: $meta-color !default;
+$meta-verified-svg-color: #0761A4 !default;
+// Same as emails
+$meta-verified-background-color: #D6E2EB;
+$meta-verified-border-color: #D6E2EB;
+
 @import "_mixins";
 @import "_report_list";
 
@@ -317,11 +335,56 @@ a,
   font-style: italic;
   margin-bottom: 0px;
 }
-.meta-2 {
+.meta-2,
+.meta-anonymous,
+.meta-verified
+ {
   font-family: $meta-font;
+  font-size: 0.75em;
+  color: $meta-color;
+}
+
+.meta-2 {
   color: #666666;
   font-style: italic;
-  font-size: 0.75em;
+}
+
+.meta-anonymous,
+.meta-verified {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  border: $meta-border;
+  border-radius: $meta-border-radius;
+  line-height: 1.4;
+
+  svg {
+    // First I tried using `vertical-align`, but each cobrand uses its own font, and each font has a different ascender which affects the alignment when using `vertical-align`. So while `vertical-align: sub`(or any other value) might work for some cobrands, it won't work for others.
+    flex: none;
+    width: 1lh;
+    height: 1lh;
+  }
+}
+
+.meta-anonymous {
+  background-color: $meta-anonymous-background-color;
+  border-color: $meta-anonymous-border-color;
+  color: $meta-anonymous-color;
+
+  svg {
+    color: $meta-anonymous-svg-color;
+  }
+}
+
+.meta-verified {
+  background-color: $meta-verified-background-color;
+  border-color: $meta-verified-border-color;
+  color: $meta-verified-color;
+
+  svg {
+    color: $meta-verified-svg-color;
+  }
 }
 
 h2.static-with-rule {
