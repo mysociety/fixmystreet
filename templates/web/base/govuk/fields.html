@@ -24,7 +24,7 @@
     [% ELSIF field.widget == 'Select' %]
         [% PROCESS select %]
     [% ELSIF field.widget == 'CheckboxGroup' %]
-        [% PROCESS checkboxes options=field.options %]
+        [% PROCESS checkboxes options=field.options_ref %]
     [% ELSIF field.widget == 'Checkbox' %]
         [% PROCESS checkboxes options=[{ value = 1, label = field.option_label, hint = field.option_hint, disabled = field.disabled }] %]
     [% ELSIF field.type == 'DateTime' %]
@@ -207,9 +207,7 @@
     </span>
 [% END %]
     <div class="govuk-radios[% IF field.get_tag('inline') %] govuk-radios--inline[% END %][% IF field.get_tag('small') %] govuk-radios--small[% END %]">
-    [% SET options = field.options; SET only_one_option = 0 %]
-    [% IF options.defined('label'); SET options = [ options ]; SET only_one_option = 1; END # If there is only one option, it is returned rather than a list of the one option %]
-    [% FOR item IN options %]
+    [% FOR item IN field.options_ref %]
       [% IF loop.last AND field.get_tag('last_differs') %]
         <div class="govuk-radios__divider">or</div>
       [% END %]
@@ -222,7 +220,7 @@
             name="[% field.html_name %]" value="[% item.value %]"[% ' aria-describedby="' _ field.id _ '-item-hint"' IF hint %]
             [% 'data-show="' _ item.data_show _ '"' IF item.data_show %]
             [% 'data-hide="' _ item.data_hide _ '"' IF item.data_hide %]
-            [% 'checked' IF field.fif == item.value OR only_one_option OR item.selected %]
+            [% 'checked' IF field.fif == item.value OR field.options_ref.size == 1 OR item.selected %]
             [% 'disabled' IF item.disabled %]>
         <label class="govuk-label govuk-radios__label" for="[% field.id %]-[% loop.index %]">
           [% item.label %]
@@ -309,14 +307,9 @@
     </span>
   [% END %]
 
-  [% options_list = field.options %]
-  [% IF !options_list.0 %]
-    [% # Single item; not an array, so force into one %]
-    [% options_list = [options_list] %]
-  [% END %]
   <select class="govuk-select[% ' js-autocomplete' IF field.get_tag('autocomplete') %]" id="[% field.id %]" name="[% field.html_name %]"[% IF field.required %] required[% END %]>
     [% '<option value=""></option>' IF field.get_tag('autocomplete') %]
-    [% FOR item IN options_list %]
+    [% FOR item IN field.options_ref %]
       [% # Select options may be optgrouped %]
       [% IF item.group %]
         <optgroup label="[% item.group %]"></optgroup>

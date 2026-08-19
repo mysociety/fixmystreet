@@ -305,6 +305,10 @@ FixMyStreet::override_config {
                 },
             ] } );
 
+            # Single T&C not messed up
+            $mech->content_contains('name="tandc" value="1"');
+            $mech->content_like(qr/<label class="govuk-label govuk-checkboxes__label" for="tandc-0">\s*I have read the <a href="tandc_link" target="_blank">bulky waste collection<\/a> page on the council’s website\s*<\/label>/);
+
             # Submit summary form
             $mech->submit_form_ok( { with_fields => { tandc => 1 } } );
             $mech->content_contains(
