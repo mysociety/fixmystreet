@@ -43,6 +43,7 @@ sub contact_name { FixMyStreet::Cobrand::UKCouncils::contact_name($_[0]) }
 sub contact_email { FixMyStreet::Cobrand::UKCouncils::contact_email($_[0]) }
 sub users_staff_admin { FixMyStreet::Cobrand::UKCouncils::users_staff_admin($_[0]) }
 sub admin_allow_user { FixMyStreet::Cobrand::UKCouncils::admin_allow_user($_[0], $_[1]) }
+sub open311_extra_data { FixMyStreet::Cobrand::UKCouncils::open311_extra_data($_[0], $_[1], $_[2]) }
 
 sub enter_postcode_text { 'Enter a location, bridge number or postcode' }
 sub report_a_problem_label { 'Report' }
@@ -131,6 +132,25 @@ sub munge_report_new_contacts {
 sub admin_contact_validate_category {
     my ( $self, $category ) = @_;
     return "(CRT)" eq substr($category, -5) ? "" : "Category must end with (CRT).";
+}
+
+sub open311_extra_data_include {
+    my ($self, $row, $h) = @_;
+
+    my $open311_only = [
+        { name => 'fixmystreet_id',
+          value => $row->id },
+        { name => 'report_url',
+          value => $h->{url} },
+        { name => 'title',
+          value => $row->title },
+        { name => 'description',
+          value => $row->detail },
+        { name => 'nearest_address',
+          value => $row->nearest_address },
+    ];
+
+    return $open311_only;
 }
 
 1;
