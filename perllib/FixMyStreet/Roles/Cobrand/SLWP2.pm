@@ -138,6 +138,7 @@ my %EVENT_TYPE_IDS = (
     bulky => 3130,
     small_items => 3144,
     general_enquiry => 3140,
+    dispute => 3143, # Formal Complain in Echo
 );
 lock_hash(%EVENT_TYPE_IDS);
 
@@ -451,6 +452,7 @@ sub missed_event_types { return {
     $EVENT_TYPE_IDS{missed_assisted} => 'missed',
     $EVENT_TYPE_IDS{bulky} => 'bulky',
     $EVENT_TYPE_IDS{small_items} => 'small_items',
+    $EVENT_TYPE_IDS{dispute} => 'dispute',
 } }
 
 sub waste_munge_report_data {

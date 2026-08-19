@@ -1010,6 +1010,43 @@ FixMyStreet::override_config {
             $mech->content_contains('We are investigating the problem with this collection.');
         };
 
+        subtest 'Existing closed dispute' => sub {
+            my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+            $report->update({ state => 'fixed - council' });
+            my @tests = (
+                {
+                    name => 'closed as justified',
+                    text => 'We have completed our investigation and have found that your dispute is justified',
+                    value => 1,
+                },
+                {
+                    name => 'closed as not justified',
+                    text => 'We have completed our investigation and have found that your dispute is unjustified',
+                    value => 2,
+                },
+            );
+            set_fixed_time('2022-09-14T19:00:00Z');
+            for my $test (@tests) {
+                subtest $test->{name} => sub {
+                    # Now mock there is an existing dispute
+                    $e->mock('GetEventsForObject', sub { [ {
+                        Id => '112112321',
+                        EventTypeId => 3143,
+                        EventStateId => 19232, # Closed
+                        ServiceId => 940, # Refuse
+                        EventDate => { DateTime => "2022-09-11T18:03:00Z" },
+                        ResolvedDate => { DateTime => "2022-09-11T18:03:00Z" },
+                        EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
+                        Data => { ExtensibleDatum => [ { DatatypeName => 'Justification', Value => $test->{value} } ] },
+                    } ] });
+
+                    $mech->get_ok($problem_url);
+                    $mech->content_like(qr/Missed collection dispute.*disabled/s);
+                    $mech->content_like(qr/$test->{text}/s);
+                    $mech->content_contains('Our investigation is complete');
+                };
+            }
+        };
 
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
@@ -1331,7 +1368,7 @@ FixMyStreet::override_config {
             $mech->clear_emails_ok;
         };
 
-        subtest 'Existing dispute event' => sub {
+        subtest 'Existing open dispute event' => sub {
             # Now mock there is an existing dispute
             $e->mock('GetEventsForObject', sub { [ {
                 Id => '112112321',
@@ -1355,6 +1392,49 @@ FixMyStreet::override_config {
             $mech->get_ok($problem_url);
             $mech->content_like(qr/Missed collection dispute.*disabled/s);
             $mech->content_contains('We are investigating the problem with this collection.');
+        };
+
+        subtest 'Existing closed dispute event' => sub {
+            my @tests = (
+                {
+                    name => 'closed as justified',
+                    text => 'We have completed our investigation and have found that your dispute is justified',
+                    value => 1,
+                },
+                {
+                    name => 'closed as not justified',
+                    text => 'We have completed our investigation and have found that your dispute is unjustified',
+                    value => 2,
+                },
+            );
+            set_fixed_time('2022-09-14T19:00:00Z');
+            for my $test (@tests) {
+                # Now mock there is an existing dispute
+                $e->mock('GetEventsForObject', sub { [ {
+                    Id => '112112321',
+                    EventTypeId => 3145, # Missed collection
+                    EventStateId => 19242, # Not Completed
+                    ResolvedDate => { DateTime => "2022-09-10T17:00:00Z" },
+                    ServiceId => 940, # Refuse
+                    EventDate => { DateTime => "2022-09-10T17:00:00Z" },
+                    EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
+                },
+                {
+                    Id => '112112321',
+                    EventTypeId => 3143,
+                    EventStateId => 0,
+                    ServiceId => 940, # Refuse
+                    EventDate => { DateTime => "2022-09-11T18:03:00Z" },
+                    EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
+                    ResolvedDate => { DateTime => "2022-09-11T17:00:00Z" },
+                    Data => { ExtensibleDatum => [ { DatatypeName => 'Justification', Value => $test->{value} } ] },
+                } ] });
+
+                $mech->get_ok($problem_url);
+                $mech->content_like(qr/Missed collection dispute.*disabled/s);
+                $mech->content_contains($test->{text});
+                $mech->content_contains('Our investigation is complete');
+            };
         };
 
         subtest 'Complete missed collection' => sub {
