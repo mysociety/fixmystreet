@@ -55,7 +55,7 @@ END;
     [% ELSIF service.dispute %]
     <div class="govuk-warning-text info">
         <div class="govuk-warning-text__content">
-        [% IF NOT service.dispute.open %]
+        [% IF NOT service.dispute.open AND NOT service.dispute.closed %]
             [% IF service.dispute.missed_event && service.dispute.missed_event.completed %]
                 [% IF service.dispute.too_late %]
                     <p>The crew have marked this collection as completed. You cannot dispute this as it has been more than 2 working days since the collection took place.</p>
@@ -81,6 +81,16 @@ END;
                 </p>
                 <p>If it is less than 2 working days, you can dispute the reason given and we will investigate. If we find that the collection task was closed incorrectly, we will return to collect the bin.</p>
                 [% END %]
+            [% END %]
+        [% ELSE %]
+            [% IF service.dispute.open %]
+                We are investigating the problem with this collection.
+            [% ELSIF service.dispute.closed.justified == 'yes' %]
+                We have completed our investigation and have found that your dispute is justified.
+                We will return to complete the task.
+            [% ELSIF service.dispute.closed.justified == 'no' %]
+                We have completed our investigation and have found that your dispute is unjustified.
+                We will not return to complete the task.
             [% END %]
         [% END %]
         </div>
@@ -170,6 +180,9 @@ ELSIF service.dispute;
     };
     IF service.dispute.open;
         field.hint = 'We are investigating the problem with this collection.';
+        field.disabled = 1;
+    ELSIF service.dispute.closed;
+        field.hint = 'Our investigation is complete';
         field.disabled = 1;
     ELSIF service.dispute.too_late;
         field.hint = 'You cannot dispute this as it has been more than 2 working days since the scheduled collection.';

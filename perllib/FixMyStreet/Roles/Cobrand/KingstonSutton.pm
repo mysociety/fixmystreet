@@ -449,7 +449,11 @@ sub _setup_missed_collection_disputes_for_service {
             $row->{dispute}{too_late} = 1;
         }
     } elsif ($missed_event && $dispute_event) {
-        $row->{dispute}{open} = $dispute_event;
+        if ($dispute_event->{closed}) {
+            $row->{dispute}{closed} = $dispute_event;
+        } else {
+            $row->{dispute}{open} = $dispute_event;
+        }
     }
 }
 
@@ -579,7 +583,11 @@ sub _setup_scheduled_collection_disputes_for_service {
             }
         }
     } else {
-        $row->{dispute}{open} = 1;
+        if ($dispute_event->{closed}) {
+            $row->{dispute}{closed} = $dispute_event;
+        } else {
+            $row->{dispute}{open} = $dispute_event;
+        }
     }
 }
 
