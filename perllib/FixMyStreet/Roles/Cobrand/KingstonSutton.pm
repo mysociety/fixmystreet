@@ -34,6 +34,12 @@ sub send_questionnaires { 0 }
 
 sub abuse_reports_only { 1 }
 
+=item * Search engines are asked not to index the site
+
+=cut
+
+sub robots_noindex { 1 }
+
 =item * Only waste reports are shown on the cobrand
 
 =cut

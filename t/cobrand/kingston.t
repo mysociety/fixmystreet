@@ -138,4 +138,22 @@ subtest 'Dashboard CSV export includes bulky items' => sub {
     };
 };
 
+subtest 'Site is not indexed by search engines' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'kingston',
+        MAPIT_URL => 'http://mapit.uk/',
+        STAGING_SITE => 0,
+    }, sub {
+        $mech->log_out_ok;
+        my ($report) = $mech->create_problems_for_body(1, $body->id, 'Missed collection', {
+            areas => "2480", category => 'Garden Subscription', cobrand => 'kingston',
+            user => $user, state => 'confirmed', cobrand_data => 'waste'
+        });
+        $mech->get_ok('/');
+        $mech->content_contains('<meta name="robots" content="noindex,nofollow">', 'Front page not indexed');
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_contains('<meta name="robots" content="noindex,nofollow">', 'Report page not indexed');
+    };
+};
+
 done_testing();
