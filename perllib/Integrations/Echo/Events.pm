@@ -77,6 +77,21 @@ sub parse {
                     $event->{state} = 'open';
                 }
             }
+        } elsif ($type eq 'dispute') {
+            my $justified = '';
+            if ($closed) {
+                my $data = Integrations::Echo::force_arrayref($_->{Data}, 'ExtensibleDatum');
+                foreach (@$data) {
+                    if ($_->{DatatypeName} eq 'Justification') {
+                        if ($_->{Value} == 1) {
+                            $justified = 'yes';
+                        } elsif ($_->{Value} == 2) {
+                            $justified = 'no';
+                        }
+                    }
+                }
+            }
+            $event->{justified} = $justified;
         }
         push @$events, $event unless $event->{ignore};
     }
