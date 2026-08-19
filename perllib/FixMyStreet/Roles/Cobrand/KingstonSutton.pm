@@ -448,7 +448,7 @@ sub _setup_missed_collection_disputes_for_service {
             $row->{dispute}{missed_event} = $missed_event;
             $row->{dispute}{too_late} = 1;
         }
-    } elsif ($dispute_event) {
+    } elsif ($missed_event && $dispute_event) {
         $row->{dispute}{open} = $dispute_event;
     }
 }
