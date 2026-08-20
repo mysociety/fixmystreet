@@ -137,6 +137,7 @@ FixMyStreet::override_config {
             large_refuse_application_form => '/faq?refuse-application',
             dispute_url => '/faq?dispute-url',
             missing_address_url => '/faq?missing-url',
+            report_other_issues_link => 'http://example.org/report-other-waste-problems',
         } },
     },
     STAGING_FLAGS => {
@@ -167,6 +168,14 @@ FixMyStreet::override_config {
         $mech->content_contains('Friday, 2nd September');
         $mech->content_contains('Report a problem with a mixed recycling collection');
     };
+
+    subtest 'check report other problem link' => sub {
+        $mech->get_ok('/waste/12345');
+        $mech->follow_link_ok({ text => 'Report a problem with a mixed recycling collection' });
+        $mech->content_contains('report repeated missed collections');
+        $mech->content_contains('http://example.org/report-other-waste-problems');
+    };
+
     subtest 'In progress collection' => sub {
         $e->mock('GetTasks', sub { [ {
             Ref => { Value => { anyType => [ 17430692, 8287 ] } },
