@@ -30,12 +30,6 @@ fixmystreet.assets.add(defaults, {
 
     non_interactive: true,
     road: true,
-    usrn: [
-        {
-            field: 'canal_name',
-            attribute: 'name',
-        }
-    ],
 
     // canals are wide and the lines to define them are narrow so we
     // need a bit more margin for error in finding the nearest to stop
