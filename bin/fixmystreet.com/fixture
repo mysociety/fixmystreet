@@ -135,6 +135,7 @@ if ($opt->test_fixtures) {
 
     FixMyStreet::DB::Factory::Contact->find_or_create({ body => $body, category => "Fly-tipping" });
 
+    # National Highways
     my $params = {
         name => 'National Highways',
         area_id => 2608,
@@ -155,6 +156,18 @@ if ($opt->test_fixtures) {
         order => 1, variable => 'false', disable_form => 'true',
     });
     $incorrect->update;
+
+    # Canal & River Trust
+    my $params = {
+        name => 'Canal & River Trust',
+        area_id => 2226, # Same as Gloucestershire
+        categories => ['Bridges (CRT)', 'Elsan (CRT)', 'Tunnel (CRT)'],
+    };
+    $bodies->{CRT} = FixMyStreet::DB::Factory::Body->find_or_create($params);
+    $bodies->{CRT}->cobrand('canalrivertrust');
+    $bodies->{CRT}->update;
+    my $cats = join(', ', @{$params->{categories}});
+    say "Created body $params->{name} for MapIt area ID $params->{area_id}, categories $cats";
 
     foreach (
         { area_id => 2482, categories => [
