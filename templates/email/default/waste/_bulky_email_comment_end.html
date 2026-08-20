@@ -16,10 +16,6 @@
         SET enquiry_type = 'template=problem';
     %]
     [% IF update.item_problem_state == 'unable to fix' %]
-        <p>
-        Our crews reported your [% collection_description %] collection was not made for the reason above.
-        </p>
-
         [%
             SET enquiry_type = 'category=Missed+collection+dispute';
             SET collection_description = 'missed';
