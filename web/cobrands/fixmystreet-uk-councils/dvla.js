@@ -62,6 +62,8 @@ const FIELDS = {
         'reg': 'vehicle_registration_number',
         'make': 'vehicle_make_model', // DVLA doesn't give us model
         'colour': 'vehicle_colour',
+        'motStatus': 'vehicle_mot_status',
+        'taxStatus': 'vehicle_tax_status',
         'trailer': ' If the vehicle is parked wrongly, you may be able to <a href="https://www.merton.gov.uk/streets-parking-transport/parking/report">report it as a parking offence</a>.'
     }
 };
@@ -263,7 +265,7 @@ function dvla_lookup(e) {
             const height = wrapper.getBoundingClientRect().height;
             document.querySelector('.js-reporting-page--active').style.paddingBottom = height + 'px';
         } else {
-            ['make', 'colour', 'reg', 'make_and_colour', 'summary'].forEach(name => {
+            ['make', 'colour', 'reg', 'make_and_colour', 'summary', 'motStatus', 'taxStatus'].forEach(name => {
                 if (fields[name] && data[name]) {
                     let field = document.querySelector('input[name*="' + fields[name] + '"]');
                     if (field) {
