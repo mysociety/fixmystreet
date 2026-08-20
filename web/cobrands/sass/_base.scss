@@ -3714,7 +3714,7 @@ html.only-map {
 
   .pin-legend__panel {
     position: absolute;
-    right: 0;
+    left: 0;
     bottom: 4rem;
     z-index: 5;
     background: transparentize($color: #000, $amount: 0.05);
@@ -3722,8 +3722,9 @@ html.only-map {
     padding: 1rem;
     max-width: 80%;
     border-radius: 8px;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    max-width: 70dvw; // Prevents overlaps with the controls on the right
   }
 }
 
