@@ -25,6 +25,11 @@
     }
     %]
     </div>
+    [% IF display_other_issues_link AND c.cobrand.feature('waste_features').report_other_issues_link %]
+      <p>
+      You can also <a href="[% c.cobrand.feature('waste_features').report_other_issues_link %]">report repeated missed collections or other crew issues here</a>.
+      </p>
+    [% END %]
     <div class="govuk-form-group"><input type="submit" value="Continue" class="govuk-button"></div>
 
   <input type="hidden" name="service_id" value="[% service_id %]">
