@@ -478,6 +478,19 @@ FixMyStreet::override_config {
         }
     };
 
+    subtest 'Amending, same date' => sub {
+        set_fixed_time('2025-08-07T01:00:00');
+        my $base_path = '/waste/12345';
+        $mech->log_in_ok( $staff->email );
+        $mech->get_ok("$base_path/small_items/amend/" . $report->id);
+        $mech->submit_form_ok;
+        $mech->content_contains('Choose date for collection', "On 'Available dates' page");
+        $mech->submit_form_ok({ with_fields => { chosen_date => '2025-08-08T00:00:00;reserve7a==;2025-08-25T10:20:00'}});
+        $mech->submit_form_ok({ with_fields => { 'item_4' => 'Small WEEE' } });
+        $mech->submit_form_ok({ form_number => 2 });
+        $mech->submit_form_ok({ form_number => 4, with_fields => { tandc => 1 } });
+    };
+
     subtest 'Amending the date' => sub {
         set_fixed_time('2025-08-07T01:00:00');
         my $base_path = '/waste/12345';
@@ -552,7 +565,7 @@ FixMyStreet::override_config {
         is $report->title, 'Small items collection';
         is $report->uprn, 1000000002;
         is $report->get_extra_field_value('Collection_Date_-_Bulky_Items'), '2025-08-12T00:00:00';
-        is $report->get_extra_field_value('Small_Item_Type'), '1::2::2';
+        is $report->get_extra_field_value('Small_Item_Type'), '1::2::2::2';
         is $report->get_extra_field_value('property_id'), '12345';
         is $report->get_extra_field_value('GUID'), '4ea70923-7151-11f0-aeea-cd51f3977c8c';
         is $report->get_extra_field_value('reservation'), 'reserve7d==';

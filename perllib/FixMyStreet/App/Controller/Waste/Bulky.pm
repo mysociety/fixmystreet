@@ -519,20 +519,22 @@ sub process_bulky_amend : Private {
                 $c->forward('process_bulky_data', [ $form ]) or return;
             }
 
-            # If there wasn't payment, we reach here and can set the things
-            $c->forward('cancel_collection', [ $p, 'amendment' ]);
-            my $new = $c->stash->{report};
-            $new->set_extra_metadata(previous_booking_id => $p->id);
-            foreach (qw(payment_reference)) {
-                $new->set_extra_metadata($_ => $p->get_extra_metadata($_)) if $p->get_extra_metadata($_);
-            }
-            $new->detail($new->detail . " | Previously submitted as " . $p->external_id);
-            $new->update;
-            $update->confirm;
-            $update->update;
-            $new->bulky_add_payment_confirmation_update($p->get_extra_metadata('payment_reference')) if $p->get_extra_metadata('payment_reference');
-            if ($c->cobrand->suppress_report_sent_email($new)) {
-                $new->send_logged_email({ report => $new, cobrand => $c->cobrand }, 0, $c->cobrand);
+            if (!$c->stash->{payment}) {
+                # If there wasn't payment, we reach here and can set the things
+                $c->forward('cancel_collection', [ $p, 'amendment' ]);
+                my $new = $c->stash->{report};
+                $new->set_extra_metadata(previous_booking_id => $p->id);
+                foreach (qw(payment_reference)) {
+                    $new->set_extra_metadata($_ => $p->get_extra_metadata($_)) if $p->get_extra_metadata($_);
+                }
+                $new->detail($new->detail . " | Previously submitted as " . $p->external_id);
+                $new->update;
+                $update->confirm;
+                $update->update;
+                $new->bulky_add_payment_confirmation_update($p->get_extra_metadata('payment_reference')) if $p->get_extra_metadata('payment_reference');
+                if ($c->cobrand->suppress_report_sent_email($new)) {
+                    $new->send_logged_email({ report => $new, cobrand => $c->cobrand }, 0, $c->cobrand);
+                }
             }
         }
     } else {
