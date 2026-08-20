@@ -298,6 +298,10 @@ ELSIF service.requests_open.size;
     f.push(field);
 END;
 
+IF c.cobrand.moniker == 'kingston';
+    SET display_other_issues_link = 1;
+END;
+
 PROCESS waste/enquiry.html
     title = 'Report a problem'
     field_options = f

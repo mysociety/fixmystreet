@@ -171,6 +171,13 @@ FixMyStreet::override_config {
         $mech->content_lacks('Report a mixed recycling (cans, plastics &amp; glass) collection as missed', 'Standard reporting link removed');
         $mech->content_contains('Report a problem', 'General report an issue link added');
     };
+
+    subtest 'check report other problem link not present' => sub {
+        $mech->get_ok('/waste/12345');
+        $mech->follow_link_ok( { url_regex => qr/service_id=940/}, 'Follow "Report a problem" link for food waste' );
+        $mech->content_lacks('report repeated missed collections');
+    };
+
     subtest 'In progress collection' => sub {
         $e->mock('GetTasks', sub { [ {
             Ref => { Value => { anyType => [ 17430692, 8287 ] } },
