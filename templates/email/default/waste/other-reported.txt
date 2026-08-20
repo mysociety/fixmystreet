@@ -98,10 +98,16 @@ Our crews carry out over 150,000 collections every week from houses and flats. I
 We will arrange another collection as soon as possible over the next 2 working days.
 [% END %]
 [% ELSIF report.category == 'Request new container' %]
+[% IF cobrand.moniker == 'brent' AND report.get_extra_field_value('request_referral') %]
+Our officers aim to contact you regarding your request within ten working
+days. If you do not receive an email from us, please check your spam or
+junk folder, as our emails may occasionally be filtered there.
+[% ELSE %]
 We aim to deliver this container to you within
 [% cobrand.wasteworks_config.request_timeframe || '20 working days' %]. If
 you have requested a replacement bin please leave your broken one
 available for collection at the front of your property.
+[% END %]
 [% END %]
 
 [% END %]
