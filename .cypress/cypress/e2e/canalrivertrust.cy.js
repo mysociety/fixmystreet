@@ -1,6 +1,6 @@
 describe('Canal & River Trust asset messaging tests', function() {
-    before(function() {
-        cy.intercept('POST', '**/mapserver/crt', {fixture: 'canals-for-asset-messaging.xml'}).as('crt-tilma');
+    beforeEach(function() {
+        cy.intercept('POST', '**/mapserver/crt', {fixture: 'canals-islington.xml'}).as('crt-tilma');
         cy.intercept('**/Canal_And_River_Trust_Bridges_View/**', {fixture: 'canal-bridges.json'}).as('crt-bridges');
         cy.intercept('**/Web_CSF_Facilities/**', {fixture: 'canal-elsan.json'}).as('crt-elsan');
         cy.intercept('**/Canal_And_River_Trust_Tunnels_View/**', {fixture: 'canal-tunnels.json'}).as('crt-tunnels');
@@ -14,7 +14,11 @@ describe('Canal & River Trust asset messaging tests', function() {
         cy.wait('@crt-tilma');
         cy.wait('@report-ajax');
     });
-    it('Select categories', function() {
+    it('does not allow reporting on non-canal', function() {
+        cy.get('.pre-button-messaging').contains('The selected location is not maintained by us.').should('be.visible');
+        cy.get('.js-reporting-page--next').should('be.disabled');
+    });
+    it('select categories', function() {
         // Bridges
         cy.pickCategory('Bridges');
         cy.wait('@crt-tilma');
