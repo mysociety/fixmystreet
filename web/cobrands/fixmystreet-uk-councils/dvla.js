@@ -34,13 +34,18 @@ const FIELDS = {
         }
     },
     'merton': {
-        'block': true,
+        'block': function() { // Merton only blocks reporting in certain categories
+            const cat = fixmystreet.reporting.selectedCategory().category;
+            return cat === 'Abandoned Vehicles';
+        },
         'categories': [
             'Abandoned Vehicles',
+            'Vehicle committing an offence'
         ],
         'reg': 'vehicle_registration_number',
         'make': 'vehicle_make_model', // DVLA doesn't give us model
-        'colour': 'vehicle_colour'
+        'colour': 'vehicle_colour',
+        'trailer': ' If the vehicle is parked wrongly, you may be able to <a href="https://www.merton.gov.uk/streets-parking-transport/parking/report">report it as a parking offence</a>.'
     }
 };
 
@@ -198,7 +203,15 @@ function dvla_lookup(e) {
         }
 
         const config = FIELDS[fixmystreet.cobrand] || {};
-        if (config.block && reason != '') {
+        // cobrand config can optionally provide a callback function (returns a
+        // bool) for `block` to allow e.g. per-category blocking
+        let block = false;
+        if (typeof config.block === 'function') {
+            block = config.block();
+        } else {
+            block = config.block;
+        }
+        if (block && reason != '') {
             document.querySelectorAll('.js-reporting-page--next').forEach(b => b.disabled = true);
             const stopperId = 'js-dvla-stopper';
             const id = document.getElementById(stopperId);
@@ -206,7 +219,7 @@ function dvla_lookup(e) {
             let vehicle_desc = [data.colour, data.make, vehicle_type=='Other'?'':vehicle_type.toLowerCase()].filter(Boolean).join(' ');
             if (data.fuelType) vehicle_desc += ', ' + data.fuelType;
             if (data.yearOfManufacture) vehicle_desc += ', ' + data.yearOfManufacture;
-            const msg = esc`<div id="${stopperId}" class="js-stopper-notice box-warning" role="alert" aria-live="assertive"><strong>${vehicle_desc}</strong><br>` + reason + ( add_dvla_contact ? 'You may be able to <a href="https://contact.dvla.gov.uk/report-untaxed-vehicle">contact the DVLA</a>.' : '' ) + '</div>';
+            const msg = esc`<div id="${stopperId}" class="js-stopper-notice box-warning" role="alert" aria-live="assertive"><strong>${vehicle_desc}</strong><br>` + reason + ( add_dvla_contact ? ' You may be able to <a href="https://contact.dvla.gov.uk/report-untaxed-vehicle">contact the DVLA</a>.' : '' ) + ( config.trailer ? config.trailer : '' ) + '</div>';
             const wrapper = document.querySelector('.js-reporting-page--active .pre-button-messaging');
             if (id) {
                 id.outerHTML = msg;
