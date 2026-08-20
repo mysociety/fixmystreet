@@ -114,36 +114,31 @@ We pass any category change to Confirm.
 
 sub open311_send_category_change { 1 }
 
-=head2 open311_get_update_munging
+=head2 open311_get_update_template_variables
 
 Aberdeenshire want certain defect fields shown in updates on FMS.
+In addition to the default functionality, this looks for
+'{{targetDate}}' and '{{jobStartDate}}' dates, formatting them
+or replacing with TBC.
 
-These values, if present, are passed back from open311-adapter in the
-<extras> element. If the template being used for this update has placeholders
-like '{{targetDate}}', '{{jobStartDate}}', or any fields configured in the
-'response_template_variables' Config entry, they get replaced with the value
-from Confirm. If there is no value then 'TBC' is used for date fields, or an
-empty string for other fields.
+=cut
 
-Additionally, the incoming update might be for a defect which has superseded an
+sub open311_get_update_template_variables {
+    my ($self, $text, $request) = @_;
+    $text = _parse_template_dates($text, $request);
+    $text = $self->SUPER::open311_get_update_template_variables($text, $request);
+    return $text;
+}
+
+=head2 open311_get_update_munging
+
+The incoming update might be for a defect which has superseded an
 existing one, so if that's the case we need to identify and close it.
 
 =cut
 
 sub open311_get_update_munging {
     my ($self, $comment, $state, $request) = @_;
-
-    my $text = $comment->text;
-    $text = _parse_template_dates($text, $request);
-    $text = $self->open311_get_update_munging_template_variables($text, $request);
-    $comment->text($text);
-
-    if ( $text = $comment->private_email_text) {
-        $text = _parse_template_dates( $text, $request );
-        $text = $self->open311_get_update_munging_template_variables(
-            $text, $request );
-        $comment->private_email_text($text);
-    }
 
     my $supersedes = $request->{extras}{supersedes};
     return unless $supersedes && $supersedes =~ /^DEFECT_/;
