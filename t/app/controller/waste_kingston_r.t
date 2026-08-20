@@ -1123,11 +1123,17 @@ FixMyStreet::override_config {
         is $report->name, 'Joe Schmoe', 'User details added to report';
         is $report->category, 'Report out-of-time not returned', "Correct category";
         FixMyStreet::Script::Reports::send();
-        my $text = $mech->get_text_body_from_email;
+        my $mail = $mech->get_email;
+        my $text = $mech->get_text_body_from_email($mail);
+        my $html = $mech->get_html_body_from_email($mail);
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
         is $cgi->param('api_key'), 'KEY';
         is $cgi->param('attribute[Notes]'), "Non-actionable not returned container\n\nSome notes";
+
+        like $text, qr/As it is more than 2 working days/, 'non actionable text in text email';
+        like $html, qr/As it is more than 2 working days/, 'non actionable text in html email';
+        $mech->clear_emails_ok;
     };
 
    subtest 'test report a problem - bin not returned, assisted' => sub {
