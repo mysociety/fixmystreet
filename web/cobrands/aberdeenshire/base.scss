@@ -111,6 +111,14 @@ a {
   }
 }
 
+// Aberdeenshire has a particularly verbose pin colour legend, so make font
+// smaller
+.pin-legend__item {
+  span {
+    font-size: 0.75em;
+  }
+}
+
 /* SITE MESSAGE */
 // Found here: https://www.aberdeenshire.gov.uk/schools/music-lessons/music-tuition
 .site-message {

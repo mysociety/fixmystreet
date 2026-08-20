@@ -99,5 +99,25 @@ sub pin_colour {
     return $self->next::method($p, $context);
 }
 
-1;
+sub pin_colour_key {
+    my ( $self, $context ) = @_;
 
+    my @keys = (
+        [ 'green-tick', 'Fixed' ],
+    );
+
+    if ( $context ne 'reports' ) {
+        push @keys, [ 'grey', 'Other council/authority' ];
+    }
+
+    # From Default.pm
+    if ( $context eq 'around' || $context eq 'reports' || $context eq 'report' ) {
+        push @keys, [ 'yellow', 'Other' ];
+    } else {
+        push @keys, [ 'red', 'Other' ];
+    }
+
+    return \@keys;
+}
+
+1;
