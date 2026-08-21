@@ -1031,7 +1031,7 @@ sub construct_bin_report_form {
     my $allow_report_small_items = 0;
 
     foreach ( values %{ $c->stash->{booked_missed} || {} } ) {
-        if ( $_->{report_allowed} && !$_->{report_open} ) {
+        if ( $show_all_services || $_->{report_allowed} && !$_->{report_open} ) {
             $_->{service_name} eq 'Small items'
                 ? $allow_report_small_items = $_
                 : $allow_report_bulky = $_;
