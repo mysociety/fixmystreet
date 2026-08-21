@@ -1307,6 +1307,7 @@ FixMyStreet::override_config {
         $mech->clear_emails_ok;
         FixMyStreet::Script::Reports::send();
         my $text = $mech->get_text_body_from_email;
+        like $text, qr/cannot return to clean the spillage/, 'Cannot return text included in email';
         my $req = Open311->test_req_used;
         foreach ($req->parts) {
             my $cd = $_->header('Content-Disposition');

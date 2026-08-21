@@ -118,7 +118,7 @@ INCLUDE '_email_top.html';
     <p style="[% p_style %]">
     We aim to deliver your new container within 20 working days. If you haven't received your container in that time, you can <a href="[% cobrand.base_url _ '/waste/' _ report.waste_property_id _ '/enquiry?template=problem&service_id=' _ report.get_extra_field_value('service_id') %]">report a problem</a>.
     </p>
-  [% ELSIF report.category == 'Waste spillage' %]
+  [% ELSIF report.category == 'Waste spillage' OR report.category == 'Report out-of-time spillage' %]
     <p style="[% p_style %]">
       We apologise for any inconvenience caused and appreciate your feedback.  We're committed to using it to improve our customer service.
     </p>

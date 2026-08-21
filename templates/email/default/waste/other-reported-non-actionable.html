@@ -4,7 +4,7 @@
 %]
 [%
 
-email_columns = 1;
+email_columns = 2;
 
 PROCESS '_email_settings.html';
 INCLUDE '_email_top.html';
@@ -16,7 +16,6 @@ INCLUDE '_email_top.html';
 
   <h1 style="[% h1_style %]">Your report has been&nbsp;logged</h1>
 
-  cat: [% report.category %]
   [% IF report.category == 'Report out-of-time missed collection' %]
   <p style="[% p_style %]">
     Thank you for reporting a missed [% bin_type %] collection on [% date.format(report.created, '%A, %-d %B') %].
@@ -43,5 +42,9 @@ INCLUDE '_email_top.html';
 
   [% end_padded_box | safe %]
 </th>
+[% WRAPPER '_email_sidebar.html' object = report %]
+    <h2 style="[% h2_style %]">[% report.title | html %]</h2>
+    [% report.detail | html_para_email(secondary_p_style) %]
+[% END %]
 
 [% INCLUDE '_email_bottom.html' %]
