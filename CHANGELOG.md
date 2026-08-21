@@ -30,6 +30,7 @@
         - Split original report_mark_private permission into a view-only permission (report_view_private) and an edit permission (report_mark_private) #5973
         - Require view dashboard permission in order to view the dashboard
         - Ensure OIDC email addresses are stored as lowercase.
+        - Remove update stats from admin stats and status pages. Also removes `updates` from `/status.json`.
     - Development improvements
         - More logging when `page_error` is called, to aid troubleshooting. #5279
         - Docker changes needed for systemd to work. #5257

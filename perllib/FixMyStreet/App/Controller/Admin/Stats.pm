@@ -13,7 +13,7 @@ sub index : Path : Args(0) {
 sub gather : Private {
     my ($self, $c) = @_;
 
-    $c->forward('state'); # Problem/update stats used on that page
+    $c->forward('state'); # Problem stats used on that page
     $c->forward('/admin/fetch_all_bodies'); # For body stat
 
     my $alerts = $c->model('DB::Alert')->summary_report_alerts( $c->cobrand->restriction );
@@ -70,13 +70,6 @@ sub state : Local : Args(0) {
     $c->stash->{total_problems_live} += $prob_counts{$_} ? $prob_counts{$_} : 0
         for ( FixMyStreet::DB::Result::Problem->visible_states() );
     $c->stash->{total_problems_users} = $c->cobrand->problems->unique_users;
-
-    my $comments = $c->cobrand->updates->summary_count;
-
-    my %comment_counts =
-      map { $_->state => $_->get_column('state_count') } $comments->all;
-
-    $c->stash->{comments} = \%comment_counts;
 }
 
 sub fix_rate : Path('fix-rate') : Args(0) {

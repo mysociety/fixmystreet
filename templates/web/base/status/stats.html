@@ -2,7 +2,6 @@
 
 [%-
     total_problems_live = total_problems_live | format_number;
-    comments_confirmed = (comments.confirmed || 0) | format_number;
     alerts_1 = alerts.1 | format_number;
     alerts_0 = alerts.0 | format_number;
     questionnaires_total = questionnaires.total | format_number;
@@ -20,7 +19,6 @@
         [% tprintf( loc('from %s different users'), decode(total_problems_users) ) %]
     [% END %]
     </li>
-    <li>[% tprintf( loc('%s live updates'), decode(comments_confirmed) ) %]</li>
     <li>[% tprintf( loc('%s confirmed alerts, %s unconfirmed'), decode(alerts_1), decode(alerts_0)) %]</li>
     <li>[% tprintf( loc('%s questionnaires sent &ndash; %s answered (%s%%)'), decode(questionnaires_total), decode(questionnaires_1), questionnaires_pc) %]</li>
     <li>[% tprintf( loc('%s bodies'), decode(total_bodies)) %],

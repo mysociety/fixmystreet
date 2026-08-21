@@ -54,7 +54,6 @@ sub index : Path : Args(0) {
         my $data = {
             version => $c->stash->{git_version},
             reports => $c->stash->{total_problems_live},
-            updates => $c->stash->{comments}{confirmed},
             alerts_confirmed => $c->stash->{alerts}{1},
             alerts_unconfirmed => $c->stash->{alerts}{0},
             questionnaires_sent => $c->stash->{questionnaires}{total},

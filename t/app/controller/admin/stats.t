@@ -5,6 +5,10 @@ my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super Us
 
 subtest "smoke view some stats pages" => sub {
     $mech->log_in_ok( $superuser->email );
+    $mech->get_ok('/admin/stats');
+    $mech->content_contains('live problems');
+    $mech->get_ok('/admin/stats/state');
+    $mech->content_contains('Problem breakdown by state');
     $mech->get_ok('/admin/stats/fix-rate');
     $mech->get_ok('/admin/stats/questionnaire');
 };
