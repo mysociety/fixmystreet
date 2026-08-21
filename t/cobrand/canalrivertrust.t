@@ -97,4 +97,16 @@ FixMyStreet::override_config {
     }
 };
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'canalrivertrust' ],
+    MAPIT_URL        => 'http://mapit.uk/',
+    COBRAND_FEATURES => {
+    },
+}, sub {
+    $mech->get_ok( '/reports' );
+    $mech->content_contains('Get updates of reports on the Canal & River Trust');
+    $mech->content_lacks('class="has-inline-svg">Wards of this council');
+};
+
+
 done_testing();
