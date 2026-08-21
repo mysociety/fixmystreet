@@ -830,6 +830,7 @@ FixMyStreet::override_config {
             # need to strip the host otherwise we're not logged in
             my $l = URI->new($enq_links[0]);
             $mech->get_ok($l->path_query);
+            $mech->submit_form_ok({ with_fields => { category => "Missed collection dispute" } });
             $mech->content_contains('No access due to gate locked', 'details of missed bin collection displayed');
             $mech->content_contains('This photo provides the evidence', 'Has resolution photo text');
         };
@@ -845,6 +846,11 @@ FixMyStreet::override_config {
             my @links = $email_html =~ m{https?://[^"]+}g;
             my @enq_links = grep( /enquiry/, @links );
             my $l = URI->new($enq_links[0]);
+            $mech->get_ok($l->path_query);
+            $mech->content_lacks('dispute');
+            # Try going directly anyway
+            $l->query_param_delete('template');
+            $l->query_param('category', 'Missed collection dispute');
             $mech->get_ok($l->path_query);
             $mech->content_lacks('Our crews reported that your Small items collection was not made', 'details of missed bin collection displayed');
             $mech->content_contains('Missed collections can only be disputed');

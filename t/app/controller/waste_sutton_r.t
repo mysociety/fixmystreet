@@ -1232,6 +1232,9 @@ FixMyStreet::override_config {
     # this is when a collection has been missed, a missed bin report made and then
     # marked as not complete
     subtest 'Dispute of non completed missed bin report' => sub {
+        $missed_report->update_extra_field({ name => 'service_id', value => '940' });
+        $missed_report->update({ external_id => 'missed-collection-guid' });
+
         # We want to test that a missed collection report can be disputed.
         # To prevent confusion, mock *completed* task for original collection.
         # If it was incomplete, a dispute could be raised for it, and would
@@ -1290,7 +1293,6 @@ FixMyStreet::override_config {
                 '"too late" messaging not shown';
         };
 
-        $missed_report->update({ external_id => 'missed-collection-guid' });
         my $comment = FixMyStreet::DB->resultset('Comment')->create(
             {
                 user          => $body_user,
@@ -1332,12 +1334,20 @@ FixMyStreet::override_config {
             my $l = URI->new($enq_links[0]);
             $mech->get_ok($l->path_query);
             $mech->content_contains('Contaminated (builder’s waste)', 'details of missed bin collection displayed');
+            $mech->submit_form_ok({ with_fields => { category => "Missed collection dispute" } });
 
-            # XXX Email link uses 'original_booking_id' param here to denote
+            $l->query_param_delete('template');
+            $l->query_param('category', 'Missed collection dispute');
+            $mech->get_ok($l->path_query);
+
+            # XXX Email link used 'original_booking_id' param here to denote
             # missed collection report ID, but 'original_booking_id' should
-            # really only refer to bulky/small item reports. Also, photo
-            # does not appear when form accessed from web below.
-            $mech->content_contains('This photo provides the evidence', 'Has resolution photo text');
+            # really only refer to bulky/small item reports, as it breaks the
+            # report a problem page if present (which assumes it is only for
+            # those and overwrites the service). Also, photo does not appear
+            # when form accessed from web below. XXX
+            $mech->content_contains('Contaminated (builder’s waste)', 'details of missed bin collection displayed');
+            #$mech->content_contains('This photo provides the evidence', 'Has resolution photo text');
         };
 
         subtest 'Create dispute for non complete missed bin report' => sub {
