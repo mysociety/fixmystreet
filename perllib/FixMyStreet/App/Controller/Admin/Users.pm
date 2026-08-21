@@ -59,7 +59,10 @@ sub index :Path : Args(0) {
     my $role = $c->get_param('role');
     my $users;
     if ($search || $role) {
-        $users = $c->cobrand->users;
+        # NOTE The below is not using $c->cobrand->users for performance reasons.
+        # The upgrade to PG15 made this query significantly slower :-(
+        #$users = $c->cobrand->users;
+        $users = FixMyStreet::DB->resultset("User");
         if ($search) {
             $search = $self->trim($search);
             $search =~ s/^<(.*)>$/$1/; # In case email wrapped in <...>
@@ -90,6 +93,10 @@ sub index :Path : Args(0) {
         order_by => [ \"me.name = ''", 'me.name' ],
     });
     my @users = $users->all;
+    # NOTE As we may have fetched more than we should above, filter out the same in code
+    if ($search || $role) {
+        $c->cobrand->call_hook(users_restriction_in_code => \@users);
+    }
     $c->stash->{users} = \@users;
     if ($search) {
         $c->forward('/admin/add_flags', [ { email => { ilike => "%$search%" } } ]);
