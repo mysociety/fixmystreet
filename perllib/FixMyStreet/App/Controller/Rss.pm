@@ -329,9 +329,13 @@ sub add_parameters : Private {
     my $uri = $c->uri_for( '/' . $c->req->path );
     $uri .= '?type=' . $c->stash->{ward_code} if $c->stash->{ward_code} && $c->stash->{ward};
 
+    my $qs = $c->stash->{qs};
+    $uri =~ s/&/&amp;/g;
+    $qs =~ s/&/&amp;/g if $qs;
+
     $c->stash->{rss}->channel(
         title       => encode_entities($title),
-        link        => $c->uri_for($link) . ($c->stash->{qs} || ''),
+        link        => $c->uri_for($link) . ($qs || ''),
         description => encode_entities($desc),
         language    => 'en-gb',
         atom => { link => {
@@ -388,6 +392,7 @@ sub xsl : Path {
     };
     my $body = $c->view('Email')->render($c, 'xsl.xsl', $vars);
 
+    $body =~ s/&/&amp;/g;
     $c->response->header('Content-Type' => 'text/xml; charset=utf-8');
     $c->response->body($body);
 }
