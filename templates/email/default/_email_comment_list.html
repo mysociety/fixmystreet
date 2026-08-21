@@ -29,17 +29,18 @@
         [% END %]
 
         [%
-          # NOTE Sutton may use 'original_booking_id' to refer to a missed collection
-          # report associated with a standard collection, not just bookings
-          # and their associated missed collection reports.
-        %]
-        [%
-          SET include_report_id = cobrand.moniker == 'sutton'
-            OR report.get_extra_field_value('service_id') == cobrand.feature('echo').small_items_service_id
-            OR report.get_extra_field_value('service_id') == cobrand.feature('echo').bulky_service_id
+          service_id = report.get_extra_field_value('service_id');
+          cfg = cobrand.feature('echo');
+          IF service_id == cfg.small_items_service_id OR service_id == cfg.bulky_service_id;
+              IF report.get_extra_field_value('Original_Event_ID');
+                original_booking_id = 'original_booking_event=' _ report.get_extra_field_value('Original_Event_ID');
+              ELSE;
+                original_booking_id = 'original_booking_id=' _ report.id;
+              END;
+          END;
         %]
         <p>
-          <a href="[% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') %]/enquiry?category=Missed+collection+dispute&service_id=[% report.get_extra_field_value('service_id') %][% IF include_report_id %]&original_booking_id=[% report.id %][% END %]">Report a problem with this missed collection</a>
+          <a href="[% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') %]/enquiry?template=problem&service_id=[% report.get_extra_field_value('service_id') %][% IF original_booking_id %]&[% original_booking_id %][% END %]">Report a problem with this missed collection</a>
         </p>
       [% END %]
     [% END %]
