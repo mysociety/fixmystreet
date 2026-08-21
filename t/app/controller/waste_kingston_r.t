@@ -869,7 +869,7 @@ FixMyStreet::override_config {
                 like $email_html, qr/Resolution text/, 'Reason pulled from comment';
                 like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
                 like $email_html,
-                    qr{/12345/enquiry\?category=Missed\+collection\+dispute&service_id=966},
+                    qr{/12345/enquiry\?template=problem&service_id=966},
                     'HTML alert contains dispute link';
                 unlike $email_html, qr/original_booking_id/;
 
@@ -880,6 +880,7 @@ FixMyStreet::override_config {
                 my $l = URI->new($enq_links[0]);
 
                 $mech->get($l->path_query);
+                $mech->submit_form_ok({ with_fields => { category => "Missed collection dispute" } });
                 like $mech->uri->path_query,
                     qr/uprn=1000000002&service_id=966&event_id=112112321/,
                     'redirects with correct params';
@@ -982,7 +983,7 @@ FixMyStreet::override_config {
                 like $email_html, qr/Completed collection/, 'Reason pulled from comment';
                 like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
                 like $email_html,
-                    qr{/12345/enquiry\?category=Missed\+collection\+dispute&service_id=966},
+                    qr{/12345/enquiry\?template=problem&service_id=966},
                     'HTML alert contains dispute link';
                 unlike $email_html, qr/original_booking_id/;
 
@@ -993,6 +994,7 @@ FixMyStreet::override_config {
                 my $l = URI->new($enq_links[0]);
 
                 $mech->get($l->path_query);
+                $mech->submit_form_ok({ with_fields => { category => "Missed collection dispute" } });
                 like $mech->uri->path_query,
                     qr/uprn=1000000002&service_id=966&event_id=112112321/,
                     'redirects with correct params';

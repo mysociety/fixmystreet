@@ -13,16 +13,13 @@
         SET collection_description = report.category == 'Small items collection'
             ? 'small items' : 'bulky waste';
 
-        SET enquiry_type = 'template=problem';
     %]
-    [% IF update.item_problem_state == 'unable to fix' %]
-        [%
-            SET enquiry_type = 'category=Missed+collection+dispute';
+    [% IF update.item_problem_state == 'unable to fix';
             SET collection_description = 'missed';
-        %]
-    [% END %]
+       END;
+    %]
     <p>
-        <a href="[% cobrand.base_url %]/waste/[% property_id %]/enquiry?[% enquiry_type %]&service_id=[% service_id %]&original_booking_id=[% report.id %]">Report a problem with this [% collection_description %] collection</a>
+        <a href="[% cobrand.base_url %]/waste/[% property_id %]/enquiry?template=problem&service_id=[% service_id %]&original_booking_id=[% report.id %]">Report a problem with this [% collection_description %] collection</a>
     </p>
 [% END %]
 
