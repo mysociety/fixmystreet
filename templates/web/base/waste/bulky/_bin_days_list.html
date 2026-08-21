@@ -99,6 +99,11 @@ END;
               <span class="waste-service-descriptor">Thank you for reporting an issue with this collection; we are investigating.</span>
           [% END %]
           [% END %]
+
+          [% IF c.cobrand.moniker == 'merton' %]
+            [% INCLUDE 'waste/_service_additional.html' unit=booked_missed.$booking_guid original_booking=booking.id %]
+          [% END %]
+
       </div>
     [% END %]
 
