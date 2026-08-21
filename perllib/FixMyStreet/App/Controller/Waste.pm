@@ -248,7 +248,7 @@ sub pay_process : Private {
     } elsif ($payment_method eq 'cheque') {
         $c->forward('pay_skip', [ $data->{cheque_reference}, undef ]);
     } elsif ($payment_method eq 'waived' || $payment_method eq 'cash') {
-        $c->forward('pay_skip', [ undef, $data->{payment_explanation} ]);
+        $c->forward('pay_skip', [ $payment_method, $data->{payment_explanation} ]);
     } else {
         if ($payment_method eq 'direct_debit') { # Garden only
             if ($c->cobrand->direct_debit_collection_method eq 'internal') {
@@ -266,7 +266,7 @@ sub pay_process : Private {
 }
 
 sub pay_skip : Private {
-    my ($self, $c, $cheque, $waived) = @_;
+    my ($self, $c, $reference, $waived) = @_;
 
     if (FixMyStreet->staging_flag('skip_waste_payment')) {
         $c->stash->{message} = 'Payment skipped on staging';
@@ -281,7 +281,7 @@ sub pay_skip : Private {
         $p->set_extra_metadata('payment_explanation', $waived);
         $p->update;
     }
-    $c->forward('confirm_subscription', [ $cheque ] );
+    $c->forward('confirm_subscription', [ $reference ] );
 }
 
 sub pay : Path('pay') : Args(0) {
@@ -1031,7 +1031,7 @@ sub construct_bin_report_form {
     my $allow_report_small_items = 0;
 
     foreach ( values %{ $c->stash->{booked_missed} || {} } ) {
-        if ( $_->{report_allowed} && !$_->{report_open} ) {
+        if ( $show_all_services || $_->{report_allowed} && !$_->{report_open} ) {
             $_->{service_name} eq 'Small items'
                 ? $allow_report_small_items = $_
                 : $allow_report_bulky = $_;

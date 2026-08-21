@@ -490,23 +490,18 @@ sub process_bulky_amend : Private {
             });
             $c->stash->{report} = $p;
             $c->cobrand->bulky_total_cost($data);
+            my $update = add_amendment_update($c, $p, $data, 'delayed');
+            $p->set_extra_metadata(amendment_update => $update->id);
+            my $ref = $p->get_extra_metadata('payment_reference');
+            $p->unset_extra_metadata('payment_reference');
             if ($c->stash->{payment}) {
-                my $update = add_amendment_update($c, $p, $data, 'delayed');
-                $p->unset_extra_metadata('payment_reference');
-                $p->set_extra_metadata(amendment_update => $update->id);
                 $p->update_extra_field({ name => 'payment', value => $c->stash->{payment} });
                 # XXX Store old payment reference and payment somewhere else?!
                 $p->update;
                 $c->forward('/waste/pay_process', [ 'bulky', $data, $form ]);
             } else {
-                my $update = add_amendment_update($c, $p, $data, 'immediate');
-                $p->waste_amend_extra_data($c->cobrand, $c->stash->{booking_maximum}, $data);
-                $c->cobrand->waste_amend_amendment_update($p, $update);
-                $update->update;
                 $p->update;
-                if ($c->cobrand->suppress_report_sent_email($p)) {
-                    $p->send_logged_email({ report => $p, cobrand => $c->cobrand }, 0, $c->cobrand);
-                }
+                $c->forward('/waste/confirm_subscription', [$ref]);
             }
         } else {
             # In this case we want to update the event to mark it as cancelled,
@@ -519,20 +514,12 @@ sub process_bulky_amend : Private {
                 $c->forward('process_bulky_data', [ $form ]) or return;
             }
 
-            # If there wasn't payment, we reach here and can set the things
-            $c->forward('cancel_collection', [ $p, 'amendment' ]);
-            my $new = $c->stash->{report};
-            $new->set_extra_metadata(previous_booking_id => $p->id);
-            foreach (qw(payment_reference)) {
-                $new->set_extra_metadata($_ => $p->get_extra_metadata($_)) if $p->get_extra_metadata($_);
-            }
-            $new->detail($new->detail . " | Previously submitted as " . $p->external_id);
-            $new->update;
-            $update->confirm;
-            $update->update;
-            $new->bulky_add_payment_confirmation_update($p->get_extra_metadata('payment_reference')) if $p->get_extra_metadata('payment_reference');
-            if ($c->cobrand->suppress_report_sent_email($new)) {
-                $new->send_logged_email({ report => $new, cobrand => $c->cobrand }, 0, $c->cobrand);
+            if (!$c->stash->{payment}) {
+                my $new = $c->stash->{report};
+                $new->set_extra_metadata(previous_booking_id => $p->id);
+                $new->detail($new->detail . " | Previously submitted as " . $p->external_id);
+                $new->update;
+                $c->forward('/waste/confirm_subscription', [$p->get_extra_metadata('payment_reference')]);
             }
         }
     } else {
