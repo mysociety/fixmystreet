@@ -329,13 +329,13 @@ sub add_parameters : Private {
     my $uri = $c->uri_for( '/' . $c->req->path );
     $uri .= '?type=' . $c->stash->{ward_code} if $c->stash->{ward_code} && $c->stash->{ward};
 
-    my $qs = $c->stash->{qs};
+    my $qs = $c->stash->{qs} || '';
     $uri =~ s/&/&amp;/g;
-    $qs =~ s/&/&amp;/g if $qs;
+    $qs =~ s/&/&amp;/g;
 
     $c->stash->{rss}->channel(
         title       => encode_entities($title),
-        link        => $c->uri_for($link) . ($qs || ''),
+        link        => $c->uri_for($link) . $qs,
         description => encode_entities($desc),
         language    => 'en-gb',
         atom => { link => {
