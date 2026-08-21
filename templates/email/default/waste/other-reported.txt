@@ -81,7 +81,7 @@ crew to remove it. We aim for this to be the same day as we deliver your new bin
 
 [% ELSIF report.category == 'Report missed collection' OR report.category == 'Report missed assisted collection' %]
 We will arrange another collection as soon as possible over the next 2 working days.
-[% ELSIF report.category == 'Waste spillage' %]
+[% ELSIF report.category == 'Waste spillage' OR report.category == 'Report out-of-time spillage' %]
 We apologise for any inconvenience caused and appreciate your feedback.  We're committed to using it to improve our customer service.
 
 Our crews cannot return to clean the spillage, but if you feel the area needs prompt attention from one of our street cleansing teams you can report a street cleaning issue.
