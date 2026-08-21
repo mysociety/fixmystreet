@@ -138,16 +138,12 @@ sub open311_extra_data_include {
     my ($self, $row, $h) = @_;
 
     my $open311_only = [
-        { name => 'fixmystreet_id',
-          value => $row->id },
         { name => 'report_url',
           value => $h->{url} },
         { name => 'title',
           value => $row->title },
         { name => 'description',
           value => $row->detail },
-        { name => 'nearest_address',
-          value => $row->nearest_address },
     ];
 
     return $open311_only;
