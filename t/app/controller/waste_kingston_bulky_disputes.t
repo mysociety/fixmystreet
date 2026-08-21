@@ -391,7 +391,7 @@ FixMyStreet::override_config {
                 like $email_html, qr/Resolution text/, 'Reason pulled from comment';
                 like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
                 like $email_html,
-                    qr{/12345/enquiry\?category=Missed\+collection\+dispute&service_id=986&original_booking_id=.+},
+                    qr{/12345/enquiry\?template=problem&service_id=986&original_booking_id=.+},
                     'HTML alert contains dispute link';
 
                 # we only want the HTML link as the text version does not contain the link
@@ -401,6 +401,7 @@ FixMyStreet::override_config {
                 my $l = URI->new($enq_links[0]);
 
                 $mech->get($l->path_query);
+                $mech->submit_form_ok({ with_fields => { category => "Missed collection dispute" } });
                 like $mech->uri->path_query,
                     qr/uprn=1000000002&service_id=986&event_id=8004/,
                     'redirects with correct params';
@@ -566,7 +567,7 @@ FixMyStreet::override_config {
                 like $email_html, qr/Resolution text/, 'Reason pulled from comment';
                 like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
                 like $email_html,
-                    qr{/12345/enquiry\?category=Missed\+collection\+dispute&service_id=986&original_booking_id=.+},
+                    qr{/12345/enquiry\?template=problem&service_id=986&original_booking_event=.+},
                     'HTML alert contains dispute link';
 
                 # we only want the HTML link as the text version does not contain the link
@@ -576,6 +577,7 @@ FixMyStreet::override_config {
                 my $l = URI->new($enq_links[0]);
 
                 $mech->get($l->path_query);
+                $mech->submit_form_ok({ with_fields => { category => "Missed collection dispute" } });
                 like $mech->uri->path_query,
                     qr/uprn=1000000002&service_id=986&event_id=112112321/,
                     'redirects with correct params';
