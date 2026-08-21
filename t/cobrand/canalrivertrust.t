@@ -106,6 +106,9 @@ FixMyStreet::override_config {
     $mech->get_ok( '/reports' );
     $mech->content_contains('Get updates of reports on the Canal & River Trust');
     $mech->content_lacks('class="has-inline-svg">Wards of this council');
+    $mech->content_contains('href="/rss/reports/Canal+&amp;+River+Trust"');
+    $mech->get_ok( '/rss/reports/Canal+&+River+Trust' ); # Browser decoded &amp;
+    $mech->content_contains('New problems to Canal &amp; River Trust on Canal &amp; River Trust');
 };
 
 
