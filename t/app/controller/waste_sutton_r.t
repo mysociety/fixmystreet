@@ -1333,6 +1333,7 @@ FixMyStreet::override_config {
             my $l = URI->new($enq_links[0]);
             $mech->get_ok($l->path_query);
             $mech->content_contains('Contaminated (builder’s waste)', 'details of missed bin collection displayed');
+            $mech->submit_form_ok({ with_fields => { category => "Missed collection dispute" } });
 
             # XXX Email link used 'original_booking_id' param here to denote
             # missed collection report ID, but 'original_booking_id' should

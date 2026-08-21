@@ -1780,6 +1780,7 @@ FixMyStreet::override_config {
     # this is disputing an attempt to collect after a missed collection report
     subtest 'Dispute of missed collections' => sub {
         my $missed = FixMyStreet::DB->resultset("Problem")->search({ category => 'Report missed collection' })->order_by('-id')->first;
+        $missed->update_extra_field({ name => 'service_id', value => 960 }); # Update to Sutton bulky service ID
         $missed->update({ external_id => 'missed-guid', cobrand => 'sutton', bodies_str => $sutton->id });
 
         my $problem_url
@@ -1856,7 +1857,7 @@ FixMyStreet::override_config {
                 like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
                 like $email_html, qr{waste/12345/enquiry}, 'HTML alert contains report link';
 
-                my $link_part = "booking_id=" . $missed->id;
+                my $link_part = "booking_event=booking-guid";
                 # we only want the HTML link as the text version does not contain the link
                 my @links = $email_html =~ m{https?://[^"]+}g;
                 my @enq_links = grep( /enquiry/, @links );
@@ -1864,6 +1865,7 @@ FixMyStreet::override_config {
                 my $l = URI->new($enq_links[0]);
                 like $l->path_query, qr/$link_part/, 'link has correct booking_id';
                 $mech->get_ok($l->path_query);
+                $mech->submit_form_ok({ with_fields => { category => 'Missed collection dispute' } });
                 $mech->content_contains('No access due to parked vehicle', 'details of missed bin collection displayed');
                 $mech->content_contains('This photo provides the evidence', 'Has resolution photo text');
             };
@@ -1880,8 +1882,7 @@ FixMyStreet::override_config {
                 my @enq_links = grep( /enquiry/, @links );
                 my $l = URI->new($enq_links[0]);
                 $mech->get_ok($l->path_query);
-                $mech->content_lacks('Our crews reported that your collection was not made', 'details of missed bin collection displayed');
-                $mech->content_contains('Missed collections can only be disputed');
+                $mech->content_lacks('dispute');
             };
 
             set_fixed_time('2025-04-10T19:00:00Z');
