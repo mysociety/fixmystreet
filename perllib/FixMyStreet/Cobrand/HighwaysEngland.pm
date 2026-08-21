@@ -35,6 +35,8 @@ sub site_key { 'nationalhighways' }
 
 sub restriction { { cobrand => shift->moniker } }
 
+sub admin_show_body_stats { 0 }
+
 sub hide_areas_on_reports { 1 }
 
 sub send_questionnaires { 0 }

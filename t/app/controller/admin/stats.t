@@ -13,6 +13,26 @@ subtest "smoke view some stats pages" => sub {
     $mech->get_ok('/admin/stats/questionnaire');
 };
 
+subtest "body stats only shown where they are meaningful" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'fixmystreet' ],
+    }, sub {
+        $mech->get_ok('/admin/stats');
+        $mech->content_contains('council contacts');
+        $mech->get_ok('/status.json');
+        like $mech->content, qr/"bodies"/;
+    };
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'brent' ],
+    }, sub {
+        $mech->get_ok('/admin/stats');
+        $mech->content_lacks('council contacts');
+        $mech->get_ok('/status.json');
+        unlike $mech->content, qr/"bodies"/;
+    };
+};
+
 subtest "test refused stats page works" => sub {
     my $body1 = $mech->create_body_ok(2651, 'Edinburgh Council');
     my $body2 = $mech->create_body_ok(2237, 'Oxfordshire Council', { send_method  => 'Refused' });

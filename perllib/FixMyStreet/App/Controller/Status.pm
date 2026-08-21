@@ -58,9 +58,11 @@ sub index : Path : Args(0) {
             alerts_unconfirmed => $c->stash->{alerts}{0},
             questionnaires_sent => $c->stash->{questionnaires}{total},
             questionnaires_answered => $c->stash->{questionnaires}{1},
-            bodies => scalar @{$c->stash->{bodies}},
-            contacts => $c->stash->{contacts}{total},
         };
+        if ($c->cobrand->admin_show_body_stats) {
+            $data->{bodies} = scalar @{$c->stash->{bodies}};
+            $data->{contacts} = $c->stash->{contacts}{total};
+        }
         my $body = JSON->new->utf8(1)->pretty->encode($data);
         $c->res->body($body);
     }
