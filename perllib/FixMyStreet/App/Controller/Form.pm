@@ -28,7 +28,7 @@ controller is a subpath of another controller).
 
 =cut
 
-sub auto : Private {
+sub begin : Private {
     my ( $self, $c ) = @_;
     my $cobrand_check = $c->cobrand->feature( $self->feature );
     $c->detach( '/page_error_404_not_found' ) if !$cobrand_check;

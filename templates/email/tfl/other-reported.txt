@@ -1,6 +1,8 @@
 [%
 IF report.cobrand_data == 'licence';
     PROCESS 'other-reported-licence.txt';
+ELSIF report.cobrand_data == 'switchout';
+    PROCESS 'other-reported-switchout.txt';
 ELSE;
 ~%]
 Subject: Your report has been logged: [% report.title %]
