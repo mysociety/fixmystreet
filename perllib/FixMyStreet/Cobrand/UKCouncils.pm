@@ -354,6 +354,8 @@ sub admin_allow_user {
 
 sub admin_show_creation_graph { 0 }
 
+sub admin_show_body_stats { 0 }
+
 sub available_permissions {
     my $self = shift;
 

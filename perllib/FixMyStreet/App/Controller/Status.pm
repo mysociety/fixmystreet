@@ -54,14 +54,15 @@ sub index : Path : Args(0) {
         my $data = {
             version => $c->stash->{git_version},
             reports => $c->stash->{total_problems_live},
-            updates => $c->stash->{comments}{confirmed},
             alerts_confirmed => $c->stash->{alerts}{1},
             alerts_unconfirmed => $c->stash->{alerts}{0},
             questionnaires_sent => $c->stash->{questionnaires}{total},
             questionnaires_answered => $c->stash->{questionnaires}{1},
-            bodies => scalar @{$c->stash->{bodies}},
-            contacts => $c->stash->{contacts}{total},
         };
+        if ($c->cobrand->admin_show_body_stats) {
+            $data->{bodies} = scalar @{$c->stash->{bodies}};
+            $data->{contacts} = $c->stash->{contacts}{total};
+        }
         my $body = JSON->new->utf8(1)->pretty->encode($data);
         $c->res->body($body);
     }

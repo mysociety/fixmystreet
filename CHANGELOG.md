@@ -31,6 +31,7 @@
         - Require view dashboard permission in order to view the dashboard
         - Ensure OIDC email addresses are stored as lowercase.
         - Select correct category group on report inspect dropdowns, and allow updating of category group
+        - Remove update stats from admin stats and status pages. Also removes `updates` from `/status.json`.
     - Development improvements
         - More logging when `page_error` is called, to aid troubleshooting. #5279
         - Docker changes needed for systemd to work. #5257
