@@ -1824,7 +1824,8 @@ FixMyStreet::override_config {
             is @email, $emails;
             if ($emails == 2) {
                 like $mech->get_text_body_from_email($email[0]), qr/a resident has tried to request a container/;
-                like $mech->get_text_body_from_email($email[1]), qr/We aim to deliver this container/;
+                like $mech->get_text_body_from_email($email[1]), qr/Our officers aim to contact you regarding your request/;
+                unlike $mech->get_text_body_from_email($email[1]), qr/We aim to deliver this container/;
             } else {
                 like $mech->get_text_body_from_email($email[0]), qr/We aim to deliver this container/;
             }
