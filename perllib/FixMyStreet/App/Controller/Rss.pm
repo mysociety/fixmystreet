@@ -392,7 +392,6 @@ sub xsl : Path {
     };
     my $body = $c->view('Email')->render($c, 'xsl.xsl', $vars);
 
-    $body =~ s/&/&amp;/g;
     $c->response->header('Content-Type' => 'text/xml; charset=utf-8');
     $c->response->body($body);
 }
