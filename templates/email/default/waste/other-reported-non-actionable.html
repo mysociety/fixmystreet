@@ -16,7 +16,6 @@ INCLUDE '_email_top.html';
 
   <h1 style="[% h1_style %]">Your report has been&nbsp;logged</h1>
 
-  cat: [% report.category %]
   [% IF report.category == 'Report out-of-time missed collection' %]
   <p style="[% p_style %]">
     Thank you for reporting a missed [% bin_type %] collection on [% date.format(report.created, '%A, %-d %B') %].
