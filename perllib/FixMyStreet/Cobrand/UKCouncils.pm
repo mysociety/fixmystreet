@@ -159,7 +159,7 @@ members of the same council, have an email address in a specified domain, or
 users who have sent a report or update to that council) but from an already
 fetched list of users, rather than asking the database for all valid users.
 
-This is used by the admin user search, as the database query was too slow
+This is used by the admin user section, as the database query was too slow
 after the upgrade to PostgreSQL 15.
 
 =cut
@@ -169,16 +169,18 @@ sub users_restriction_in_code {
 
     my $body_id = $self->body->id;
     my $user_ids = [ map { $_->id } @$users ];
-    my %p = _users_restriction_lookup($self->problems, $user_ids);
-    my %u = _users_restriction_lookup($self->updates, $user_ids);
+    my $problems = $self->problems; # Separate line because it can return a list
+    my %p = _users_restriction_lookup($problems, $user_ids);
+    my $updates = $self->updates;
+    my %u = _users_restriction_lookup($updates, $user_ids);
     my @domains = $self->call_hook('admin_user_domain');
     my $domains = join('|', map { "\@$_" } @domains);
-    @$users = grep { $p{$_->id} || $u{$_->id} || $self->user_restriction_in_code($_, $body_id, $domains) } @$users;
+    @$users = grep { $p{$_->id} || $u{$_->id} || user_restriction_in_code($_, $body_id, $domains) } @$users;
 
 }
 
 sub user_restriction_in_code {
-    my ($self, $user, $body_id, $domains) = @_;
+    my ($user, $body_id, $domains) = @_;
     return 0 if $user->is_superuser;
     return 1 if $user->from_body && $user->from_body->id eq $body_id;
     return 1 if $user->email =~ /($domains)$/;
