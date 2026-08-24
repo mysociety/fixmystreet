@@ -4,11 +4,6 @@ use FixMyStreet::Script::Alerts;
 
 my $mech = FixMyStreet::TestMech->new;
 
-# Mock tilma so TfL's report_new_is_on_tlrn method doesn't make a live API call.
-use t::Mock::Tilma;
-my $tilma = t::Mock::Tilma->new;
-LWP::Protocol::PSGI->register( $tilma->to_psgi_app, host => qr/tilma/ );
-
 my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Southwark');
 
 $cobrand->mock('estate_feature_for_point', sub {

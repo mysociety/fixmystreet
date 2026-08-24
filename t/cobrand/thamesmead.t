@@ -2,10 +2,6 @@ use Test::MockModule;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::UpdateAllReports;
 use FixMyStreet::Script::Alerts;
-use t::Mock::Tilma;
-
-my $tilma = t::Mock::Tilma->new;
-LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => qr/tilma/);
 
 my $mech = FixMyStreet::TestMech->new;
 

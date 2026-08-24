@@ -5,10 +5,6 @@ use FixMyStreet::Script::Reports;
 use File::Temp 'tempdir';
 use_ok 'FixMyStreet::Geocode::Bexley';
 
-use t::Mock::Tilma;
-my $tilma = t::Mock::Tilma->new;
-LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => qr/tilma/);
-
 my $mech = FixMyStreet::TestMech->new;
 
 # disable info logs for this test run
