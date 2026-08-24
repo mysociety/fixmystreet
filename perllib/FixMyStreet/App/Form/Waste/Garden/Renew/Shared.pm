@@ -52,7 +52,7 @@ sub intro {
             my $bin_count = $c->get_param('bins_wanted') || $form_data->{bins_wanted} || $data->{bins} || 1;
             my $new_bins = $bin_count - $current_bins;
 
-            my $edit_current_allowed = $c->cobrand->call_hook('waste_allow_current_bins_edit');
+            my $edit_current_allowed = $c->cobrand->call_hook('waste_renewal_allow_current_bins_edit');
             my $bins_wanted_disabled = $c->cobrand->call_hook('waste_renewal_bins_wanted_disabled');
             my $costs = WasteWorks::Costs->new({
                 cobrand => $c->cobrand,

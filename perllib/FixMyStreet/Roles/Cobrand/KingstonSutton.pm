@@ -145,7 +145,8 @@ sub waste_password_hidden { 1 }
 
 =cut
 
-sub waste_allow_current_bins_edit { 1 }
+sub waste_renewal_allow_current_bins_edit { 1 }
+sub waste_modify_allow_current_bins_edit { 1 }
 
 =head2 waste_munge_report_form_fields
 
