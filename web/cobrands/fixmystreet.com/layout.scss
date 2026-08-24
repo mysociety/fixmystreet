@@ -135,16 +135,14 @@ body.mappage {
 
 .postcode-form-box {
     div {
-        font-size: 1.3em;
-        min-width: 20em;
+        font-size: 1.2rem;
     }
     label {
         font-family: $body-font;
     }
     input#pc {
-        color: #777;
+        color: #555;
         font-size: 0.9em;
-        height: 2.6em;
         &:focus {
             outline: 0;
         }

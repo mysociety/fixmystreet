@@ -47,6 +47,17 @@
   }
 }
 
+// Prevent overlap with logo
+.nav-menu {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: end;
+}
+
+#main-nav {
+  max-width: 80%;
+}
+
 /* FRONTPAGE */
 
 #front_stats {

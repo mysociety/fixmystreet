@@ -2899,6 +2899,7 @@ body.authpage {
     display: flex;
     flex-wrap: wrap;
     width: 100%;
+    max-width: 25rem;
     background: #fff;
     border: 1px solid $primary_b;
   }
