@@ -435,6 +435,51 @@ FixMyStreet::override_config {
             $mech->content_like(qr/Missed collection dispute.*disabled/s);
             $mech->content_contains('We are investigating the problem with this collection.');
         };
+
+        subtest 'Existing closed dispute event' => sub {
+            $mech->log_in_ok( $user->email );
+            set_fixed_time('2023-07-03T16:00:01Z');
+
+            my @tests = (
+                {
+                    name => "closed as justified",
+                    value => 1,
+                    button_text => 'Our investigation is complete',
+                    notice_text => 'We have completed our investigation and have found that your dispute is justified',
+                },
+                {
+                    name => "closed as justified",
+                    value => 2,
+                    button_text => 'Our investigation is complete',
+                    notice_text => 'We have completed our investigation and have found that your dispute is unjustified',
+                }
+            );
+
+            for my $test (@tests) {
+                subtest $test->{name} => sub {
+                    # Mock failed collection plus dispute
+                    $echo->mock('GetEventsForObject', sub { [ {
+                        %event_defaults,
+                        ResolutionCodeId => 66, # Not presented
+                    }, {
+                        Id => '112112321',
+                        EventTypeId => 3143, # Dispute
+                        EventStateId => 19232, # Closed
+                        ServiceId => 986, # Bulky
+                        EventDate => { DateTime => '2023-07-02T15:00:00Z' },
+                        ResolvedDate => { DateTime => "2023-07-03T18:03:00Z" },
+                        Data => { ExtensibleDatum => [ { DatatypeName => 'Justification', Value => $test->{value} } ] },
+                    } ] });
+
+                    get_problem_page();
+                    $mech->content_like(qr/Missed collection dispute.*disabled/s);
+                    $mech->content_contains($test->{button_text});
+                    $mech->content_contains($test->{notice_text});
+
+                };
+            }
+
+        };
     };
 
     subtest 'Dispute about resolution of bulky missed collection report' => sub {
