@@ -14,6 +14,7 @@ sub import {
 use Encode;
 use Test::WWW::Mechanize::Catalyst 'FixMyStreet::App';
 use t::Mock::MapIt;
+use t::Mock::Tilma;
 use Test::More;
 use Web::Scraper;
 use Carp;
