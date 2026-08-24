@@ -1915,8 +1915,26 @@ FixMyStreet::override_config {
         $dispute->update({ external_id => 'second-dispute-guid' });
 
         subtest 'Existing dispute event' => sub {
-            # Now mock there is an existing escalation
-            $echo->mock('GetEventsForObject', sub { [ {
+            my @tests = (
+                {
+                    name => "open dispute",
+                    closed => 0,
+                    notice_text => "We are investigating the problem with this collection",
+                },
+                {
+                    name => "closed as justified",
+                    closed => 1,
+                    value => 1,
+                    notice_text => "We will return to complete your request."
+                },
+                {
+                    name => "closed as unjustified",
+                    closed => 1,
+                    value => 2,
+                    notice_text => "Unfortunately, we cannot come back to complete your request."
+                },
+            );
+            my $mock = [ {
                 Id => '8004',
                 Guid => 'booking-guid',
                 ServiceId => 960, # Bulky
@@ -1940,12 +1958,28 @@ FixMyStreet::override_config {
                 EventStateId => 0,
                 ServiceId => 960, # Bulky
                 EventDate => { DateTime => "2025-04-11T19:00:00Z" },
-            } ] });
+                ResolvedDate => { DateTime => "2025-04-12T18:03:00Z" },
+                Data => { ExtensibleDatum => [ { DatatypeName => 'Justification', Value => 1 } ] }
+            } ];
 
             set_fixed_time('2025-04-12T19:00:00Z');
-            $mech->get_ok($problem_url);
-            $mech->content_like(qr/Missed collection dispute.*disabled/s);
-            $mech->content_contains('We are investigating the problem with this collection.');
+            for my $test (@tests) {
+                subtest $test->{name} => sub {
+                    # Now mock there is an existing dispute
+                    my @dupe = @{dclone($mock)};
+                    if ($test->{closed}) {
+                        $dupe[2]->{Data}->{ExtensibleDatum}->[0]->{Value} = $test->{value}
+                    } else {
+                        delete $dupe[2]->{Data};
+                        delete $dupe[2]->{ResolvedDate};
+                    }
+                    $echo->mock('GetEventsForObject', \@dupe);
+
+                    $mech->get_ok($problem_url);
+                    $mech->content_like(qr/Missed collection dispute.*disabled/s);
+                    $mech->content_contains($test->{notice_text});
+                };
+            }
         };
 
         subtest 'Complete missed collection' => sub {

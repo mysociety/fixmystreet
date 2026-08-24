@@ -243,7 +243,7 @@ around booked_check_missed_collection => sub {
         # we have reported a missed collection, the second collection has not been picked up
         # because of a problem so we can open a dispute about the second collection
         } elsif ($missed_event && $missed_event->{closed}) {
-            my $open_dispute = $self->_check_for_open_disputes($disputes, $missed_event->{report}->external_id);
+            my $current_dispute = $self->_check_for_open_disputes($disputes, $missed_event->{report}->external_id);
 
             my $within_window = $self->_check_date_within_dispute_window(
                 $missed_event->{date}, 'is_bulky',
@@ -252,7 +252,9 @@ around booked_check_missed_collection => sub {
                 type => 'missed_collection_report',
             );
 
-            if ($open_dispute){
+            if ($current_dispute && $current_dispute->{closed}) {
+                $missed->{$guid}{dispute}{closed} = $current_dispute;
+            } elsif ($current_dispute) {
                 $missed->{$guid}{dispute}{open} = 1;
             } elsif ($within_window eq 'within' && $resolution_valid) {
                 $missed->{$guid}{dispute}{allowed} = 1;
@@ -261,14 +263,16 @@ around booked_check_missed_collection => sub {
         # our original collection was not picked up because of a problem so we
         # can open a dispute about the original collection
         } elsif ($locked_out) {
-            my $open_dispute = $self->_check_for_open_disputes($disputes, $guid);
+            my $current_dispute = $self->_check_for_open_disputes($disputes, $guid);
             my $within_window = $self->_check_date_within_dispute_window(
                 $missed->{$guid}{report_locked_out_date}, 'is_bulky',
             );
             my $resolution_valid = $self->waste_check_can_raise_dispute(
                 resolution_key => $missed->{$guid}{resolution_id},
             );
-            if ($open_dispute) {
+            if ($current_dispute && $current_dispute->{closed}) {
+                $missed->{$guid}{dispute}{closed} = $current_dispute;
+            } elsif ($current_dispute) {
                 $missed->{$guid}{dispute}{open} = 1;
             } elsif ($within_window eq 'within' && $resolution_valid) {
                 $missed->{$guid}{dispute}{allowed} = 1;
