@@ -115,17 +115,22 @@ sub about_hook {
     }
 }
 
-=item * TfL has green pins for closed/fixed, red for confirmed, and orange for everything else
+=item * Customised pin colours
+
+TfL have a grey cross for closed reports; green tick for fixed;
+yellow cone for open; orange at work for other open states.
 
 =cut
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    return 'green' if $p->is_closed;
-    return 'green' if $p->is_fixed;
-    return 'red' if $p->state eq 'confirmed';
-    return 'orange'; # all the other `open_states` like "in progress"
+    return 'grey-cross' if $p->is_closed;
+    return 'green-tick' if $p->is_fixed;
+    return 'yellow-cone' if $p->state eq 'confirmed';
+    return 'orange-work'; # all the other `open_states` like "in progress"
 }
+
+sub path_to_pin_icons { '/i/pins/whole-shadow-cone-spot/' }
 
 =item * Superusers and TfL staff can access the TfL admin
 

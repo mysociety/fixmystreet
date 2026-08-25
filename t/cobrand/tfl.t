@@ -854,15 +854,19 @@ subtest 'check lookup by reference' => sub {
 for my $test (
     {
         states => [ 'confirmed' ],
-        colour => 'red'
+        colour => 'yellow-cone'
     },
     {
         states => ['action scheduled', 'in progress', 'investigating', 'planned'],
-        colour => 'orange'
+        colour => 'orange-work'
     },
     {
-        states => [ FixMyStreet::DB::Result::Problem->fixed_states, FixMyStreet::DB::Result::Problem->closed_states ],
-        colour => 'green'
+        states => [ FixMyStreet::DB::Result::Problem->fixed_states ],
+        colour => 'green-tick'
+    },
+    {
+        states => [ FixMyStreet::DB::Result::Problem->closed_states ],
+        colour => 'grey-cross'
     },
 ) {
     subtest 'check ' . $test->{colour} . ' pin states' => sub {
