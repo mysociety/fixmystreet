@@ -1130,20 +1130,27 @@ textarea.form-error {
   box-shadow: none;
 
   .dropzone-desktop {
-    display: block;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75em;
   }
   .dropzone-mobile {
     display: none;
   }
 
   .dropzone {
-    background-image: url("/cobrands/fixmystreet/images/icon-image-upload.svg");
-    background-repeat: no-repeat;
-    padding: 2em;
-    padding-left: 4rem;
-    background-position: 1em 1.25em;
-    background-size: 3rem;
+    padding: 2rem 1rem;
     border-width: 1px;
+
+    svg {
+      flex: 0 0 auto;
+      // Using lh units because we don't need to worry about each `font-family` cobrand's ascender.
+      width: 1lh;
+      height: 1lh;
+      // Using scale instead of just making the height and width larger, which would break the vertical alignment between the icon and the text next to it. Scale causes some overflow on its box, but this has been compensated for with an extra `gap: 0.75em`.
+      transform: scale(1.4);
+      transform-origin: left center;
+    }
 
     .dz-error-message  {
       padding-top: 0;
