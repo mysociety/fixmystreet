@@ -146,6 +146,43 @@ subtest 'superuser can see all bodies' => sub {
     $mech->content_contains('Role C');
 };
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'oxfordshire',
+    MAPIT_URL => 'http://mapit.uk',
+}, sub {
+    subtest 'superuser only sees cobrand body roles' => sub {
+        $mech->log_in_ok( $superuser->email );
+
+        $mech->get_ok("/admin/roles");
+        $mech->content_contains('Role B');
+        $mech->content_lacks('Role Z');
+        $mech->content_lacks('Role C');
+        $mech->content_lacks('Bromley');
+
+        $mech->follow_link_ok({ text => 'Create' });
+        $mech->content_lacks('Body');
+        $mech->submit_form_ok({ with_fields => {
+            name => 'Role D',
+            permissions => 'contribute_as_body',
+        }});
+        $mech->content_contains('Role D');
+        my $role_d = FixMyStreet::DB->resultset("Role")->find({ name => 'Role D' });
+        is $role_d->body_id, $body->id, 'role created for cobrand body';
+    };
+
+    subtest "superuser cannot edit another body's role" => sub {
+        my $role_z = FixMyStreet::DB->resultset("Role")->find({ name => 'Role Z' });
+        $mech->get('/admin/roles/' . $role_z->id);
+        is $mech->res->code, 404, 'cannot edit role of another body';
+    };
+
+    subtest 'user role filter only lists cobrand body roles' => sub {
+        $mech->get_ok('/admin/users');
+        $mech->content_contains('Role B');
+        $mech->content_lacks('Role Z');
+    };
+};
+
 subtest 'check log of the above' => sub {
     my $id = FixMyStreet::DB->resultset("Role")->find({ name => "Role B" })->id;
     $mech->get_ok('/admin/users/' . $editor->id . '/log');

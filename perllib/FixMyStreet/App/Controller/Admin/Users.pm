@@ -104,7 +104,10 @@ sub index :Path : Args(0) {
 
     my $rs;
     if ($c->user->is_superuser) {
-        $rs = $c->model('DB::Role')->search_rs({}, { join => 'body', order_by => ['body.name', 'me.name'] });
+        # On a cobrand associated with a body, only show that body's roles
+        my $body = $c->cobrand->body;
+        my $search = $body ? { 'me.body_id' => $body->id } : {};
+        $rs = $c->model('DB::Role')->search_rs($search, { join => 'body', order_by => ['body.name', 'me.name'] });
         $rs = $rs->search(undef, {
             '+columns' => { 'body.msgstr' => \'COALESCE(translation_name.msgstr, body.name)' },
             join => { body => 'translation_name' },
