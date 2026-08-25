@@ -1775,6 +1775,7 @@ FixMyStreet::override_config {
     # this is disputing an attempt to collect after a missed collection report
     subtest 'Dispute of missed collections' => sub {
         my $missed = FixMyStreet::DB->resultset("Problem")->search({ category => 'Report missed collection' })->order_by('-id')->first;
+        $missed->update_extra_field({ name => 'service_id', value => '960'});
         $missed->update({ external_id => 'missed-guid', cobrand => 'sutton', bodies_str => $sutton->id });
 
         my $problem_url

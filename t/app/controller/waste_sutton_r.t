@@ -1290,6 +1290,7 @@ FixMyStreet::override_config {
                 '"too late" messaging not shown';
         };
 
+        $missed_report->update_extra_field({ name => 'service_id', value => '940'});
         $missed_report->update({ external_id => 'missed-collection-guid' });
         my $comment = FixMyStreet::DB->resultset('Comment')->create(
             {
@@ -1329,15 +1330,11 @@ FixMyStreet::override_config {
             my @links = $email_html =~ m{https?://[^"]+}g;
             my @enq_links = grep( /enquiry/, @links );
             # need to strip the host otherwise we're not logged in
+            warn @enq_links;
             my $l = URI->new($enq_links[0]);
+            like $l, qr'enquiry\?template=problem';
             $mech->get_ok($l->path_query);
-            $mech->content_contains('Contaminated (builder’s waste)', 'details of missed bin collection displayed');
-
-            # XXX Email link uses 'original_booking_id' param here to denote
-            # missed collection report ID, but 'original_booking_id' should
-            # really only refer to bulky/small item reports. Also, photo
-            # does not appear when form accessed from web below.
-            $mech->content_contains('This photo provides the evidence', 'Has resolution photo text');
+            $mech->content_contains('Dispute collection closure reason', 'has dispute option');
         };
 
         subtest 'Create dispute for non complete missed bin report' => sub {

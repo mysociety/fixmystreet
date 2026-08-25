@@ -566,7 +566,7 @@ FixMyStreet::override_config {
                 like $email_html, qr/Resolution text/, 'Reason pulled from comment';
                 like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
                 like $email_html,
-                    qr{/12345/enquiry\?category=Missed\+collection\+dispute&service_id=986&original_booking_id=.+},
+                    qr{/12345/enquiry\?category=Missed\+collection\+dispute&original_booking_id=.+&service_id=986},
                     'HTML alert contains dispute link';
 
                 # we only want the HTML link as the text version does not contain the link
