@@ -29,6 +29,18 @@ my $contact = $mech->create_contact_ok(body => $body, ( category => 'Report miss
     );
 $contact->update;
 
+$contact = $mech->create_contact_ok(body => $body, group => ['Waste'],
+    category => 'Request additional collection', email => 'additional@example.org',
+    extra => { type => 'waste' });
+  $contact->set_extra_fields(
+        { code => 'property_id', required => 1, automated => 'hidden_field' },
+        { code => 'service_id', required => 0, automated => 'hidden_field' },
+        { code => 'Exact_Location', required => 0, automated => 'hidden_field' },
+        { code => 'Original_Event_ID', required => 0, automated => 'hidden_field' },
+        { code => 'Notes', required => 0, automated => 'hidden_field' },
+    );
+$contact->update;
+
 my $contact_centre_user = $mech->create_user_ok('contact@example.org', from_body => $body, email_verified => 1, name => 'Contact 1');
 $contact_centre_user->user_body_permissions->create({ body => $body, permission_type => 'report_view_private' });
 $contact_centre_user->user_body_permissions->create({ body => $body, permission_type => 'wasteworks_config' });
@@ -828,50 +840,33 @@ FixMyStreet::override_config {
         };
 
         subtest 'Pay and confirm amendment' => sub {
-            my $mech2 = $mech->clone;
-            $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
-            is $mech2->res->previous->code, 302, 'payments issues a redirect';
-            is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+            $mech->submit_form_ok({ with_fields => { payment_method => 'waived', payment_explanation => 'Paid in cash', tandc => 1 } });
+
+            $new_report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
 
             FixMyStreet::Script::Alerts::send_updates();
-            $mech->email_count_is(0); # No cancellation update, not been confirmed yet
-            $mech->clear_emails_ok;
-
-            $report->discard_changes;
-            is $report->state, 'confirmed';
-
-            my ($token, $report_id);
-            ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
-
-            is $new_report->category, 'Bulky collection', 'correct category on report';
-            is $new_report->title, 'Bulky goods collection', 'correct title on report';
-            is $new_report->get_extra_field_value('payment_method'), 'csc', 'correct payment method on report';
-            is $new_report->state, 'confirmed', 'report confirmed';
-            is $new_report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
-
-            is $sent_params->{items}[0]{amount}, 2375, 'correct amount used';
-            is $sent_params->{items}[0]{cost_code}, '20180282880000000000000';
-            is $sent_params->{items}[0]{reference}, 'LBM-BWC-' . $new_report->id;
-
-            $mech->clear_emails_ok;
-            FixMyStreet::Script::Reports::send();
-            $mech->email_count_is(1); # Only email is 'email' to council
-            $mech->clear_emails_ok;
-
-            $mech->get_ok("/waste/pay_complete/$report_id/$token");
-            is $sent_params->{reference}, 12345, 'correct scpReference sent';
-            FixMyStreet::Script::Reports::send();
             my $email = $mech->get_email;
             is $email->header('Subject'), 'Bulky waste collection service - reference ' . $new_report->id;
             $mech->clear_emails_ok;
-            $new_report->discard_changes;
-            is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+
+            $report->discard_changes;
+            is $report->state, 'cancelled';
+
+            is $new_report->category, 'Bulky collection', 'correct category on report';
+            is $new_report->title, 'Bulky goods collection', 'correct title on report';
+            is $new_report->get_extra_field_value('payment_method'), 'waived', 'correct payment method on report';
+            is $new_report->state, 'confirmed', 'report confirmed';
+            is $new_report->get_extra_metadata('payment_explanation'), 'Paid in cash';
+            is $new_report->get_extra_metadata('payment_reference'), 'waived', 'correct payment reference on report';
+
+            FixMyStreet::Script::Reports::send();
+            $mech->clear_emails_ok;
 
             is $new_report->comments->count, 1; # Payment confirmed update
             my $update = $new_report->comments->first;
             is $update->state, 'confirmed';
-            is $update->text, 'Payment confirmed, reference 54321, amount £23.75';
-            is $update->get_extra_metadata('fms_extra_payments'), '54321|23.75|6789|0.00|54321|37.00';
+            is $update->text, 'Payment confirmed, reference waived, amount £23.75';
+            is $update->get_extra_metadata('fms_extra_payments'), 'waived|23.75|6789|0.00|54321|37.00';
             FixMyStreet::Script::Alerts::send_updates();
             $mech->email_count_is(0); # No cancellation update
             $mech->clear_emails_ok;
@@ -1241,6 +1236,52 @@ FixMyStreet::override_config {
         $mech->content_contains('A missed bulky waste collection has been reported');
         $mech->get_ok('/waste/12345/report');
         $mech->content_lacks('Bulky waste collection');
+        $echo->mock( 'GetEventsForObject', sub { [] } );
+    };
+
+    subtest 'Additional collections' => sub {
+        $mech->log_in_ok( $contact_centre_user->email );
+        $echo->mock( 'GetEventsForObject', sub { [ {
+            Guid => 'a-guid',
+            EventTypeId => 3130,
+            ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
+            ResolutionCodeId => 466,
+            EventStateId => 19185,
+        } ] } );
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('A missed collection cannot be reported', 'Not completed');
+        $mech->content_contains('Gate locked');
+        $mech->follow_link_ok({ text => 'Request an additional bulky waste collection' });
+        $mech->content_contains('Bulky waste collection');
+        $mech->content_contains('Request additional collection');
+        $mech->submit_form_ok({ form_number => 1 });
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
+        $mech->submit_form_ok({ form_number => 3 });
+
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('Exact_Location'), 'in the middle of the drive';
+        is $report->title, 'Request additional bulky collection';
+        is $report->category, 'Request additional collection';
+        is $report->get_extra_field_value('Original_Event_ID'), 'a-guid';
+
+        $echo->mock( 'GetEventsForObject', sub { [ {
+            Guid => 'a-guid',
+            EventTypeId => 3130,
+            ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
+            ResolutionCodeId => 466,
+            EventStateId => 19185,
+        }, {
+            EventTypeId => 3160,
+            EventStateId => 0,
+            ServiceId => 1089,
+            Guid => 'guid',
+            EventDate => { DateTime => '2023-07-05T00:00:00Z' },
+        } ] } );
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('An additional collection request has been made');
+        $mech->get_ok('/waste/12345/report');
+        $mech->content_lacks('Bulky waste collection');
+
         $echo->mock( 'GetEventsForObject', sub { [] } );
     };
 

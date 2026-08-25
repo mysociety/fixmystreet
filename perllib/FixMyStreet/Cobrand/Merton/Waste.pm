@@ -876,5 +876,31 @@ sub unset_free_bulky_used {
     }
 }
 
+=head2 Additional collections
+
+Spot an open bulky additional collection. Scheduled collections are
+handled in C<munge_bin_services_for_address>.
+
+=cut
+
+around booked_check_missed_collection => sub {
+    my ($orig, $self, $type, $events, $blocked_codes) = @_;
+
+    $self->$orig($type, $events, $blocked_codes);
+
+    # Now check for any open additional collections
+
+    my $cfg = $self->feature('echo');
+    my $service_id = $cfg->{$type . '_service_id'} or return;
+
+    my $additionals = $events->filter({ event_type => $EVENT_TYPE_IDS{additional_collection}, service => $service_id, closed => 0 });
+    if ($additionals) {
+        my $missed = $self->{c}->stash->{booked_missed};
+        foreach my $guid (keys %$missed) {
+            $missed->{$guid}{additional_open} = 1;
+        }
+    }
+
+};
 
 1;

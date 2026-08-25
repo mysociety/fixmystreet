@@ -281,6 +281,8 @@ sub bulky_total_cost {
     my ($self, $data) = @_;
     my $c = $self->{c};
 
+    return if $c->stash->{small_items}; # Small items aren't charged for
+
     my %pop_items;
     if ($self->bulky_pop_item_costs) {
         %pop_items = map { $_->{name} => 1 } grep { $_->{contains_pops} } @{ $self->bulky_items_master_list };
