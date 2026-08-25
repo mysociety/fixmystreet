@@ -42,6 +42,17 @@
   }
 }
 
+// Prevents overlap with logo. Even when logged in with admin account.
+.nav-menu {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: end;
+}
+
+#main-nav {
+  max-width: 60%;
+}
+
 /* FRONTPAGE */
 #front-main {
   margin: 0 0 45px 0;
