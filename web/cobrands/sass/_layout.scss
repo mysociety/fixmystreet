@@ -51,14 +51,18 @@ $postcodeform-color-desktop: $primary_text !default;
 $form-hint-color-desktop: transparentize($postcodeform-color-desktop, 0.2) !default;
 $front-main-h2-color-desktop: transparentize($front-main-color-desktop, 0.1) !default;
 // This variable will be helpful for cobrands where the copy inside the postcode form is too long leaving to no space available for the image report first form.
-$postcodeform-max-width: 55% !default;
+$postcodeform-max-width: 50% !default;
 
 //This variable controls the color of .content for the front-page
 $content-background-desktop: #fff !default;
 
+// Most cobrands will use `space-between`, but some might have wider containers, hence the forms(postcode and image) will look quite apart, so they would benefit from `flex-start` instead.
+$report-forms-wrapper-flex-justify-content: space-between !default;
 // Gap between the postcode form and the dropzone form
-$report-forms-wrapper-flex-column-gap: 7rem !default;
-$report-forms-wrapper-flex-row-gap: 2rem !default;
+$report-forms-wrapper-flex-column-gap: 4em !default;
+$report-forms-wrapper-flex-row-gap: 2em !default;
+// Prevents wrapping on smaller screens.
+$report-forms-wrapper-flex-wrap: nowrap !default;
 $report-forms-wrapper-margin-top: 1rem !default;
 
 // Useful when a cobrand has a front-main container with dark background.
@@ -1028,10 +1032,11 @@ textarea.form-error {
 .report-forms-wrapper {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
   column-gap: $report-forms-wrapper-flex-column-gap;
   row-gap: $report-forms-wrapper-flex-row-gap;
-  
+  justify-content: $report-forms-wrapper-flex-justify-content;
+  flex-wrap: $report-forms-wrapper-flex-wrap;
+
   color: $postcodeform-color-desktop;
   background: $postcodeform-background-desktop;
   
