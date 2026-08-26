@@ -302,6 +302,16 @@ canalrivertrust:
         asset_found: fixmystreet.assets.canalrivertrust.asset_found
         asset_not_found: fixmystreet.assets.canalrivertrust.asset_not_found
       feature_code: sap_description
+    - name: web_csf_facilities
+      template: arcgis_spot
+      http_options:
+        url: https://services.arcgis.com/DknzyjEEie5tEW0u/arcgis/rest/services/Web_CSF_Facilities/FeatureServer/0/query
+        params:
+          inSR: 3857
+          outSR: 3857
+          f: geojson
+          outFields: sap_func_loc
+      asset_item_message: ''
   # Structures
   - name: CRT Bridges
     asset_category:
@@ -310,6 +320,14 @@ canalrivertrust:
     template: arcgis_spot
     http_options:
       url: https://services.arcgis.com/DknzyjEEie5tEW0u/arcgis/rest/services/Canal_And_River_Trust_Bridges_View/FeatureServer/0/query
+  # CSF Facilities
+  - name: CRT Elsan
+    asset_category: Elsan (CRT)
+    asset_item: elsan
+    template: web_csf_facilities
+    http_options:
+      params:
+        where: "facility_type='elsan_point'"
 
 lincolnshire:
   - wfs_url: "https://tilma.staging.mysociety.org/mapserver/lincs"
