@@ -290,6 +290,34 @@ sub pin_colour {
     return 'red';
 }
 
+sub pin_colour_key {
+    [
+        [ 'red',
+'Open
+Action scheduled',
+        ],
+        [ 'orange',
+'Investigating
+Planned
+Internal referral
+Defect',
+        ],
+        [ 'orange-work',
+'In progress',
+        ],
+        [ 'green',
+'Fixed
+Closed',
+        ],
+        # CHECKME What does 'DPM' priority code mean?
+        [ 'grey',
+'Not responsible
+Unable to fix
+Priority code DPM',
+        ],
+    ];
+}
+
 sub lookup_site_code_config {
     my ($self, $property) = @_;
 

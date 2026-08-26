@@ -353,6 +353,26 @@ sub pin_colour {
     return $self->next::method($p, $context);
 }
 
+sub pin_colour_key {
+    my ( $self, $context ) = @_;
+
+    my @keys;
+
+    # From Default.pm
+    if ( $context eq 'around' || $context eq 'reports' || $context eq 'report' ) {
+        push @keys, [ 'yellow', 'Other' ];
+    } else {
+        push @keys, [ 'green', 'Fixed' ];
+        push @keys, [ 'red', 'Other' ];
+    }
+
+    if ( $context ne 'reports' ) {
+        push @keys, [ 'grey', 'Other council/authority' ];
+    }
+
+    return \@keys;
+}
+
 # If we ever link to a county problem report, or a TfL report,
 # needs to be to main FixMyStreet
 sub base_url_for_report {
