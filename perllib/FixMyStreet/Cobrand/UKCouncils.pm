@@ -161,6 +161,56 @@ sub users_restriction {
     return $rs->search($query);
 }
 
+=head2 users_restriction_in_code
+
+This performs the same function as users_restriction above (users who are
+members of the same council, have an email address in a specified domain, or
+users who have sent a report or update to that council) but from an already
+fetched list of users, rather than asking the database for all valid users.
+
+This is used by the admin user section, as the database query was too slow
+after the upgrade to PostgreSQL 15.
+
+=cut
+
+sub users_restriction_in_code {
+    my ($self, $users) = @_;
+
+    my $body_id = $self->body->id;
+    my $user_ids = [ map { $_->id } @$users ];
+    my $problems = $self->problems; # Separate line because it can return a list
+    my %p = _users_restriction_lookup($problems, $user_ids);
+    my $updates = $self->updates;
+    my %u = _users_restriction_lookup($updates, $user_ids);
+    my @domains = $self->call_hook('admin_user_domain');
+    my $domains = join('|', map { "\@$_" } @domains);
+    @$users = grep { $p{$_->id} || $u{$_->id} || user_restriction_in_code($_, $body_id, $domains) } @$users;
+
+}
+
+sub user_restriction_in_code {
+    my ($user, $body_id, $domains) = @_;
+    return 0 if $user->is_superuser;
+    return 1 if $user->from_body && $user->from_body->id eq $body_id;
+    return 1 if $user->email =~ /($domains)$/;
+    return 0;
+}
+
+# This doesn't do nothing, as it might appear from first glance,
+# because $rs will be e.g. restricting to a particular body, so
+# this will remove users that have no output in that $rs.
+sub _users_restriction_lookup {
+    my ($rs, $user_ids) = @_;
+    my @objects = $rs->search({
+        'me.user_id' => $user_ids
+    }, {
+        columns => [ 'user_id' ],
+        distinct => 1
+    })->all;
+    my %lookup = map { $_->user_id => 1 } @objects;
+    return %lookup;
+}
+
 sub users_staff_admin {
     my $self = shift;
     return FixMyStreet::DB->resultset('User')->search({ is_superuser => 0, from_body => $self->body->id });

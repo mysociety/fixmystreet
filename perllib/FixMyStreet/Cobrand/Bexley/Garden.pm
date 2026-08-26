@@ -343,6 +343,12 @@ sub garden_due_date {
     return $end_date->subtract(days => 42);
 };
 
+=item * Allow people to edit the current number of bins when renewing
+
+=cut
+
+sub waste_renewal_allow_current_bins_edit { 1 }
+
 =head2 garden_renew_as_new_days
 
 A garden waste renewal request for a subscription that has been expired for

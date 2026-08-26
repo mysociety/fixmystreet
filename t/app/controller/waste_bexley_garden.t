@@ -1123,6 +1123,7 @@ FixMyStreet::override_config {
 
                     $mech->submit_form_ok(
                         {   with_fields => {
+                                current_bins => 1,
                                 bins_wanted => 2,
                                 payment_method => 'credit_card',
                             },
@@ -1137,8 +1138,8 @@ FixMyStreet::override_config {
                     check_extra_data_pre_confirm(
                         $renew_report,
                         type         => 'New',
-                        current_bins => 2,
-                        new_bins     => 0,
+                        current_bins => 1,
+                        new_bins     => 1,
                         bins_wanted  => 2,
                         customer_external_ref => '',
                         renew_as_new_subscription => 1,

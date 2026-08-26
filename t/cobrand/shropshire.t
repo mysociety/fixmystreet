@@ -268,6 +268,25 @@ FixMyStreet::override_config {
         $mech->get_ok('/dashboard?export=1');
         $mech->content_contains('website,shropshire,,No,1');
 
+        # Unconfirmed alerts shouldn't be included in alert count
+        my $unconfirmed = FixMyStreet::DB->resultset('Alert')->create( {
+            parameter  => $report->id,
+            alert_type => 'new_updates',
+            user       => $councillor,
+        } );
+        $mech->get_ok('/dashboard?export=1');
+        $mech->content_contains('website,shropshire,,No,1');
+        my $yesterday = \"current_timestamp - '1 day'::interval";
+        $report->update( { created => $yesterday, confirmed => $yesterday } );
+        FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
+        $mech->get_ok('/dashboard?export=1');
+        $mech->content_contains('website,shropshire,,No,1');
+
+        # Once confirmed, it should increase the alert count
+        $unconfirmed->confirm;
+        FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
+        $mech->get_ok('/dashboard?export=1');
+        $mech->content_contains('website,shropshire,,No,2');
     };
 };
 
