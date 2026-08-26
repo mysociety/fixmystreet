@@ -276,6 +276,41 @@ camden:
     max_resolution: 0.5971642833948135
     wfs_feature: Trees
 
+canalrivertrust:
+  -
+    - name: arcgis_default
+      srsName: EPSG:3857
+      geometryName: SHAPE
+      protocol_class: OpenLayers.Protocol.ArcgisHTTP
+      format_class: OpenLayers.Format.GeoJSON
+      asset_id_field: OBJECTID
+      http_options:
+        params:
+          inSR: 3857
+          outSR: 3857
+          f: geojson
+          outFields: sap_func_loc, sap_description
+          where: 1=1
+      attributes:
+        location_description: sap_func_loc
+    - name: arcgis_spot
+      template: arcgis_default
+      asset_type: spot
+      class: OpenLayers.Layer.VectorAssetMove
+      max_resolution: 1.75
+      actions:
+        asset_found: fixmystreet.assets.canalrivertrust.asset_found
+        asset_not_found: fixmystreet.assets.canalrivertrust.asset_not_found
+      feature_code: sap_description
+  # Structures
+  - name: CRT Bridges
+    asset_category:
+      - Bridges (CRT)
+    asset_item: bridge
+    template: arcgis_spot
+    http_options:
+      url: https://services.arcgis.com/DknzyjEEie5tEW0u/arcgis/rest/services/Canal_And_River_Trust_Bridges_View/FeatureServer/0/query
+
 lincolnshire:
   - wfs_url: "https://tilma.staging.mysociety.org/mapserver/lincs"
     geometryName: 'msGeometry'
@@ -692,4 +727,3 @@ gloucester:
     http_options:
       params:
         layer: all_plots
-
