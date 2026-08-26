@@ -1,0 +1,24 @@
+{
+    "type": "FeatureCollection",
+    "crs": {
+        "type": "name",
+        "properties": {
+            "name": "EPSG:3857"
+        }
+    },
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -10794.0294374621,
+                    6716106.56131897
+                ]
+            },
+            "properties": {
+                "sap_func_loc": "RE-008-061"
+            }
+        }
+    ]
+}
