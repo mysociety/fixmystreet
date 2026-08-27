@@ -120,10 +120,9 @@ sub munge_report_new_bodies {
 sub munge_report_new_contacts {
     my ($self, $contacts) = @_;
 
-    my $code = 'CRT';
     foreach my $c (@$contacts) {
         my $clean_name = $c->category_display;
-        if ($clean_name =~ s/ \($code\)//) {
+        if ($clean_name =~ s/ \(CRT:.*?\)//) {
             $c->set_extra_metadata(display_name => $clean_name);
         }
     }
@@ -131,7 +130,7 @@ sub munge_report_new_contacts {
 
 sub admin_contact_validate_category {
     my ( $self, $category ) = @_;
-    return "(CRT)" eq substr($category, -5) ? "" : "Category must end with (CRT).";
+    return $category =~ /\(CRT: \w.*?\)/ ? "" : "Category must end with (CRT: <group_name>).";
 }
 
 sub open311_extra_data_include {
