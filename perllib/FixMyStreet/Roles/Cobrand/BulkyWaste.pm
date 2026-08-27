@@ -4,7 +4,6 @@ use Moo::Role;
 use JSON::MaybeXS;
 use FixMyStreet::Map;
 use List::Util qw(max);
-use List::MoreUtils qw(slideatatime);
 
 =head1 NAME
 
@@ -716,7 +715,7 @@ sub bulky_reminders {
         });
     }
 
-    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->truncate( to => 'day' );
 
     while (my $report = $collections->next) {
         my $dt = $self->collection_date($report);
@@ -727,7 +726,7 @@ sub bulky_reminders {
         # already passed) then mark this report as done so we don't see it
         # again tomorrow.
         my $cancelled = $self->bulky_is_cancelled($report);
-        if ( $cancelled || $dt < $now) {
+        if ( $cancelled || $dt <= $now) {
             $report->set_extra_metadata(reminder_1 => 1);
             $report->set_extra_metadata(reminder_3 => 1);
             $report->update;
@@ -748,12 +747,10 @@ sub bulky_reminders {
 
         next if $report->get_extra_metadata("reminder_1"); # No reminders left to do
 
-        my $it = slideatatime 1, 2, @days;
-        while (my ($curr, $next) = $it->()) {
+        foreach my $curr (@days) {
             my $r = $report->get_extra_metadata("reminder_$curr");
             my $dc = $dt->clone->subtract(days => $curr);
-            my $dn = $dt->clone->subtract(days => ($next || 0));
-            if (!$r && $now >= $dc && $now < $dn) {
+            if (!$r && $now == $dc) {
                 $h->{days} = $curr;
                 $self->_bulky_send_reminder_email($report, $h, $params);
                 $self->_bulky_send_reminder_text($report, $h, $params);

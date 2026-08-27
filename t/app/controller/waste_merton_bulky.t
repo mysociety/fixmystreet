@@ -1492,8 +1492,11 @@ FixMyStreet::override_config {
 
     subtest 'Discounted email reminders' => sub {
         my $cobrand = $body->get_cobrand_handler;
+        my $date = '2023-06-06'; # 3rd would get one, but 6th midway between should not
+        set_fixed_time($date . 'T05:44:59Z');
+        $cobrand->bulky_reminders;
+        $mech->email_count_is(0);
         foreach (
-            { date => '2023-06-03', days => '28 days' },
             { date => '2023-06-10', days => '21 days' },
             { date => '2023-06-17', days => '14 days' },
             { date => '2023-06-24', days => '7 days' },
