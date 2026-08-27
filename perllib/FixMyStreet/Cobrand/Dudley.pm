@@ -56,6 +56,17 @@ sub abuse_reports_only { 1 }
 
 sub on_map_default_status { 'open' }
 
+=item * The default map view shows closed/fixed reports for 30 days
+
+=cut
+
+sub report_age {
+    return {
+        closed => '30 days',
+        fixed  => '30 days',
+    };
+}
+
 =item * Some customised pins (yellow/blue/green/grey)
 
 =cut
@@ -74,6 +85,12 @@ sub pin_colour {
 =cut
 
 sub report_sent_confirmation_email { 'id' }
+
+=item * No questionnaires
+
+=cut
+
+sub send_questionnaires { 0 }
 
 =item * Starts the map more zoomed in than the default
 

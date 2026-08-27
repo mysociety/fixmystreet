@@ -36,6 +36,8 @@ sub lookup {
     }
     $data = string($s, $c)
         unless $data->{error} || defined $data->{latitude};
+    $data = $c->cobrand->call_hook(geocode_postcode_fallback => $s)
+        unless $data->{error} || defined $data->{latitude};
     $data->{error} = _('Sorry, we could not find that location.')
         unless $data->{error} || defined $data->{latitude};
     return ( $data->{latitude}, $data->{longitude}, $data->{error} );

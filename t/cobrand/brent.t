@@ -40,10 +40,10 @@ $gc->mock('cache', sub {
                            ],
           'osm_id' => 507095202
         },
-        { # duplicate so we don't jump straight to report page with only one result
+        { # near duplicate so we don't jump straight to report page with only one result
           'osm_type' => 'way',
           'type' => 'tertiary',
-          'display_name' => 'Engineers Way, London Borough of Brent, London, Greater London, England, HA9 0FJ, United Kingdom',
+          'display_name' => 'Engineers Road, London Borough of Brent, London, Greater London, England, HA9 0FJ, United Kingdom',
           'licence' => "Data \x{a9} OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
           'lat' => '51.55904',
           'importance' => '0.40001',
