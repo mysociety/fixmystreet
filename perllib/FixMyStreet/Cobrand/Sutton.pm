@@ -424,7 +424,7 @@ sub waste_request_form_first_next {
         my $data = shift;
         my $choice = $data->{"container-choice"};
         return 'about_you' if $choice == $CONTAINERS{recycling_blue_bag} || $choice == $CONTAINERS{paper_bag};
-        foreach ($CONTAINERS{refuse_140}, $CONTAINERS{refuse_240}, $CONTAINERS{paper_240}, $CONTAINERS{paper_360}) {
+        foreach ($CONTAINERS{refuse_140}, $CONTAINERS{refuse_240}, $CONTAINERS{paper_240}, $CONTAINERS{paper_360}, $CONTAINERS{food_outdoor_premium}) {
             if ($choice == $_ && !$containers->{$_}) {
                 $data->{request_reason} = 'change_capacity';
                 return 'about_you';
@@ -515,6 +515,9 @@ sub waste_munge_request_data {
         } elsif ($id == $CONTAINERS{paper_360}) {
             $reason_id = '9::9'; # Increase Capacity
             $id_to_remove = $CONTAINERS{paper_240};
+        } elsif ($id == $CONTAINERS{food_outdoor_premium}) {
+            $reason_id = '8::12'; # Remove Containers / Add to Service
+            $id_to_remove = $CONTAINERS{food_outdoor};
         }
     } else {
         # No reason, must be a bag
