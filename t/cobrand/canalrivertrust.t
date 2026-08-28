@@ -29,6 +29,8 @@ my $staff_user = $mech->create_user_ok(
     from_body => $body,
 );
 
+$staff_user->user_body_permissions->create({ body => $body, permission_type => 'category_edit' });
+
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'fixmystreet', 'canalrivertrust' ],
     MAPIT_URL        => 'http://mapit.uk/',
@@ -95,6 +97,60 @@ FixMyStreet::override_config {
             }
         }
     }
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'canalrivertrust' ],
+    MAPIT_URL        => 'http://mapit.uk/',
+    COBRAND_FEATURES => {
+    },
+}, sub {
+    $mech->get_ok( '/reports' );
+    $mech->content_contains('Get updates of reports on the Canal & River Trust');
+    $mech->content_lacks('class="has-inline-svg">Wards of this council');
+    $mech->content_contains('href="/rss/reports/Canal+&amp;+River+Trust"');
+    $mech->get_ok( '/rss/reports/Canal+&+River+Trust' ); # Browser decoded &amp;
+    $mech->content_contains('New problems to Canal &amp; River Trust on Canal &amp; River Trust');
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'canalrivertrust' ],
+    MAPIT_URL => 'http://mapit.uk/',
+    BASE_URL => 'http://www.example.org',
+    COBRAND_FEATURES => {
+       category_groups => { canalrivertrust => 1 },
+    }
+}, sub {
+    subtest 'Displays and protects category names' => sub {
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/admin/body/' . $body->id);
+        $mech->follow_link_ok({ text => 'Add new category' });
+        $mech->content_contains('Parent categories');
+        $mech->submit_form_ok( { with_fields => {
+                                                 category => 'Access issues (CRT)',
+                                                 group => 'Aqueduct',
+                                                 email => 'AccessIssues@test.com',
+                                                }
+                               });
+        $mech->content_contains('Category must end with (CRT: &lt;group_name&gt;)');
+        $mech->submit_form_ok( { with_fields => {
+                                                 category => 'Access issues (CRT: Aqueduct)',
+                                                 group => 'Aqueduct',
+                                                 email => 'AccessIssues@test.com',
+                                                }
+                               });
+        $mech->content_contains('New category contact added');
+
+        $mech->get_ok('/around');
+        $mech->submit_form_ok( { with_fields => { pc => 'GL50 2PR' } },
+            'submit location' );
+        $mech->follow_link_ok(
+            { text_regex => qr/skip this step/i, },
+            "follow 'skip this step' link"
+                             );
+
+        $mech->content_contains('data-category_display="Access issues"');
+    };
 };
 
 done_testing();

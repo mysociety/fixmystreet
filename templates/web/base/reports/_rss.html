@@ -1,4 +1,3 @@
-[% UNLESS c.cobrand.moniker == 'canalrivertrust' %]
 <div id="key-tools-wrapper" class="shadow-wrap">
     <ul id="key-tools" class="js-key-tools">
         <li class="feed-list-wrapper">
@@ -13,6 +12,8 @@
                 'Get updates of reports in this ward';
             ELSIF c.cobrand.is_council;
                 tprintf(loc('Get updates of %s problems'), thing);
+            ELSIF c.cobrand.moniker == 'canalrivertrust';
+                'Get updates of reports on the Canal & River Trust';
             ELSE;
                 tprintf(loc('Get updates of problems in this %s'), thing);
             END
@@ -20,6 +21,7 @@
             [% INCLUDE 'icons/rss.html' width='1.5em' height='1.5em' %]
             </a>
         </li>
+[% UNLESS c.cobrand.moniker == 'canalrivertrust' %]
         [% IF children.size %]
             [% TRY %]
                 [% INCLUDE 'reports/_rss_other_districts.html' %]
@@ -27,6 +29,7 @@
                 <li><a href="#council_wards" id="key-tool-wards" class="has-inline-svg">[% ward_text %][% INCLUDE 'icons/chevron-right.html' width='1.5em' height='1.5em' %]</a></li>
             [% END %]
         [% END %]
+[% END %]
     </ul>
 </div>
-[% END %]
+
