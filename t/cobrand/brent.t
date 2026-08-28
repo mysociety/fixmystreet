@@ -3,7 +3,6 @@ use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 use FixMyStreet::Script::CSVExport;
 use File::Temp 'tempdir';
-use t::Mock::Tilma;
 use Test::MockTime qw(:all);
 use Test::MockModule;
 use Test::Output;
@@ -13,9 +12,6 @@ my $mech = FixMyStreet::TestMech->new;
 # disable info logs for this test run
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
-
-my $tilma = t::Mock::Tilma->new;
-LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => qr/tilma/);
 
 my $gc = Test::MockModule->new('FixMyStreet::Geocode');
 
