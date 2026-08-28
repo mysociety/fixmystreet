@@ -52,64 +52,41 @@ $oxfordshire_cobrand->mock('get', sub {
     }';
 });
 
-subtest 'check /around?ajax gets extra pins from wfs' => sub {
-    $mech->delete_problems_for_body($oxon->id);
-
+subtest 'extra pins' => sub {
     my $latitude = 51.784721;
     my $longitude = -1.494453;
     my $bbox = ($longitude - 0.01) . ',' .  ($latitude - 0.01)
                 . ',' . ($longitude + 0.01) . ',' .  ($latitude + 0.01);
+    my @tests = (
+        { url => '/around?ajax=1&bbox=' . $bbox, test => '/around?ajax' },
+        { url => "/around/nearby?filter_category=Potholes&distance=250&latitude=$latitude&longitude=$longitude", test => '/around/nearby' },
+        { url => '/reports/Oxfordshire?ajax=1&zoom=15&bbox=' . $bbox, test => '/reports/Oxfordshire?ajax zoom 15' },
+    );
 
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'oxfordshire',
     }, sub {
-        my $json = $mech->get_ok_json( '/around?ajax=1&bbox=' . $bbox );
-        my $pins = $json->{pins};
-        is scalar @$pins, 2, 'defect pins included';
-        my $pin = @$pins[0];
-        is @$pin[4], "Minor Carriageway (Pothole)\nEstimated completion date: Thursday  5 November 2020", 'pin title is correct';
-    }
-};
-
-subtest 'check /around/nearby gets extra pins from wfs' => sub {
-    $mech->delete_problems_for_body($oxon->id);
-
-    my $latitude = 51.784721;
-    my $longitude = -1.494453;
-
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => 'oxfordshire',
-    }, sub {
-        my $json = $mech->get_ok_json( "/around/nearby?filter_category=Potholes&distance=250&latitude=$latitude&longitude=$longitude" );
-        my $pins = $json->{pins};
-        is scalar @$pins, 2, 'defect pins included';
-        my $pin = @$pins[0];
-        is @$pin[4], "Minor Carriageway (Pothole)\nEstimated completion date: Thursday  5 November 2020", 'pin title is correct';
-    }
-};
-
-subtest 'check /reports/Oxfordshire?ajax gets extra pins from wfs for zoom 15' => sub {
-    $mech->delete_problems_for_body($oxon->id);
-
-    my $latitude = 51.784721;
-    my $longitude = -1.494453;
-    my $bbox = ($longitude - 0.01) . ',' .  ($latitude - 0.01)
-                . ',' . ($longitude + 0.01) . ',' .  ($latitude + 0.01);
-
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => 'oxfordshire',
-    }, sub {
-        my $json = $mech->get_ok_json( '/reports/Oxfordshire?ajax=1&zoom=15&bbox=' . $bbox );
-        my $pins = $json->{pins};
-        is scalar @$pins, 2, 'defect pins included';
-        my $pin = @$pins[0];
-        is @$pin[4], "Minor Carriageway (Pothole)\nEstimated completion date: Thursday  5 November 2020", 'pin title is correct';
-    }
+        foreach (@tests) {
+            subtest "check $_->{test} gets no extra pins from wfs, not staff" => sub {
+                my $json = $mech->get_ok_json($_->{url});
+                my $pins = $json->{pins};
+                is scalar @$pins, 0, 'no defect pins included';
+            };
+        }
+        $mech->log_in_ok( $counciluser->email );
+        foreach (@tests) {
+            subtest "check $_->{test} gets extra pins from wfs, staff" => sub {
+                my $json = $mech->get_ok_json($_->{url});
+                my $pins = $json->{pins};
+                is scalar @$pins, 2, 'no defect pins included';
+                my $pin = @$pins[0];
+                is @$pin[4], "Minor Carriageway (Pothole)\nEstimated completion date: Thursday  5 November 2020", 'pin title is correct';
+            };
+        }
+    };
 };
 
 subtest "check /reports/Oxfordshire?ajax doesn't get extra pins from wfs at zoom 14" => sub {
-    $mech->delete_problems_for_body($oxon->id);
-
     my $latitude = 51.784721;
     my $longitude = -1.494453;
     my $bbox = ($longitude - 0.01) . ',' .  ($latitude - 0.01)
