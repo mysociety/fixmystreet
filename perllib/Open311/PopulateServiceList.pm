@@ -31,6 +31,7 @@ sub process_bodies {
 sub process_body {
     my $self = shift;
     my $open311 = Open311->new(
+        fixmystreet_body => $self->_current_body,
         endpoint => $self->_current_body->endpoint,
         jurisdiction => $self->_current_body->jurisdiction,
         api_key => $self->_current_body->api_key

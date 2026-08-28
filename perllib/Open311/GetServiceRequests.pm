@@ -67,6 +67,7 @@ sub create_open311_object {
     my ($self, $body) = @_;
 
     my $o = Open311->new(
+        fixmystreet_body => $body,
         endpoint     => $body->endpoint,
         api_key      => $body->api_key,
         jurisdiction => $body->jurisdiction,
