@@ -717,6 +717,7 @@ sub waste_fetch_events {
     }
 
     my %open311_conf = (
+        fixmystreet_body => $body,
         endpoint => $conf->endpoint || '',
         api_key => $conf->api_key || '',
         jurisdiction => $conf->jurisdiction || '',

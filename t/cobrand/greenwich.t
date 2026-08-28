@@ -73,18 +73,23 @@ subtest 'check services override' => sub {
     my $o = Open311->new(
         jurisdiction => 'mysociety',
         endpoint => 'http://example.com',
+        fixmystreet_body => $body,
     );
     Open311->_inject_response('/services/HOLE.xml', $meta_xml);
 
     $processor->_current_open311( $o );
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'greenwich' ],
+        COBRAND_FEATURES => { open311_api_key_header => { greenwich => 'TOKEN' } },
     }, sub {
         $processor->_current_body( $body );
+        $processor->_current_service( { service_code => 'HOLE' } );
+        $processor->_add_meta_to_contact( $contact );
+        $contact->update;
     };
-    $processor->_current_service( { service_code => 'HOLE' } );
-    $processor->_add_meta_to_contact( $contact );
-    $contact->update;
+
+    my $req = Open311->test_req_used;
+    is $req->header('Ocp-Apim-Subscription-Key'), 'TOKEN';
 
     my $extra = [ {
         automated => 'server_set',
