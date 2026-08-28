@@ -23,7 +23,7 @@ has_page intro => (
 
 has_page where => (
     fields => ['location', 'continue'],
-    title => 'Where did the incident happen',
+    title => 'Proposed switch out',
     next => sub { $_[0]->{possible_location_matches} ? 'choose_location' : $_[0]->{latitude} ? 'map' : 'choose_location' },
 );
 
@@ -167,7 +167,7 @@ has_field longitude => (
 
 has_page emergency => (
     fields => ['emergency', 'continue'],
-    title => 'Proposed switch out date',
+    title => 'Proposed switch out',
     next => sub { $_[0]->{emergency} eq 'Yes' ? 'call_us' : 'when_1' },
 );
 
@@ -574,7 +574,7 @@ has_field payment_phone => (
 has_field payment_po => (
     required => 1,
     type => 'Text',
-    label => 'Purchase Oder Number',
+    label => 'Purchase Order Number',
 );
 
 has_field payment_behalf => (
@@ -666,11 +666,12 @@ has_field continue => ( type => 'Submit', value => 'Continue', element_attr => {
 sub validate_datetime {
     my ($form, $field) = @_;
 
+    return if scalar @{ $field->errors };
+
     if ($field->value < DateTime->today(time_zone => FixMyStreet->local_time_zone)) {
         $field->add_error("You cannot enter a date in the past");
     }
 
-    return if scalar @{ $field->errors };
     my $valid = 1;
     for my $child ( @{ $field->{fields} } ) {
         $valid = 0 if scalar @{ $child->errors };

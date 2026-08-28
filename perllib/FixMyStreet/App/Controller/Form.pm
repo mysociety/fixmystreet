@@ -30,6 +30,7 @@ controller is a subpath of another controller).
 
 sub begin : Private {
     my ( $self, $c ) = @_;
+    $c->forward('/begin');
     my $cobrand_check = $c->cobrand->feature( $self->feature );
     $c->detach( '/page_error_404_not_found' ) if !$cobrand_check;
     $c->session->{form_unique_id} ||= mySociety::AuthToken::random_token();
