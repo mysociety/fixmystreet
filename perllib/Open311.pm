@@ -663,6 +663,10 @@ sub _request {
         }
     };
 
+    if ($self->fixmystreet_body && (my $cobrand = $self->fixmystreet_body->get_cobrand_handler)) {
+        $cobrand->call_hook(open311_extra_headers => $req);
+    }
+
     $debug_request .= $self->_params_to_string($params, $debug_request);
     $self->debug_details( $self->debug_details . $debug_request );
 
