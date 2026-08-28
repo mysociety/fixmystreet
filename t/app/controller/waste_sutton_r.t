@@ -135,7 +135,7 @@ FixMyStreet::override_config {
             request_replace_cost_refuse_360 => 500,
             request_replace_cost_paper_240 => 500,
             request_replace_cost_paper_360 => 1500,
-            request_replace_cost_food_indoor_premium => 1500,
+            request_replace_cost_food_outdoor_premium => 1500,
         } },
     },
     STAGING_FLAGS => {
