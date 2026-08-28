@@ -469,7 +469,8 @@ sub defect_wfs_query {
     </ogc:Filter>";
     $filter =~ s/\n\s+//g;
 
-    my $uri = URI->new("https://tilma.mysociety.org/proxy/occ/nsg/");
+    my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
+    my $uri = URI->new("https://$host/proxy/occ/nsg/");
     $uri->query_form(
         REQUEST => "GetFeature",
         SERVICE => "WFS",
@@ -494,6 +495,10 @@ sub defect_wfs_query {
 # Get defects from WDM feed and display them on /around page.
 sub pins_from_wfs {
     my ($self, $bbox) = @_;
+
+    # Staff only
+    my $c = $self->{c};
+    return [] unless $c->user_exists && ($c->user->from_body || $c->user->is_superuser);
 
     my $wfs = $self->defect_wfs_query($bbox);
 
@@ -567,7 +572,7 @@ sub extra_reports_pins {
     }
 
     # Only show pins at certain zoom levels
-    if (!defined($zoom) || int($zoom) < 15) {
+    if (!defined($zoom) || int($zoom) < 8) {
         return [];
     }
 
