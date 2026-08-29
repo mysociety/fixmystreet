@@ -1238,6 +1238,7 @@ FixMyStreet::override_config {
         $mech->content_contains('a_user_2@example.net');
         $mech->content_contains('unconfirmed');
         $mech->content_contains('4000,,1500,1915,1,2'); # Fee/fee/fee/bin/current/sub
+        $mech->content_contains('a_user@example.net,,pkg-tappcontrollerwaste_kingstont-staff@example.org');
     };
 
     subtest 'check CSV pregeneration' => sub {
@@ -1252,6 +1253,7 @@ FixMyStreet::override_config {
         $mech->content_contains('a_user_2@example.net');
         $mech->content_contains('unconfirmed');
         $mech->content_contains('4000,,1500,1915,1,2'); # Fee/fee/fee/bin/current/sub
+        $mech->content_contains('a_user@example.net,,pkg-tappcontrollerwaste_kingstont-staff@example.org');
     };
 
     subtest 'check new sub price changes at fixed time' => sub {
