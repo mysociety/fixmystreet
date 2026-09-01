@@ -67,6 +67,12 @@ sub report_age {
     };
 }
 
+=item * We do not show reports made before go-live on 2026-09-01.
+
+=cut
+
+sub cut_off_date { '2026-09-01' }
+
 =item * Some customised pins (yellow/blue/green/grey)
 
 =cut
@@ -108,12 +114,30 @@ sub new_report_title_field_label { "Location of the problem" }
 
 =cut
 
+sub problems_restriction {
+    my ($self, $rs) = @_;
+    return $rs if FixMyStreet->staging_flag('skip_checks');
+
+    $rs = $rs->to_body($self->body);
+
+    my $date = $self->cut_off_date;
+    my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
+    $rs = $rs->search({
+        "$table.created" => { '>=', $date },
+        "$table.category" => 'Potholes',
+    });
+    return $rs;
+}
+
 sub categories_restriction {
     my ($self, $rs) = @_;
-    return $rs->search( { -or => [
-        'me.send_method' => undef, # Open311 categories, or National Highways
-        'me.send_method' => '', # Open311 categories that have been edited in the admin
-    ] } );
+    return $rs->search( {
+        'me.category' => 'Potholes',
+    } );
+    # return $rs->search( { -or => [
+    #     'me.send_method' => undef, # Open311 categories, or National Highways
+    #     'me.send_method' => '', # Open311 categories that have been edited in the admin
+    # ] } );
 }
 
 =item * Fetch the nearest USRN if we don't have it already
