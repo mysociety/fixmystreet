@@ -75,7 +75,7 @@ my %CONTAINERS = (
     paper_1100 => 32,
     paper_bag => 34,
     food_indoor => 43,
-    food_indoor_premium => 85,
+    food_outdoor_premium => 85,
     food_outdoor => 46,
     food_240 => 51,
     garden_240 => 39,
@@ -269,7 +269,7 @@ sub image_for_unit {
         $CONTAINERS{paper_bag} => $bag_clear,
         $CONTAINERS{refuse_bag} => $bag_red_stripe,
         $CONTAINERS{food_outdoor} => { src => "$base/caddy-brown-large", alt => 'Large brown caddy' },
-        $CONTAINERS{food_indoor_premium} => $premium_food,
+        $CONTAINERS{food_outdoor_premium} => $premium_food,
 
         # Fallback to the service if no container match
         $SERVICE_IDS{domestic_refuse} => svg_container_bin('Brown wheelie bin', 'wheelie', '#8B5E3D'),
@@ -314,7 +314,7 @@ sub waste_containers {
         $CONTAINERS{paper_240} => 'Paper and Cardboard Green Wheelie Bin (240L)',
         $CONTAINERS{paper_140} => 'Paper and Cardboard Green Wheelie Bin (140L)',
         $CONTAINERS{food_indoor} => 'Small Kitchen Food Waste Caddy (7L)',
-        $CONTAINERS{food_indoor_premium} => 'Premium Outdoor Food Waste Caddy (23L)',
+        $CONTAINERS{food_outdoor_premium} => 'Premium Outdoor Food Waste Caddy (23L)',
         $CONTAINERS{food_outdoor} => 'Large Outdoor Food Waste Caddy (23L)',
         $CONTAINERS{garden_240} => 'Garden Waste Wheelie Bin (240L)',
         $CONTAINERS{garden_140} => 'Garden Waste Wheelie Bin (140L)',
@@ -424,7 +424,7 @@ sub waste_request_form_first_next {
         my $data = shift;
         my $choice = $data->{"container-choice"};
         return 'about_you' if $choice == $CONTAINERS{recycling_blue_bag} || $choice == $CONTAINERS{paper_bag};
-        foreach ($CONTAINERS{refuse_140}, $CONTAINERS{refuse_240}, $CONTAINERS{paper_240}, $CONTAINERS{paper_360}) {
+        foreach ($CONTAINERS{refuse_140}, $CONTAINERS{refuse_240}, $CONTAINERS{paper_240}, $CONTAINERS{paper_360}, $CONTAINERS{food_outdoor_premium}) {
             if ($choice == $_ && !$containers->{$_}) {
                 $data->{request_reason} = 'change_capacity';
                 return 'about_you';
@@ -515,6 +515,9 @@ sub waste_munge_request_data {
         } elsif ($id == $CONTAINERS{paper_360}) {
             $reason_id = '9::9'; # Increase Capacity
             $id_to_remove = $CONTAINERS{paper_240};
+        } elsif ($id == $CONTAINERS{food_outdoor_premium}) {
+            $reason_id = '8::12'; # Remove Containers / Add to Service
+            $id_to_remove = $CONTAINERS{food_outdoor};
         }
     } else {
         # No reason, must be a bag
@@ -616,7 +619,7 @@ sub request_cost {
     if (my $cost = $costs->get_cost('request_replace_cost_' . $id_to_name{$id})) {
         # we always include premium food container as an option because it's
         # not included in $containers
-        if ($id == $CONTAINERS{food_indoor_premium} || $containers->{$id}) {
+        if ($id == $CONTAINERS{food_outdoor_premium} || $containers->{$id}) {
             my $price = sprintf("£%.2f", $cost / 100);
             $price =~ s/\.00$//;
             my $hint = "There is a $price administration/delivery charge to replace your container";
