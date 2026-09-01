@@ -112,6 +112,7 @@ sub index :Path : Args(0) {
             '+columns' => { 'body.msgstr' => \'COALESCE(translation_name.msgstr, body.name)' },
             join => { body => 'translation_name' },
         });
+        $c->stash->{group_roles_by_body} = !$body;
     } elsif ($c->user->from_body) {
         $rs = $c->user->from_body->roles->search_rs({}, { order_by => 'name' });
     }

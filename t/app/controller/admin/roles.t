@@ -131,6 +131,10 @@ subtest 'superuser can see all bodies' => sub {
     $mech->content_contains('Bromley');
     $mech->content_contains('Role B');
     $mech->content_contains('Role Z');
+    $mech->content_contains('colspan="3"');
+    $mech->get_ok("/admin/users");
+    $mech->content_contains('<optgroup');
+    $mech->get_ok("/admin/roles");
     $mech->follow_link_ok({ text => 'Create' });
     $mech->content_contains('Body');
     $mech->content_contains('Bromley');
@@ -158,6 +162,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('Role Z');
         $mech->content_lacks('Role C');
         $mech->content_lacks('Bromley');
+        $mech->content_lacks('colspan="3"', 'no body headings when only one body');
 
         $mech->follow_link_ok({ text => 'Create' });
         $mech->content_lacks('Body');
@@ -180,6 +185,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/admin/users');
         $mech->content_contains('Role B');
         $mech->content_lacks('Role Z');
+        $mech->content_lacks('<optgroup', 'no optgroup when only one body');
     };
 };
 

@@ -18,9 +18,12 @@ sub auto :Private {
             prefetch => 'body',
             order_by => ['body.name', 'me.name']
         }));
+        $c->stash->{group_roles_by_body} = !$body;
     } elsif ($user->from_body) {
         $c->stash(rs => $user->from_body->roles->search_rs({}, { order_by => 'name' }));
     }
+
+    return 1;
 }
 
 sub index :Path :Args(0) {
