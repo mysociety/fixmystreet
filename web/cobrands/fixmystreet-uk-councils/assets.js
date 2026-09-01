@@ -719,6 +719,10 @@ fixmystreet.assets.canalrivertrust.tunnel_found = function(layer, feature) {
 
 fixmystreet.assets.canalrivertrust.tunnel_not_found = function(layer) {
     fixmystreet.message_controller.tunnel_not_found(layer);
+
+    // Force deletion of 'You have selected tunnel...' message as it does
+    // not otherwise happen if e.g. another category selected
+    layer.map_messaging.asset = layer.fixmystreet.no_asset_message;
 };
 
 /* Central Bedfordshire */

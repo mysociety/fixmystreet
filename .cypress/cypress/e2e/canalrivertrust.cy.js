@@ -71,7 +71,6 @@ describe('Canal & River Trust asset messaging tests', function() {
 
         // Make sure messaging disappears if another category (but not asset) selected
         cy.pickCategory('Elsan');
-        // cy.wait('@crt-elsan');
         cy.get('#map_box').click();
         cy.get('.js-not-an-asset').should('be.visible');
         cy.get('.js-not-an-asset').invoke('text').should(
@@ -114,5 +113,10 @@ describe('Canal & River Trust asset messaging tests', function() {
         cy.wait('@crt-tunnel-portals');
         cy.get('.js-floating-button-message').invoke('text').should('match', /You have selected tunnel Islington Tunnel/);
 
+        // Boating etiquette - no messaging should show
+        cy.pickCategory('Boating etiquette');
+        cy.get('.js-not-an-asset').should('not.exist');
+        cy.get('.js-floating-button-message').should('not.exist');
+        cy.get('.js-reporting-page--next').should('not.be.disabled');
     });
 });
