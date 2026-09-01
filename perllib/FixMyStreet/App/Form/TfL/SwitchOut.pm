@@ -631,6 +631,7 @@ has_page summary => (
         }
         return $success;
     },
+    tags => { hide => 1 },
     next => 'done',
 );
 

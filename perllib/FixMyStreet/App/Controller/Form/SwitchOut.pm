@@ -133,7 +133,8 @@ summary page they were shown during the application.
 sub view : Private {
     my ($self, $c) = @_;
     my $p = $c->stash->{problem};
-    $c->forward('show');
+    $c->forward('/auth/get_csrf_token');
+    $c->forward('form');
     $c->stash->{form}->saved_data($p->extra);
     $c->stash->{template} = 'switchout/summary.html';
 }

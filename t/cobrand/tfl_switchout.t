@@ -5,6 +5,9 @@ use DateTime;
 use Encode;
 use FixMyStreet::Script::Reports;
 
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 my $sample_pdf = path(__FILE__)->parent->parent->child("app/controller/sample.pdf");
 my $mech = FixMyStreet::TestMech->new;
 my $body = $mech->create_body_ok(2482, 'TfL', { cobrand => 'tfl' });
@@ -195,7 +198,6 @@ subtest 'Switch out application form submission' => sub {
             $mech->get("/form/switchout/pdf/$id?token=wrong");
             is $mech->res->code, 404, 'Invalid token returns 404';
 
-            $mech->log_out_ok;
             $mech->get("/form/switchout/pdf/$id");
             is $mech->res->code, 404, 'No token and not logged in returns 404';
 
@@ -209,6 +211,16 @@ subtest 'Switch out application form submission' => sub {
             );
             $mech->get_ok("/form/switchout/pdf/$id");
             is $mech->res->header('Content-Type'), 'application/pdf', 'Logged-in creator gets PDF';
+        };
+
+        subtest 'Viewing application logged in' => sub {
+            $mech->get_ok("/report/" . $problem->id);
+            $mech->content_contains('FMS' . $problem->id);
+        };
+        subtest 'Viewing application not logged in' => sub {
+            $mech->log_out_ok;
+            $mech->get("/report/" . $problem->id);
+            is $mech->res->code, 403;
         };
     };
 };

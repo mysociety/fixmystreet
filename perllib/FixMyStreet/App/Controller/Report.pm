@@ -91,9 +91,8 @@ sub display :PathPart('') :Chained('id') :Args(0) {
         $c->detach('/waste/bulky/view');
     }
 
-    if ($problem->cobrand_data eq 'licence' || $problem->cobrand_data eq 'switchout') {
-        $c->detach('/licence/view');
-    }
+    $c->detach('/licence/view') if $problem->cobrand_data eq 'licence';
+    $c->detach('/form/switchout/view') if $problem->cobrand_data eq 'switchout';
 
     $c->forward('/auth/get_csrf_token');
     $c->forward( 'load_updates' );
