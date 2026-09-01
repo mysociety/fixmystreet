@@ -998,9 +998,9 @@ FixMyStreet::override_config {
             like $mech->content, qr/You do not have a Garden waste collection/;
         };
 
-        subtest 'with no garden container in Whitespace' => sub {
+        subtest 'with no garden container in Whitespace, and no bins in Agile' => sub {
             $whitespace_mock->mock( 'GetSiteCollections', sub { [] } );
-            mock_agile('14/03/2024 12:00');
+            mock_agile('14/03/2024 12:00', WasteContainerQuantity => 0);
 
             $mech->get_ok("/waste/$uprn");
             like $mech->content, qr/Renew subscription today/,
@@ -1014,6 +1014,14 @@ FixMyStreet::override_config {
                 'Renewal link available';
             like $mech->text, qr/Frequency.*Pending/,
                 'Details pending because no Whitespace data';
+
+            $mech->get_ok("/waste/$uprn/garden_renew");
+            $mech->submit_form_ok({ with_fields => { has_reference => 'Yes', customer_reference => 'CUSTOMER_BAD' } });
+            $mech->submit_form_ok({ with_fields => { verifications_first_name => 'Ferrety', verifications_last_name => 'Wright', email => 'ferrety@wright.com' } });
+            like $mech->content, qr/name="current_bins.*value="0"/s, 'Current bins pre-populated';
+            like $mech->content, qr/name="bins_wanted.*value="0"/s, 'Wanted bins pre-populated';
+            $mech->submit_form_ok({ with_fields => { current_bins => 0, bins_wanted => 1, payment_method => 'credit_card' } });
+            $mech->content_contains('Please review the information you’ve provided before you submit your garden subscription');
         };
 
         subtest 'with garden container in Whitespace' => sub {

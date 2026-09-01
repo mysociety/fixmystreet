@@ -347,7 +347,7 @@ sub garden_due_date {
 
 =cut
 
-sub waste_renewal_allow_current_bins_edit { 1 }
+sub waste_renewal_allow_current_bins_edit { 'zero' }
 
 =head2 garden_renew_as_new_days
 
