@@ -218,7 +218,7 @@
         %]
       [% END %]
     <tr [% IF class_to_hide %]class="[% class_to_hide %]"[% END %]>
-      <th class="contact-category" scope="row">[% k %]</th>
+      <th class="contact-category" scope="row">[% category_display_names.$k_safe OR k %]</th>
     [% ELSE %]
     <tr>
       <th scope="row">[% k %]</th>
