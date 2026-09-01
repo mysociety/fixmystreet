@@ -86,7 +86,7 @@ subtest 'extra pins' => sub {
     };
 };
 
-subtest "check /reports/Oxfordshire?ajax doesn't get extra pins from wfs at zoom 14" => sub {
+subtest "check /reports/Oxfordshire?ajax doesn't get extra pins from wfs at zoom 7" => sub {
     my $latitude = 51.784721;
     my $longitude = -1.494453;
     my $bbox = ($longitude - 0.01) . ',' .  ($latitude - 0.01)
@@ -95,7 +95,7 @@ subtest "check /reports/Oxfordshire?ajax doesn't get extra pins from wfs at zoom
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'oxfordshire',
     }, sub {
-        my $json = $mech->get_ok_json( '/reports/Oxfordshire?ajax=1&zoom=14&bbox=' . $bbox );
+        my $json = $mech->get_ok_json( '/reports/Oxfordshire?ajax=1&zoom=7&bbox=' . $bbox );
         my $pins = $json->{pins};
         is scalar @$pins, 0, 'defect pins not included';
     }

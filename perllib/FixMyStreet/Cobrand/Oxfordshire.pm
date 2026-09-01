@@ -572,7 +572,7 @@ sub extra_reports_pins {
     }
 
     # Only show pins at certain zoom levels
-    if (!defined($zoom) || int($zoom) < 15) {
+    if (!defined($zoom) || int($zoom) < 8) {
         return [];
     }
 
