@@ -320,6 +320,37 @@ canalrivertrust:
     template: arcgis_spot
     http_options:
       url: https://services.arcgis.com/DknzyjEEie5tEW0u/arcgis/rest/services/Canal_And_River_Trust_Bridges_View/FeatureServer/0/query
+
+  - name: CRT Tunnels
+    asset_category: Tunnel (CRT)
+    asset_item: tunnel
+    template: arcgis_default
+    http_options:
+      url: https://services.arcgis.com/DknzyjEEie5tEW0u/arcgis/rest/services/Canal_And_River_Trust_Tunnels_View/FeatureServer/0/query
+    non_interactive: true
+    road: true
+    stylemap: fixmystreet.assets.canalrivertrust.tunnel_stylemap
+    usrn:
+      - attribute: sap_func_loc
+        field: location_description
+    actions:
+      found: fixmystreet.assets.canalrivertrust.tunnel_found
+      not_found: fixmystreet.assets.canalrivertrust.tunnel_not_found
+    no_asset_msg_id: '#js-not-a-tunnel'
+    feature_code: sap_description
+
+  - name: CRT Tunnel Portals
+    asset_category: Tunnel (CRT)
+    asset_item: portal
+    template: arcgis_spot
+    http_options:
+      url: https://services.arcgis.com/DknzyjEEie5tEW0u/arcgis/rest/services/Canal_And_River_Trust_Tunnel_Portals_View/FeatureServer/0/query
+    actions:
+      asset_found: fixmystreet.assets.named_select_action_found
+      asset_not_found: fixmystreet.assets.named_select_action_not_found
+    asset_item_message: ''
+    feature_code: sap_description
+
   # CSF Facilities
   - name: CRT Elsan
     asset_category: Elsan (CRT)
