@@ -152,7 +152,7 @@ FixMyStreet::override_config {
             request_replace_cost_refuse_360 => 500,
             request_replace_cost_paper_240 => 500,
             request_replace_cost_paper_360 => 1500,
-            request_replace_cost_food_indoor_premium => 1500,
+            request_replace_cost_food_outdoor_premium => 1500,
         } },
     },
     STAGING_FLAGS => {
@@ -262,13 +262,22 @@ FixMyStreet::override_config {
         $mech->content_contains('The Council has continued to provide waste and recycling containers free for as long as possible', 'Intro text included');
         $mech->content_contains('You can request a larger container if you meet the following criteria', 'Divider intro text included for container sizes');
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 85 }});
-        $mech->submit_form_ok({ with_fields => { 'request_reason' => 'missing' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->content_contains('Continue to payment');
-        $mech->content_contains('Missing (1x to deliver)');
+        $mech->content_contains('1x to collect');
+        $mech->content_contains('1x to deliver');
 
         $mech->waste_submit_check({ with_fields => { process => 'summary' } });
         is $sent_params->{items}[0]{amount}, 1500;
+
+        my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        is $report->uprn, 1000000002;
+        is $report->title, 'Request exchange for Premium Outdoor Food Waste Caddy (23L)';
+        is $report->get_extra_field_value('payment'), 1500, 'correct payment';
+        is $report->get_extra_field_value('Container_Type'), '46::85', 'correct bin type';
+        is $report->get_extra_field_value('Action'), '2::1', 'correct container request action';
+        is $report->get_extra_field_value('Reason'), '8::12', 'correct container request reason';
+        is $report->get_extra_field_value('service_id'), 954;
     };
     subtest 'Request a larger bin than current (120L -> 240L)' => sub {
         $mech->get_ok('/waste/12345/request');
