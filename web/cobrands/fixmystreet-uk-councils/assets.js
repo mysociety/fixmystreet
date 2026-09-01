@@ -697,7 +697,7 @@ fixmystreet.assets.canalrivertrust.asset_not_found = function() {
 };
 
 // Tunnels (treated as 'road' assets) and tunnel portals (spot assets).
-// Follow same pattern as Bucks PROWs and spot assets on those PROWs.
+// Follow similar pattern to Bucks PROWs and spot assets on those PROWs.
 
 fixmystreet.assets.canalrivertrust.tunnel_stylemap = new OpenLayers.StyleMap({
     'default': new OpenLayers.Style({
@@ -706,16 +706,6 @@ fixmystreet.assets.canalrivertrust.tunnel_stylemap = new OpenLayers.StyleMap({
         strokeWidth: 4
     })
 });
-
-fixmystreet.assets.canalrivertrust.tunnel_portal_selected = function(asset) {
-    var id = asset.attributes.sap_func_loc;
-    return 'You have selected portal' + ' <b>' + id + '</b>';
-};
-
-fixmystreet.assets.canalrivertrust.tunnel_selected = function(asset) {
-    var id = asset.attributes.sap_func_loc;
-    return 'You have selected tunnel <b>' + id + '</b>';
-};
 
 fixmystreet.assets.canalrivertrust.tunnel_found = function(layer, feature) {
     fixmystreet.message_controller.road_found(layer, feature);
@@ -728,14 +718,7 @@ fixmystreet.assets.canalrivertrust.tunnel_found = function(layer, feature) {
 };
 
 fixmystreet.assets.canalrivertrust.tunnel_not_found = function(layer) {
-    fixmystreet.message_controller.road_not_found(layer);
-    if ( fixmystreet.assets.selectedFeature() ) {
-        // This may never be reached, as selecting a spot asset implies
-        // a road has also been found
-        return;
-    }
-
-    fixmystreet.assets.named_select_action_not_found.call(layer);
+    fixmystreet.message_controller.tunnel_not_found(layer);
 };
 
 /* Central Bedfordshire */
