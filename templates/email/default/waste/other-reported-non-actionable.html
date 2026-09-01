@@ -1,0 +1,50 @@
+[% USE date %]
+[%
+  SET bin_type = report.title.replace('Report missed ', '');
+%]
+[%
+
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box | safe %]
+
+  <h1 style="[% h1_style %]">Your report has been&nbsp;logged</h1>
+
+  [% IF report.category == 'Report out-of-time missed collection' %]
+  <p style="[% p_style %]">
+    Thank you for reporting a missed [% bin_type %] collection on [% date.format(report.created, '%A, %-d %B') %].
+  </p>
+  <p style="[% p_style %]">
+    As you reported this after the 2 day time period for reporting missed collections, we will not be able to return on this occasion.
+  </p>
+
+  <p style="[% p_style %]">
+    However, we will use your report to improve our service.
+  </p>
+  [% ELSIF report.category == 'Report out-of-time not returned' %]
+  <p style="[% p_style %]">
+    As it is more than 2 working days since your scheduled collection, we cannot return to collect your bin, but your report will be recorded and used to improve our service.
+  </p>
+  <p style="[% p_style %]">
+    We appreciate your feedback and are committed to using it to improve our customer service.
+  </p>
+  [% END %]
+
+  <p style="[% p_style %]">
+    [% INCLUDE 'waste/signature.html' %]
+  </p>
+
+  [% end_padded_box | safe %]
+</th>
+[% WRAPPER '_email_sidebar.html' object = report %]
+    <h2 style="[% h2_style %]">[% report.title | html %]</h2>
+    [% report.detail | html_para_email(secondary_p_style) %]
+[% END %]
+
+[% INCLUDE '_email_bottom.html' %]

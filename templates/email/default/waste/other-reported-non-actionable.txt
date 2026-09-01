@@ -1,0 +1,25 @@
+[% USE date ~%]
+Subject: Your report has been logged
+
+Dear [% report.name %],
+
+Thank you for reporting the following:
+
+[% report.detail %]
+
+on [% date.format(report.created, '%A, %-d %B') %].
+
+[% IF report.category == 'Report out-of-time missed collection' ~%]
+As you reported this after the 2 day time period for reporting missed collections, we will not be able to return on this occasion.
+
+However, we will use your report to improve our service.
+[% ELSIF report.category == 'Report out-of-time not returned' ~%]
+As it is more than 2 working days since your scheduled collection, we cannot return to collect your bin, but your report will be recorded and used to improve our service.
+
+We appreciate your feedback and are committed to using it to improve our customer service.
+[% END ~%]
+
+[% signature %]
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.

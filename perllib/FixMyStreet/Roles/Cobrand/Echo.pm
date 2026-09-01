@@ -5,6 +5,7 @@ use warnings;
 use DateTime;
 use DateTime::Format::Strptime;
 use List::Util qw(min sum);
+use MIME::Base64;
 use Moo::Role;
 use Path::Tiny;
 use POSIX qw(floor);
@@ -193,6 +194,15 @@ sub bin_services_for_address {
         $self->{c}->stash->{open_garden_event} = 1;
     }
 
+    # store all the missed events which we need for checking details
+    # of incomplete missed collection re-attempts when clicking through
+    # from a link in an alert email
+    my %missed;
+    foreach my $event ( $events->filter({ type => 'missed' })->list ) {
+        $missed{$event->{guid}} = $event if $event->{guid};
+    }
+    $self->{c}->stash->{missed_events_by_guid} = \%missed;
+
     # Bulky/small items collection event
     my $waste_cfg = $self->{c}->stash->{waste_features};
     if ($waste_cfg && $waste_cfg->{bulky_missed}) {
@@ -289,6 +299,7 @@ sub bin_services_for_address {
         my $open_requests = { map { $_->{container} => $_ } $events->filter(
             {
                 type => 'request',
+                closed => 0,
                 containers => $containers || [],
                 report_not_cancelled => 1,  # Don't include requests which have cancellations pending
             }
@@ -340,7 +351,10 @@ sub bin_services_for_address {
             $row->{events} = $events->combine($events_unit)->filter({ service => $service_id, since => $row->{last}{date} });
             my $recent_events = $row->{events}->filter({ type => 'missed' });
             $row->{report_open} = ($recent_events->list)[0];
+
+            $self->call_hook(waste_allow_non_actionable_report => $row);
         }
+
         push @out, $row;
     }
 
@@ -458,7 +472,6 @@ sub _parse_events {
     my $events = Integrations::Echo::Events->new({
         cobrand => $self,
         event_types => $self->missed_event_types,
-        include_closed_requests => $params->{include_closed_requests},
     })->parse($events_data);
     return $events;
 }
@@ -576,6 +589,16 @@ sub waste_task_resolutions {
             $resolution = $template->text if $template;
         }
 
+        my $data = Integrations::Echo::force_arrayref($_->{Data}, 'ExtensibleDatum');
+        my $media;
+        foreach (@$data) {
+            if ($_->{DatatypeName} eq 'Image') {
+                my $value = decode_base64($_->{Value});
+                my $type = FixMyStreet::PhotoStorage->detect_type($value);
+                $media = "data:image/$type;base64,$_->{Value}";
+            }
+        }
+
         if (($resolution_id || 0) == 237 && $state eq 'Completed') { # Echo returning bad data
             $resolution = '';
         }
@@ -585,6 +608,7 @@ sub waste_task_resolutions {
         $row->{last}{completed} = $completed;
         $row->{last}{resolution} = $resolution;
         $row->{last}{resolution_id} = $resolution_id;
+        $row->{last}{image} = $media if $media;
 
         # Special handling if last instance is today e.g. if it's before a
         # particular hour and outstanding, show it as in progress
@@ -595,6 +619,7 @@ sub waste_task_resolutions {
         # If the task is ended and could not be done, do not allow reporting
         if ($state eq 'Not Completed' || ($state eq 'Completed' && $orig_resolution =~ /Excess/)) {
             $row->{report_allowed} = 0;
+            $row->{report_allowed_non_actionable} = 0;
             $row->{report_locked_out} = 1;
         }
 
@@ -1032,29 +1057,42 @@ sub booked_check_missed_collection {
         my $row = {
             service_name => $type eq 'small_items' ? 'Small items' : 'Bulky waste',
             service_id => $service_id_missed || $service_id,
+            $self->{c}->cobrand->moniker eq 'kingston' ? ( event_id => $event->{id} ) : (),
+            date => $event->{date},
         };
         my $in_time = $self->within_working_days($event->{date}, 2);
         foreach my $state_id (keys %$blocked_codes) {
             next unless $event->{state} eq $state_id;
             foreach (keys %{$blocked_codes->{$state_id}}) {
-                if ($event->{resolution} eq $_ || $_ eq 'all') {
+                if ( ( $event->{resolution} // '' ) eq $_ || $_ eq 'all') {
+                    $row->{resolution_id} = $_;
                     $row->{report_locked_out} = 1;
                     $row->{report_locked_out_reason} = $blocked_codes->{$state_id}{$_};
+                    $row->{report_locked_out_date} = $event->{date};
                 }
             }
         }
 
+        # set a Kingston/Sutton specific flag (hence hardcoding time) if the current time
+        # is before the end of the possible collection window. Used to determine if a
+        # collection can be reported as missed
+        my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+        my $event_is_today = $today->clone->truncate(to => 'day') == $event->{date}->clone->truncate(to => 'day');
+        if ($event->{date} > $today || ($event_is_today && $today->hour < 18)) {
+            $row->{bulky_before_collection_date} = 1 if $event->{state} eq 'open';
+        }
+
         # Open events are coming through and we only want to continue under specific circumstances with an open event
-        next unless (!$event->{state} || $event->{state} ne 'open') || $self->{c}->cobrand->call_hook('bulky_open_overdue', $event);
+        if ((!$event->{state} || $event->{state} ne 'open') || $self->{c}->cobrand->call_hook('bulky_open_overdue', $event)) {
+            $row->{report_allowed} = $in_time && !$row->{report_locked_out};
 
-        $row->{report_allowed} = $in_time && !$row->{report_locked_out};
-
-        # Loop through the missed events and see if any of them is for this bulky event
-        foreach ($missed_events->list) {
-            next unless $_->{report};
-            my $reported_guid = $_->{report}->get_extra_field_value('Original_Event_ID');
-            next unless $reported_guid;
-            $row->{report_open} = $_ if $reported_guid eq $guid;
+            # Loop through the missed events and see if any of them is for this bulky event
+            foreach ($missed_events->list) {
+                next unless $_->{report};
+                my $reported_guid = $_->{report}->get_extra_field_value('Original_Event_ID');
+                next unless $reported_guid;
+                $row->{report_open} = $_ if $reported_guid eq $guid;
+            }
         }
 
         $self->{c}->stash->{booked_missed}{$guid} = $row;
