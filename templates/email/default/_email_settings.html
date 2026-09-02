@@ -9,6 +9,7 @@ color_grey = "#D2D2D2"
 color_gunmetal = "#42494C"
 color_gunmetal_light = "#4E646B"
 color_yellow = "#FDD008"
+color_yellow_pale = "#FEF6D5"
 color_red_dark = "#ce2626"
 color_green_dark = "#39a515"
 color_dark_grey = "#3B3F44"
@@ -62,6 +63,9 @@ submit_footer_td_style = "text-align: left; vertical-align: top; font-weight: no
 submit_footer_h2_style = "font-size: 16px; line-height: 18px; margin: 0 0 10px 0;";
 submit_footer_link_style = "color: #9CD0EA;";
 
+warning_message_background_color = color_yellow_pale
+verified_box_background_color = color_blue_pale
+
 %]
 
 [% # Handy point at which your cobrand can override any of those default colours before the rest of the settings are constructed. %]
@@ -89,7 +93,14 @@ wrapper_min_width = 520 # in pixels without "px" suffix
 hint_min_width = wrapper_min_width - (column_padding * 2)
 hint_style = "min-width: ${ hint_min_width }px; padding: ${ column_padding }px; color: $body_text_color; background: $color_white; box-sizing:border-box; font-size: 12px; line-height: 18px;"
 
-warning_style = "min-width: ${ hint_min_width }x; padding: ${ column_padding }px; background-color: $color_red_dark; color: $color_white; box-sizing: border-box;"
+message_box_style = "font-size: 13px; line-height: 20px; margin: 0 0 12px 0; padding: 16px; box-sizing: border-box; border-radius: 4px;"
+message_box_icon_style = "vertical-align: text-bottom; margin-right: 4px;"
+warning_message_icon = "web/cobrands/fixmystreet/images/notice-icon.png"
+warning_message_style = "$message_box_style background-color: $warning_message_background_color;"
+verified_box_style = "$message_box_style background-color: $verified_box_background_color;"
+verified_box_icon = "web/cobrands/fixmystreet/images/verified-icon.png"
+
+warning_style = "min-width: ${ hint_min_width }px; padding: ${ column_padding }px; background-color: $color_red_dark; color: $color_white; box-sizing: border-box;"
 
 header_style = "padding: $header_padding; background: $header_background_color; color: $header_text_color;"
 
