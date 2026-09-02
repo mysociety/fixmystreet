@@ -42,9 +42,9 @@ FixMyStreet::override_config {
             },
         },
         updates_allowed   => {
-            canalrivertrust => 'open/staff',
+            canalrivertrust => 'none',
             fixmystreet     => {
-                'Canal & River Trust' => 'open/staff',
+                'Canal & River Trust' => 'none',
             }
         },
     },
@@ -65,12 +65,12 @@ FixMyStreet::override_config {
         for my $user ( undef, $standard_user_1, $standard_user_2, $staff_user ) {
             $user ? $mech->log_in_ok( $user->email ) : $mech->log_out_ok;
 
-            # Anyone can leave an update on an open report
+            # No-one can leave an update on an open report
             $report->update( { state => 'in progress' } );
 
             $mech->get_ok( '/report/' . $report->id );
-            $mech->content_contains( 'Provide an update',
-                'Can leave update on open report' );
+            $mech->content_lacks( 'Provide an update',
+                'Cannot leave update on open report' );
 
             # Nobody can mark report as fixed
             $mech->content_lacks( 'This problem has been fixed',
@@ -85,15 +85,10 @@ FixMyStreet::override_config {
                 'No option to reopen report',
             );
 
-            # Only staff can leave update on closed report
+            # No-one can leave update on a closed report
             $mech->get_ok( '/report/' . $report->id );
-            if ( $user && $user->email eq $staff_user->email ) {
-                $mech->content_contains( 'Provide an update',
-                    'Can leave update on closed report' );
-            } else {
-                $mech->content_lacks( 'Provide an update',
-                    'Cannot leave update on closed report' );
-            }
+            $mech->content_lacks( 'Provide an update',
+                'Cannot leave update on closed report' );
         }
     }
 };
