@@ -107,10 +107,11 @@ sub index :Path : Args(0) {
         # On a cobrand associated with a body, only show that body's roles
         my $body = $c->cobrand->body;
         my $search = $body ? { 'me.body_id' => $body->id } : {};
-        $rs = $c->model('DB::Role')->search_rs($search, { join => 'body', order_by => ['body.name', 'me.name'] });
-        $rs = $rs->search(undef, {
+        $rs = $c->model('DB::Role')->search_rs($search, {
+            prefetch => 'body',
             '+columns' => { 'body.msgstr' => \'COALESCE(translation_name.msgstr, body.name)' },
             join => { body => 'translation_name' },
+            order_by => ['body.name', 'me.name'],
         });
         $c->stash->{group_roles_by_body} = !$body;
     } elsif ($c->user->from_body) {
