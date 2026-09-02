@@ -407,7 +407,7 @@ subtest 'check display of TfL reports' => sub {
         ALLOWED_COBRANDS => 'bromley',
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
-        $mech->follow_link_ok({ text_regex => qr/Back to all reports/i });
+        $mech->submit_form_ok({ form_id => 'form_for_back_to_all_reports' });
     };
     $mech->content_like(qr{<a title="TfL Test[^>]*www.example.org[^>]*><img[^>]*red});
     $mech->content_like(qr{<a title="Test Test[^>]*href="/[^>]*><img[^>]*yellow});

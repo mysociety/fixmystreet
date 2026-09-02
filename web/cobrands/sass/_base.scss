@@ -1844,13 +1844,9 @@ input.final-submit {
   line-height: 1.2em;
   margin: -1em -1em 1em -1em;
   padding: 0.9em 1em;
+  border: none;
   border-bottom: 0.2em solid #eee;
-
-  &:link,
-  &:visited,
-  &:hover {
-    color: #666;
-  }
+  color: #666;
 }
 
 .problem-back--top {
