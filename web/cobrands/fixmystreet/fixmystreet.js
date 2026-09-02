@@ -111,7 +111,14 @@ function isR2L() {
                 if (!$this.addClass('hover').data('setup')) {
                     // Optionally fill $drawer with HTML from an AJAX data source
                     if (ajax) {
-                        var href = $this.attr('href') + ';ajax=1';
+                        var href;
+                        if (this.form) {
+                            href = this.form.action + '?';
+                            href += (new URLSearchParams(new FormData(this.form))).toString();
+                        } else {
+                            href = $this.attr('href');
+                        }
+                        href += ';ajax=1';
                         var margin = isR2L() ? 'margin-left' : 'margin-right';
                         var $ajax_result = $('<div>').appendTo($drawer);
                         $ajax_result.html('<p style="text-align:center">Loading</p>');
@@ -1413,9 +1420,9 @@ $.extend(fixmystreet.set_up, {
 
     if ($('.mobile').length) {
         // Make sure we end up with one Get updates link
-        if ($('#key-tools a.js-feed').length) {
-            $('#sub_map_links a.js-feed').remove();
-            $('#key-tools a.js-feed').appendTo('#sub_map_links');
+        if ($('#key-tools .js-feed').length) {
+            $('#sub_map_links .js-feed').remove();
+            $('#key-tools .js-feed').appendTo('#sub_map_links');
         }
         $('#key-tools li:empty').remove();
         $('#report-updates-data').insertAfter($('#map_box'));
@@ -1851,7 +1858,7 @@ $.extend(fixmystreet.set_up, {
     });
 
     $('#map_sidebar').on('click', '.js-back-to-report-list', function(e) {
-        var report_list_url = $(this).attr('href');
+        var report_list_url = this.form.action;
         var map_state = around_map_state;
         var set_map_state = true;
         fixmystreet.back_to_reports_list(e, report_list_url, map_state, set_map_state);
