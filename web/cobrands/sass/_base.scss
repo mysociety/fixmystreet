@@ -246,11 +246,12 @@ img {
   max-width: none;
 }
 
+button,
 select,
 input,
 textarea {
   font-size: 99%;
-  font-family: $meta-font;
+  font-family: inherit;
 }
 
 // To deal with bug from drop-down being wider than holder
