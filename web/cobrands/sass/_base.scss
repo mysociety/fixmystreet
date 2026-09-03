@@ -1002,6 +1002,12 @@ html.mobile.js-nav-open #js-menu-open-modal {
     // Prevents elements with more than two words to break into multiple lines
     white-space: nowrap;
 
+    @media (max-width: 420px) {
+      // Prevents cobrands with bigger font-sizes to overflow horizontally.
+      text-align: center;
+      white-space: normal;
+    }
+
     &:hover,
     &.hover,
     &:focus {
