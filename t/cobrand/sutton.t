@@ -221,6 +221,12 @@ subtest 'updating of waste reports' => sub {
                     DatatypeName => 'Post Collection Photo',
                     Value => encode_base64($sample_file->slurp_raw),
                 };
+            } elsif ($external_id eq 'waste-with-justification') {
+                $event_type_id = 3143; # Dispute
+                push @$data, {
+                    DatatypeName => 'Justification',
+                    Value => 2, # No
+                };
             }
             return SOAP::Result->new(result => {
                 Guid => $external_id,
@@ -239,6 +245,7 @@ subtest 'updating of waste reports' => sub {
                     { CoreState => 'Closed', Name => 'Completed', Id => 15004 },
                     { CoreState => 'Closed', Name => 'Partially Completed', Id => 15005 },
                     { CoreState => 'Closed', Name => 'Not Completed', Id => 15006 },
+                    { CoreState => 'Closed', Name => 'Closed', Id => 19232 },
                 ] } },
             });
         } else {
@@ -381,6 +388,14 @@ subtest 'updating of waste reports' => sub {
         (my $photo_link_full) = $mech->content =~ m#a href="(/photo.*?1)"#;
         $mech->get_ok($photo_link_thumbnail, "Successfully call thumbnail image");
         $mech->get_ok($photo_link_full, "Successfully call full image");
+
+        $report->update({ external_id => 'waste-with-justification' });
+
+        $in = $mech->echo_notify_xml('waste-with-justification', 3143, 19232, '');
+        $mech2->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+        is $report->comments->count, 6, 'A new update';
+        $report->discard_changes;
+        is $report->state, 'unable to fix', 'A state change';
     };
 };
 
