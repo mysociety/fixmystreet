@@ -37,7 +37,6 @@ sub process_body {
     );
 
     $self->_current_open311( $open311 );
-    $self->_check_endpoints;
 
     my $list = $open311->get_service_list;
     unless ( $list && $list->{service} ) {
@@ -52,23 +51,6 @@ sub process_body {
     }
     $self->process_services( $list );
 }
-
-
-
-sub _check_endpoints {
-    my $self = shift;
-
-    # west berks end point not standard
-    if ( $self->_current_body->areas->{2619} ) {
-        $self->_current_open311->endpoints(
-            {
-                services => 'Services',
-                requests => 'Requests'
-            }
-        );
-    }
-}
-
 
 sub process_services {
     my $self = shift;
@@ -290,11 +272,8 @@ sub _add_meta_to_contact {
 sub _normalize_service_name {
     my $self = shift;
 
-    # FIXME - at the moment it makes more sense to use the description
-    # for cambridgeshire but need a more flexible way to set this
-    my $service_name = $self->_current_body->areas->{2218} ?
-                        $self->_current_service->{description} :
-                        $self->_current_service->{service_name};
+    my $service_name = $self->_current_service->{service_name};
+
     # remove trailing whitespace as it upsets db queries
     # to look up contact details when creating problem
     $service_name =~ s/\s+$//;
