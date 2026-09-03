@@ -22,12 +22,6 @@
       </p>
       [% END %]
       [% IF (cobrand.moniker == 'sutton' OR cobrand.moniker == 'kingston') AND (report.category == 'Report missed collection' OR report.category == 'Escalate missed collection report') AND (update.item_problem_state == 'closed' OR update.item_problem_state == 'unable to fix' OR update.item_problem_state == 'fixed') %]
-        [% IF report.category == 'Report missed collection' && update.item_problem_state != 'fixed' %]
-          <p>
-            Our crews reported your collection was not made for the reason above.
-          </p>
-        [% END %]
-
         [%
           service_id = report.get_extra_field_value('service_id');
           cfg = cobrand.feature('echo');
