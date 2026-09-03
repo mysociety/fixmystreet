@@ -46,7 +46,7 @@ $mech->create_contact_ok(
     email => 'graffiti@example.org',
     send_method => 'Email',
 );
-foreach ([ missed => 'Report missed collection' ], [ 1638 => 'Garden Subscription' ], [ 1636 => 'Bulky collection' ]) {
+foreach ([ missed => 'Report missed collection' ], [ 3159 => 'Garden Subscription' ], [ 3130 => 'Bulky collection' ]) {
     $mech->create_contact_ok(
         body => $body,
         email => $_->[0],
@@ -215,6 +215,7 @@ subtest 'updating of waste reports' => sub {
             my $external_id = ${$value->value}->value->value;
             my ($waste, $event_state_id, $resolution_code) = split /-/, $external_id;
             my $data = [];
+            my $event_type_id = 3159;
             if ($external_id eq 'waste-with-image') {
                 push @$data, {
                     DatatypeName => 'Post Collection Photo',
@@ -224,7 +225,7 @@ subtest 'updating of waste reports' => sub {
             return SOAP::Result->new(result => {
                 Guid => $external_id,
                 EventStateId => $event_state_id,
-                EventTypeId => '1638',
+                EventTypeId => $event_type_id,
                 LastUpdatedDate => { OffsetMinutes => 60, DateTime => $date },
                 ResolutionCodeId => $resolution_code,
                 Data => { ExtensibleDatum => $data },
@@ -328,7 +329,7 @@ subtest 'updating of waste reports' => sub {
             waste => { kingston => 1, sutton => 1 }
         },
     }, sub {
-        my $in = $mech->echo_notify_xml('waste-15004-', 1638, 15002, '');
+        my $in = $mech->echo_notify_xml('waste-15004-', 3159, 15002, '');
         my $mech2 = $mech->clone;
         $mech2->host('kingston.example.org');
         $mech2->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
@@ -347,7 +348,7 @@ subtest 'updating of waste reports' => sub {
         );
         $report->update({ category => 'Bulky collection', external_id => 'waste-15005-' });
 
-        $in = $mech->echo_notify_xml('waste-15005-', 1636, 15005, '');
+        $in = $mech->echo_notify_xml('waste-15005-', 3130, 15005, '');
         $mech2->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
         is $report->comments->count, 4, 'A new update';
         $report->discard_changes;
@@ -359,7 +360,7 @@ subtest 'updating of waste reports' => sub {
         $report->set_extra_metadata( payment_reference => 'Pay123' );
         $report->update({ external_id => 'waste-with-image' });
 
-        $in = $mech->echo_notify_xml('waste-with-image', 1638, 15004, '');
+        $in = $mech->echo_notify_xml('waste-with-image', 3159, 15004, '');
         $mech2->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
         is $report->comments->count, 5, 'A new update';
         $report->discard_changes;
