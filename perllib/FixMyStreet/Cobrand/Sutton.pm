@@ -98,18 +98,6 @@ my %CONTAINER_SWAPS_FROM = (
     paper_240 => ['paper_360'],
 );
 
-=head2 skip_alert_state_changed_to
-
-Do not include the "State changed to" line on small item collection update alerts.
-
-=cut
-
-sub skip_alert_state_changed_to {
-    my ( $self, $report ) = @_;
-
-    return $report->category eq 'Small items collection' || $report->category eq 'Request new container';
-}
-
 =head2 public_holidays
 
 The only Bank Holidays relevant to Sutton are Christmas, Boxing, New Year.
