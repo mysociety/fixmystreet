@@ -2247,7 +2247,7 @@ html.js #map .noscript {
   bottom: 0;
   margin: 0;
 
-  a {
+  a, button {
     box-sizing: border-box;
     flex: 1 1 auto;
 
@@ -2287,6 +2287,15 @@ html.js #map .noscript {
   #map_filter:after {
     @extend %sub-map-link-icon;
     background-position: -96px 0;
+  }
+
+  #key-tool-around-updates {
+    color: inherit;
+    background: none;
+    appearance: none;
+    -webkit-appearance: none;
+    text-align: $left;
+    border: none;
   }
 }
 
