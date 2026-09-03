@@ -1411,9 +1411,9 @@ $.extend(fixmystreet.set_up, {
 
     if ($('.mobile').length) {
         // Make sure we end up with one Get updates link
-        if ($('#key-tools a.js-feed').length) {
-            $('#sub_map_links a.js-feed').remove();
-            $('#key-tools a.js-feed').appendTo('#sub_map_links');
+        if ($('#key-tools .js-feed').length) {
+            $('#sub_map_links .js-feed').remove();
+            $('#key-tools .js-feed').appendTo('#sub_map_links');
         }
         $('#key-tools li:empty').remove();
         $('#report-updates-data').insertAfter($('#map_box'));
