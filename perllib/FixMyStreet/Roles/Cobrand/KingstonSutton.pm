@@ -148,6 +148,21 @@ sub waste_password_hidden { 1 }
 sub waste_renewal_allow_current_bins_edit { 1 }
 sub waste_modify_allow_current_bins_edit { 1 }
 
+=head2 skip_alert_state_changed_to
+
+Do not include the "State changed to" line on some update alerts.
+
+=cut
+
+sub skip_alert_state_changed_to {
+    my ( $self, $report ) = @_;
+
+    return 1 if $report->state eq 'unable to fix';
+    return 1 if $report->category eq 'Small items collection';
+    return 1 if $report->cobrand eq 'sutton' && $report->category eq 'Request new container';
+    return 0;
+}
+
 =head2 waste_munge_report_form_fields
 
 We use a custom report form to add some text to the "About you" page.
