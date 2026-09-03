@@ -180,4 +180,10 @@ sub open311_update_missing_data {
     }
 }
 
+sub open311_extra_headers {
+    my ($self, $req) = @_;
+    my $key = $self->feature('open311_api_key_header');
+    $req->header( Ocp_Apim_Subscription_Key => $key ) if $key;
+}
+
 1;
