@@ -116,7 +116,7 @@ body.mappage {
 #lang-switcher {
     z-index: 1;
     #{$right}: 0;
-    top: -1em;
+    top: 1em;
 }
 
 #front-main {
@@ -167,7 +167,7 @@ body.frontpage {
     #site-logo {
         margin: $fms-logo-vertical-margin 0;
         width: $fms-logo-width;
-        margin-left: $mysociety-badge-width;
+        margin-left: 80px;
         height: $fms-logo-height;
         background: none;
 
@@ -184,8 +184,8 @@ body.frontpage {
         display: block;
         position: absolute;
         z-index: 2;
-        margin-left: -0.75em;
-        top: -($fms-logo-vertical-margin + $header-top-border-width);
+        margin-left: -10px;
+        top: 0;
         width: $mysociety-badge-width;
         height: $mysociety-badge-height;
         outline-offset: -10px;
@@ -193,12 +193,6 @@ body.frontpage {
             width: 100%;
             height: auto;
         }
-    }
-
-    #main-nav {
-        height: calc(#{$fms-logo-height} + #{$fms-logo-vertical-margin} * 2);
-        margin-top: 0;
-        margin-left: $fms-logo-width + $mysociety-badge-width + 16px; // Prevent overlapping with logo
     }
 
     .nav-menu li {
