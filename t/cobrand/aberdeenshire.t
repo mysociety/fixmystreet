@@ -22,11 +22,13 @@ $staff_user->add_to_roles($role);
 $aberdeenshire->update({ comment_user_id => $staff_user->id });
 $mech->create_contact_ok(body_id => $aberdeenshire->id, category => 'Pothole', email => 'potholes@example.org');
 $mech->create_contact_ok(body_id => $aberdeenshire->id, category => 'Surface Issue', email => 'surface_issue@example.org');
+my %base_pothole_problem = (
+    category => 'Pothole', cobrand => 'aberdeenshire',
+    latitude => 57.27126, longitude => -2.43012, areas => '2648',
+);
 (my $report) = $mech->create_problems_for_body(1, $aberdeenshire->id, 'Pothole', {
-            category => 'Pothole', cobrand => 'aberdeenshire',
-            latitude => 57.27126, longitude => -2.43012, areas => '2648',
-            external_id => '9876543'
-        });
+    %base_pothole_problem, external_id => '9876543'
+});
 
 my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 FixMyStreet::override_config {
@@ -122,12 +124,23 @@ FixMyStreet::override_config {
 
         subtest 'Duplicate reports are not shown when reporting' => sub {
             (my $report) = $mech->create_problems_for_body(1, $aberdeenshire->id, 'Another pothole', {
-                category => 'Pothole', cobrand => 'aberdeenshire',
-                latitude => 57.27126, longitude => -2.43012, areas => '2648',
-                state => 'duplicate',
+                %base_pothole_problem, state => 'duplicate',
             });
             my $json = $mech->get_ok_json('/around?ajax=1&bbox=-2.43112,57.27026,-2.42912,57.27226');
             is_deeply($json->{pins}, [], 'No duplicate problem included');
+        };
+
+        subtest 'Planned/no further action shown in nearby duplicates' => sub {
+            $mech->create_problems_for_body(1, $aberdeenshire->id, 'A planned pothole', {
+                %base_pothole_problem, state => 'planned',
+            });
+            $mech->create_problems_for_body(1, $aberdeenshire->id, 'A no further action pothole', {
+                %base_pothole_problem, state => 'unable to fix',
+            });
+            my $json = $mech->get_ok_json( "/around/nearby?filter_category=Pothole&latitude=57.27126&longitude=-2.43012" );
+            like $json->{reports_list}, qr/A planned pothole Test/;
+            like $json->{reports_list}, qr/A no further action pothole Test/;
+            unlike $json->{reports_list}, qr/Another pothole Test/;
         };
 
         subtest 'Category changes are passed to Open311' => sub {
