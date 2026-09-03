@@ -688,8 +688,16 @@ fixmystreet.assets.camden.filter_column = new OpenLayers.Filter.Comparison({
 
 fixmystreet.assets.canalrivertrust = {};
 
+fixmystreet.assets.canalrivertrust.asset_found = function(asset) {
+    fixmystreet.message_controller.asset_found.call(this, asset);
+    fixmystreet.assets.named_select_action_found.call(this, asset);
+};
+fixmystreet.assets.canalrivertrust.asset_not_found = function() {
+    fixmystreet.message_controller.asset_not_found.call(this);
+};
+
 // Tunnels (treated as 'road' assets) and tunnel portals (spot assets).
-// Follow same pattern as Bucks PROWs and spot assets on those PROWs.
+// Follow similar pattern to Bucks PROWs and spot assets on those PROWs.
 
 fixmystreet.assets.canalrivertrust.tunnel_stylemap = new OpenLayers.StyleMap({
     'default': new OpenLayers.Style({
@@ -698,16 +706,6 @@ fixmystreet.assets.canalrivertrust.tunnel_stylemap = new OpenLayers.StyleMap({
         strokeWidth: 4
     })
 });
-
-fixmystreet.assets.canalrivertrust.tunnel_portal_selected = function(asset) {
-    var id = asset.attributes.sap_func_loc;
-    return 'You have selected portal' + ' <b>' + id + '</b>';
-};
-
-fixmystreet.assets.canalrivertrust.tunnel_selected = function(asset) {
-    var id = asset.attributes.sap_func_loc;
-    return 'You have selected tunnel <b>' + id + '</b>';
-};
 
 fixmystreet.assets.canalrivertrust.tunnel_found = function(layer, feature) {
     fixmystreet.message_controller.road_found(layer, feature);
@@ -720,14 +718,11 @@ fixmystreet.assets.canalrivertrust.tunnel_found = function(layer, feature) {
 };
 
 fixmystreet.assets.canalrivertrust.tunnel_not_found = function(layer) {
-    fixmystreet.message_controller.road_not_found(layer);
-    if ( fixmystreet.assets.selectedFeature() ) {
-        // This may never be reached, as selecting a spot asset implies
-        // a road has also been found
-        return;
-    }
+    fixmystreet.message_controller.tunnel_not_found(layer);
 
-    fixmystreet.assets.named_select_action_not_found.call(layer);
+    // Force deletion of 'You have selected tunnel...' message as it does
+    // not otherwise happen if e.g. another category selected
+    layer.map_messaging.asset = layer.fixmystreet.no_asset_message;
 };
 
 /* Central Bedfordshire */

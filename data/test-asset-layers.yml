@@ -276,6 +276,90 @@ camden:
     max_resolution: 0.5971642833948135
     wfs_feature: Trees
 
+canalrivertrust:
+  -
+    - name: arcgis_default
+      srsName: EPSG:3857
+      geometryName: SHAPE
+      protocol_class: OpenLayers.Protocol.ArcgisHTTP
+      format_class: OpenLayers.Format.GeoJSON
+      asset_id_field: OBJECTID
+      http_options:
+        params:
+          inSR: 3857
+          outSR: 3857
+          f: geojson
+          outFields: sap_func_loc, sap_description
+          where: 1=1
+      attributes:
+        location_description: sap_func_loc
+    - name: arcgis_spot
+      template: arcgis_default
+      asset_type: spot
+      class: OpenLayers.Layer.VectorAssetMove
+      max_resolution: 1.75
+      actions:
+        asset_found: fixmystreet.assets.canalrivertrust.asset_found
+        asset_not_found: fixmystreet.assets.canalrivertrust.asset_not_found
+      feature_code: sap_description
+    - name: web_csf_facilities
+      template: arcgis_spot
+      http_options:
+        url: https://services.arcgis.com/DknzyjEEie5tEW0u/arcgis/rest/services/Web_CSF_Facilities/FeatureServer/0/query
+        params:
+          inSR: 3857
+          outSR: 3857
+          f: geojson
+          outFields: sap_func_loc
+      asset_item_message: ''
+  # Structures
+  - name: CRT Bridges
+    asset_category:
+      - Bridges (CRT)
+    asset_item: bridge
+    template: arcgis_spot
+    http_options:
+      url: https://services.arcgis.com/DknzyjEEie5tEW0u/arcgis/rest/services/Canal_And_River_Trust_Bridges_View/FeatureServer/0/query
+
+  - name: CRT Tunnels
+    asset_category: Tunnel (CRT)
+    asset_item: tunnel
+    template: arcgis_default
+    http_options:
+      url: https://services.arcgis.com/DknzyjEEie5tEW0u/arcgis/rest/services/Canal_And_River_Trust_Tunnels_View/FeatureServer/0/query
+    non_interactive: true
+    road: true
+    stylemap: fixmystreet.assets.canalrivertrust.tunnel_stylemap
+    usrn:
+      - attribute: sap_func_loc
+        field: location_description
+    actions:
+      found: fixmystreet.assets.canalrivertrust.tunnel_found
+      not_found: fixmystreet.assets.canalrivertrust.tunnel_not_found
+    no_asset_msg_id: '#js-not-a-tunnel'
+    feature_code: sap_description
+
+  - name: CRT Tunnel Portals
+    asset_category: Tunnel (CRT)
+    asset_item: portal
+    template: arcgis_spot
+    http_options:
+      url: https://services.arcgis.com/DknzyjEEie5tEW0u/arcgis/rest/services/Canal_And_River_Trust_Tunnel_Portals_View/FeatureServer/0/query
+    actions:
+      asset_found: fixmystreet.assets.named_select_action_found
+      asset_not_found: fixmystreet.assets.named_select_action_not_found
+    asset_item_message: ''
+    feature_code: sap_description
+
+  # CSF Facilities
+  - name: CRT Elsan
+    asset_category: Elsan (CRT)
+    asset_item: elsan
+    template: web_csf_facilities
+    http_options:
+      params:
+        where: "facility_type='elsan_point'"
+
 lincolnshire:
   - wfs_url: "https://tilma.staging.mysociety.org/mapserver/lincs"
     geometryName: 'msGeometry'
@@ -692,4 +776,3 @@ gloucester:
     http_options:
       params:
         layer: all_plots
-

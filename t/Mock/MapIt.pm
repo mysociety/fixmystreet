@@ -135,6 +135,7 @@ my @PLACES = (
     [ '?', 51.530115, -0.228293, 2503, 'Kensington and Chelsea Borough Council', 'LBO' ],
     [ '?', 54.2448, -1.0643, 2408, 'Ryedale District Council', 'DIS' ], # When doing gen36 lookup
     [ 'SE18 6HQ', 51.48593, 0.00754, 2493, 'Royal Borough of Greenwich', 'LBO' ],
+    [ '?', 51.532974, -0.099152, 2507, 'Islington Borough Council', 'LBO' ], # Regent's Canal in Islington
 );
 
 sub dispatch_request {

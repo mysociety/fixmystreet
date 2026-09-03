@@ -1,0 +1,39 @@
+{
+    "type": "FeatureCollection",
+    "crs": {
+        "type": "name",
+        "properties": {
+            "name": "EPSG:3857"
+        }
+    },
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -12802.9329583966,
+                    6716443.56254865
+                ]
+            },
+            "properties": {
+                "sap_func_loc": "RE-007-005-01",
+                "sap_description": "Islington Tunnel West Portal"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -11426.8549481112,
+                    6716152.01292019
+                ]
+            },
+            "properties": {
+                "sap_func_loc": "RE-007-005-08",
+                "sap_description": "Islington Tunnel East Portal"
+            }
+        }
+    ]
+}

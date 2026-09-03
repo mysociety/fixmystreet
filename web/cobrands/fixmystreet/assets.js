@@ -1616,6 +1616,18 @@ fixmystreet.message_controller = (function() {
             }
         },
 
+        // For canal tunnels. Using road_not_found above means that sometimes
+        // the responsibility message is not shown because there is a
+        // fixmystreet.assets.selectedFeature().
+        tunnel_not_found: function(layer) {
+            if (!layer.visibility) {
+                responsibility_off(layer, 'road');
+            }
+            else {
+                responsibility_on(layer, 'road');
+            }
+        },
+
         register_category: function(params) {
             stoppers.push(params);
         },
