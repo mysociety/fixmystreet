@@ -1,6 +1,8 @@
 [%
 IF report.cobrand_data == 'licence';
     PROCESS 'other-reported-licence.html';
+ELSIF report.cobrand_data == 'switchout';
+    PROCESS 'other-reported-switchout.html';
 ELSE;
 
 email_columns = 2;
