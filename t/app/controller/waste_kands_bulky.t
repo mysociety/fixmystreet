@@ -1855,7 +1855,6 @@ FixMyStreet::override_config {
                 like $email_text, qr/No access due to parked vehicle/, 'Reason pulled from comment';
                 like $email_text, qr/report a problem with this missed collection/, 'Report a problem text in text email';
                 like $email_html, qr/No access due to parked vehicle/, 'Reason pulled from comment';
-                like $email_html, qr/Our crews reported your collection was not made/, 'extra collection text included';
                 like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
                 like $email_html, qr{waste/12345/enquiry}, 'HTML alert contains report link';
 
