@@ -770,11 +770,19 @@ sub open311_waste_update_extra {
     }
     my $data = Integrations::Echo::force_arrayref($event->{Data}, 'ExtensibleDatum');
     my @media;
+    my $justified = '';
     foreach (@$data) {
         if ($_->{DatatypeName} eq 'Post Collection Photo' || $_->{DatatypeName} eq 'Pre Collection Photo') {
             my $value = decode_base64($_->{Value});
             my $type = FixMyStreet::PhotoStorage->detect_type($value);
             push @media, "data:image/$type,$value";
+        }
+        if ($_->{DatatypeName} eq 'Justification') {
+            if ($_->{Value} == 1) {
+                $justified = 'yes';
+            } elsif ($_->{Value} == 2) {
+                $justified = 'no';
+            }
         }
     }
 
@@ -785,6 +793,13 @@ sub open311_waste_update_extra {
     my $description = $event_type->{states}{$state_id}{name} || '';
     if ($description eq 'Not Completed' && !$resolution_id) {
         $override_status = "";
+    }
+    if ($event->{EventTypeId} == $EVENT_TYPE_IDS{dispute}) {
+        if ($justified eq 'yes') {
+            $override_status = 'fixed - council';
+        } elsif ($justified eq 'no') {
+            $override_status = 'unable to fix';
+        }
     }
 
     return (
