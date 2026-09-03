@@ -6,7 +6,7 @@ module.exports = defineConfig({
   allowCypressEnv: false,
 
   projectId: "y8vvs1",
-  blockHosts: ["gaze.mysociety.org", "*.openstreetmap.org", "portal.roadworks.org", "tilma.mysociety.org", "tilma.staging.mysociety.org", "isharemaps.bathnes.gov.uk", "consent.cookiebot.com", "assets.adobedtm.com", "www.googletagmanager.com", "www.googleadservices.com", "*.virtualearth.net", "feedback.happy-or-not.com"],
+  blockHosts: ["gaze.mysociety.org", "*.openstreetmap.org", "portal.roadworks.org", "tilma.mysociety.org", "tilma.staging.mysociety.org", "isharemaps.bathnes.gov.uk", "consent.cookiebot.com", "assets.adobedtm.com", "www.googletagmanager.com", "www.googleadservices.com", "*.virtualearth.net", "feedback.happy-or-not.com","services.arcgis.com"],
   expose: {
      postcode: "BS10 5EE"
   },
