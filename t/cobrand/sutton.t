@@ -46,7 +46,7 @@ $mech->create_contact_ok(
     email => 'graffiti@example.org',
     send_method => 'Email',
 );
-foreach ([ missed => 'Report missed collection' ], [ 1638 => 'Garden Subscription' ], [ 1636 => 'Bulky collection' ]) {
+foreach ([ missed => 'Report missed collection' ], [ 3159 => 'Garden Subscription' ], [ 3130 => 'Bulky collection' ]) {
     $mech->create_contact_ok(
         body => $body,
         email => $_->[0],
@@ -215,16 +215,23 @@ subtest 'updating of waste reports' => sub {
             my $external_id = ${$value->value}->value->value;
             my ($waste, $event_state_id, $resolution_code) = split /-/, $external_id;
             my $data = [];
+            my $event_type_id = 3159;
             if ($external_id eq 'waste-with-image') {
                 push @$data, {
                     DatatypeName => 'Post Collection Photo',
                     Value => encode_base64($sample_file->slurp_raw),
                 };
+            } elsif ($external_id eq 'waste-with-justification') {
+                $event_type_id = 3143; # Dispute
+                push @$data, {
+                    DatatypeName => 'Justification',
+                    Value => 2, # No
+                };
             }
             return SOAP::Result->new(result => {
                 Guid => $external_id,
                 EventStateId => $event_state_id,
-                EventTypeId => '1638',
+                EventTypeId => $event_type_id,
                 LastUpdatedDate => { OffsetMinutes => 60, DateTime => $date },
                 ResolutionCodeId => $resolution_code,
                 Data => { ExtensibleDatum => $data },
@@ -238,6 +245,7 @@ subtest 'updating of waste reports' => sub {
                     { CoreState => 'Closed', Name => 'Completed', Id => 15004 },
                     { CoreState => 'Closed', Name => 'Partially Completed', Id => 15005 },
                     { CoreState => 'Closed', Name => 'Not Completed', Id => 15006 },
+                    { CoreState => 'Closed', Name => 'Closed', Id => 19232 },
                 ] } },
             });
         } else {
@@ -328,7 +336,7 @@ subtest 'updating of waste reports' => sub {
             waste => { kingston => 1, sutton => 1 }
         },
     }, sub {
-        my $in = $mech->echo_notify_xml('waste-15004-', 1638, 15002, '');
+        my $in = $mech->echo_notify_xml('waste-15004-', 3159, 15002, '');
         my $mech2 = $mech->clone;
         $mech2->host('kingston.example.org');
         $mech2->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
@@ -347,7 +355,7 @@ subtest 'updating of waste reports' => sub {
         );
         $report->update({ category => 'Bulky collection', external_id => 'waste-15005-' });
 
-        $in = $mech->echo_notify_xml('waste-15005-', 1636, 15005, '');
+        $in = $mech->echo_notify_xml('waste-15005-', 3130, 15005, '');
         $mech2->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
         is $report->comments->count, 4, 'A new update';
         $report->discard_changes;
@@ -359,7 +367,7 @@ subtest 'updating of waste reports' => sub {
         $report->set_extra_metadata( payment_reference => 'Pay123' );
         $report->update({ external_id => 'waste-with-image' });
 
-        $in = $mech->echo_notify_xml('waste-with-image', 1638, 15004, '');
+        $in = $mech->echo_notify_xml('waste-with-image', 3159, 15004, '');
         $mech2->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
         is $report->comments->count, 5, 'A new update';
         $report->discard_changes;
@@ -380,6 +388,14 @@ subtest 'updating of waste reports' => sub {
         (my $photo_link_full) = $mech->content =~ m#a href="(/photo.*?1)"#;
         $mech->get_ok($photo_link_thumbnail, "Successfully call thumbnail image");
         $mech->get_ok($photo_link_full, "Successfully call full image");
+
+        $report->update({ external_id => 'waste-with-justification' });
+
+        $in = $mech->echo_notify_xml('waste-with-justification', 3143, 19232, '');
+        $mech2->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+        is $report->comments->count, 6, 'A new update';
+        $report->discard_changes;
+        is $report->state, 'unable to fix', 'A state change';
     };
 };
 
