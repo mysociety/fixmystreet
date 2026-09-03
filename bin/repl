@@ -10,6 +10,7 @@ BEGIN {
 }
 
 use Term::ReadLine;
+use DDP colored => 1;
 use Data::Dumper;
 
 $Data::Dumper::Terse = 1;
@@ -26,6 +27,8 @@ $Data::Dumper::Indent = 0;
 {
     no strict 'refs';
     no warnings 'redefine';
+
+    *{"REPL::Dumper"} = \&Dumper;
 
     use FixMyStreet::DB;
     use Module::Pluggable search_path => ['FixMyStreet::DB::Result'], require => 1, sub_name => 'resultsets';
@@ -60,10 +63,11 @@ while (defined(my $input = $term->readline($prompt))) {
         } elsif ($input =~ /;\s*$/) {
             # Input ends with a semi-colon, suppress the output.
             $output = '';
-        } elsif (defined $result) {
-            $output = Dumper($result);
+        } elsif ($input =~ /^Dumper/) {
+            # Started with Dumper, assume Data::Dumper output
+            $output = $result;
         } else {
-            $output = 'undef';
+            $output = np $result;
         }
     }
 
