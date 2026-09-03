@@ -31,13 +31,12 @@ $mappage-actions-sidebar-width--medium: 25em !default;
 $mappage-actions-sidebar-width--large: $mappage-sidebar-width--large !default;
 $mappage-actions-sidebar-width--xlarge: $mappage-sidebar-width--xlarge !default;
 
-$header-top-border-width: 0.25em !default;
-$header-top-border: $header-top-border-width solid $primary !default;
 
 $container-max-width: 60em !default;
 
 $primary_link_color: null !default;
 $primary_link_hover_color: null !default;
+
 
 // None of the form variables control the mobile styling. For that refer to _base.scss
 // $front-main-color-desktop controls the colours of all elements inside #front-main and .postcode-form-box element.
@@ -110,28 +109,21 @@ h1 {
   position: relative;
 }
 
+#site-header {
+  
+  .container {
+    height: $header-height-desktop;
+    padding: 0;
+  }
+}
+
 #main-nav {
-  position: static;
-  min-height: $mappage-header-height; // defaults to map header height; should be height of #site-header (eg: #site-logo + any vertical padding)
-  height: 1px; // flex `align-items: center` doesn't work in IE10 and IE11 unless flex container has an explicit height (even when min-height means this explicit height gets ignored!)
   display: flex;
   align-items: center;
-  float: $right; // we could use justify-content here, but float degrades better for non-flexbox browsers
-  @if ($header-top-border) {
-    margin-top: $header-top-border-width * -1; // visually compensate for border on #site-header
-  }
+  justify-content: right;
 
-  // No flexbox in IE9, so replace `align-items: center` with absolute positioning
-  .ie9 & {
-    position: relative;
-    float: none;
-
-    & > * {
-        position: absolute;
-        top: 50%;
-        #{$right}: 0;
-        -ms-transform: translate(0, -50%);
-    }
+  @if ($header-top-border-desktop) {
+    margin-top: $header-top-border-width-desktop * -1; // visually compensate for border on #site-header
   }
 }
 
@@ -151,21 +143,19 @@ h1 {
 }
 
 .nav-wrapper {
-  position: absolute;
-  @if ($header-top-border) {
-    top: $header-top-border-width;
-  } @else {
-    top: 0;
-  }
-  #{$left}: 0;
-  #{$right}: 0;
+  position: static;
+  display: flex;
+  // TODO GAP should be a variable
+  gap: 1rem;
+  width: auto;
 }
 
 .nav-menu {
-  float: $right;
-  li {
-    float: $left;
-  }
+  display: flex;
+  justify-content: flex-end;
+  gap: $header-items-flex-gap-desktop;
+  flex-wrap: wrap;
+
   a, span {
     display: block;
     color: $nav_colour;
@@ -176,14 +166,17 @@ h1 {
     color: $nav_colour;
   }
 }
+
 .nav-menu--main {
   a, span {
-    padding: 0.75em;
-    font-size: 0.9em;
+    padding: $header-items-padding-desktop;
+    font-size: $header-items-font-size-desktop;
   }
+
   a:hover {
     background-color: $nav_hover_background_colour;
   }
+
   a.report-a-problem-btn {
     color: $primary_text;
     background-color: $primary;

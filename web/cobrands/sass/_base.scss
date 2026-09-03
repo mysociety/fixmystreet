@@ -42,8 +42,6 @@ $col_fixed_label: #00bd08 !default;
 $col_fixed_label_light: mix($col_fixed_label, #fff, 10%) !default;
 
 $form-control-border-color: #aaaaaa !default;
-$header-top-border-width: 0.25em !default;
-$header-top-border: $header-top-border-width solid $primary !default;
 
 $container-max-width: 60em !default;
 
@@ -820,12 +818,28 @@ ul.error {
 
 // #site-header creates grey bar in mobile
 #site-header {
+
+  .container {
+    height: $header-height-mobile;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
   @if ($header-top-border) {
     border-top: $header-top-border;
   }
   color: $nav_colour;
   background-color: $nav_background_colour;
   position: relative;
+}
+
+.nav-wrapper {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: 60px;
 }
 
 #site-logo {
@@ -911,11 +925,9 @@ html.mobile.js-nav-open #js-menu-open-modal {
 
 #main-nav {
   display: none;
-  position: absolute;
-  overflow: auto;
-  left: 0;
-  right: 0;
-  z-index: 15; // So appears over map and #js-menu-open-modal
+  position: relative;
+  // So it sits above the dark overlay of #js-menu-open-modal
+  z-index: 10;
 }
 
 #main-nav-btn {

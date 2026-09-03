@@ -1,0 +1,13 @@
+/* HEADER: Mobile */
+$header-height-mobile: 6rem !default;
+$header-top-border-width: 0.25em !default;
+$header-top-border: $header-top-border-width solid $primary !default;
+
+/* HEADER: Desktop */
+$header-height-desktop: $header-height-mobile !default;
+$header-top-border-width-desktop: $header-top-border-width !default;
+$header-top-border-desktop: $header-top-border-width-desktop solid $primary !default;
+
+$header-items-flex-gap-desktop: 0.5rem !default;
+$header-items-padding-desktop: 0.75rem !default;
+$header-items-font-size-desktop: 0.9rem !default;
