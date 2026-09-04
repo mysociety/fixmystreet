@@ -150,6 +150,7 @@ sub renew : Chained('setup') : PathPart('garden_renew') : Args(0) {
     my ($self, $c) = @_;
 
     $c->detach('/waste/property_redirect') if $c->stash->{waste_features}->{garden_renew_disabled};
+    $c->detach('/waste/property_redirect') unless $c->cobrand->garden_current_subscription;
 
     $c->forward('/waste/get_original_sub', ['any']);
 
