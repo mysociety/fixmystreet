@@ -56,8 +56,8 @@ const FIELDS = {
             return cat === 'Abandoned Vehicles';
         },
         'categories': [
-            'Abandoned Vehicles',
-            'Vehicle committing an offence'
+            // 'Vehicle committing an offence',
+            'Abandoned Vehicles'
         ],
         'reg': 'vehicle_registration_number',
         'make': 'vehicle_make_model', // DVLA doesn't give us model
@@ -282,6 +282,7 @@ function dvla_lookup(e) {
             if (field && vehicle_type) {
                 field.value = vehicle_type;
             }
+
             if (fields.taxed) {
                 let val = '';
                 if (data.taxStatus == 'Taxed') {
@@ -289,8 +290,8 @@ function dvla_lookup(e) {
                 } else if (data.taxStatus == 'Untaxed') {
                     val = config.tax.no;
                 }
+                field = document.querySelector('[name*="' + fields.taxed + '"][value="' + val + '"]');
                 if (field) {
-                    field = document.querySelector('[name*="' + fields.taxed + '"][value="' + val + '"]');
                     field.checked = true;
                 }
             }

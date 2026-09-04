@@ -167,6 +167,26 @@ END
 </ul>
 [% END %]
 
+[% IF c.cobrand.moniker == 'bexley' %]
+    [% IF problem.category == 'Garden Subscription' %]
+        <h2>Subscription information</h2>
+        <ul>
+        [% INCLUDE show_fields fields=[
+            [ 'Current containers', 'current_containers' ],
+            [' New containers', 'new_containers' ],
+            [ 'Verified by', 'verified_by' ],
+        ] %]
+        </ul>
+    [% ELSIF problem.category == 'Cancel Garden Subscription' %]
+        <ul>
+        [% INCLUDE show_fields fields=[
+            [ 'Reason', 'reason' ],
+            [ 'Verified by', 'verified_by' ],
+        ] %]
+        </ul>
+    [% END %]
+[% END %]
+
 [% IF c.cobrand.moniker == 'bromley' AND problem.get_extra_field_value('Subscription_Details_Container_Type') %]
 <h2>Subscription information</h2>
 <ul>
