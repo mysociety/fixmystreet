@@ -25,6 +25,6 @@
 
 [% PROCESS 'waste/_services_request.html' %]
 
-[% IF unit.garden_waste %]
+[% IF property.garden_current_subscription && unit.garden_waste %]
   [% PROCESS 'waste/_services_garden_current.html' %]
 [% END %]

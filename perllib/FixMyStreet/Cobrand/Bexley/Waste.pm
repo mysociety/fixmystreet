@@ -568,7 +568,8 @@ sub bin_services_for_address {
     }
 
     # Garden subscription.
-    # This call removes Whitespace service if there is no contract in Agile.
+    # Returns undef if there is a garden service in Whitespace but no
+    # subscription data in Agile (this occurs for communal properties/flats).
     $property->{garden_current_subscription}
         = $self->garden_current_subscription(\@site_services_filtered);
 

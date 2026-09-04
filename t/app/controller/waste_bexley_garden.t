@@ -3234,6 +3234,9 @@ FixMyStreet::override_config {
     };
 
     subtest 'Parent property scenarios' => sub {
+        set_fixed_time('2024-02-01T00:00:00Z');
+        $mech->log_in_ok( $user->email );
+
         my $child_uprn = '10002';
         my $parent_uprn = '10001';
         my $parent_site_id = 999;
@@ -3252,12 +3255,13 @@ FixMyStreet::override_config {
             return { AccountSiteUprn => $parent_uprn } if $site_id == $parent_site_id;
             return {};
         });
+        $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub { [] } );
 
         # Scenario 1: Parent property exists, but child has its own services (kerbside)
         subtest 'Kerbside with parent UPRN' => sub {
+            # No garden service
             $whitespace_mock->mock( 'GetSiteCollections', sub {
                 my ($self, $uprn) = @_;
-                # Child has its own service
                 return [
                     {   ServiceItemName      => 'PC-180',
                         NextCollectionDate   => '2024-02-07T00:00:00',
@@ -3279,10 +3283,48 @@ FixMyStreet::override_config {
                 'Subscribe to garden waste collection service',
                 'Sidebar garden sign-up link shown',
             );
+
+            # Child has its own garden service
+            mock_agile( '01/02/2025 00:00', UPRN => $child_uprn, Email => $user->email );
+            $whitespace_mock->mock( 'GetSiteCollections', sub {
+                my ($self, $uprn) = @_;
+                return [
+                    {   ServiceItemName      => 'PC-180',
+                        NextCollectionDate   => '2024-02-07T00:00:00',
+                        ServiceName          => 'Blue Bin',
+                        SiteServiceValidFrom => '2000-01-01T00:00:00',
+                        SiteServiceValidTo   => '0001-01-01T00:00:00',
+                        RoundSchedule        => 'RND-1 Mon'
+                    },
+                    {   ServiceItemName => 'GA-140',  # Garden 140 ltr Bin
+                        NextCollectionDate   => '2024-02-07T00:00:00',
+                        ServiceName          => 'Brown Wheelie Bin',
+                        SiteServiceValidFrom => '2000-01-01T00:00:00',
+                        SiteServiceValidTo   => '0001-01-01T00:00:00',
+                        RoundSchedule => 'RND-1 Mon',
+                    },
+                ] if $uprn == $child_uprn;
+                return [];
+            });
+
+            $mech->get_ok("/waste/$child_uprn");
+            $mech->text_like(
+                qr/Brown Wheelie Bin\s+Garden waste\s+Frequency\s+Weekly\s+Next collection\s+Wednesday/,
+                'Garden waste schedule info shown'
+            );
+            $mech->text_contains('Subscription £130.00 per year (2 bins)', 'subscription info shown');
+            $mech->text_contains('Renewal01 February 2025', 'renewal info shown');
+            $mech->content_contains('Change your brown wheelie bin subscription', 'modify link present');
+            $mech->content_contains('Cancel your brown wheelie bin subscription', 'cancel link present');
+            $mech->content_contains('Manage garden waste bins', 'management link present');
         };
 
         # Scenario 2: Parent property exists, child has NO services (communal)
         subtest 'Communal with parent UPRN' => sub {
+            # If parent controls garden payment (e.g. for flats) there is no
+            # subscription data in Agile
+            $agile_mock->mock( 'CustomerSearch', sub { {} } );
+
             $whitespace_mock->mock( 'GetSiteCollections', sub {
                 my ($self, $uprn) = @_;
                 return [] if $uprn == $child_uprn; # Child has no services
@@ -3308,6 +3350,46 @@ FixMyStreet::override_config {
                 'Subscribe to garden waste collection service',
                 'Sidebar garden sign-up link not shown',
             );
+
+            $whitespace_mock->mock( 'GetSiteCollections', sub {
+                my ($self, $uprn) = @_;
+                return [] if $uprn == $child_uprn; # Child has no services
+                # Parent has services
+                return [
+                    {   ServiceItemName      => 'RES-180',
+                        NextCollectionDate   => '2024-02-07T00:00:00',
+                        ServiceName          => 'Green Bin',
+                        SiteServiceValidFrom => '2000-01-01T00:00:00',
+                        SiteServiceValidTo   => '0001-01-01T00:00:00',
+                        RoundSchedule        => 'RND-1 Mon'
+                    },
+                    {   ServiceItemName => 'GA-140',  # Garden 140 ltr Bin
+                        NextCollectionDate   => '2024-02-07T00:00:00',
+                        ServiceName          => 'Brown Wheelie Bin',
+                        SiteServiceValidFrom => '2000-01-01T00:00:00',
+                        SiteServiceValidTo   => '0001-01-01T00:00:00',
+                        RoundSchedule => 'RND-1 Mon',
+                    },
+                ] if $uprn == $parent_uprn;
+                return [];
+            });
+
+            $mech->get_ok("/waste/$child_uprn");
+            $mech->text_like(
+                qr/Brown Wheelie Bin\s+Garden waste\s+Frequency\s+Weekly\s+Next collection\s+Wednesday/,
+                'Garden waste schedule info shown'
+            );
+            $mech->text_lacks('Subscription', 'no subscription info');
+            $mech->text_lacks('Renewal', 'no renewal info');
+            $mech->content_lacks('Change your brown wheelie bin subscription', 'modify link not present');
+            $mech->content_lacks('Cancel your brown wheelie bin subscription', 'cancel link not present');
+            $mech->content_lacks('Manage garden waste bins', 'management link not present');
+            $mech->content_lacks("$child_uprn/garden", 'no other garden links');
+
+            for (qw/garden garden_modify garden_cancel garden_renew/) {
+                $mech->get_ok("/waste/$child_uprn/$_");
+                is $mech->uri->path, "/waste/$child_uprn", 'redirected to bin days page';
+            }
         };
     };
 
