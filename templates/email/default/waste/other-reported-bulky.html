@@ -60,6 +60,8 @@ cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel
       [% IF cobrand.moniker == 'peterborough' %]
         If you wish to cancel your booking, please call 01733 74 74 74.
       [% END %]
+    [% ELSIF cobrand.moniker == 'bexley' %]
+      <strong>If you wish to cancel your booking, please visit <a href="[% cancel_url %]">this link</a>.</strong>
     [% ELSIF cobrand.moniker != 'sutton' AND cobrand.moniker != 'kingston' AND cobrand.moniker != 'peterborough' %]
       If you wish to cancel your booking, please visit <a href="[% cancel_url %]">this link</a>.
     [% END %]
