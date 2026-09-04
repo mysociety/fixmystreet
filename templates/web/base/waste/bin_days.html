@@ -348,6 +348,11 @@
 
       [% TRY %][% PROCESS waste/services_extra.html %][% CATCH file %][% END %]
 
+        [%# Allow superusers to see more data for debugging purposes %]
+        [% IF c.user.is_superuser %]
+            [% PROCESS waste/bin_days_debug.html %]
+        [% END %]
+
     </div>
 
     [% IF c.cobrand.moniker != 'peterborough' %]
