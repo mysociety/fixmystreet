@@ -148,8 +148,7 @@ sub _remove_garden_services {
 
 Look up the garden subscription in Agile. Note if there is one but no
 Whitespace service, this fakes a new Whitespace service in the services list.
-If there isn't one and there is a Whitespace service, this removes the
-Whitespace service. This caches the results on first call to be used by future
+This caches the results on first call to be used by future
 calls (which don't pass in services).
 
 =cut
@@ -177,8 +176,7 @@ sub garden_current_subscription {
 
     my $sub = $lookup_result->{subscription};
     unless ($sub) {
-        # No Agile data, so remove Whitespace service
-        $self->_remove_garden_services($services);
+        # No Agile data, so return nothing here, so any service is still shown
         return undef;
     }
 
