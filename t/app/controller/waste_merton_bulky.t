@@ -29,6 +29,18 @@ my $contact = $mech->create_contact_ok(body => $body, ( category => 'Report miss
     );
 $contact->update;
 
+$contact = $mech->create_contact_ok(body => $body, group => ['Waste'],
+    category => 'Request additional collection', email => 'additional@example.org',
+    extra => { type => 'waste' });
+  $contact->set_extra_fields(
+        { code => 'property_id', required => 1, automated => 'hidden_field' },
+        { code => 'service_id', required => 0, automated => 'hidden_field' },
+        { code => 'Exact_Location', required => 0, automated => 'hidden_field' },
+        { code => 'Original_Event_ID', required => 0, automated => 'hidden_field' },
+        { code => 'Notes', required => 0, automated => 'hidden_field' },
+    );
+$contact->update;
+
 my $contact_centre_user = $mech->create_user_ok('contact@example.org', from_body => $body, email_verified => 1, name => 'Contact 1');
 $contact_centre_user->user_body_permissions->create({ body => $body, permission_type => 'report_view_private' });
 $contact_centre_user->user_body_permissions->create({ body => $body, permission_type => 'wasteworks_config' });
@@ -1224,6 +1236,52 @@ FixMyStreet::override_config {
         $mech->content_contains('A missed bulky waste collection has been reported');
         $mech->get_ok('/waste/12345/report');
         $mech->content_lacks('Bulky waste collection');
+        $echo->mock( 'GetEventsForObject', sub { [] } );
+    };
+
+    subtest 'Additional collections' => sub {
+        $mech->log_in_ok( $contact_centre_user->email );
+        $echo->mock( 'GetEventsForObject', sub { [ {
+            Guid => 'a-guid',
+            EventTypeId => 3130,
+            ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
+            ResolutionCodeId => 466,
+            EventStateId => 19185,
+        } ] } );
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('A missed collection cannot be reported', 'Not completed');
+        $mech->content_contains('Gate locked');
+        $mech->follow_link_ok({ text => 'Request an additional bulky waste collection' });
+        $mech->content_contains('Bulky waste collection');
+        $mech->content_contains('Request additional collection');
+        $mech->submit_form_ok({ form_number => 1 });
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
+        $mech->submit_form_ok({ form_number => 3 });
+
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('Exact_Location'), 'in the middle of the drive';
+        is $report->title, 'Request additional bulky collection';
+        is $report->category, 'Request additional collection';
+        is $report->get_extra_field_value('Original_Event_ID'), 'a-guid';
+
+        $echo->mock( 'GetEventsForObject', sub { [ {
+            Guid => 'a-guid',
+            EventTypeId => 3130,
+            ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
+            ResolutionCodeId => 466,
+            EventStateId => 19185,
+        }, {
+            EventTypeId => 3160,
+            EventStateId => 0,
+            ServiceId => 1089,
+            Guid => 'guid',
+            EventDate => { DateTime => '2023-07-05T00:00:00Z' },
+        } ] } );
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('An additional collection request has been made');
+        $mech->get_ok('/waste/12345/report');
+        $mech->content_lacks('Bulky waste collection');
+
         $echo->mock( 'GetEventsForObject', sub { [] } );
     };
 

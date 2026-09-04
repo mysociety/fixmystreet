@@ -397,7 +397,8 @@ sub waste_munge_report_data {
     }
     if ($c->get_param('additional') && $c->stash->{is_staff}) {
         $data->{category} = 'Request additional collection';
-        $data->{title} = "Request additional $service collection";
+        $data->{title} = "Request additional $service";
+        $data->{title} .= ' collection' unless $data->{title} =~ /collection/;
     } else {
         my $service_ids = $SERVICE_IDS{$self->moniker};
         my %lookup = reverse %$service_ids;
