@@ -699,8 +699,11 @@ $.extend(fixmystreet.set_up, {
             var $new_category_meta = $('#category_meta');
             $new_category_meta.closest('.js-reporting-page').toggleClass('js-reporting-page--skip', !!data.extra_hidden);
             // Preserve any existing values
-            $category_meta.find("[name]").each(function() {
+            $category_meta.find("[name]").not(":checkbox").not(":radio").each(function() {
                 $new_category_meta.find("[name='"+this.name+"']").val(this.value);
+            });
+            $category_meta.find("[name]:checked").each(function() {
+                $new_category_meta.find("[name='"+this.name+"']").val([this.value]);
             });
         } else {
             $category_meta.closest('.js-reporting-page').addClass('js-reporting-page--skip');
