@@ -479,7 +479,7 @@ $.extend(fixmystreet.set_up, {
     // In case we've come here by clicking back to a form that disabled a submit button
     $('input[type=submit][data-disable],button[data-disable]').prop('disabled', false);
 
-    $('[data-confirm]').on('click', function() {
+    $('body').on('click', '[data-confirm]', function() {
         return confirm(this.getAttribute('data-confirm'));
     });
   },
