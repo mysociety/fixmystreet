@@ -3716,6 +3716,10 @@ $site-message-border: 1px solid #525252 !default;
       list-style: none;
       padding-bottom: 0.5rem;
       border-bottom: 1px solid $form-control-border-color;
+      
+      &:last-child {
+        border-bottom: none;
+      }
     }
   }
 }
