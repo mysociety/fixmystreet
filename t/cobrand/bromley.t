@@ -45,9 +45,10 @@ my $contact = $mech->create_contact_ok(
 );
 $contact->set_extra_metadata(id_field => 'service_request_id_ext');
 $contact->set_extra_fields(
-    { code => 'easting', datatype => 'number', },
-    { code => 'northing', datatype => 'number', },
-    { code => 'service_request_id_ext', datatype => 'number', },
+    { code => 'easting', datatype => 'number', automated => 'server_set' },
+    { code => 'northing', datatype => 'number', automated => 'server_set' },
+    { code => 'service_request_id_ext', datatype => 'number', automated => 'server_set' },
+    { code => 'question', datatype => 'string' },
 );
 $contact->update;
 my $streetlights = $mech->create_contact_ok(
@@ -504,15 +505,17 @@ subtest 'Dashboard CSV extra columns' => sub {
         ALLOWED_COBRANDS => 'bromley',
         PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     }, sub {
+        $report->update_extra_field({ name => 'question', value => 'Answer' });
+        $report->update;
         $mech->log_in_ok($staffuser->email);
         $mech->get_ok('/dashboard?export=1');
-        $mech->content_contains('"Reported As","Staff User","Staff Role"');
-        $mech->content_like(qr/bromley,,[^,]*staff\@example.com,"Role A"/);
+        $mech->content_contains('"Reported As","Staff User","Staff Role",fms_layer_owner,question');
+        $mech->content_like(qr/bromley,,[^,]*staff\@example.com,"Role A",,Answer/);
 
         FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
         $mech->get_ok('/dashboard?export=1');
-        $mech->content_contains('"Reported As","Staff User","Staff Role"');
-        $mech->content_like(qr/bromley,,[^,]*staff\@example.com,"Role A"/);
+        $mech->content_contains('"Reported As","Staff User","Staff Role",fms_layer_owner,question');
+        $mech->content_like(qr/bromley,,[^,]*staff\@example.com,"Role A",,Answer/);
 
         $mech->get_ok('/dashboard?export=1&role=' . $role->id);
         $mech->content_contains("Role A");
