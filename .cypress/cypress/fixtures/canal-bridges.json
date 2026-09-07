@@ -1,0 +1,95 @@
+{
+    "type": "FeatureCollection",
+    "crs": {
+        "type": "name",
+        "properties": {
+            "name": "EPSG:3857"
+        }
+    },
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -9104.896012289,
+                    6716865.34141275
+                ]
+            },
+            "properties": {
+                "sap_func_loc": "RE-009-005",
+                "sap_description": "Bridge 43, Whitmore Road Bridge"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -9974.33035983536,
+                    6716641.94046726
+                ]
+            },
+            "properties": {
+                "sap_func_loc": "RE-009-002",
+                "sap_description": "Bridge 41, New North Road (A1200)`"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -11147.6144633038,
+                    6716088.42088807
+                ]
+            },
+            "properties": {
+                "sap_func_loc": "RE-008-002",
+                "sap_description": "Bridge 38, Froglane Bridge"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -10479.6523468078,
+                    6716283.41448973
+                ]
+            },
+            "properties": {
+                "sap_func_loc": "RE-008-013",
+                "sap_description": "Bridge 40, Packington Square Bridge"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -10794.0294374621,
+                    6716106.56131897
+                ]
+            },
+            "properties": {
+                "sap_func_loc": "RE-008-010",
+                "sap_description": "Bridge 39, Wharf Road"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -9635.82039616671,
+                    6716880.9062482
+                ]
+            },
+            "properties": {
+                "sap_func_loc": "RE-009-004",
+                "sap_description": "Bridge 42, Rosemary Branch Bridge (B102)"
+            }
+        }
+    ]
+}

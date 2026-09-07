@@ -1,0 +1,43 @@
+{
+    "type": "FeatureCollection",
+    "crs": {
+        "type": "name",
+        "properties": {
+            "name": "EPSG:3857"
+        }
+    },
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                    [
+                        -11426.146344967,
+                        6716152.02609002
+                    ],
+                    [
+                        -11427.2382846613,
+                        6716152.22916386
+                    ],
+                    [
+                        -11557.3194872269,
+                        6716179.96396691
+                    ],
+                    [
+                        -12776.824863048,
+                        6716439.87185838
+                    ],
+                    [
+                        -12801.7480754647,
+                        6716444.2258203
+                    ]
+                ]
+            },
+            "properties": {
+                "sap_func_loc": "RE-007-005",
+                "sap_description": "Islington Tunnel"
+            }
+        }
+    ]
+}

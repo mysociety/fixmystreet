@@ -1,1 +1,1 @@
-<p class="form-hint" id="pc-hint">[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]</p>
+<p class="form-hint" id="pc-hint">[% IF c.cobrand.moniker == 'canalrivertrust' %][% tprintf(loc('e.g. ‘%s’, ‘%s’, or ‘%s’'), c.cobrand.example_places) %][% ELSE %][% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %][% END %]</p>
