@@ -1,0 +1,203 @@
+@import "_variables";
+@import "../sass/layout";
+
+/* GENERAL */
+html {
+    font-size: 1.25rem;
+}
+
+.container {
+  padding: 0 2rem;
+}
+
+.content,
+.council_sent_info {
+  color: $primary_b;
+}
+
+/* BUTTONS */
+.btn-crt, .btn,
+.dz-clickable .dz-message u {
+  height: 60px;
+  line-height: 28px;
+}
+
+.my-account-preferences-list--email a.btn, .my-account-preferences-list--phone a.btn {
+  padding: $button-padding-top $button-padding-right;
+}
+
+/* NAVBAR */
+#site-logo {
+  background-image: url("/cobrands/canalrivertrust/images/logo.svg");
+    background-size: auto 5rem;
+    height: $mappage-header-height;
+    width: 18.875rem;
+}
+
+.nav-menu--main {
+  display: flex;
+  align-items: center;
+  margin-left: 5px;
+  margin-right: 5px;
+
+  a, span {
+    font-size: 0.9rem;
+    padding: 0.2em 0.5em;
+    margin: 0;
+
+     &:hover {
+      background: $primary;
+     }
+  }
+
+  a {
+    &:hover {
+      color: $cobrand_white;
+      text-decoration: underline;
+    }
+  }
+
+  span {
+    color: $primary_text;
+    &:hover {
+      color: $primary_text;
+    }
+  }
+
+  li:has(.report-a-problem-btn) {
+    order: 10;
+    
+    a {
+      @include button-variant($bg-top: $button-secondary-bg-top, $bg-bottom: $button-secondary-bg-bottom, $border: $button-secondary-border, $text: $button-secondary-text, $hover-bg-bottom: $button-secondary-hover-bg-bottom, $hover-bg-top: $button-secondary-hover-bg-top, $hover-border: $button-secondary-hover-border, $hover-text: $button-secondary-hover-text,$focus-bg-bottom: $button-secondary-focus-bg-bottom, $focus-bg-top: $button-secondary-focus-bg-top, $focus-border: $button-secondary-focus-border, $focus-text: $button-secondary-focus-text);
+      border-radius: 50px;
+      margin: 0;
+      padding: .25rem .75rem;
+      line-height: 1.3;
+
+      &:hover {
+        background-color: #fd3;
+        text-decoration: none;
+      }
+    }
+  }
+
+  @media (min-width: 1440px) {
+    max-width: 100%;
+  }
+}
+
+/* FRONTPAGE */
+#front-main {
+  padding: 6em 1em;
+  margin-bottom: 5rem;
+
+  #front-main-container {
+    max-width: fit-content;
+    padding: 2em;
+  }
+}
+
+#front_stats {
+  border-color: $primary;
+  color: $primary;
+}
+
+.js #photoForm,
+.js #photoForm .dropzone {
+  border-radius: 0;
+}
+
+/* MAP PAGE */
+.big-green-banner {
+  border-top: 1px solid $cobrand_white;
+  text-transform: none;
+  background: #1e29f5 url('/cobrands/canalrivertrust/images/right-chevron.svg') right center no-repeat;
+  background-size: 3.5rem;
+}
+
+/* CONTACT FORM */
+@media (min-width: 1180px) {
+  // Applying same media query rule than CRT website, otherwise the form looks too squashed on smaller screen.
+  .help-contact-form {
+    .govuk-form-group {
+      margin-bottom: 2rem;
+      display: flex;
+      flex-direction: row;
+      gap: 1rem;
+      align-items: center;
+
+      &:has(textarea) {
+        align-items: flex-start;
+      }
+    }
+
+    .govuk-label {
+      font-size: 1rem;
+      width: 20rem;
+      margin: 0;
+    }
+
+    .govuk-textarea {
+      font-size: 1rem;
+    }
+  }
+}
+
+// /* DARK THEME */
+// @media (prefers-color-scheme: dark) {
+//   body {
+//     @include true-black();
+//   }
+
+//   #front-main {
+//     position: relative;
+//     box-sizing: border-box;
+
+//     &::after {
+//       content: "";
+//       position: absolute;
+//       background-color: rgba(0, 0, 0, 0.5);
+//       height: 100%;
+//       width: 100%;
+//       top: 0;
+//       left: 0;
+//       z-index: 0;
+//     }
+
+//     #front-main-container {
+//       position: relative;
+//       z-index: 1;
+//       @include true-black();
+//       h1 {
+//         color: $cobrand_white;
+//       }
+//       h2 {
+//         color: rgba($cobrand_white, 0.9);
+//       }
+//       .report-forms-wrapper {
+//         color: $cobrand_white;
+  
+//         .form-hint {
+//           color: rgba($cobrand_white, 0.9);
+//         }
+//       }
+//     }
+//   }
+
+//   .keyboard-instructions-wrapper {
+//     background-color: #000;
+//   }
+
+//   .frontpage {
+//     .content {
+//       @include true-black();
+//     }
+//     h2 {
+//       color: $cobrand_white;
+//     }
+//   }
+
+//   .content, #map_sidebar  {
+//     @include true-black;
+//   }
+// }

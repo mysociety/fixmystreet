@@ -13,8 +13,10 @@
     <tr>
       <th class="spacer-cell"></th>
       <th width="[% wrapper_max_width %]" style="[% td_style %][% hint_style %]" class="hint">
-        [%~ IF email_footer.defined %]
-          [% email_footer | safe %]
+        [%~ IF fms_email_footer.defined %]
+          [% fms_email_footer | safe %]
+        [%~ ELSIF email_footer.defined %]
+          [% email_footer %]
         [%~ ELSE %]
           [% loc('This email was sent automatically, from an unmonitored email account. Please do not reply to it.') %]
         [%~ END %]
