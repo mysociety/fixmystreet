@@ -12,7 +12,7 @@
     min-width: 100%; // always at least as wide as its .multi-select-button sibling
     background: #fff;
     margin: 1.5em 0;
-    border: 1px solid #aaa;
+    border: 1px solid $form-control-border-color;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     display: none;
 }
@@ -114,7 +114,7 @@
 }
 
 .multi-select-presets {
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid $form-control-border-color;
 }
 
 .multi-select-button {
