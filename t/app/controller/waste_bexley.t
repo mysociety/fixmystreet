@@ -672,7 +672,7 @@ FixMyStreet::override_config {
             { with_fields => { name => 'John Doe', phone => '44 07 111 111 111', email => 'test@example.com' } },
             'Submitting contact details');
         $mech->submit_form_ok(
-            { with_fields => { submit => 'Report collection as missed', category => 'Report missed collection' } },
+            { with_fields => { submit => 'Report collection as missed', tandc => 1 } },
             'Submitting missed collection report');
 
         $mech->content_contains('Thank you for reporting a missed collection');
@@ -710,14 +710,14 @@ FixMyStreet::override_config {
             { with_fields => { bin_location => 'Rear of property', 'service-RES-CHAM' => 1 } },
             'Selecting missed collection for communal refuse bin');
         $mech->submit_form_ok(
-            { with_fields => { name => 'John Doe', phone => '44 07 111 111 111', email => 'test@example.com' } },
+            { with_fields => { name => 'John Ray', phone => '44 07 111 111 111', email => 'test@example.com' } },
             'Submitting contact details');
         $mech->submit_form_ok(
-            { with_fields => { submit => 'Report collection as missed', category => 'Report missed collection' } },
+            { with_fields => { submit => 'Report collection as missed', tandc => 1 } },
             'Submitting missed collection report');
 
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
-
+        is $report->name, 'John Ray';
         is $report->uprn, '10001', 'Report is against the parent property';
     };
 
@@ -833,7 +833,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok(
             {   with_fields => {
                     submit   => 'Report collection as missed',
-                    category => 'Report missed collection'
+                    tandc => 1,
                 }
             },
             'Submitting missed collection report'
