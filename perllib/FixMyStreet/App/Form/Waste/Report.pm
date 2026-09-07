@@ -15,14 +15,51 @@ has_page about_you => (
 with 'FixMyStreet::App::Form::Waste::AboutYou';
 
 has_page summary => (
-    fields => ['submit'],
+    fields => ['submit', 'tandc'],
     title => 'Submit missed collection',
     template => 'waste/summary_report.html',
+    field_ignore_list => sub {
+        my $page = shift;
+        my $c = $page->form->c;
+        my $cobrand = $c->cobrand->moniker;
+        if ($cobrand ne 'bexley') {
+            return ['tandc'];
+        }
+    },
     finished => sub {
         return $_[0]->wizard_finished('process_report_data');
     },
     next => 'done',
 );
+
+has_field tandc => (
+    type => 'Multiple',
+    widget => 'CheckboxGroup',
+    label => 'Terms and conditions',
+    required => 1,
+);
+
+sub options_tandc {
+    my $form = $_[0]->form;
+    my $c = $form->c;
+    my @options;
+    my $label;
+    if ($c->cobrand->moniker eq 'bexley') {
+        $label = << 'HERE';
+&bull; My rubbish or recycling was put out at the right place by 6am on my collection day.
+<br>
+&bull; My bin contains the correct types of rubbish and recycling and does not contain any hazardous materials.
+<br>
+&bull; My bin has not already been emptied and has not been re-filled following the scheduled collection.
+<br>
+&bull; I am aware that missed collections that are falsely reported will be cancelled and my bin will not be emptied.
+HERE
+    }
+    $label = FixMyStreet::Template::SafeString->new($label);
+    push @options,
+        { label => $label, value => 1 };
+    return @options;
+}
 
 has_page done => (
     title => 'Missed collection sent',
