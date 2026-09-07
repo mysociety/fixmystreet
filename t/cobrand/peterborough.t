@@ -8,8 +8,7 @@ use Test::LongString;
 use Open311::PostServiceRequestUpdates;
 use t::Mock::Nominatim;
 
-my $mock = Test::MockModule->new('FixMyStreet::Cobrand::Peterborough');
-$mock->mock('_fetch_features', sub {
+sub mock_fetch_features {
     my ($self, $args, $x, $y) = @_;
     if ( $args->{type} && $args->{type} eq 'arcgis' ) {
         # council land
@@ -32,7 +31,9 @@ $mock->mock('_fetch_features', sub {
         return [];
     }
     return [];
-});
+}
+my $mock = Test::MockModule->new('FixMyStreet::Cobrand::Peterborough');
+$mock->mock('_fetch_features', \&mock_fetch_features);
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -292,6 +293,31 @@ for my $test (
         };
     };
 }
+
+subtest 'GIS failure causes report sending to be deferred' => sub {
+    $mock->unmock('_fetch_features');
+    my $mock_gis = LWP::Protocol::PSGI->register(sub {
+        return [503, ['Content-Type' => 'text/plain'], ['Service Unavailable']];
+    }, host => 'tilma.mysociety.org');
+
+    my ($report) = $mech->create_problems_for_body(1, $peterborough->id, 'Graffiti problem', {
+        category => 'Non offensive graffiti', cobrand => 'peterborough',
+        latitude => 52.5408, longitude => 0.2505,
+    });
+
+    FixMyStreet::override_config {
+        STAGING_FLAGS => { send_reports => 1 },
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'peterborough',
+    }, sub {
+        FixMyStreet::Script::Reports::send();
+    };
+
+    $report->discard_changes;
+    ok !$report->whensent, 'Report was not marked as sent';
+    is $report->send_fail_reason, "No-op", 'Report has been deferred';
+    $mock->mock('_fetch_features', \&mock_fetch_features);
+};
 
 subtest "flytipping on PCC land is sent by open311 and email" => sub {
     FixMyStreet::override_config {
