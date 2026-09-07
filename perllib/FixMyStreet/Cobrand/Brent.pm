@@ -554,6 +554,12 @@ sub dashboard_export_problems_add_columns {
 
     my $request_lookups = echo_ids_to_strings();
 
+    my ($user_lookup, $userroles);
+    if (!$csv->dbi) {
+        $user_lookup = $self->csv_staff_users;
+        $userroles = $self->csv_staff_roles($user_lookup);
+    }
+
     $csv->csv_extra_data(sub {
         my $report = shift;
 
@@ -561,11 +567,9 @@ sub dashboard_export_problems_add_columns {
         my $container_req_type = $LOOKUP->($report, 'Container_Request_Container_Type', $request_lookups->{type});
         my $container_req_reason = $LOOKUP->($report, 'Container_Request_Reason', $request_lookups->{reason});
 
-        my ($by, $userroles, $staff_role);
+        my ($by, $staff_role);
         if (!$csv->dbi) {
             $by = $report->get_extra_metadata('contributed_by');
-            my $user_lookup = $self->csv_staff_users;
-            $userroles = $self->csv_staff_roles($user_lookup);
             $staff_role = join(',', @{$userroles->{$by} || []}) if $by;
         }
 
