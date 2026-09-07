@@ -210,6 +210,20 @@ sub item_list : Private {
     $c->stash->{blank_form} = $form;
 }
 
+sub discount_reset : PathPart : Chained('setup') : Args(0) {
+    my ($self, $c) = @_;
+    if (
+        $c->cobrand->wasteworks_config->{discount_enabled}
+        && $c->stash->{is_staff}
+        && $c->cobrand->moniker eq 'merton'
+    ) {
+        my $uprn = $c->stash->{property}{uprn};
+        my $property = FixMyStreet::DB->resultset("Property")->find($uprn);
+        $property->delete if $property;
+    }
+    $c->detach('/waste/property_redirect');
+}
+
 sub index : PathPart('') : Chained('setup') : Args(0) {
     my ($self, $c) = @_;
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Bulky';

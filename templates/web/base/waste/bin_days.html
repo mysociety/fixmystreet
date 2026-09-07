@@ -253,13 +253,29 @@
                     Please make sure you’ve read the <a href="https://www.sutton.gov.uk/w/bulky-waste-collections-terms-and-conditions">bulky goods collection page</a> before making a booking.
                   [% END %]
                 </p>
-              [% ELSIF c.cobrand.moniker == 'merton' AND c.cobrand.wasteworks_config.discount_enabled %]
+              [% ELSIF c.cobrand.moniker == 'merton' AND c.cobrand.wasteworks_config.discount_enabled;
+                SET last_discounted_date = cobrand.bulky_last_discounted_date; %]
+                [% IF is_staff AND last_discounted_date %]
+                    <form id="form_for_discount_reset" method="post" action="[% c.uri_for_action('waste/bulky/discount_reset', [ property.id ]) %]">
+                [% END %]
                 <p>
                 Please read the <a href="[% c.cobrand.call_hook('bulky_tandc_link') %]">bulky waste collection</a> page on the council’s website.
                 <br>Any discount will automatically be applied to your booking.
-                <br>Last discounted collection: [% IF cobrand.bulky_last_discounted_date; date.format(cobrand.bulky_last_discounted_date, format='%A %-d %B %Y'); ELSE; 'None'; END %]
+                <br>Last discounted collection: [%
+                    IF last_discounted_date ~%]
+                        [% date.format(last_discounted_date, format='%A %-d %B %Y') %]
+                        [% IF is_staff %]
+                          <input type="hidden" name="token" value="[% csrf_token %]">
+                          &ndash; <input type="submit" value="Reset discount" class="fake-link" data-confirm="Are you sure you wish to reset this property’s discount?">
+                        [% END %]
+                    [% ELSE ~%]
+                        None
+                    [% END %]
                 <br>Next discounted collection on or after: [% date.format(cobrand.bulky_next_discounted_date, format='%A %-d %B %Y') %]
                 </p>
+                [% IF is_staff AND last_discounted_date %]
+                    </form>
+                [% END %]
               [% END %]
           </div>
           [% END %]
@@ -331,6 +347,11 @@
       [% END %]
 
       [% TRY %][% PROCESS waste/services_extra.html %][% CATCH file %][% END %]
+
+        [%# Allow superusers to see more data for debugging purposes %]
+        [% IF c.user.is_superuser %]
+            [% PROCESS waste/bin_days_debug.html %]
+        [% END %]
 
     </div>
 

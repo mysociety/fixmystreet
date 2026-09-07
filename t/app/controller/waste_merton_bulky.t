@@ -1987,6 +1987,14 @@ FixMyStreet::override_config {
         };
     };
 
+    subtest 'Resetting discount' => sub {
+        # Still logged in as staff
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Last discounted collection: Saturday 1 July 2023');
+        $mech->submit_form_ok({ form_id => 'form_for_discount_reset' });
+        $mech->content_contains('Last discounted collection: None');
+    };
+
     # subtest 'Bulky goods cheque payment by contact centre' => sub {
     #     $mech->log_in_ok($contact_centre_user->email);
     #     $mech->get_ok('/waste/12345/bulky');

@@ -1,0 +1,27 @@
+[%# Assume Echo in the base %]
+<details>
+    <summary>🐞 Superuser debugging</summary>
+
+    <h2>Property</h2>
+    <dl>
+      <dt>UPRN</dt>
+      <dd>[% property.uprn %]</dd>
+      <dt>Property type</dt>
+      <dd>[% property.type_name %] ([% property.type_id %])</dd>
+    </dl>
+
+    <h2>Services</h2>
+    [% FOREACH service IN service_data %]
+    <dl>
+      <dt>Name</dt>
+      <dd>[% service.service_name %] ([% service.service_id %])</dd>
+      <dt>Reporting allowed</dt>
+      <dd>[% service.report_allowed ? 'Yes' : 'No' %] / [% service.report_within_time ? 'within time' : 'too late' %]</dd>
+      <dt>Requesting allowed</dt>
+      <dd>[% service.request_allowed ? 'Yes' : 'No' %]
+      <dt>Requesting containers</dt>
+      <dd><ul>[% FOR container IN service.request_containers %]<li>[% containers.$container %] ([% container %])[% END %]</ul></dd>
+    </dl>
+    [% END %]
+
+</details>
