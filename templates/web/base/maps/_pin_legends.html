@@ -4,9 +4,11 @@
 <div class="pin-legend pin-legend--desktop">
     <button type="button" class="pin-legend__preview js-pin-legend-desktop-toggle" aria-expanded="false" aria-controls="pin-legend-panel-desktop">
         <span class="visuallyhidden">[% loc('Show map pin key') %]</span>
-        <img src="/i/pins/yellow/pin.png" alt="">
-        <img src="/i/pins/green/pin.png" alt="">
-        <img src="/i/pins/bromley/green/pin.png" alt="">
+        [% FOR colour IN colours.slice(0, 2) %]
+            [% IF colour.0 %]
+            <img src="/i/pins/[% colour.0 %]/pin.png" alt="[% colour.0 %]">
+            [% END %]
+        [% END %]
     </button>
     <div id="pin-legend-panel-desktop" class="pin-legend__panel" aria-labelledby="pin-legend-heading-desktop">
         <div class="pin-legend__header">
