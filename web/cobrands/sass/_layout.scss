@@ -163,12 +163,12 @@ h1 {
 
   a, span {
     display: block;
-    color: $nav_colour;
+    color: $nav_colour-desktop;
     background-color: transparent;
     border-bottom: none;
   }
   a:visited {
-    color: $nav_colour;
+    color: $nav_colour-desktop;
   }
 }
 
@@ -179,7 +179,7 @@ h1 {
   }
 
   a:hover {
-    background-color: $nav_hover_background_colour;
+    background-color: $nav_hover_background_colour-desktop;
   }
 
   a.report-a-problem-btn {

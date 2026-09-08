@@ -3,6 +3,13 @@ $header-height-mobile: 6rem !default;
 $header-top-border-width: 0.25em !default;
 $header-top-border: $header-top-border-width solid $primary !default;
 
+// Applies to mobile and desktop
+$nav_background_colour: $primary !default;
+
+/* HEADER: Navitems · Mobile */
+$nav_colour: #000 !default;
+$nav_hover_background_colour: $primary !default;
+
 /* HEADER: Desktop */
 $header-height-desktop: $header-height-mobile !default;
 $header-top-border-width-desktop: $header-top-border-width !default;
@@ -15,6 +22,10 @@ $secondary-navbar-desktop: false !default;
 $secondary-navbar-vertical-position: 10px !default;
 // By default will sit right below the logo, but it can be move to the center or right.
 $secondary-navbar-align-self-desktop: flex-start !default;
+
+/* HEADER: Navitems · Desktop */
+$nav_colour-desktop: $nav_colour !default;
+$nav_hover_background_colour-desktop: $nav_hover_background_colour !default;
 
 $header-items-flex-gap-desktop: 0.5rem !default;
 $header-items-padding-x-desktop: 0.75rem !default;

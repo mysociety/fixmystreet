@@ -818,6 +818,9 @@ ul.error {
 
 // #site-header creates grey bar in mobile
 #site-header {
+  color: $nav_colour;
+  background: $nav_background_colour;
+  position: relative;
 
   .container {
     height: $header-height-mobile;
@@ -831,9 +834,6 @@ ul.error {
   @if ($header-top-border) {
     border-top: $header-top-border;
   }
-  color: $nav_colour;
-  background-color: $nav_background_colour;
-  position: relative;
 }
 
 .nav-wrapper {
