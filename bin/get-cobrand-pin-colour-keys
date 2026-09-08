@@ -1,0 +1,69 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use feature 'say';
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
+
+use FixMyStreet::Cobrand;
+use Text::CSV;
+
+my $csv = Text::CSV->new( { binary => 1, auto_diag => 1, eol => "\n" } );
+open my $fh, '>:encoding(utf8)', 'cobrand-pin-colour-keys.csv' or die "$!";
+$csv->print( $fh, ['Cobrand (moniker)', 'Context', 'Pin', 'Description'] );
+
+my @contexts = qw/_default around reports report/;
+my @cobrands = FixMyStreet::Cobrand->available_cobrand_classes;
+my %seen_cobrands;
+my %cobrand_colours;
+
+for my $cobrand_info (@cobrands) {
+    my $cobrand_class = $cobrand_info->{class};
+    my $moniker = $cobrand_info->{moniker};
+
+    if (!$cobrand_class) {
+        say "No class for cobrand " . $moniker;
+        next;
+    }
+    next if $seen_cobrands{$moniker};
+
+    my $cobrand = $cobrand_class->new;
+
+    my %colour_keys_to_contexts;
+
+    # Dedupe colour keys that are shared between contexts
+    for my $context (@contexts) {
+        my $colour_keys = $cobrand->pin_colour_key($context);
+        my $colour_key_str = join ';', map { join ':', @$_ } @$colour_keys;
+
+        $colour_keys_to_contexts{$colour_key_str}{$context} = 1;
+    }
+
+    for my $colour_key_str (keys %colour_keys_to_contexts) {
+        my $context_str = join ', ', sort keys $colour_keys_to_contexts{$colour_key_str}->%*;
+
+        $cobrand_colours{$moniker}{$context_str} = $colour_key_str;
+    }
+
+    say $moniker;
+    for my $context ( sort keys $cobrand_colours{$moniker}->%* ) {
+        say "  $context";
+        say "    $cobrand_colours{$moniker}{$context}";
+
+        for my $colour_key ( split ';', $cobrand_colours{$moniker}{$context} ) {
+            my ( $pin, $description ) = split ':', $colour_key;
+
+            $csv->print( $fh, [ $moniker, $context, $pin, $description ] );
+        }
+    }
+
+    $seen_cobrands{$moniker} = 1;
+}
+
+close $fh or die "$!";
