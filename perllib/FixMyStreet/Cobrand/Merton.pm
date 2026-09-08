@@ -257,4 +257,21 @@ around open311_post_send => sub {
     return $orig->($self, $row, $h, $sender);
 };
 
+sub dashboard_export_problems_add_columns {
+    my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        park_name => 'Park name',
+        park_uprn => 'Park UPRN',
+    );
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+        return {
+            park_name => $csv->_extra_field($report, 'ParkName'),
+            park_uprn => $csv->_extra_field($report, 'uprn'),
+        };
+    });
+}
+
 1;

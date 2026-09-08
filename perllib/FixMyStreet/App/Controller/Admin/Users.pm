@@ -583,7 +583,12 @@ sub user_alert_details : Private {
     my $alerts = $c->stash->{user}->alerts({}, {
         prefetch => 'alert_type',
         rows => 100,
-        order_by => 'whensubscribed',
+        # The zero interval adding here is to prevent PostgreSQL from using the
+        # whensubscribed index.  If someone has a large number of alerts, the
+        # planner thinks it will be quicker to scan backwards by whensubscribed
+        # date, rather than use the user ID index, which could well be very
+        # wrong if their alerts are all old.
+        order_by => \"whensubscribed + interval '0'",
     })->page( $page );
     my @alerts = $alerts->all;
 

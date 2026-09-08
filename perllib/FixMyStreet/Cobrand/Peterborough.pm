@@ -263,6 +263,10 @@ sub get_body_sender {
             }
         }
 
+        if ($self->{_fetch_features_failed}) {
+            return { method => 'Noop' }; # Skip until GIS is working
+        }
+
         # is on land that is handled by bartec so send
         if ( $features && scalar @$features ) {
             return $self->SUPER::get_body_sender($body, $problem);
