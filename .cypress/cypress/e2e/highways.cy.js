@@ -98,4 +98,43 @@ describe('National Highways tests', function() {
         // There should still be an active reporting page (not a blank sidebar)
         cy.get('.js-reporting-page--active').should('exist');
     });
+    it('keeps the "Somewhere else" answer when signing in with a password mid-report', function() {
+        cy.intercept('**/mapserver/highways*', {fixture: 'highways.xml'}).as('highways-tilma');
+        cy.intercept('**/report/new/ajax*', {fixture: 'highways-ajax.json'}).as('report-ajax');
+        cy.visit('/');
+        cy.contains('Go');
+        cy.get('[name=pc]').type(Cypress.expose('postcode'));
+        cy.get('[name=pc]').parents('form').submit();
+        cy.url().should('include', '/around');
+        cy.get('#map_box').click(272, 249);
+        cy.wait('@report-ajax');
+        cy.wait('@highways-tilma');
+
+        cy.get('#highways').should('contain', 'M6');
+        cy.get('#js-not-highways').click();
+        cy.get('#single_body_only').should('have.value', '');
+        cy.nextPageReporting();
+        cy.pickCategory('Flyposting');
+        cy.nextPageReporting();
+        cy.nextPageReporting(); // No photo
+        cy.get('[name=title]').type('Title');
+        cy.get('[name=detail]').type('Detail');
+        cy.nextPageReporting();
+
+        cy.get('.js-new-report-show-sign-in').should('be.visible').click();
+        cy.get('#form_username_sign_in').type('user@example.org');
+        cy.get('[name=password_sign_in]').type('password');
+        cy.get('[name=password_sign_in]').parents('form').submit();
+        cy.get('#map_sidebar').should('contain', 'check and confirm your details');
+        cy.get('#form_category_fieldset input[value="Incorrect sign (NH)"]').should('exist');
+
+        // The answer to the National Highways question should have survived
+        cy.get('#js-not-highways').should('be.checked');
+        // The report should still not be routed to National Highways
+        cy.get('#single_body_only').should('have.value', '');
+        // The category the user picked should still be selected and shown
+        cy.get('#form_category_fieldset input[value="Flyposting"]').should('be.checked');
+        cy.get('#form_category_fieldset input[value="Flyposting"]').parent()
+            .should('not.have.class', 'hidden-highways-choice');
+    });
 });
