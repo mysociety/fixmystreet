@@ -1137,30 +1137,51 @@ sub waste_cc_payment_sale_ref {
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
 
+    my @contacts = $csv->body->contacts->order_by('category')->all;
+    my %extra_columns;
+    foreach my $contact (@contacts) {
+        foreach (@{$contact->get_metadata_for_storage}) {
+            $extra_columns{$_->{code}} = $_->{description} || $_->{code};
+        }
+    }
+
+    my @extra_columns = sort keys %extra_columns;
+    @extra_columns = map { $_ => $extra_columns{$_} } @extra_columns;
     $csv->add_csv_columns(
         staff_user => 'Staff User',
         staff_role => 'Staff Role',
+        @extra_columns,
     );
 
-    return if $csv->dbi; # All covered already
-
-    my $user_lookup = $self->csv_staff_users;
-    my $userroles = $self->csv_staff_roles($user_lookup);
+    my ($user_lookup, $userroles);
+    if (!$csv->dbi) {
+        $user_lookup = $self->csv_staff_users;
+        $userroles = $self->csv_staff_roles($user_lookup);
+    }
 
     $csv->csv_extra_data(sub {
         my $report = shift;
+        my $data = {};
 
-        my $by = $report->get_extra_metadata('contributed_by');
-        my $staff_user = '';
-        my $staff_role = '';
-        if ($by) {
-            $staff_user = $self->csv_staff_user_lookup($by, $user_lookup);
-            $staff_role = join(',', @{$userroles->{$by} || []});
+        if (!$csv->dbi) {
+            my $by = $report->get_extra_metadata('contributed_by');
+            my $staff_user = '';
+            my $staff_role = '';
+            if ($by) {
+                $staff_user = $self->csv_staff_user_lookup($by, $user_lookup);
+                $staff_role = join(',', @{$userroles->{$by} || []});
+            }
+            $data = {
+                staff_user => $staff_user,
+                staff_role => $staff_role,
+            };
         }
-        return {
-            staff_user => $staff_user,
-            staff_role => $staff_role,
-        };
+
+        foreach (@{$csv->_extra_field($report)}) {
+            $data->{$_->{name}} = $_->{value};
+        }
+
+        return $data;
     });
 }
 
