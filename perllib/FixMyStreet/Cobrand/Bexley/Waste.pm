@@ -406,7 +406,7 @@ sub bin_services_for_address {
     return \@site_services_filtered if $self->{c}->action eq 'waste/calendar_ics';
 
     # TODO Call these in parallel
-    $property->{open_reports} = $self->_open_reports($property);
+    ($property->{missed_reports}, $property->{open_requests}) = $self->_open_and_missed_reports($property);
     $property->{recent_collections} = $self->_recent_collections($property);
 
     my ( $property_logs, $completed_or_attempted_collections )
@@ -506,11 +506,17 @@ sub bin_services_for_address {
             { type => 'removal', open => 'removal_open', details => 'removal_details' },
         ) {
             my $container_id = _parent_for_container($service->{service_id});
-            my $details = $property->{open_reports}{$_->{type}}{$container_id};
+            my $details = $_->{type} eq 'missed'
+                ? $property->{missed_reports}{$container_id}
+                : $property->{open_requests}{$_->{type}}{$container_id};
 
             if ($details) {
                 $service->{$_->{details}} = $details;
-                $service->{$_->{open}} = $details->{open};
+                if ($_->{type} eq 'missed') {
+                    $service->{$_->{open}} = $service->{last}{date} && $details->{reported} && $details->{reported} >= $service->{last}{date};
+                } else {
+                    $service->{$_->{open}} = $details->{open};
+                }
             } else {
                 $service->{$_->{open}} = 0;
             }
@@ -603,13 +609,14 @@ sub waste_suggest_retry_on_no_property_data { 1 }
 
 # Returns hashref of 'ServiceItemName's (FO-140, GA-140, etc.), each mapped
 # to details of an open missed collection report or container request
-sub _open_reports {
+sub _open_and_missed_reports {
     my ( $self, $property ) = @_;
 
     my @uprns = ($property->{uprn});
     push @uprns, $property->{parent_property}{uprn} if $property->{parent_property};
 
-    my %open_reports;
+    my %missed_reports;
+    my %open_requests;
 
     my $c = $self->{c};
     foreach my $uprn (@uprns) {
@@ -621,12 +628,15 @@ sub _open_reports {
         }
 
         for my $ws (@$worksheets) {
-            next
-                unless $ws->{WorksheetStatusName} eq 'Open'
-                && $ws->{WorksheetSubject} =~ /^Missed|Deliver|Collect/;
+            next unless $ws->{WorksheetSubject} =~ /^Missed|Deliver|Collect/;
 
             my $type = $ws->{WorksheetSubject} =~ /^Missed/ ? 'missed'
                 : $ws->{WorksheetSubject} =~ /Deliver/ ? 'delivery' : 'removal';
+
+            # We want closed missed reports
+            next unless $type eq 'missed' || $ws->{WorksheetStatusName} eq 'Open';
+
+            my $hash = $type eq 'missed' ? \%missed_reports : \%{$open_requests{$type}};
 
             # Check if it exists in our DB
             my $external_id = 'Whitespace-' . $ws->{WorksheetID};
@@ -641,7 +651,7 @@ sub _open_reports {
             my $service_item_name
                 = $report->get_extra_field_value('service_item_name') // '';
             $service_item_name = _parent_for_container($service_item_name);
-            next if $open_reports{$type}{$service_item_name};
+            next if $hash->{$service_item_name};
 
             my $latest_comment
                 = $report->comments->search(
@@ -654,22 +664,22 @@ sub _open_reports {
                 external_id => $report->external_id,
                 open        => $report->is_open,
                 reported    => (
-                    $ws->{WorksheetStartDate} eq WHITESPACE_UNDEF_DATE ?
-                    '' : $ws->{WorksheetStartDate}
+                    !$ws->{WorksheetStartDate} || $ws->{WorksheetStartDate} eq WHITESPACE_UNDEF_DATE ?
+                    '' : DateTime::Format::W3CDTF->parse_datetime($ws->{WorksheetStartDate})
                 ),
                 will_be_completed => (
-                    $ws->{WorksheetEscallatedDate} eq WHITESPACE_UNDEF_DATE ?
-                    '' : $ws->{WorksheetEscallatedDate}
+                    !$ws->{WorksheetEscallatedDate} || $ws->{WorksheetEscallatedDate} eq WHITESPACE_UNDEF_DATE ?
+                    '' : DateTime::Format::W3CDTF->parse_datetime($ws->{WorksheetEscallatedDate})
                 ),
                 latest_comment =>
                     ( $latest_comment ? $latest_comment->text : '' ),
             };
 
-            $open_reports{$type}{$service_item_name} = $report_details;
+            $hash->{$service_item_name} = $report_details;
         }
     }
 
-    return \%open_reports;
+    return (\%missed_reports, \%open_requests);
 }
 
 # Returns a hash of recent collections, mapping Round + Schedule to collection
@@ -785,8 +795,9 @@ sub _in_cab_logs {
 sub can_report_missed {
     my ( $self, $property, $service ) = @_;
 
-    # Cannot make a report if there is already an open one for this service
-    return 0 if $property->{open_reports}{missed}{ $service->{service_id} };
+    # Cannot make a report if there is already an existing one for this service
+    # Not strictly needed, as all checks currently involve report_allowed && !report_open
+    return 0 if $service->{report_open};
 
     # Prevent reporting if there are red tags on the service
     # Red tags are matched to services based on prefix
@@ -1511,7 +1522,7 @@ sub _construct_bin_request_form_delivery {
     my $field_list = [];
 
     my $property = $c->stash->{property};
-    my $open_reports = $property->{open_reports}{delivery};
+    my $open_reports = $property->{open_requests}{delivery};
 
     for my $container ( @{ $property->{containers_for_delivery} } )
     {
@@ -1584,7 +1595,7 @@ sub _construct_bin_request_form_removal {
 
     my $field_list = [];
 
-    my $open_reports = $property->{open_reports}{removal};
+    my $open_reports = $property->{open_requests}{removal};
     my %service_names_to_ids
             = map { $_->{service_name} => $_->{service_id} }
             @{ $self->{c}->stash->{service_data} };

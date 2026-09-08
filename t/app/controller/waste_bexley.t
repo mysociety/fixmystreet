@@ -204,12 +204,14 @@ FixMyStreet::override_config {
         note 'Missed collection displays';
         $mech->content_contains(
             'A blue recycling box collection has already been reported as missed');
-        $mech->content_contains('Reported on: N/A');
+        $mech->content_contains('Reported on: Friday 29 March 2024');
         $mech->content_contains('Will be completed by: N/A');
         $mech->content_contains('Action: Please leave your waste out, our contractor will return soon');
 
         $mech->content_contains(
             'A green recycling box collection has already been reported as missed');
+        $mech->content_contains('Reported on: Sunday 31 March 2024');
+        $mech->content_contains('Will be completed by: Tuesday 2 April 2024');
         $mech->content_contains('Action: Preexisting comment');
 
         subtest 'service_sort sorts correctly' => sub {
@@ -272,7 +274,7 @@ FixMyStreet::override_config {
                         id                => ignore(),
                         external_id       => 'Whitespace-4',
                         open              => 1,
-                        reported          => '',
+                        reported          => DateTime->new(year => 2024, month => 3, day => 29, hour => 1),
                         will_be_completed => '',
                         latest_comment    => '',
                     },
@@ -296,8 +298,8 @@ FixMyStreet::override_config {
                         id                => ignore(),
                         external_id       => 'Whitespace-5',
                         open              => 1,
-                        reported          => '2024-03-31T01:00:00',
-                        will_be_completed => '2024-04-02T01:00:00',
+                        reported          => DateTime->new(year => 2024, month => 3, day => 31, hour => 1),
+                        will_be_completed => DateTime->new(year => 2024, month => 4, day => 2, hour => 1),
                         latest_comment    => 'Preexisting comment',
                     },
                     report_locked_out => 0,
