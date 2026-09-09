@@ -155,7 +155,7 @@ for my $test (
             );
         }
 
-        ok $problem, 'succesfully create a problem';
+        ok $problem, 'successfully create a problem';
 
         if ( $update ) {
             if ( $test->{update}->{hidden} ) {
