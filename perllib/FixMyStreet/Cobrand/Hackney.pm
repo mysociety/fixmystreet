@@ -191,19 +191,27 @@ sub get_body_sender {
 
     my $contact = $body->contacts->search( { category => $problem->category } )->first;
 
-    if (my ($park, $estate, $other) = $self->_split_emails($contact->email)) {
-        my $to = $other;
-        if ($self->problem_is_within_area_type($problem, 'park')) {
-            $to = $park;
-        } elsif ($self->problem_is_within_area_type($problem, 'estate')) {
-            $to = $estate;
-        }
+    if (my $to = $self->_split_service_code($problem, $contact)) {
         $problem->set_extra_metadata(split_match => { $contact->email => $to });
         if (is_valid_email($to)) {
             return { method => 'Email', contact => $contact };
         }
     }
     return $self->SUPER::get_body_sender($body, $problem);
+}
+
+
+=item * Determine which service code/email to actually use for this report based on its location
+
+=cut
+
+sub _split_service_code {
+    my ($self, $problem, $contact) = @_;
+
+    my ($park, $estate, $other) = $self->_split_emails($contact->email) or return;
+    return $park if $self->problem_is_within_area_type($problem, 'park');
+    return $estate if $self->problem_is_within_area_type($problem, 'estate');
+    return $other;
 }
 
 sub munge_sendreport_params {
@@ -278,11 +286,25 @@ sub open311_extra_data_include {
     return $open311_only;
 }
 
+=item * Updates on a report are sent to the same service code the report itself went, or marked as skipped if that was an email address
+
+=cut
+
+sub should_skip_sending_update {
+    my ($self, $comment) = @_;
+
+    my $problem = $comment->problem;
+    my $to = $self->_split_service_code($problem, $problem->contact) or return 0;
+    return is_valid_email($to) ? 1 : 0;
+}
+
 sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;
 
-    my $contact = $comment->problem->contact;
-    $params->{service_code} = $contact->email;
+    my $problem = $comment->problem;
+    my $contact = $problem->contact;
+    # make sure we use the correctly split service code, if necessary, rather than the entire semicolon-delimited value
+    $params->{service_code} = $self->_split_service_code($problem, $contact) || $contact->email;
 }
 
 sub _split_emails {
