@@ -72,7 +72,13 @@ sub construct_query {
 
     my $params = {
         state => { -not_in => [ FixMyStreet::DB::Result::Problem::hidden_states ] },
-        send_state => 'unprocessed',
+        -or => [
+            send_state => 'unprocessed',
+            {
+                send_state => 'processing',
+                send_fail_timestamp => { '<', \"current_timestamp - '1 hour'::interval" }
+            },
+        ],
         @noop_params ? (-and => \@noop_params) : (),
     };
     if (!$debug) {

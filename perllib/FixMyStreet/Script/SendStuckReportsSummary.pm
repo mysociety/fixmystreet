@@ -14,7 +14,13 @@ sub run {
     my $resultset = FixMyStreet::DB->resultset('Problem')->to_body($params->{body}->id);
     my @stuck_reports = $resultset->search({
         category => $params->{categories},
-        send_state => 'unprocessed',
+        -or => [
+            send_state => 'unprocessed',
+            {
+                send_state => 'processing',
+                send_fail_timestamp => { '<', \"current_timestamp - '1 hour'::interval" }
+            },
+        ],
         state => [ FixMyStreet::DB::Result::Problem::open_states() ],
         send_fail_count => { '>', 0 },
     })->order_by('-confirmed')->all;
