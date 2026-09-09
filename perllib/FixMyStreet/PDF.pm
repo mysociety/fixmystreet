@@ -26,6 +26,7 @@ package FixMyStreet::PDF;
 
 use Moo;
 use PDF::Builder;
+use FixMyStreet;
 
 has title => ( is => 'ro' );
 
@@ -97,6 +98,11 @@ sub plot_line {
         start_y => $y,
     );
     if ($rc) {
+        if (! defined $y) {
+            # Was at start of page, so something has gone wrong...
+            ($rc, $next_y) = $self->plot_line(undef, 'red', 'Error including text');
+            return ($rc, $next_y);
+        }
         # On pages after the first, start under the logo
         $self->add_page();
         $next_y = undef;
