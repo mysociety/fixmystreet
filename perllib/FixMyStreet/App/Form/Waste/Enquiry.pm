@@ -10,6 +10,7 @@ has_field category => ( type => 'Hidden' );
 has_field service_id => ( type => 'Hidden' );
 
 has_page about_you => (
+    intro => 'enquiry-about-you-intro.html',
     fields => ['name', 'phone', 'email', 'category', 'service_id', 'continue'],
     title => 'About you',
     next => 'summary',

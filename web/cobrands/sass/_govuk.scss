@@ -28,3 +28,7 @@
 .govuk-radios__label {
   margin-top: 0; // Override the label element margin-top property
 }
+
+.govuk-radios__input:disabled ~ .govuk-hint--unfaded {
+  opacity: 1;
+}

@@ -462,3 +462,12 @@ input[type="text"], input[type="email"], textarea {
         list-style: none;
     }
 }
+
+// for the waste report a problem page
+.govuk-warning-text + form {
+    margin-top: 1em;
+}
+
+.govuk-warning-text p:last-child {
+    margin-bottom: 0em;
+}

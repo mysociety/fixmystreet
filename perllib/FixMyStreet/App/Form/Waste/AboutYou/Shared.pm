@@ -40,7 +40,7 @@ has_field email => (
     type => 'Email',
     order => 3,
     tags => {
-        hint => 'Provide an email address so we can send you order status updates'
+        hint => 'Provide an email address so we can send you updates'
     },
 );
 
