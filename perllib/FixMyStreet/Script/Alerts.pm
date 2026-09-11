@@ -72,7 +72,7 @@ sub send_alert_type {
         and alert_type='$ref' and whendisabled is null and $item_table.confirmed >= whensubscribed
         and $item_table.confirmed >= current_timestamp - '7 days'::interval
          and (select whenqueued from alert_sent where alert_sent.alert_id = alert.id and alert_sent.parameter = $item_table.id::text) is null
-        and $item_table.user_id <> alert.user_id
+        and ($item_table.user_id <> alert.user_id or $item_table.extra @> '{\"send_alert_to_reporter\":1}')
         and " . $alert_type->item_where . "
         and alert.confirmed = 1
         order by alert.id, $item_table.confirmed";

@@ -657,6 +657,8 @@ FixMyStreet::override_config {
             is $comment->get_extra_metadata('fms_extra_amend_location'), 'in the middle of the drive';
             is $comment->get_extra_metadata('fms_extra_amend_payment_ref'), '54321';
             is $comment->get_extra_metadata('fms_extra_amend_payment_amount'), '37.00';
+            is $comment->get_extra_metadata('bulky_amendment'), 1;
+            is $comment->user_id, $contact_centre_user->id, 'Amendment comment made by logged-in staff';
 
             $mech->content_contains('Bulky collection booking confirmed');
             $mech->content_contains('please use the reference:&nbsp;' . $report->id);
@@ -758,6 +760,9 @@ FixMyStreet::override_config {
             $mech->content_contains('Booking cancelled due to amendment');
             $report->discard_changes;
             is $report->state, 'cancelled';
+            my $cancellation_update = $report->comments->order_by('-id')->first;
+            is $cancellation_update->get_extra_metadata('bulky_cancellation'), 1;
+            is $cancellation_update->user_id, $contact_centre_user->id, 'Amendment update made by logged-in staff';
         };
 
         $report = $new_report;
