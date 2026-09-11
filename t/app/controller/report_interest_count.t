@@ -93,7 +93,7 @@ FixMyStreet::override_config {
 
             if ( $test->{from_body} ) {
                 $mech->content_contains('Add support');
-                $mech->submit_form_ok( { form_number => 1 } );
+                $mech->submit_form_ok( { form_number => 2 } );
 
                 is $mech->uri->path, "/report/$report_id", 'add support redirects to report page';
 

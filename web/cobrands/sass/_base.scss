@@ -246,11 +246,12 @@ img {
   max-width: none;
 }
 
+button,
 select,
 input,
 textarea {
   font-size: 99%;
-  font-family: $meta-font;
+  font-family: inherit;
 }
 
 // To deal with bug from drop-down being wider than holder
@@ -1000,6 +1001,12 @@ html.mobile.js-nav-open #js-menu-open-modal {
     line-height: 1.2em;
     // Prevents elements with more than two words to break into multiple lines
     white-space: nowrap;
+
+    @media (max-width: 420px) {
+      // Prevents cobrands with bigger font-sizes to overflow horizontally.
+      text-align: center;
+      white-space: normal;
+    }
 
     &:hover,
     &.hover,
@@ -1844,13 +1851,10 @@ input.final-submit {
   line-height: 1.2em;
   margin: -1em -1em 1em -1em;
   padding: 0.9em 1em;
+  border: none;
   border-bottom: 0.2em solid #eee;
-
-  &:link,
-  &:visited,
-  &:hover {
-    color: #666;
-  }
+  color: #666;
+  width: calc(100% + 2em);
 }
 
 .problem-back--top {
@@ -2250,7 +2254,7 @@ html.js #map .noscript {
   bottom: 0;
   margin: 0;
 
-  a {
+  a, button {
     box-sizing: border-box;
     flex: 1 1 auto;
 
@@ -2259,6 +2263,7 @@ html.js #map .noscript {
     padding: 0.5em;
     font-size: 1em;
     text-align: center;
+    text-decoration: none;
 
     &:hover,
     &:focus {
@@ -2290,6 +2295,15 @@ html.js #map .noscript {
   #map_filter:after {
     @extend %sub-map-link-icon;
     background-position: -96px 0;
+  }
+
+  #key-tool-around-updates {
+    color: inherit;
+    background: none;
+    appearance: none;
+    -webkit-appearance: none;
+    text-align: $left;
+    border: none;
   }
 }
 

@@ -522,21 +522,7 @@ a#geolocate_link {
 }
 
 #key-tools {
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-  padding: 15px;
-
-  li {
-    display: block;
-    width: 90%;
-
-    &:nth-child(2) {
-      margin-top: 15px;
-    }
-  }
-
-  a {
+  a, button {
     text-decoration: none;
     color: $primary_b !important;
     text-align: left;
