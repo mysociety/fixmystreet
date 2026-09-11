@@ -571,16 +571,12 @@ sub add_amendment_update {
 
     my $update = $p->add_to_comments({
         text => "Booking amended",
-        user => $c->cobrand->body->comment_user || $p->user,
-        extra => { bulky_amendment => 1 },
-        $type eq 'immediate' ? (
-            state => 'confirmed',
-        ) : (
-            state => 'unconfirmed',
-            extra => {
-                fms_extra_amend => $data,
-            },
-        ),
+        user => $c->user_exists ? $c->user->obj : ($c->cobrand->body->comment_user || $p->user),
+        extra => {
+            bulky_amendment => 1,
+            $type eq 'delayed' ? (fms_extra_amend => $data) : (),
+        },
+        $type eq 'immediate' ? (state => 'confirmed') : (state => 'unconfirmed'),
     });
     # We don't want to send an update if amending, they'll get a new report logged email
     $p->cancel_update_alert($update->id);
@@ -612,13 +608,14 @@ sub add_cancellation_update {
     my $description = $c->stash->{non_user_cancel} ? "Booking cancelled" : $type eq 'delayed' ? "Booking cancelled due to amendment" : "Booking cancelled by customer";
     my $update = $p->add_to_comments({
         text => $description,
-        user => $c->cobrand->body->comment_user || $p->user,
+        user => $c->user_exists ? $c->user->obj : ($c->cobrand->body->comment_user || $p->user),
         extra => { bulky_cancellation => 1 },
         problem_state => 'cancelled',
         $type eq 'immediate' ? (state => 'confirmed') : (state => 'unconfirmed'),
     });
-    # We don't want to send an update if amending, they'll get a new report logged email
-    $p->cancel_update_alert($update->id) if $type eq 'delayed';
+    # We don't want to send an update alert, we send the email directly
+    # ourselves
+    $p->cancel_update_alert($update->id);
     return $update;
 }
 
@@ -634,12 +631,24 @@ sub process_bulky_cancellation : Private {
 
     $c->forward('cancel_collection', [ $collection_report, 'cancellation' ]);
 
-    $c->cobrand->call_hook('bulky_send_cancellation_confirmation' => $collection_report);
+    my $can_refund = $c->cobrand->call_hook(bulky_can_refund => $collection_report);
+
+    # Send a cancellation email directly
+    if ($c->cobrand->bulky_cancel_by_update && $collection_report->user->email) {
+        my $refund_amount = $c->cobrand->call_hook(bulky_refund_amount => $collection_report)
+            // $collection_report->get_extra_field_value('payment');
+        $c->send_email('waste/bulky-confirm-cancellation.txt', {
+            to => [ [ $collection_report->user->email, $collection_report->name ] ],
+            report => $collection_report,
+            refund_amount => $can_refund ? $refund_amount : 0,
+            collection_date => $c->cobrand->bulky_nice_collection_date($collection_report),
+        });
+    }
 
     # Was collection a free one? If so, reset 'FREE BULKY USED' on premises.
     $c->cobrand->call_hook('unset_free_bulky_used');
 
-    if ( $c->cobrand->call_hook(bulky_can_refund => $collection_report) ) {
+    if ($can_refund) {
         $c->cobrand->call_hook(bulky_refund_collection => $collection_report);
         $c->stash->{entitled_to_refund} = 1;
     }

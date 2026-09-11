@@ -4,6 +4,7 @@ use Test::MockTime 'set_fixed_time';
 use FixMyStreet::TestMech;
 use Path::Tiny;
 use FixMyStreet::Script::Reports;
+use FixMyStreet::Script::Alerts;
 
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
@@ -513,7 +514,12 @@ FixMyStreet::override_config {
                 $mech->content_contains('Your booking has been cancelled');
                 $mech->content_lacks('If you need to contact us about your bulky collection cancellation please use the reference');
 
+                my $cancellation_update = $report->comments->order_by('-id')->first;
+                is $cancellation_update->get_extra_metadata('bulky_cancellation'), 1;
+                is $cancellation_update->user_id, $report->user->id, 'Cancellation update made by logged-in user';
+
                 my $report_id = $report->id;
+                FixMyStreet::Script::Alerts::send_updates();
                 my $email = $mech->get_email;
                 subtest 'Sends cancellation confirmation' => sub {
                     is $email->header('Subject'),
@@ -769,6 +775,7 @@ FixMyStreet::override_config {
         my $cancellation_update = $report->comments->first;
         is $cancellation_update->text, "Booking cancelled";
         is $cancellation_update->get_extra_metadata('bulky_cancellation'), 1;
+        is $cancellation_update->user_id, $staff_user->id, 'Cancellation update made by logged-in staff user';
         unlike $report->detail, qr/Cancelled at user request/;
         like $report->detail, qr/Cancelled/;
 

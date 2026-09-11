@@ -769,6 +769,8 @@ FixMyStreet::override_config {
         $report->discard_changes;
         is $report->state, 'cancelled', 'Original report cancelled';
         like $report->detail, qr/Cancelled at user request/, 'Original report detail field updated';
+        like $mech->get_text_body_from_email, qr/Bulky waste collection slot @{[$report->id]} scheduled for .* has been cancelled/;
+        $mech->clear_emails_ok;
 
         subtest 'Viewing original report summary after cancellation' => sub {
             my $id   = $report->id;
