@@ -215,11 +215,15 @@ sub discount_reset : PathPart : Chained('setup') : Args(0) {
     if (
         $c->cobrand->wasteworks_config->{discount_enabled}
         && $c->stash->{is_staff}
+        && $c->user->has_body_permission_to('wasteworks_config')
         && $c->cobrand->moniker eq 'merton'
     ) {
         my $uprn = $c->stash->{property}{uprn};
         my $property = FixMyStreet::DB->resultset("Property")->find($uprn);
-        $property->delete if $property;
+        if ($property) {
+            $property->delete;
+            $c->forward( '/admin/log_edit', [ $uprn, 'property', 'discount_reset' ] );
+        }
     }
     $c->detach('/waste/property_redirect');
 }

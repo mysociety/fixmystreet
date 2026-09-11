@@ -508,6 +508,7 @@ create table admin_log (
       or object_type = 'category'
       or object_type = 'role'
       or object_type = 'manifesttheme'
+      or object_type = 'property'
     ),
     object_id integer not null,
     action text not null,
