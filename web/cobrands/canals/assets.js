@@ -25,6 +25,7 @@ var defaults = {
 
 fixmystreet.assets.add(defaults, {
     wfs_feature: "Canals",
+    name: "canals",
     stylemap: fixmystreet.assets.stylemap_invisible,
     always_visible: true,
 
@@ -37,6 +38,16 @@ fixmystreet.assets.add(defaults, {
     nearest_radius: 20,
     actions: {
         found: function(layer, feature) {
+            fixmystreet.highways_canals.canals_layer_queried = true;
+            fixmystreet.highways_canals.canals_asset_selected = true;
+
+            // 'Somewhere else' option selected from canal question,
+            // so we either go to highways question or show standard
+            // categories
+            if (fixmystreet.highways_canals.canals_somewhere_else) {
+                return;
+            }
+
             if (fixmystreet.assets.selectedFeature()) {
                 $('.js-reporting-page--canals').remove();
                 return;
@@ -61,6 +72,8 @@ fixmystreet.assets.add(defaults, {
             }
         },
         not_found: function(layer) {
+            fixmystreet.highways_canals.canals_layer_queried = true;
+
             if (fixmystreet.body_overrides.get_only_send() === body_name) {
                 fixmystreet.body_overrides.remove_only_send();
                 fixmystreet.body_overrides.do_not_send(body_name);
@@ -122,10 +135,39 @@ function add_canals_warning(canal_name) {
     $radios.appendTo($warning);
     $warning.wrap($page);
     $page = $warning.parent();
-    $page.append('<button type="button" class="btn btn--block js-reporting-page--next">Continue</button>');
+
+    var $button = $('<button type="button" class="btn btn--block js-reporting-page--next">Continue</button>');
+    $button.on('click', display_next);
+    $page.append($button);
 
     $('.js-reporting-page').first().before($page);
     $page.nextAll('.js-reporting-page').removeClass('js-reporting-page--active');
+}
+
+// Shows canal categories if 'On <canal>' selected (set in canal_selected()).
+// Otherwise, if we are also on a highway,
+// goes to the highway display code.
+// Otherwise, shows standard categories (set in non_canal_selected()).
+function display_next() {
+    var canals_selected = $('#js-canals:checked').length;
+
+    fixmystreet.highways_canals.canals_somewhere_else = canals_selected ? false : true;
+
+    // 'Somewhere else' selected; go to highways question if appropriate
+    if (fixmystreet.highways_canals.canals_somewhere_else) {
+        if (fixmystreet.highways_canals.highways_asset_selected) {
+            var highways_layer = fixmystreet.map.getLayersByName('highways')[0];
+
+            highways_layer.fixmystreet.actions.found(highways_layer, highways_layer.selected_feature);
+        }
+    } else {
+        // In case highways warning appears before canals
+        // (not likely but it can trigger in tests at least):
+        // make sure highways warning & hidden classes are removed, and
+        // canals categories are shown.
+        $('.js-reporting-page--highways').remove();
+        canal_selected(true);
+    }
 }
 
 function canal_selected() {
@@ -158,6 +200,9 @@ function regenerate_category(canals_body_flag) {
             });
 
             $(this).parent().toggleClass('hidden-canals-choice', hidden == inputs.length);
+
+            // Make sure no 'hidden-highways-choice'
+            $(this).parent().toggleClass('hidden-highways-choice', false);
         }
     });
 
@@ -174,6 +219,8 @@ function _update_category(input, canals_body_flag) {
         (!canals_categories && !canals_body_flag) ||
         input.data(canals_cat_signifier.toLowerCase());
     input.parent().toggleClass('hidden-canals-choice', !to_show);
+    // Make sure no 'hidden-highways-choice'
+    input.parent().toggleClass('hidden-highways-choice', false);
     return to_show ? 0 : 1;
 }
 
