@@ -1644,3 +1644,11 @@ fixmystreet.message_controller = (function() {
     };
 
 })();
+
+fixmystreet.highways_canals = {
+    canals_layer_queried: false,
+    canals_asset_selected: false,
+    canals_somewhere_else: false,
+
+    highways_asset_selected: false,
+};
