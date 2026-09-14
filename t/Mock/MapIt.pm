@@ -40,6 +40,8 @@ my @PLACES = (
     [ '?', 51.507461, -0.126890, 2504, 'Westminster City Council', 'LBO' ],
     [ '?', 51.49228, -0.1488, 2504, 'Westminster City Council', 'LBO' ],
     [ 'GL50 2PR', 51.896268, -2.093063, 2226, 'Gloucestershire County Council', 'CTY', 2326, 'Cheltenham Borough Council', 'DIS', 4544, 'Lansdown', 'DIW', 143641, 'Lansdown and Park', 'CED' ],
+    [ '?', 51.856417, -2.257592, 2226, 'Gloucestershire County Council', 'CTY' ], # On canal
+    [ '?', 51.856700, -2.257900, 2226, 'Gloucestershire County Council', 'CTY' ], # Not on canal
     [ 'OX20 1SZ', 51.754926, -1.256179, 2237, 'Oxfordshire County Council', 'CTY', 2421, 'Oxford City Council', 'DIS' ],
     [ 'OX16 9UP', 52.038712, -1.346397, 2237, 'Oxfordshire County Council', 'CTY', 2419, 'Cherwell District Council', 'DIS', 151767, "Banbury, Calthorpe & Easington", "DIW" ],
     [ 'RG9 6TL', 51.561705, -0.868388, 163793, 'Buckinghamshire Council', 'UTA'],
