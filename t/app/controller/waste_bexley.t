@@ -944,7 +944,7 @@ FixMyStreet::override_config {
                         WorksheetStartDate => '',
                     },
                 ],
-                db_report => 1,
+                db_report => {},
                 report_allowed => 1,
             },
             {
@@ -957,7 +957,7 @@ FixMyStreet::override_config {
                         WorksheetStartDate => '2026-09-08T12:00:00',
                     },
                 ],
-                db_report => 1,
+                db_report => {},
                 report_allowed => 1,
             },
             {
@@ -970,7 +970,7 @@ FixMyStreet::override_config {
                         WorksheetStartDate => '2026-09-15T12:00:00',
                     },
                 ],
-                db_report => 1,
+                db_report => {},
                 report_allowed => 0,
             },
 
@@ -987,7 +987,7 @@ FixMyStreet::override_config {
                 report_allowed => 1,
             },
             {
-                desc => 'has closed missed collection report but no start date on worksheet',
+                desc => 'has closed missed collection report with no start date on worksheet nor whensent in DB',
                 site_worksheets => [
                     {
                         WorksheetID => '12345',
@@ -996,8 +996,21 @@ FixMyStreet::override_config {
                         WorksheetStartDate => '',
                     },
                 ],
-                db_report => 1,
+                db_report => {},
                 report_allowed => 1,
+            },
+            {
+                desc => 'has closed missed collection report with no start date on worksheet but has whensent in DB',
+                site_worksheets => [
+                    {
+                        WorksheetID => '12345',
+                        WorksheetStatusName => 'Complete',
+                        WorksheetSubject => 'Missed Collection Food',
+                        WorksheetStartDate => '',
+                    },
+                ],
+                db_report => { whensent => '2026-09-15 12:00:30' },
+                report_allowed => 0,
             },
             {
                 desc => 'has closed missed collection report for old round',
@@ -1009,7 +1022,7 @@ FixMyStreet::override_config {
                         WorksheetStartDate => '2026-09-08T12:00:00',
                     },
                 ],
-                db_report => 1,
+                db_report => {},
                 report_allowed => 1,
             },
             {
@@ -1022,7 +1035,7 @@ FixMyStreet::override_config {
                         WorksheetStartDate => '2026-09-15T12:00:00',
                     },
                 ],
-                db_report => 1,
+                db_report => {},
                 report_allowed => 0,
             },
         );
@@ -1094,6 +1107,7 @@ FixMyStreet::override_config {
                             category => 'Report missed collection',
                             external_id => 'Whitespace-12345',
                             state => 'confirmed',
+                            ( whensent => $test->{db_report}{whensent} ) x !!$test->{db_report}{whensent},
                         },
                     );
                     $r->set_extra_fields(

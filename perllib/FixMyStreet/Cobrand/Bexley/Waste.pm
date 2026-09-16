@@ -663,9 +663,11 @@ sub _open_and_missed_reports {
                 id          => $report->id,
                 external_id => $report->external_id,
                 open        => $report->is_open,
+                # Fall back to send time on report if no WorksheetStartDate
+                # (though it's not clear if this is ever the case)
                 reported    => (
                     !$ws->{WorksheetStartDate} || $ws->{WorksheetStartDate} eq WHITESPACE_UNDEF_DATE ?
-                    '' : DateTime::Format::W3CDTF->parse_datetime($ws->{WorksheetStartDate})
+                    $report->whensent : DateTime::Format::W3CDTF->parse_datetime($ws->{WorksheetStartDate})
                 ),
                 will_be_completed => (
                     !$ws->{WorksheetEscallatedDate} || $ws->{WorksheetEscallatedDate} eq WHITESPACE_UNDEF_DATE ?
