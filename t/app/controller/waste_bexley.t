@@ -868,189 +868,257 @@ FixMyStreet::override_config {
         default_mocks();
     };
 
-    subtest 'Missed collection eligibility checks' => sub {
-        set_fixed_time('2024-04-22T12:00:00'); # Monday
+    subtest 'Missed collection eligibility' => sub {
+        my @tests = (
+            {
+                # Default
+                desc => 'collection due last working day that happened',
+                report_allowed => 1,
+            },
+            {
+                desc => 'collection due last working day that did not happen',
+                no_logs_within_working_days_window => 1,
+                report_allowed => 0,
+                is_delayed => 1,
+            },
+            {
+                desc => 'collection due today but has not happened',
+                now => '2026-09-14T12:00:00',
+                last_expected_collection_date => '07/09/2026 00:00:00',
+                next_collection_date => '2026-09-14T00:00:00',
+                no_logs_within_working_days_window => 1,
+                report_allowed => 0,
+            },
+            {
+                desc => 'after 5pm and today\'s collection not made',
+                now => '2026-09-14T17:00:01',
+                last_expected_collection_date => '07/09/2026 00:00:00',
+                next_collection_date => '2026-09-14T00:00:00',
+                no_logs_within_working_days_window => 1,
+                report_allowed => 0,
+                is_delayed => 1,
+            },
+            {
+                desc => 'had a collection earlier today',
+                now => '2026-09-14T12:00:00',
+                last_expected_collection_date => '07/09/2026 00:00:00',
+                next_collection_date => '2026-09-14T00:00:00',
+                last_logged_collection_date => '2026-09-14T06:10:09.417',
+                report_allowed => 1,
+            },
+            {
+                desc => 'has exception',
+                reason => 'Food - revolted against being thrown away',
+                report_allowed => 0,
+            },
+            {
+                desc => 'collection too old',
+                now => '2026-09-18T12:00:00',
+                report_allowed => 0,
+            },
 
-        my %services = (
-            # Has a missed collection report
-            'RES-SACK' => {
-                service_id => 'RES-SACK',
-                round => 'RES-R1',
-                round_schedule => 'RES-R1 Fri',
+            {
+                desc => 'has missed collection DB report but no worksheet for current round',
+                db_report => {},
+                report_allowed => 1,
             },
-            # Has exception against round
-            'MDR-SACK' => {
-                service_id => 'MDR-SACK',
-                round => 'MDR-R1',
-                round_schedule => 'MDR-R1 Fri',
+            {
+                desc => 'has open missed collection worksheet but no DB report for current round',
+                site_worksheets => [
+                    {
+                        WorksheetID => '12345',
+                        WorksheetStatusName => 'Open',
+                        WorksheetSubject => 'Missed Collection Food',
+                        WorksheetStartDate => '2026-09-15T12:00:00',
+                    },
+                ],
+                report_allowed => 1,
             },
-            # Collection due today but has not happened
-            'FO-23' => {
-                service_id => 'FO-23',
-                round => 'RCY-R1',
-                round_schedule => 'RCY-R1 Mon',
-                next => {
-                    is_today => 1,
-                },
-                last => {
-                    date => DateTime->today,
+            {
+                desc => 'has open missed collection report but no start date on worksheet',
+                site_worksheets => [
+                    {
+                        WorksheetID => '12345',
+                        WorksheetStatusName => 'Open',
+                        WorksheetSubject => 'Missed Collection Food',
+                        WorksheetStartDate => '',
+                    },
+                ],
+                db_report => 1,
+                report_allowed => 1,
+            },
+            {
+                desc => 'has open missed collection report for old round',
+                site_worksheets => [
+                    {
+                        WorksheetID => '12345',
+                        WorksheetStatusName => 'Open',
+                        WorksheetSubject => 'Missed Collection Food',
+                        WorksheetStartDate => '2026-09-08T12:00:00',
+                    },
+                ],
+                db_report => 1,
+                report_allowed => 1,
+            },
+            {
+                desc => 'has open missed collection report for current round',
+                site_worksheets => [
+                    {
+                        WorksheetID => '12345',
+                        WorksheetStatusName => 'Open',
+                        WorksheetSubject => 'Missed Collection Food',
+                        WorksheetStartDate => '2026-09-15T12:00:00',
+                    },
+                ],
+                db_report => 1,
+                report_allowed => 0,
+            },
+
+            {
+                desc => 'has closed missed collection worksheet but no DB report for current round',
+                site_worksheets => [
+                    {
+                        WorksheetID => '12345',
+                        WorksheetStatusName => 'Complete',
+                        WorksheetSubject => 'Missed Collection Food',
+                        WorksheetStartDate => '2026-09-15T12:00:00',
+                    },
+                ],
+                report_allowed => 1,
+            },
+            {
+                desc => 'has closed missed collection report but no start date on worksheet',
+                site_worksheets => [
+                    {
+                        WorksheetID => '12345',
+                        WorksheetStatusName => 'Complete',
+                        WorksheetSubject => 'Missed Collection Food',
+                        WorksheetStartDate => '',
+                    },
+                ],
+                db_report => 1,
+                report_allowed => 1,
+            },
+            {
+                desc => 'has closed missed collection report for old round',
+                site_worksheets => [
+                    {
+                        WorksheetID => '12345',
+                        WorksheetStatusName => 'Complete',
+                        WorksheetSubject => 'Missed Collection Food',
+                        WorksheetStartDate => '2026-09-08T12:00:00',
+                    },
+                ],
+                db_report => 1,
+                report_allowed => 1,
+            },
+            {
+                desc => 'has closed missed collection report for current round',
+                site_worksheets => [
+                    {
+                        WorksheetID => '12345',
+                        WorksheetStatusName => 'Complete',
+                        WorksheetSubject => 'Missed Collection Food',
+                        WorksheetStartDate => '2026-09-15T12:00:00',
+                    },
+                ],
+                db_report => 1,
+                report_allowed => 0,
+            },
+        );
+
+        my $default_time = '2026-09-16T12:00:00'; # Wed
+
+        for my $test (@tests) {
+            subtest $test->{desc} => sub {
+                set_fixed_time( $test->{now} // $default_time );
+
+                $whitespace_mock->mock(
+                    'GetSiteCollections',
+                    sub {
+                        [   {   SiteServiceID          => 1,
+                                ServiceItemDescription => 'Food 23 ltr Caddy',
+                                ServiceItemName => 'FO-23',
+
+                                NextCollectionDate   => $test->{next_collection_date} // '2026-09-21T00:00:00',
+                                SiteServiceValidFrom => '2020-01-01T00:00:00',
+                                SiteServiceValidTo   => '0001-01-01T00:00:00',
+
+                                RoundSchedule => 'RND-1 Mon',
+                            },
+                        ];
+                    }
+                );
+                $whitespace_mock->mock(
+                    'GetCollectionByUprnAndDatePlus',
+                    sub {
+                        # Scheduled/expected collection
+                        [   {   Date     => $test->{last_expected_collection_date} // '14/09/2026 00:00:00', # Mon
+                                Round    => 'RND-1',
+                                Schedule => 'Mon',
+                                Service  => 'Recycling Collection Service',
+                            },
+                        ];
+                    }
+                );
+
+                if ( $test->{no_logs_within_working_days_window} ) {
+                    $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub { } );
+                } else {
+                    $whitespace_mock->mock(
+                        'GetInCabLogsByUsrn',
+                        sub {
+                            # Actual collection
+                            [
+                                {
+                                    Reason => $test->{reason} // 'N/A',
+                                    RoundCode => 'RND-1',
+                                    LogDate => $test->{last_logged_collection_date} // '2026-09-14T06:10:09.417', # Mon
+                                    Uprn => '10001',
+                                    Usrn => '321',
+                                },
+                            ]
+                        }
+                    );
                 }
-            },
-            # Had a collection earlier today
-            'FO-140' => {
-                service_id => 'FO-140',
-                round => 'RCY-R2',
-                round_schedule => 'RCY-R2 Mon',
-                next => {
-                    is_today => 1,
-                },
-                last => {
-                    date => DateTime->today,
-                },
-            },
-            # Collection due last working day but it did not happen
-            'RES-180' => {
-                service_id => 'RES-180',
-                round => 'RES-R2',
-                round_schedule => 'RES-R2 Fri',
-                last => {
-                    date => DateTime->today->subtract( days => 3 ),
-                },
-            },
-            # Collections due last working day and they happened
-            'RES-240' => {
-                service_id => 'RES-240',
-                round => 'RES-R3',
-                round_schedule => 'RES-R3 Fri',
-                last => {
-                    date => DateTime->today->subtract( days => 3 ),
-                },
-            },
-            'RES-660' => {
-                service_id => 'RES-660',
-                round => 'RES-R4',
-                round_schedule => 'RES-R4 Fri',
-                last => {
-                    date => DateTime->today->subtract( days => 3 ),
-                },
-            },
-            # Collection too old
-            'GA-240' => {
-                service_id => 'GA-240',
-                round => 'GDN-R1',
-                round_schedule => 'GDN-R1 Tue',
-                last => {
-                    date => DateTime->today->subtract( days => 6 ),
-                },
-            },
-            'PG-240' => {
-                service_id => 'PG-240',
-                round => 'RCY-R2',
-                round_schedule => 'RCY-R2 Mon PG Wk 2',
-                last => {
-                    date => DateTime->today->subtract( days => 7 ),
-                },
-            },
-        );
 
-        my $property = {
-            uprn => 10001,
-            missed_collection_reports => {
-                'RES-SACK' => 1,
-            },
-        };
+                $whitespace_mock->mock( 'GetSiteWorksheets',
+                    sub { $test->{site_worksheets} // [] } );
 
-        my $cobrand = FixMyStreet::Cobrand::Bexley->new;
-        $cobrand->{c} = Test::MockObject->new;
-        $cobrand->{c}->mock(
-            stash => sub {
-                {
-                    cab_logs => [
-                        # Successful collection today
-                        {   LogDate   => '2024-04-22T10:00:00.977',
-                            Reason    => 'N/A',
-                            RoundCode => 'RCY-R2',    # For FO-140 and PG-240
-                            Uprn      => '',
+                if ( $test->{db_report} ) {
+                    my ($r) = $mech->create_problems_for_body(
+                        1,
+                        $body->id,
+                        'Missed collection',
+                        {
+                            category => 'Report missed collection',
+                            external_id => 'Whitespace-12345',
+                            state => 'confirmed',
                         },
-                        # Successful collection last working day
-                        {   LogDate   => '2024-04-19T10:00:00.977',
-                            Reason    => 'N/A',
-                            RoundCode => 'RES-R3',    # For RES-240
-                            Uprn      => '',
-                        },
-                        # Successful collection last working day,
-                        # marked against individual property
-                        {   LogDate   => '2024-04-19T10:00:00.977',
-                            Reason    => 'N/A',
-                            RoundCode => 'RES-R4',    # For RES-660
-                            Uprn      => '10001',
-                        },
-                        # Successful collection earlier than allowed window
-                        {   LogDate   => '2024-04-16T10:00:00.977',
-                            Reason    => 'N/A',
-                            RoundCode => 'GDN-R1',    # For GA-240
-                            Uprn      => '',
-                        },
-                    ],
-                };
-            },
-        );
-        $cobrand->{c}->mock( cobrand => sub {$cobrand} );
+                    );
+                    $r->set_extra_fields(
+                        { name => 'service_item_name', value => 'FO-23' }
+                    );
+                    $r->update;
+                }
 
-        is $cobrand->can_report_missed( $property, $services{'RES-SACK'} ), 0,
-            'cannot report missed collection against service with an open report';
+                $mech->get_ok('/waste/10001');
 
-        is $cobrand->can_report_missed( $property, $services{'MDR-SACK'} ), 0,
-            'cannot report missed collection against service with round exceptions';
+                $test->{report_allowed}
+                    ? $mech->content_contains('Report a brown caddy collection as missed', 'can make report')
+                    : $mech->content_lacks('Report a brown caddy collection as missed', 'cannot make report');
 
-        is $cobrand->can_report_missed( $property, $services{'FO-23'} ), 0,
-            'cannot report missed collection against service due today that has not been collected';
-        ok !$services{'FO-23'}{last}{is_delayed}, 'not marked delayed';
+                $test->{is_delayed}
+                    ? $mech->content_contains('We are currently behind on collecting this', 'is marked delayed')
+                    : $mech->content_lacks('We are currently behind on collecting this', 'is not marked delayed');
 
-        is $cobrand->can_report_missed( $property, $services{'FO-140'} ), 1,
-            'can report missed collection against service due today that *has* been collected';
-        ok !$services{'FO-140'}{last}{is_delayed}, 'not marked delayed';
+                $mech->delete_problems_for_body( $body->id );
+            };
+        }
 
-        is $cobrand->can_report_missed( $property, $services{'RES-180'} ), 0,
-            'cannot report missed collection against service due yesterday whose round is not logged as collected';
-        ok $services{'RES-180'}{last}{is_delayed}, 'marked delayed';
-
-        FixMyStreet::override_config {
-            COBRAND_FEATURES => { whitespace => { bexley => {
-                use_expected_collection_datetime => 1,
-                } },
-            },
-        }, sub {
-            is $cobrand->can_report_missed( $property, $services{'RES-180'} ), 1,
-                'can report missed collection against service due yesterday whose round is not logged as collected when '
-                . '"use_expected_collections_datetime" is set, so it is considered to have been collected';
-        };
-
-        is $cobrand->can_report_missed( $property, $services{'RES-240'} ), 1,
-            'can report missed collection against service due yesterday whose round *is* logged as collected';
-        ok !$services{'RES-240'}{last}{is_delayed}, 'not marked delayed';
-
-        is $cobrand->can_report_missed( $property, $services{'RES-660'} ), 1,
-            'can report missed collection against service due yesterday whose round *is* logged as collected (against individual property)';
-        ok !$services{'RES-660'}{last}{is_delayed}, 'not marked delayed';
-
-        is $cobrand->can_report_missed( $property, $services{'GA-240'} ), 0,
-            'cannot report missed collection against service whose round was collected more than 3 working days ago';
-        ok !$services{'GA-240'}{last}{is_delayed}, 'not marked delayed';
-
-        is $cobrand->can_report_missed( $property, $services{'PG-240'} ), 0,
-            'cannot report missed collection against service whose round was collected more than 3 working days ago';
-        ok !$services{'PG-240'}{last}{is_delayed}, 'not marked delayed';
-
-        # After 5pm, so FO-23 is now considered delayed
-        set_fixed_time('2024-04-22T17:00:00');
-        is $cobrand->can_report_missed( $property, $services{'FO-23'} ), 0,
-            'cannot report missed collection after 5pm against service due today that has not been collected';
-        ok $services{'FO-23'}{last}{is_delayed}, 'marked delayed';
-
-        # Put time back to previous value
-        set_fixed_time('2024-03-31T01:00:00'); # March 31st, 02:00 BST
+        default_mocks();
     };
+
     my $ukc = Test::MockModule->new('FixMyStreet::Cobrand::UK');
     $ukc->mock('_get_bank_holiday_json', sub {
         {
