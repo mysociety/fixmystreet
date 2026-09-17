@@ -184,7 +184,7 @@ subtest 'user with old reports does not get email' => sub {
       lastupdate => '2014-12-01 07:00:00',
       user       => $user,
   });
- 
+
   FixMyStreet::Script::ArchiveOldEnquiries::archive($opts);
 
   my @emails = $mech->get_email;

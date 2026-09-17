@@ -254,18 +254,23 @@ sub close_problems {
             $cobrand->set_lang_and_domain($problem->lang, 1);
         }
 
-        my $comment = $problem->add_to_comments( {
-            text => get_closure_message() || '',
-            user => FixMyStreet::DB->resultset("User")->find($opts->{user}),
-            problem_state => $opts->{closed_state},
-            extra => $extra,
-            send_state => 'processed',
-        } );
-        $problem->update({ state => $opts->{closed_state}, send_questionnaire => 0 });
+        # This is in a transaction so that if send-alerts happens to be running
+        # at the same time it can't spot the newly-created comment before its
+        # alerts are cancelled.
+        FixMyStreet::DB->schema->txn_do(sub {
+            my $comment = $problem->add_to_comments( {
+                text => get_closure_message() || '',
+                user => FixMyStreet::DB->resultset("User")->find($opts->{user}),
+                problem_state => $opts->{closed_state},
+                extra => $extra,
+                send_state => 'processed',
+            } );
+            $problem->update({ state => $opts->{closed_state}, send_questionnaire => 0 });
 
-        next if $opts->{retain_alerts};
+            return if $opts->{retain_alerts};
 
-        # Stop any alerts being sent out about this closure.
-        $problem->cancel_update_alert($comment->id);
+            # Stop any alerts being sent out about this closure.
+            $problem->cancel_update_alert($comment->id);
+        });
     }
 }
