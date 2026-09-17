@@ -6,6 +6,9 @@ if (!fixmystreet.maps) {
 
 var host = fixmystreet.staging ? 'tilma.staging.mysociety.org' : 'tilma.mysociety.org';
 
+// Read now, as the category list arriving clears the field before the road layer runs.
+var submitted_do_not_send = $('#do_not_send').val() || '';
+
 var defaults = {
     http_wfs_url: "https://" + host + "/mapserver/highways",
     asset_type: 'area',
@@ -98,6 +101,15 @@ function _scottish_road_name($descriptor) {
     }
 }
 
+function _initial_highways_choice(highways_body_name) {
+    var submitted = submitted_do_not_send;
+    submitted_do_not_send = ''; // a later pin move is a fresh question
+    if (!submitted) {
+        return true;
+    }
+    return $.inArray(highways_body_name, fixmystreet.utils.csv_to_array(submitted)[0]) === -1;
+}
+
 function _update_category(input, highways_body_flag, highways_body_name) {
     var highways_body_cat_signifier = _set_body_cat_signifier(highways_body_name);
     var highways_categories = input.val().match(highways_body_cat_signifier);
@@ -175,6 +187,7 @@ function add_highways_warning(road_name, highways_body_name) {
                    'Does your report concern something on this road, or somewhere else (e.g a road crossing it)?<p></div>');
   var $page = $('<div data-page-name="highwaysengland" class="js-reporting-page js-reporting-page--active js-reporting-page--highways"></div>');
   var $radios = $('<fiedset class="govuk-fieldset govuk-radios"></fieldset>');
+  var on_road = _initial_highways_choice(highways_body_name);
 
     $('<div>')
         .addClass('govuk-radios__item')
@@ -183,7 +196,7 @@ function add_highways_warning(road_name, highways_body_name) {
                 .attr('type', 'radio')
                 .attr('name', 'highways-choice')
                 .attr('id', 'js-highways')
-                .prop('checked', true)
+                .prop('checked', on_road)
                 .on('click', {body_name: highways_body_name}, highways_body_selected)
                 .addClass('govuk-radios__input'),
             $('<label>')
@@ -200,6 +213,7 @@ function add_highways_warning(road_name, highways_body_name) {
                 .attr('type', 'radio')
                 .attr('name', 'highways-choice')
                 .attr('id', 'js-not-highways')
+                .prop('checked', !on_road)
                 .on('click', {body_name: highways_body_name}, non_highways_body_selected)
                 .addClass('govuk-radios__input'),
             $('<label>')
@@ -216,7 +230,11 @@ function add_highways_warning(road_name, highways_body_name) {
 
     $('.js-reporting-page').first().before($page);
     $page.nextAll('.js-reporting-page').removeClass('js-reporting-page--active');
-    highways_body_selected(highways_body_name);
+    if (on_road) {
+        highways_body_selected(highways_body_name);
+    } else {
+        non_highways_body_selected(highways_body_name);
+    }
 }
 
 })();

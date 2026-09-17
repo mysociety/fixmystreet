@@ -8,10 +8,17 @@ use Open311;
 has '+send_comments_flag' => ( default => 0 );
 has ext_to_int_map => ( is => 'rw' );
 
-has report_criteria => ( is => 'ro', default => sub { {
-        state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
+has open => ( is => 'ro' );
+
+has report_criteria => ( is => 'lazy', default => sub {
+    my @states = $_[0]->open
+        ? FixMyStreet::DB::Result::Problem->open_states()
+        : FixMyStreet::DB::Result::Problem->visible_states();
+    return {
+        state => \@states,
         external_id => { '!=', '' },
-    } } );
+    };
+});
 
 sub process_body {
     my ($self) = @_;

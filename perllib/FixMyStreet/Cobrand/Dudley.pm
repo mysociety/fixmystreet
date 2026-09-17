@@ -71,7 +71,7 @@ sub report_age {
 
 =cut
 
-sub cut_off_date { '2026-09-01' }
+sub cut_off_date { '2026-09-14' }
 
 =item * Some customised pins (yellow/blue/green/grey)
 

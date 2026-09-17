@@ -39,6 +39,16 @@ my $role = FixMyStreet::DB->resultset("Role")->create({
     });
 $councillor->add_to_roles($role);
 
+my $enquiry_handler = $mech->create_user_ok('enquiry_handler@example.com', name => 'Handler',
+                                       from_body => $body, password => 'password');
+
+$role = FixMyStreet::DB->resultset("Role")->create({
+    body => $body,
+    name => 'Enquiry Handler',
+    permissions => ['report_inspect'],
+    });
+$enquiry_handler->add_to_roles($role);
+
 my $role2 = FixMyStreet::DB->resultset("Role")->create({
     body => $body,
     name => 'General council',
@@ -142,7 +152,7 @@ FixMyStreet::override_config {
         }
       }
 }, sub {
-    subtest 'User in Councillor role can not update reports' => sub {
+    subtest 'User in Councillor/Enquiry Handler roles can not update reports' => sub {
         $mech->log_in_ok( $staffuser->email );
         my $id = $report2->id;
         $mech->get_ok( '/report/' . $id );
@@ -151,6 +161,10 @@ FixMyStreet::override_config {
         $mech->log_in_ok( $councillor->email );
         $mech->get_ok( '/report/' . $id );
         $mech->content_lacks('Provide an update', 'Councillor role staff user can not leave an update');
+
+        $mech->log_in_ok( $enquiry_handler->email );
+        $mech->get_ok( '/report/' . $id );
+        $mech->content_lacks('Provide an update', 'Enquiry Handler role staff user can not leave an update');
     };
 };
 
