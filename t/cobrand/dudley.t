@@ -54,6 +54,14 @@ FixMyStreet::override_config {
     };
 
     subtest 'cobrand does not display email categories' => sub {
+        $mech->get_ok('/reports');
+        $mech->content_contains('Potholes');
+        $mech->content_lacks('Bridges');
+
+        $mech->get_ok('/around?latitude=52.5142&longitude=-2.08');
+        $mech->content_contains('Potholes');
+        $mech->content_lacks('Bridges');
+
         $mech->get_ok('/report/new?latitude=52.5142&longitude=-2.08');
         $mech->content_contains('Potholes');
         $mech->content_lacks('Bridges');
