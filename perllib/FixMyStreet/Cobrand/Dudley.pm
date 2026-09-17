@@ -140,6 +140,17 @@ sub categories_restriction {
     # ] } );
 }
 
+sub munge_around_filter_category_list {
+    my ($self) = @_;
+    my $cats = $self->{c}->stash->{category_groups}[0]{categories};
+    @$cats = grep { $_->category eq 'Potholes' } @$cats;
+}
+
+sub munge_reports_category_list {
+    my ($self, $categories) = @_;
+    @$categories = grep { $_->category eq 'Potholes' } @$categories;
+}
+
 =item * Fetch the nearest USRN if we don't have it already
 
 =cut
