@@ -569,12 +569,12 @@ sub process_bulky_amend : Private {
 sub add_amendment_update {
     my ($c, $p, $data, $type) = @_;
 
-    my $user = $c->user_exists ? $c->user->obj : ( $c->cobrand->body->comment_user || $p->user );
     my $update = $p->add_to_comments({
         text => "Booking amended",
-        user => $user,
+        user => $c->cobrand->body->comment_user || $p->user,
         extra => {
             bulky_amendment => 1,
+            $c->user_exists ? (contributed_by => $c->user->id) : (),
             $type eq 'delayed' ? (fms_extra_amend => $data) : (),
         },
         $type eq 'immediate' ? (state => 'confirmed') : (state => 'unconfirmed'),
@@ -607,15 +607,12 @@ sub add_cancellation_update {
     my ($c, $p, $type) = @_;
 
     my $description = $c->stash->{non_user_cancel} ? "Booking cancelled" : $type eq 'delayed' ? "Booking cancelled due to amendment" : "Booking cancelled by customer";
-    my $user = $c->user_exists ? $c->user->obj : ( $c->cobrand->body->comment_user || $p->user );
     my $update = $p->add_to_comments({
         text => $description,
-        user => $user,
+        user => $c->cobrand->body->comment_user || $p->user,
         extra => {
             bulky_cancellation => 1,
-            # Alerts aren't normally sent for a user's own updates, but we
-            # want the customer to be told their booking has been cancelled
-            $c->user_exists && $c->user->id == $p->user_id ? (send_alert_to_reporter => 1) : (),
+            $c->user_exists ? (contributed_by => $c->user->id) : (),
         },
         problem_state => 'cancelled',
         $type eq 'immediate' ? (state => 'confirmed') : (state => 'unconfirmed'),

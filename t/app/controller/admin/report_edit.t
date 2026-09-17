@@ -676,6 +676,18 @@ subtest "Test display of contributed_as data" => sub {
     $mech->content_contains('Created Body</strong>: Oxfordshire County Council');
 };
 
+subtest "Test display of contributed_by on updates" => sub {
+    my $update = $mech->create_comment_for_problem($report, $user, 'Test User', 'Booking cancelled', 0, 'confirmed', 'confirmed');
+    $mech->get_ok("/admin/report_edit/$report_id");
+    $mech->content_lacks('<small>Created By:');
+
+    $update->set_extra_metadata( contributed_by => $user3->id );
+    $update->update;
+    $mech->get_ok("/admin/report_edit/$report_id");
+    $mech->content_like(qr!<small>Created By: <a[^>]*>Body User \(@{[ $user3->email ]}!);
+    $update->delete;
+};
+
 subtest "Test display and changing of send_status" => sub {
 
     $mech->get_ok("/admin/report_edit/$report_id");

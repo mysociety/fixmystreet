@@ -515,7 +515,7 @@ FixMyStreet::override_config {
 
                 my $cancellation_update = $report->comments->order_by('-id')->first;
                 is $cancellation_update->get_extra_metadata('bulky_cancellation'), 1;
-                is $cancellation_update->user_id, $report->user->id, 'Cancellation update made by logged-in user';
+                is $cancellation_update->get_extra_metadata('contributed_by'), $report->user->id, 'Cancellation update made by logged-in user';
 
                 my $report_id = $report->id;
                 my $email = $mech->get_email;
@@ -773,7 +773,7 @@ FixMyStreet::override_config {
         my $cancellation_update = $report->comments->first;
         is $cancellation_update->text, "Booking cancelled";
         is $cancellation_update->get_extra_metadata('bulky_cancellation'), 1;
-        is $cancellation_update->user_id, $staff_user->id, 'Cancellation update made by logged-in staff user';
+        is $cancellation_update->get_extra_metadata('contributed_by'), $staff_user->id, 'Cancellation update made by logged-in staff user';
         unlike $report->detail, qr/Cancelled at user request/;
         like $report->detail, qr/Cancelled/;
 

@@ -23,6 +23,10 @@
         </td>
         <td>[% PROCESS value_or_nbsp value=update.name %]
             <br>[% PROCESS value_or_nbsp value=update.user.email %]
+            [% SET contributor = updates_contributed_by.${update.extra.contributed_by} %]
+            [% IF contributor %]
+            <br><small>[% loc('Created By') %]: <a href="[% c.uri_for_action('admin/users/index', { search => contributor.email }) %]">[% contributor.name | html %] ([% contributor.email | html %])</a></small>
+            [% END %]
         </td>
         <td>[% IF update.user.id == update.problem.user_id %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
         <td>[% IF update.user.belongs_to_body( update.problem.bodies_str ) %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
