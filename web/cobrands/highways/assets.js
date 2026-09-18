@@ -49,8 +49,15 @@ fixmystreet.assets.add(defaults, {
             var highways_body_cat_signifier = _set_body_cat_signifier(highways_body_name);
             var category = fixmystreet.reporting.selectedCategory().category;
             if (fixmystreet.assets.selectedFeature()) {
-                $('.js-reporting-page--highways').remove();
-                return;
+                if ( ($('.js-reporting-page.js-reporting-page--active.js-reporting-page--highways')).length !== 1 ) {
+                    $('.js-reporting-page--highways').remove();
+                    return;
+                } else {
+                    non_highways_body_selected(highways_body_name);
+                    fixmystreet.pageController.toPage('next');
+                    $('.js-reporting-page--highways').remove();
+                    return;
+                }
             }
             var current_road_name = $('#highways strong').first().text();
             var new_road_name = highways_body_name === 'National Highways' ? feature.attributes.ROA_NUMBER : _scottish_road_name(feature.attributes.descriptor);
