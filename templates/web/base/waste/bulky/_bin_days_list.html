@@ -94,9 +94,11 @@ END;
       <div class="waste-services-launch-panel">
           <a class="btn btn--primary govuk-!-margin-bottom-2" href="/report/[% booking.id %]">[% check_key %]</a>
           [% PROCESS 'waste/_service_missed.html' unit=booked_missed.$booking_guid original_booking=booking.id no_default=1 %]
-          [% IF c.cobrand.moniker == 'sutton' %]
+          [% IF c.cobrand.moniker == 'sutton' OR cobrand.moniker == 'kingston' %]
           [% IF booked_missed.$booking_guid.escalations.missed_open %]
-              <span class="waste-service-descriptor">Thank you for reporting an issue with this collection; we are investigating.</span>
+              <span class="waste-service-descriptor">Thank you for reporting an issue with this collection; we are investigating
+                [%~ IF booked_missed.$booking_guid.escalations.missed_open.target %] and aim to resolve this by [% date.format(booked_missed.$booking_guid.escalations.missed_open.target, '%A, %-d %B') %]
+                [%~ END %].</span>
           [% END %]
           [% END %]
       </div>
