@@ -416,7 +416,10 @@ function asset_selected(e) {
     // move the green marker to the point of the click to stop
     // it jumping around unexpectedly if the user deselects the asset.
     fixmystreet.markers.setVisibility(false);
-    fixmystreet.markers.features[0].move(lonlat);
+    var marker = fixmystreet.markers.features[0];
+    if (marker) { // Might not be on e.g. TfL switchout form
+        marker.move(lonlat);
+    }
 
     // Need to ensure the correct coords are used for the report
     fixmystreet.maps.update_pin(lonlat);

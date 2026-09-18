@@ -77,7 +77,6 @@ $(function() {
     ];
 
     function light_selected(e,f) {
-        // Want LOCATION BOROUGH_NO ABBREVIATED_ID
         var feature = e.feature;
         $('#asset_location').val(toTitleCase(feature.attributes.LOCATION));
         $('#asset_borough').val(BOROUGHS[feature.attributes.BOROUGH_NO]);
@@ -93,8 +92,9 @@ $(function() {
     }
 
     var layer = fixmystreet.map.getLayersByName("TfL Traffic Lights")[0];
+    // Ignore OTU entries
+    layer.fixmystreet.http_options.params.where = "ABBREVIATED_ID NOT LIKE '__/5__'";
     layer.events.register('featureselected', layer, light_selected);
     layer.events.register('featureunselected', layer, light_unselected);
-///    light_unselected();
     layer.setVisibility(true);
 });
