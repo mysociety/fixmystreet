@@ -52,7 +52,7 @@ sub intro {
             my $bin_count = $c->get_param('bins_wanted') || $form_data->{bins_wanted} || $data->{bins} || 1;
             my $new_bins = $bin_count - $current_bins;
 
-            my $edit_current_allowed = $c->cobrand->call_hook('waste_renewal_allow_current_bins_edit');
+            my $edit_current_allowed = $c->cobrand->call_hook('waste_renewal_allow_current_bins_edit') || '';
             my $bins_wanted_disabled = $c->cobrand->call_hook('waste_renewal_bins_wanted_disabled');
             my $costs = WasteWorks::Costs->new({
                 cobrand => $c->cobrand,
@@ -70,9 +70,20 @@ sub intro {
 
             $form_data->{_direct_debit_internal} = 1 if $c->cobrand->direct_debit_collection_method eq 'internal';
 
+            # e.g. Bexley can say they have no bins when renewing
+            my $current_min = 1;
+            $current_min = 0 if $edit_current_allowed eq 'zero';
+
             return {
-                current_bins => { %bin_params, $edit_current_allowed ? (disabled=>0) : () },
-                bins_wanted => { %bin_params, $bins_wanted_disabled ? (disabled=>1) : () },
+                current_bins => {
+                    %bin_params,
+                    range_start => $current_min,
+                    $edit_current_allowed ? (disabled=>0) : ()
+                },
+                bins_wanted => {
+                    %bin_params,
+                    $bins_wanted_disabled ? (disabled=>1) : ()
+                },
             };
         },
         next => sub {
@@ -94,7 +105,6 @@ has_field current_bins => (
     tags => { number => 1 },
     required => 1,
     disabled => 1,
-    range_start => 1,
 );
 
 has_field bins_wanted => (

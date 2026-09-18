@@ -370,6 +370,39 @@ FixMyStreet::override_config {
             my $c = CGI::Simple->new($req->content);
             is $c->param('service_code'), 'OTHER';
         };
+
+        subtest 'update left on a report that was sent elsewhere' => sub {
+            my $comment = $mech->create_comment_for_problem($p, $system_user, 'Name', 'Text', 'f', 'confirmed', undef);
+            $comment->discard_changes;
+            Open311::PostServiceRequestUpdates->new->process_update($hackney, $comment);
+            $comment->discard_changes;
+            isnt $comment->send_state, 'skipped', 'update not skipped';
+            my $req = Open311->test_req_used;
+            like $req->uri, qr/servicerequestupdates/, 'update was posted';
+            my $c = CGI::Simple->new($req->content);
+            is $c->param('service_code'), 'OTHER', 'update sent with the same service code as the report';
+            $p->comments->delete;
+        };
+
+        subtest 'update left on a report in a park that was sent via email' => sub {
+            $cbr->mock('_fetch_features', sub {
+                my ($self, $cfg) = @_;
+                return [{
+                    properties => { park_id => 'park' },
+                    geometry => {
+                        type => 'Polygon',
+                        coordinates => [ [ [ $x-1, $y-1 ], [ $x+1, $y+1 ] ] ],
+                    }
+                }] if $cfg->{typename} eq 'greenspaces:hackney_park';
+            });
+            my $comment = $mech->create_comment_for_problem($p, $system_user, 'Name', 'Text', 'f', 'confirmed', undef);
+            $comment->discard_changes;
+            Open311::PostServiceRequestUpdates->new->process_update($hackney, $comment);
+            $comment->discard_changes;
+            is $comment->send_state, 'skipped', 'update on report sent via email is marked as skipped';
+            $p->comments->delete;
+        };
+
         $contact2->update({ send_method => 'Email' }); # Switch back for next test
     };
 

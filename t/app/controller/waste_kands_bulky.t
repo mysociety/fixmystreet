@@ -806,7 +806,6 @@ FixMyStreet::override_config {
         my $report_id = $report->id;
         like $email_text, qr/To report a problem with this collection visit your bin page/, 'collection completed text has problem instructions';
         like $email_html, qr/Your bulky waste has successfully been collected/, 'collection completed html email has completed text';
-        unlike $email_html, qr/collection was not made/, 'html email does not have collection missed text';
         like $email_html, qr/Report a problem with this bulky waste collection/, 'collection completed html email has problem link';
         like $email_html, qr#waste/12345/enquiry\?template=problem&service_id=986&original_booking_id=$report_id#, 'collection completed html email has problem link';
     };

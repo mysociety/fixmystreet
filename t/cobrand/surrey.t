@@ -14,7 +14,15 @@ END { FixMyStreet::App->log->enable('info'); }
 use_ok 'FixMyStreet::Cobrand::Surrey';
 
 my $comment_user = $mech->create_user_ok('systemuser@surrey.example.com');
-my $surrey = $mech->create_body_ok(2242, 'Surrey County Council', { cobrand => 'surrey', comment_user => $comment_user });
+my $surrey = $mech->create_body_ok(2242, 'Surrey County Council', {
+    cobrand => 'surrey',
+    comment_user => $comment_user,
+    send_method => 'Open311',
+    endpoint => 'http://endpoint.example.com',
+    jurisdiction => 'surrey',
+    api_key => 'test'
+});
+
 my $surrey_staff_user = $mech->create_user_ok( 'staff@example.com', name => 'Staff User', from_body => $surrey );
 $surrey_staff_user->user_body_permissions->create({ body => $surrey, permission_type => 'view_dashboard' });
 $mech->create_contact_ok(body_id => $surrey->id, category => 'Potholes', email => 'potholes@example.org');
@@ -136,8 +144,6 @@ FixMyStreet::override_config {
     };
 
     subtest 'GIS failure causes report sending to be deferred' => sub {
-        $surrey->update({ send_method => 'Open311', endpoint => 'http://endpoint.example.com', jurisdiction => 'surrey', api_key => 'test' });
-
         my ($report) = $mech->create_problems_for_body(1, $surrey->id, 'Pothole problem', {
             category => 'Potholes', cobrand => 'surrey',
             latitude => 51.293415, longitude => -0.441269, areas => '2242',

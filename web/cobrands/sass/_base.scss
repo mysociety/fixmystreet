@@ -3654,19 +3654,6 @@ $site-message-border: 1px solid #525252 !default;
   display: none;
 }
 
-.badge {
-  padding: 0.25em 0.35em;
-  margin-right: 0.25em;
-  text-transform: uppercase;
-  font-weight: 600;
-  background-color: mix($primary, #fff, 30%);
-  border: 1px solid darken($primary, 10%);
-  font-size: 0.85rem;
-  color: #222;
-  border-radius: 4px;
-  vertical-align: middle;
-}
-
 // Mygovscot styling
 body.authpage {
   .content:has(.mygovscot-form) {

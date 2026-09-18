@@ -479,7 +479,7 @@ $.extend(fixmystreet.set_up, {
     // In case we've come here by clicking back to a form that disabled a submit button
     $('input[type=submit][data-disable],button[data-disable]').prop('disabled', false);
 
-    $('[data-confirm]').on('click', function() {
+    $('body').on('click', '[data-confirm]', function() {
         return confirm(this.getAttribute('data-confirm'));
     });
   },
@@ -699,8 +699,11 @@ $.extend(fixmystreet.set_up, {
             var $new_category_meta = $('#category_meta');
             $new_category_meta.closest('.js-reporting-page').toggleClass('js-reporting-page--skip', !!data.extra_hidden);
             // Preserve any existing values
-            $category_meta.find("[name]").each(function() {
+            $category_meta.find("[name]").not(":checkbox").not(":radio").each(function() {
                 $new_category_meta.find("[name='"+this.name+"']").val(this.value);
+            });
+            $category_meta.find("[name]:checked").each(function() {
+                $new_category_meta.find("[name='"+this.name+"']").val([this.value]);
             });
         } else {
             $category_meta.closest('.js-reporting-page').addClass('js-reporting-page--skip');

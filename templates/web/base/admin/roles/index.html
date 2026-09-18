@@ -7,7 +7,7 @@
         <th>&nbsp;</th>
     </tr>
 [% FOREACH role IN roles -%]
-  [% IF c.user.is_superuser AND last_name != role.body.name %]
+  [% IF group_roles_by_body AND last_name != role.body.name %]
     <tr>
         <td colspan="3"><strong>[% role.body.name %]</strong></td>
     </tr>

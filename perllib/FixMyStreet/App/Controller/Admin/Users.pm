@@ -104,11 +104,16 @@ sub index :Path : Args(0) {
 
     my $rs;
     if ($c->user->is_superuser) {
-        $rs = $c->model('DB::Role')->search_rs({}, { join => 'body', order_by => ['body.name', 'me.name'] });
-        $rs = $rs->search(undef, {
+        # On a cobrand associated with a body, only show that body's roles
+        my $body = $c->cobrand->body;
+        my $search = $body ? { 'me.body_id' => $body->id } : {};
+        $rs = $c->model('DB::Role')->search_rs($search, {
+            prefetch => 'body',
             '+columns' => { 'body.msgstr' => \'COALESCE(translation_name.msgstr, body.name)' },
             join => { body => 'translation_name' },
+            order_by => ['body.name', 'me.name'],
         });
+        $c->stash->{group_roles_by_body} = !$body;
     } elsif ($c->user->from_body) {
         $rs = $c->user->from_body->roles->search_rs({}, { order_by => 'name' });
     }
@@ -578,7 +583,12 @@ sub user_alert_details : Private {
     my $alerts = $c->stash->{user}->alerts({}, {
         prefetch => 'alert_type',
         rows => 100,
-        order_by => 'whensubscribed',
+        # The zero interval adding here is to prevent PostgreSQL from using the
+        # whensubscribed index.  If someone has a large number of alerts, the
+        # planner thinks it will be quicker to scan backwards by whensubscribed
+        # date, rather than use the user ID index, which could well be very
+        # wrong if their alerts are all old.
+        order_by => \"whensubscribed + interval '0'",
     })->page( $page );
     my @alerts = $alerts->all;
 

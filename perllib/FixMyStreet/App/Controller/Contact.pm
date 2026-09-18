@@ -185,7 +185,7 @@ sub validate : Private {
 
 =head2 prepare_params_for_email
 
-Does neccessary reformating of exiting params and add any additional
+Does necessary reformatting of existing params and add any additional
 information required for emailing ( problem ids, admin page links etc )
 
 =cut

@@ -11,13 +11,19 @@ sub auto :Private {
 
     my $user = $c->user;
     if ($user->is_superuser) {
-        $c->stash(rs => $c->model('DB::Role')->search_rs({}, {
+        # On a cobrand associated with a body, only show that body's roles
+        my $body = $c->cobrand->body;
+        my $search = $body ? { 'me.body_id' => $body->id } : {};
+        $c->stash(rs => $c->model('DB::Role')->search_rs($search, {
             prefetch => 'body',
             order_by => ['body.name', 'me.name']
         }));
+        $c->stash->{group_roles_by_body} = !$body;
     } elsif ($user->from_body) {
         $c->stash(rs => $user->from_body->roles->search_rs({}, { order_by => 'name' }));
     }
+
+    return 1;
 }
 
 sub index :Path :Args(0) {
@@ -94,9 +100,16 @@ sub form {
         ],
     };
 
+    my $body;
     if (!$c->user->is_superuser && $c->user->from_body) {
+        $body = $c->user->from_body;
+    } else {
+        # Superusers on a cobrand associated with a body can only use that body
+        $body = $c->cobrand->body;
+    }
+    if ($body) {
         push @{$opts->{field_list}}, '+body', { inactive => 1 };
-        $opts->{body_id} = $c->user->from_body->id;
+        $opts->{body_id} = $body->id;
     }
 
     my $action = $role->in_storage ? 'edit' : 'add';

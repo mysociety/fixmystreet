@@ -889,7 +889,7 @@ $problem->send_fail_count(1);
 my $comment = make_comment();
 $comment->send_fail_count(1);
 
-subtest 'No request id in reponse' => sub {
+subtest 'No request id in response' => sub {
     my $results;
     warning_like {
         $results = make_service_req(
@@ -903,7 +903,7 @@ subtest 'No request id in reponse' => sub {
     is $results->{ res }, 0, 'No request_id is a failure';
 };
 
-subtest 'Bad data in request_id element in reponse' => sub {
+subtest 'Bad data in request_id element in response' => sub {
     my $results;
     warning_like {
         $results = make_service_req(
@@ -917,7 +917,7 @@ subtest 'Bad data in request_id element in reponse' => sub {
     is $results->{ res }, 0, 'No request_id is a failure';
 };
 
-subtest 'No update id in reponse' => sub {
+subtest 'No update id in response' => sub {
     my $results;
     warning_like {
         $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id></update_id></request_update></service_request_updates>' )

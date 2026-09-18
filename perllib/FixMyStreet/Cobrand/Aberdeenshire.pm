@@ -76,6 +76,16 @@ sub reopening_disallowed { 1 }
 
 sub send_questionnaires { 0 }
 
+=item * Include planned/no further action in nearby reports
+
+=cut
+
+sub around_nearby_filter {
+    my ($self, $params) = @_;
+    $params->{states}->{planned} = 1;
+    $params->{states}->{'unable to fix'} = 1;
+}
+
 =pod
 
 =back
