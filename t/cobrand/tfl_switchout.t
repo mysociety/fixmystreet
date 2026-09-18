@@ -44,7 +44,34 @@ subtest 'Switch out application form submission' => sub {
         $mech->submit_form_ok({ with_fields => { emergency => 'No' }});
 
         my $start_date = DateTime->today->add(weeks => 2);
-        $mech->submit_form_ok({ with_fields => {
+        subtest 'bad times submissions' => sub {
+            $mech->submit_form_ok({ with_fields => {
+                'switch_out_date_1.day' => $start_date->day,
+                'switch_out_date_1.month' => $start_date->month,
+                'switch_out_date_1.year' => $start_date->year,
+                'switch_out_time_1' => '01:30',
+                'restore_date_1.day' => $start_date->day,
+                'restore_date_1.month' => $start_date->month,
+                'restore_date_1.year' => $start_date->year,
+                'restore_time_1' => '01:30',
+            }});
+            $mech->content_contains('must be after the start time');
+
+            $mech->submit_form_ok({ with_fields => {
+                'switch_out_date_1.day' => $start_date->day,
+                'switch_out_date_1.month' => $start_date->month,
+                'switch_out_date_1.year' => $start_date->year,
+                'switch_out_time_1' => '01:30',
+                'restore_date_1.day' => $start_date->day,
+                'restore_date_1.month' => $start_date->month,
+                'restore_date_1.year' => $start_date->year,
+                'restore_time_1' => '00:30',
+            }});
+            $mech->content_contains('must be after the start time');
+        };
+
+        $mech->form_number(0)->action($mech->form_number(0)->action . '?same_times=1');
+        $mech->submit_form_ok({ button => 'add_another_same_times', with_fields => {
             'switch_out_date_1.day' => $start_date->day,
             'switch_out_date_1.month' => $start_date->month,
             'switch_out_date_1.year' => $start_date->year,
@@ -54,6 +81,23 @@ subtest 'Switch out application form submission' => sub {
             'restore_date_1.year' => $start_date->year,
             'restore_time_1' => '01:30',
         }});
+
+        $mech->form_number(0)->action($mech->form_number(0)->action . '?same_times=0');
+        $mech->submit_form_ok({ button => 'add_another', with_fields => {
+            'restore_time_2' => '01:30',
+        }});
+
+        $mech->submit_form_ok({ with_fields => {
+            'switch_out_date_3.day' => $start_date->day,
+            'switch_out_date_3.month' => $start_date->month,
+            'switch_out_date_3.year' => $start_date->year,
+            'switch_out_time_3' => '07:30',
+            'restore_date_3.day' => $start_date->day,
+            'restore_date_3.month' => $start_date->month,
+            'restore_date_3.year' => $start_date->year,
+            'restore_time_3' => '08:30',
+        }});
+
 
         $mech->submit_form_ok({ with_fields => {
             temporary_signal_company_name => 'Temporary Ltd',
@@ -96,8 +140,8 @@ subtest 'Switch out application form submission' => sub {
         }});
 
         $mech->form_with_fields('terms_accepted');
-        $mech->current_form->find_input('terms_accepted', undef, 1)->value('TfL Traffic Signal Switch out terms & conditions');
-        $mech->current_form->find_input('terms_accepted', undef, 2)->value('TfL Traffic Signal Switch out fee structure');
+        $mech->current_form->find_input('terms_accepted', undef, 1)->value('TfL Traffic Signal Switch Out Guidance and Terms & Conditions');
+        $mech->current_form->find_input('terms_accepted', undef, 2)->value('TfL Traffic Signal Switch Out Fee structure');
         $mech->submit_form_ok;
 
         $mech->content_contains('Application summary', 'Summary page rendered');

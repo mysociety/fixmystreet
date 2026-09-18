@@ -5,6 +5,8 @@ extends 'FixMyStreet::App::Form::Wizard';
 use utf8;
 use Path::Tiny;
 
+my $MAX_DATES = 20;
+
 has default_page_type => ( is => 'ro', isa => 'Str', default => 'Wizard' );
 
 has finished_action => ( is => 'ro' );
@@ -23,7 +25,7 @@ has_page intro => (
 
 has_page where => (
     fields => ['location', 'continue'],
-    title => 'Proposed switch out',
+    title => 'Switch out',
     next => sub { $_[0]->{possible_location_matches} ? 'choose_location' : $_[0]->{latitude} ? 'map' : 'choose_location' },
 );
 
@@ -127,12 +129,6 @@ has_page map => (
             latitude => $latitude,
             longitude => $longitude,
             clickable => 1,
-            pins => [ {
-                latitude => $latitude,
-                longitude => $longitude,
-                draggable => 1,
-                colour => $c->cobrand->pin_new_report_colour,
-            } ],
         );
     },
 );
@@ -167,7 +163,7 @@ has_field longitude => (
 
 has_page emergency => (
     fields => ['emergency', 'continue'],
-    title => 'Proposed switch out',
+    title => 'Is there a potential threat to life or property?',
     next => sub { $_[0]->{emergency} eq 'Yes' ? 'call_us' : 'when_1' },
 );
 
@@ -183,18 +179,44 @@ has_field emergency => (
 );
 
 has_page call_us => (
-    title => 'Emergency',
+    title => 'Important Notice',
     intro => 'call_us.html',
 );
+
+sub when_page_update_field_list {
+    my ($form) = @_;
+    if ($form->c->get_param('same_times') && $form->previous_form) {
+        my $page = $form->page_name;
+        my ($num) = $page =~ /when_(\d+)/;
+        my $prev = $num - 1;
+        my $d1 = $form->saved_data->{"switch_out_date_$prev"};
+        $d1 = $d1->clone->add( days => 1 );
+        my $t1 = $form->saved_data->{"switch_out_time_$prev"};
+        my $d2 = $form->saved_data->{"restore_date_$prev"};
+        $d2 = $d2->clone->add( days => 1 );
+        my $t2 = $form->saved_data->{"restore_time_$prev"};
+        return {
+            "switch_out_date_$num" => { default => $d1 },
+            "switch_out_time_$num" => { default => $t1 },
+            "restore_date_$num" => { default => $d2 },
+            "restore_time_$num" => { default => $t2 },
+        };
+    }
+    return {};
+}
 
 sub when_page_fields {
     my $args = shift;
     my $page = $args->{page};
     my $next = 'on_site';
-    my $fields = ["switch_out_date_$page", "switch_out_time_$page", "restore_date_$page", "restore_time_$page", "switch_out_date_notice_$page", 'continue'];
+    my $fields = ["switch_out_date_$page", "switch_out_time_$page", "restore_date_$page", "restore_time_$page", 'continue'];
     if ($page < $args->{pages}) {
-        $next = sub { $_[1]->{add_another} ? 'when_' . ($page+1) : 'on_site' };
-        push @$fields, 'add_another';
+        $next = sub {
+            return 'when_' . ($page+1) if $_[1]->{"add_another"};
+            return 'when_' . ($page+1) if $_[1]->{"add_another_same_times"};
+            return 'on_site';
+        };
+        push @$fields, "switch_out_date_notice_$page", 'add_another', "add_another_same_times";
     }
 
     return (
@@ -203,6 +225,7 @@ sub when_page_fields {
         intro => $args->{template},
         next => $next,
         tags => { hide => sub { !$_[0]->form->saved_data->{"switch_out_date_$page"} } },
+        update_field_list => \&when_page_update_field_list,
     );
 }
 
@@ -215,11 +238,11 @@ for my $h (0..23) {
     }
 }
 
-for my $page (1..20) {
+for my $page (1..$MAX_DATES) {
     has_page "when_$page" => when_page_fields({
         page => $page,
-        pages => 20,
-        title => 'Proposed switch out date',
+        pages => $MAX_DATES,
+        title => 'Switch out date',
         template => 'date.html',
     });
     has_field "switch_out_date_$page" => (
@@ -253,7 +276,7 @@ for my $page (1..20) {
         label => 'Do you require additional switch out and restore attendances at this location?',
         required => 0,
         widget => 'NoRender',
-    );
+    ) if $page < $MAX_DATES;
 }
 
 has_field 'add_another' => (
@@ -261,6 +284,15 @@ has_field 'add_another' => (
     value => 'Add another',
     element_attr => {
         class => 'govuk-button govuk-button--secondary',
+        formaction => '?same_times=0',
+    },
+);
+has_field 'add_another_same_times' => (
+    type => 'Submit',
+    value => 'Add another (next day, same times)',
+    element_attr => {
+        class => 'govuk-button govuk-button--secondary',
+        formaction => '?same_times=1',
     },
 );
 
@@ -322,7 +354,7 @@ has_field organisation => (
 
 has_field name => (
     type => 'Text',
-    label => 'Applicant full name',
+    label => 'Applicant (person’s full name)',
     required => 1,
 );
 
@@ -417,7 +449,7 @@ has_field permit_ha => (
 
 has_field permit_contact => (
     type => 'Text',
-    label => 'Highway Authority contact details',
+    label => 'Highway Authority contact details (email/phone)',
     required => 1,
 );
 
@@ -437,7 +469,7 @@ has_field permit_nature => (
 );
 
 my $upload_fields = ['upload_document_1', 'upload_document_2', 'upload_document_3',
-    'upload_missing_explanation', 'additional_information',
+    'missing_explanation', 'additional_information',
     'continue'];
 
 has_page uploads => (
@@ -464,22 +496,27 @@ has_page uploads => (
 );
 
 has_field upload_document_1 => (
-    required => 1,
+    required_when => {
+        'missing_explanation' => sub {
+            my ($val, $field) = @_;
+            !$val && !$field->get_tag('files');
+        }
+    },
     type => 'FileIdUpload',
     label => 'Traffic Management Drawing, Stage Diagram and Temporary Signal Timings Documents',
 );
 
 has_field upload_document_2 => (
     type => 'FileIdUpload',
-    label => 'Traffic Management Drawing, Stage Diagram and Temporary Signal Timings Documents',
+    label => 'Additional supporting documentation part 2',
 );
 
 has_field upload_document_3 => (
     type => 'FileIdUpload',
-    label => 'Traffic Management Drawing, Stage Diagram and Temporary Signal Timings Documents',
+    label => 'Additional supporting documentation part 3',
 );
 
-has_field upload_missing_explanation => (
+has_field missing_explanation => (
     type => 'Text',
     widget => 'Textarea',
     label => 'If any of the requested information is unavailable, please provide details below. Our team will review the information provided and advise whether your application can proceed.',
@@ -489,7 +526,6 @@ has_field additional_information => (
     type => 'Text',
     widget => 'Textarea',
     label => 'Please provide any additional information relevant to this application that TfL or our contractors may need when reviewing your request or attending the site.',
-    required => 1,
 );
 
 has_page payment => (
@@ -606,8 +642,8 @@ sub options_terms_accepted {
         '',
     );
     my @labels = (
-        'TfL Traffic Signal Switch out terms & conditions',
-        'TfL Traffic Signal Switch out fee structure',
+        'TfL Traffic Signal Switch Out Guidance and Terms & Conditions',
+        'TfL Traffic Signal Switch Out Fee structure',
     );
     for (0..@labels-1) {
         $labels[$_] = {
@@ -679,6 +715,32 @@ sub validate_datetime {
     }
 
     $field->add_error("Please enter a valid date") unless $valid;
+}
+
+# Overall form validation
+sub construct_datetime {
+    my ($self, $d, $t) = @_;
+    my $field = $self->field($d);
+    return unless $field->is_active && $field->has_result && !$field->has_errors;
+    my $date = $field->value;
+    my ($h, $m) = split /:/, $self->field($t)->value or return;
+    return $date->set_hour($h)->set_minute($m);
+}
+
+sub validate {
+    my $self = shift;
+
+    for my $page (1..$MAX_DATES) {
+        my $off = $self->construct_datetime("switch_out_date_$page", "switch_out_time_$page");
+        if ($off) {
+            my $on = $self->construct_datetime("restore_date_$page", "restore_time_$page");
+            if ($on <= $off) {
+                $self->add_form_error('The end time must be after the start time');
+            }
+        }
+    }
+
+    $self->next::method();
 }
 
 sub generate_pdf {

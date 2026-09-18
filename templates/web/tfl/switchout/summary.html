@@ -7,7 +7,8 @@
 
 <h1 class="govuk-heading-xl">[% form.title %]</h1>
 [% IF problem %]
-<p>FMS[% problem.id %]
+<p>Application reference: FMS[% problem.id %]
+<p>Date of application: [% problem.created.strftime('%d/%m/%Y') %]
 [% ELSE %]
 <p>Please review your application before submitting.</p>
 [% END %]

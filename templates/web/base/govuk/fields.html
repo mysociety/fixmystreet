@@ -70,9 +70,9 @@
               [% FOR error IN form.all_form_errors %]
                 <li>[% error %]</li>
               [% END %]
-              [% FOR error IN form.errors_by_id.pairs %]
+              [% FOR error IN form.error_fields %]
                 <li>
-                    <a href="#form-[% error.key %]-row">[% error.value.join('; ') %]</a>
+                    <a href="#form-[% error.id %]-row">[% error.all_errors.join('; ') %]</a>
                 </li>
               [% END %]
             </ul>
