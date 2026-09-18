@@ -227,6 +227,10 @@ subtest 'updating of waste reports' => sub {
                     DatatypeName => 'Justification',
                     Value => 2, # No
                 };
+                push @$data, {
+                    DatatypeName => 'Notes',
+                    Value => 'Sorry, we disagree',
+                };
             }
             return SOAP::Result->new(result => {
                 Guid => $external_id,
@@ -396,6 +400,8 @@ subtest 'updating of waste reports' => sub {
         is $report->comments->count, 6, 'A new update';
         $report->discard_changes;
         is $report->state, 'unable to fix', 'A state change';
+        $update = FixMyStreet::DB->resultset("Comment")->order_by('-id')->first;
+        is $update->text, 'Sorry, we disagree', 'Correct update text';
     };
 };
 
