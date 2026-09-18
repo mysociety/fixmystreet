@@ -279,6 +279,13 @@ sub edit : Path('/admin/report_edit') : Args(1) {
           ->search( { problem_id => $problem->id }, { order_by => [ 'created', 'id' ] } )
           ->all ];
 
+    # Look up any users recorded as having made an update as someone else
+    my @contributed_by = grep { $_ } map { $_->get_extra_metadata('contributed_by') } @{$c->stash->{updates}};
+    if (@contributed_by) {
+        my @users = $c->model('DB::User')->search({ id => \@contributed_by })->all;
+        $c->stash->{updates_contributed_by} = { map { $_->id => $_ } @users };
+    }
+
     if (my $rotate_photo_param = $c->forward('/admin/_get_rotate_photo_param')) {
         $c->forward('/admin/rotate_photo', [$problem, @$rotate_photo_param]);
         $c->detach('edit_display');

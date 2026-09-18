@@ -572,15 +572,12 @@ sub add_amendment_update {
     my $update = $p->add_to_comments({
         text => "Booking amended",
         user => $c->cobrand->body->comment_user || $p->user,
-        extra => { bulky_amendment => 1 },
-        $type eq 'immediate' ? (
-            state => 'confirmed',
-        ) : (
-            state => 'unconfirmed',
-            extra => {
-                fms_extra_amend => $data,
-            },
-        ),
+        extra => {
+            bulky_amendment => 1,
+            $c->user_exists ? (contributed_by => $c->user->id) : (),
+            $type eq 'delayed' ? (fms_extra_amend => $data) : (),
+        },
+        $type eq 'immediate' ? (state => 'confirmed') : (state => 'unconfirmed'),
     });
     # We don't want to send an update if amending, they'll get a new report logged email
     $p->cancel_update_alert($update->id);
@@ -613,7 +610,10 @@ sub add_cancellation_update {
     my $update = $p->add_to_comments({
         text => $description,
         user => $c->cobrand->body->comment_user || $p->user,
-        extra => { bulky_cancellation => 1 },
+        extra => {
+            bulky_cancellation => 1,
+            $c->user_exists ? (contributed_by => $c->user->id) : (),
+        },
         problem_state => 'cancelled',
         $type eq 'immediate' ? (state => 'confirmed') : (state => 'unconfirmed'),
     });
