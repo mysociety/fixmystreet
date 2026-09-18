@@ -764,11 +764,15 @@ sub open311_waste_update_extra {
     my $data = Integrations::Echo::force_arrayref($event->{Data}, 'ExtensibleDatum');
     my @media;
     my $justified = '';
+    my $override_description;
     foreach (@$data) {
         if ($_->{DatatypeName} eq 'Post Collection Photo' || $_->{DatatypeName} eq 'Pre Collection Photo') {
             my $value = decode_base64($_->{Value});
             my $type = FixMyStreet::PhotoStorage->detect_type($value);
             push @media, "data:image/$type,$value";
+        }
+        if ($_->{DatatypeName} eq 'Notes' && $event->{EventTypeId} == $EVENT_TYPE_IDS{dispute}) {
+            $override_description = $_->{Value};
         }
         if ($_->{DatatypeName} eq 'Justification') {
             if ($_->{Value} == 1) {
@@ -798,6 +802,7 @@ sub open311_waste_update_extra {
     return (
         @media ? ( media_url => \@media ) : (),
         defined $override_status ? (status => $override_status ) : (),
+        $override_description ? (description => $override_description ) : (),
     );
 }
 
