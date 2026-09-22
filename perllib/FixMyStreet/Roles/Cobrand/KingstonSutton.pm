@@ -630,12 +630,6 @@ sub waste_munge_enquiry_form_pages {
     my $c = $self->{c};
     my $category = $c->get_param('category');
 
-    my $booking_id = $c->get_param('original_booking_id');
-    if ($booking_id) {
-        my $report = $c->cobrand->problems->find($booking_id);
-        $c->stash->{guid} = $report->external_id;
-    }
-
     # Add the service to the main fields form page
     $pages->[1]{intro} = 'enquiry-intro.html';
     $pages->[1]{title} = _enquiry_nice_title($category);
@@ -720,17 +714,11 @@ sub waste_munge_enquiry_form_pages {
             },
         };
     } elsif ( $category eq 'Missed collection dispute') {
-        my $guid = $c->stash->{guid};
-        # if we have a guid then it might be a link from an email and
-        # so it might be clicked outside the window so re-check if
-        # disputes are allowed
-        if ($guid) {
-            my $date = $c->stash->{booked_missed}{$guid}{report_locked_out_date} # Bulky etc. collection that was not collected
-                    || $c->stash->{booked_missed}{$guid}{report_open}{date} # Missed collection report made against a bulky etc. collection
-                    || $c->stash->{missed_events_by_guid}{$guid}{date};
-
-            my $dispute_allowed = $date && $self->_check_date_within_dispute_window( $date );
-            unless ($dispute_allowed eq 'within') {
+        # this might have been visited outside the window
+        # so re-check if disputes are allowed
+        if (my $report = $c->stash->{original_booking_report}) {
+            my $guid = $report->external_id;
+            unless ($c->stash->{booked_missed}{$guid}{dispute}{allowed}) {
                 $c->stash->{first_page} = 'window_expired';
                 @$pages = (window_expired => {
                     title => _enquiry_nice_title($category),

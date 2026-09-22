@@ -1303,7 +1303,6 @@ FixMyStreet::override_config {
                 mark_open     => 0,
                 mark_fixed    => 0,
                 state         => 'confirmed',
-                photo         => $sample_file->slurp,
             }
         );
 
@@ -1334,15 +1333,7 @@ FixMyStreet::override_config {
             $mech->get_ok($l->path_query);
             $mech->content_contains('Contaminated (builder’s waste)', 'details of missed bin collection displayed');
             $mech->submit_form_ok({ with_fields => { category => "Missed collection dispute" } });
-
-            # XXX Email link used 'original_booking_id' param here to denote
-            # missed collection report ID, but 'original_booking_id' should
-            # really only refer to bulky/small item reports, as it breaks the
-            # report a problem page if present (which assumes it is only for
-            # those and overwrites the service). Also, photo does not appear
-            # when form accessed from web below. XXX
             $mech->content_contains('Contaminated (builder’s waste)', 'details of missed bin collection displayed');
-            #$mech->content_contains('This photo provides the evidence', 'Has resolution photo text');
         };
 
         subtest 'Create dispute for non complete missed bin report' => sub {

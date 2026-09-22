@@ -1,30 +1,22 @@
 [%-
 SET service_id = c.req.params.service_id;
 SET category = c.req.params.category;
-SET booking_id = c.req.params.original_booking_id;
 
-# For ordinary services & their missed collection reports
-IF services.$service_id;
+IF original_booking_report;
+    SET booking_guid = original_booking_report.external_id;
+    SET service = booked_missed.$booking_guid;
+    SET resolution = service.report_locked_out_reason || service.report_open.resolution_reason;
+    SET missed = service.dispute.missed_event; # May have a missed collection report against it
+ELSE;
+    # For ordinary services & their missed collection reports
     SET service = services.$service_id;
-    SET service_name = service.service_name;
     SET missed = service.report_open;
     SET resolution = c.cobrand.resolution_text(service.last.resolution_id) || missed.resolution_reason;
     SET image = service.last.image;
 END;
+SET service_name = service.service_name;
 
-# FIXME This is confusing; I am not sure if parts of this are redundant or
-# incorrect. Is $guid ever actually a GUID for a missed collection report?
-IF missed_events_by_guid.$guid;
-    SET missed = missed_events_by_guid.$guid;
-    SET service_name = missed.service_name;
-    SET resolution = missed.resolution_reason;
-ELSIF booked_missed.$guid;
-    SET booked = 1;
-    SET service = booked_missed.$guid; # Original bulky/small booking
-    SET service_name = service.service_name;
-    SET resolution = service.report_locked_out_reason || service.report_open.resolution_reason;
-    SET missed = service.dispute.missed_event; # May have a missed collection report against it
-END -%]
+-%]
 
 [%- IF service_name %]
 <dl class="waste__address">
@@ -65,7 +57,7 @@ END -%]
             If you are disputing the reasons for this missed collection please use this form. We will investigate using our onboard 360 degree video cameras and other photo evidence before making a decision.
         </p>
 
-        [%- SET update = cobrand.waste_bulky_resolution_photo_update( booking_id) %]
+        [%- SET update = cobrand.waste_bulky_resolution_photo_update(original_booking_report.id) %]
         [%- IF update %]
             [% INCLUDE 'report/photo.html' object=update %]
 

@@ -1177,13 +1177,7 @@ sub enquiry : Chained('property') : Args(0) {
             # TODO Return if no event?
 
         } elsif ( my $report = $c->stash->{original_booking_report} ) {
-            # NOTE!
-            # original_booking_report may actually be missed collection report
-            # against an original booking, so check against that too
-            my $original_booking_event
-                = $c->stash->{booked_missed}{ $report->external_id }
-                || $c->stash->{booked_missed}{ $report->get_extra_field_value
-                    ('Original_Event_ID') };
+            my $original_booking_event = $c->stash->{booked_missed}{$report->external_id};
 
             $c->detach('property_redirect')
                 unless $original_booking_event->{dispute}{allowed};
