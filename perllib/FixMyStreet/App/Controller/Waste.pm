@@ -1133,6 +1133,14 @@ sub enquiry : Chained('property') : Args(0) {
         $c->detach;
     }
 
+    if (my $report = $c->stash->{original_booking_report}) {
+        unless ($c->user_exists && ($c->stash->{is_staff} || $report->user->id == $c->user->id)) {
+            my $property_uri = $c->uri_for_action( 'waste/bin_days', $c->stash->{property_id} );
+            my $uri = $c->uri_for( '/auth', { r => $property_uri } );
+            $c->res->redirect($uri);
+        }
+    }
+
     $c->forward('setup_categories_and_bodies');
 
     my $category = $c->get_param('category');
