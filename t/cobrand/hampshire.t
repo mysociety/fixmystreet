@@ -52,6 +52,9 @@ FixMyStreet::override_config {
     $updates->send;
     $req = Open311->test_req_used;
     ok $req->content =~ m/description=Thanks%0A%0AReport\+marked\+as\+fixed\+by\+an\+FMS\+user/, 'Additonal text added to comment';
+
+    $mech->get_ok( '/report/' . $p->id );
+    unlike $mech->content, qr/marked as fixed/, 'Update not saved to FMS';
 };
 
 done_testing();
