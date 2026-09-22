@@ -33,6 +33,8 @@ step1 = first_page;
             END;
         ELSIF container_id == 28;
             SET remove_container = containers.27;
+        ELSIF container_id == 85;
+            SET remove_container = containers.46;
         END;
         INCLUDE row key=remove_container value='1x to collect';
         INCLUDE row key=containers.$container_id value='1x to deliver';
