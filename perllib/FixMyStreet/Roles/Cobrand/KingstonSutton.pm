@@ -918,7 +918,13 @@ sub dashboard_export_include_all_states { 1 }
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
 
-    $csv->modify_csv_header( Detail => 'Address' );
+    my $sutton = $self->moniker eq 'sutton';
+    if ($sutton) {
+        $csv->splice_csv_column('user_name_display', address => 'Address');
+        $csv->splice_csv_column('user_name_display', reason => 'Reason');
+    } else {
+        $csv->modify_csv_header( Detail => 'Address' );
+    }
 
     my $config = $self->wasteworks_config || {};
     my $max_items = max(
@@ -941,7 +947,7 @@ sub dashboard_export_problems_add_columns {
         current_bins => 'Bin count declared',
         quantity => 'Subscription quantity',
         # Escalations
-        $self->moniker eq 'sutton' ? (original_ref => 'Original reference') : (),
+        $sutton ? (original_ref => 'Original reference') : (),
         map { "item_" . $_ => "Item $_" } (1..$max_items),
     );
 
@@ -965,10 +971,21 @@ sub dashboard_export_problems_add_columns {
         }
 
         my $detail = $csv->dbi ? $report->{detail} : $report->detail;
-        $detail =~ s/^.*?\n\n//; # Remove waste category
+        my %detail;
+        if ($sutton) {
+            my ($reason) = $detail =~ /^Reason: (.*)$/m;
+            %detail = (
+                detail => $detail,
+                address => $csv->_extra_metadata($report, 'property_address') || '',
+                reason => $reason || '',
+            );
+        } else {
+            $detail =~ s/^.*?\n\n//; # Remove waste category
+            %detail = ( detail => $detail );
+        }
 
         my $data = {
-            detail => $detail,
+            %detail,
             $csv->dbi ? (
                 user_name_display => $report->{name},
                 payment_reference => $report->{extra}{payment_reference} || '',
