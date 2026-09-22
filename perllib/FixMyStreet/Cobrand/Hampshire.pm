@@ -35,4 +35,13 @@ sub lookup_site_code_config { {
     accept_feature => sub { 1 }
 } }
 
+sub open311_pre_send_updates {
+    my ($self, $row) = @_;
+
+    if ($row->mark_fixed) {
+        my $text = $row->text . "\n\nReport marked as fixed by an FMS user";
+        $row->text($text);
+    }
+}
+
 1;
