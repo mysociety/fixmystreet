@@ -35,4 +35,12 @@ sub lookup_site_code_config { {
     accept_feature => sub { 1 }
 } }
 
+sub open311_munge_update_params {
+    my ($self, $params, $comment) = @_;
+
+    if ($comment->mark_fixed) {
+        $params->{description} .= "\n\nReport marked as fixed by an FMS user";
+    }
+}
+
 1;
