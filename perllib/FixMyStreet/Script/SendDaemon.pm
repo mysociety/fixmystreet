@@ -58,7 +58,7 @@ sub look_for_update {
         ->search($params, {
             for => \'UPDATE SKIP LOCKED',
             rows => 1,
-            order_by => \'RANDOM()'
+            order_by => FixMyStreet->test_mode ? 'id' : \'RANDOM()'
         })->single or return;
 
     my $problem = $comment->problem;
