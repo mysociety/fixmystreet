@@ -52,7 +52,11 @@
       [% END %]
     [% END %]
     [% IF unit.report_allowed %]
+        [% IF c.cobrand.moniker == 'merton' %]
+        <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?template=problem&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a spillage or other problem with a [% unit.service_name FILTER lower %] collection</a>
+        [% ELSE %]
         <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?template=problem&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a problem with a [% unit.service_name FILTER lower %] collection</a>
+        [% END %]
     [% END %]
 [% END %]
 
