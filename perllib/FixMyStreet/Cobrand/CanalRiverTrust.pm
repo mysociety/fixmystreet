@@ -104,6 +104,20 @@ sub fetch_area_children {
 
 =back
 
+=head2 report_validation
+
+Changes the default name error message.
+
+=cut
+
+sub report_validation {
+    my ($self, $report, $errors) = @_;
+
+    $errors->{name}
+        = 'Please enter your full name. If you do not wish your name to be shown on the site, untick the box below.'
+        if $errors->{name};
+}
+
 =head2 Report categories
 
 There is special handling of body/contacts; categories must end "(CRT)"
