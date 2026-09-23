@@ -130,7 +130,16 @@ sub send {
         }
     }
 
-    $cobrand->call_hook(munge_sendreport_params => $row, $h, $params);
+    # Special National Highways change - due to NH exemption in UK's
+    # get_body_handler_for_problem, we can be in the 'wrong' handler
+    # Sometimes we only get an email in To->0, but NH will be a ref.
+    my $to = $params->{To}->[0];
+    my $munge_cobrand = $cobrand;
+    if (ref $to eq 'ARRAY' && $to->[0] =~ /\@nh$/) {
+        $munge_cobrand = FixMyStreet::Cobrand::HighwaysEngland->new;
+    }
+
+    $munge_cobrand->call_hook(munge_sendreport_params => $row, $h, $params);
 
     my $result = FixMyStreet::Email::send_cron($row->result_source->schema,
         $self->get_template($row), {
