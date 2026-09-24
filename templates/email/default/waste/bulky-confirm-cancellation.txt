@@ -1,0 +1,24 @@
+[%
+USE pounds = format('%.2f');
+IF report.category == 'Small items collection';
+    service = 'small items';
+ELSIF report.category == 'Sharps collection';
+    service = 'sharps';
+ELSIF cobrand.moniker == 'bromley';
+    service = 'bulky goods';
+ELSE;
+    service = 'bulky waste';
+END;
+~%]
+Subject: Cancelled [% service %] collection [% report.id %]
+
+[% service | ucfirst %] collection slot [% report.id %] scheduled for [% collection_date %] has been cancelled.
+
+[% IF refund_amount > 0 %]
+£[% pounds(refund_amount / 100) %] will be refunded.
+[% END %]
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.
+
+[% signature %]

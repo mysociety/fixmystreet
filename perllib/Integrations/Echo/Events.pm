@@ -4,7 +4,6 @@ use Moo;
 
 has cobrand => ( is => 'ro' );
 has event_types => ( is => 'ro' );
-has include_closed_requests => ( is => 'ro' );
 
 has _events => ( is => 'ro' );
 
@@ -27,8 +26,6 @@ sub parse {
 
         my $closed = $self->_closed_event($_);
         my $completed = $self->_completed_event($_);
-        # Only care about open requests/enquiries
-        next if $type eq 'request' && $closed && !$self->include_closed_requests;
 
         my $source;
         my $objects = Integrations::Echo::force_arrayref($_->{EventObjects}, 'EventObject');
@@ -49,6 +46,7 @@ sub parse {
             completed => $completed,
             source => $source,
             $_->{EventDate} ? (date => construct_bin_date($_->{EventDate})) : (),
+            $_->{ResolvedDate} ? (resolved_date => construct_bin_date($_->{ResolvedDate})) : (),
         };
 
         my $report = $self->cobrand->problems->search({ external_id => $_->{Guid} })->first;
@@ -79,6 +77,21 @@ sub parse {
                     $event->{state} = 'open';
                 }
             }
+        } elsif ($type eq 'dispute') {
+            my $justified = '';
+            if ($closed) {
+                my $data = Integrations::Echo::force_arrayref($_->{Data}, 'ExtensibleDatum');
+                foreach (@$data) {
+                    if ($_->{DatatypeName} eq 'Justification') {
+                        if ($_->{Value} == 1) {
+                            $justified = 'yes';
+                        } elsif ($_->{Value} == 2) {
+                            $justified = 'no';
+                        }
+                    }
+                }
+            }
+            $event->{justified} = $justified;
         }
         push @$events, $event unless $event->{ignore};
     }

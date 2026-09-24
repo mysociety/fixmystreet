@@ -435,7 +435,10 @@ FixMyStreet::override_config {
             $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
             $mech->content_contains('Your booking has been cancelled');
 
-            $mech->email_count_is(0);
+            my $text = $mech->get_text_body_from_email;
+            like $text, qr/Bulky waste collection slot @{[$report->id]} scheduled for Friday 04 July 2025 has been cancelled/;
+            unlike $text, qr/will be refunded/;
+            $mech->clear_emails_ok;
 
             $report->discard_changes;
             $report->set_extra_metadata(payment_reference => 12345);
@@ -451,7 +454,8 @@ FixMyStreet::override_config {
         $mech->content_contains('Your booking has been cancelled');
 
         my $report_id = $report->id;
-        my $email = $mech->get_email;
+        my ($cancel_email, $email) = $mech->get_email;
+        like $mech->get_text_body_from_email($cancel_email), qr/£69.30 will be refunded/;
 
         subtest 'Sends refund email' => sub {
             is $email->header('Subject'),
