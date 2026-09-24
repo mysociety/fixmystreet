@@ -18,6 +18,12 @@ use FixMyStreet::App::Form::Waste::Report::SLWP;
 use FixMyStreet::App::Form::Waste::Request::Kingston;
 use FixMyStreet::App::Form::Waste::Request::Sutton;
 
+my %EVENT_TYPE_IDS = (
+    escalation => 3134, # Complaint Against Time
+    dispute => 3143, # Formal Complaint
+);
+lock_hash(%EVENT_TYPE_IDS);
+
 =head2 Defaults
 
 =over 4
@@ -213,8 +219,8 @@ around booked_check_missed_collection => sub {
     my $cfg = $self->feature('echo');
     my $service_id = $cfg->{$type . '_service_id'} or return;
 
-    my $escalations = $events->filter({ event_type => 3134, service => $service_id });
-    my $disputes = $events->filter({ event_type => 3143, service => $service_id });
+    my $escalations = $events->filter({ event_type => $EVENT_TYPE_IDS{escalation}, service => $service_id });
+    my $disputes = $events->filter({ event_type => $EVENT_TYPE_IDS{dispute}, service => $service_id });
     my $missed = $self->{c}->stash->{booked_missed};
     foreach my $guid (keys %$missed) {
         my $missed_event = $missed->{$guid}{report_open};
@@ -402,7 +408,7 @@ sub _setup_missed_collection_escalations_for_service {
     my $missed_event = ($events->filter({ type => 'missed' })->list)[0];
     return unless $missed_event; # If there's a missed bin report
 
-    my $escalation_events = $events->filter({ event_type => 3134 });
+    my $escalation_events = $events->filter({ event_type => $EVENT_TYPE_IDS{escalation} });
 
     foreach my $escalation_event ($escalation_events->list) {
         my $escalation_event_report = $escalation_event->{report};
@@ -450,7 +456,7 @@ sub _setup_missed_collection_disputes_for_service {
     my $property = $c->stash->{property};
 
     my $missed_event = ($events->filter({ type => 'missed' })->list)[0];
-    my $dispute_event = ($events->filter({ event_type => 3143 })->list)[0];
+    my $dispute_event = ($events->filter({ event_type => $EVENT_TYPE_IDS{dispute} })->list)[0];
     if (
         # If there's a missed bin report
         $missed_event
@@ -492,7 +498,7 @@ sub _setup_container_request_escalations_for_service {
 
     # We're only expecting one open container request per service
     my $open_request_event = (values %$open_requests)[0];
-    my $escalation_events = $row->{all_events}->filter({ event_type => 3134 });
+    my $escalation_events = $row->{all_events}->filter({ event_type => $EVENT_TYPE_IDS{escalation} });
     my $wd = FixMyStreet::WorkingDays->new();
 
     foreach my $escalation_event ($escalation_events->list) {
@@ -561,7 +567,7 @@ sub _setup_container_request_disputes_for_service {
     # Look for any closed request events
     my $request_events = $events->filter({ type => 'request', closed => 1, report_not_cancelled => 1 });
     # And any existing disputes that could be on those events
-    my $dispute_events = $events->filter({ event_type => 3143 });
+    my $dispute_events = $events->filter({ event_type => $EVENT_TYPE_IDS{dispute} });
 
     foreach my $request ($request_events->list) {
         my $guid = $request->{guid};
@@ -593,7 +599,7 @@ sub _setup_scheduled_collection_disputes_for_service {
 
     my $dispute_event;
     if ($events) {
-        $dispute_event = ($events->filter({ event_type => 3143 })->list)[0];
+        $dispute_event = ($events->filter({ event_type => $EVENT_TYPE_IDS{dispute} })->list)[0];
     }
     if (!$dispute_event) {
         if ($row->{last} && $row->{last}->{completed} && $row->{report_locked_out}) {
