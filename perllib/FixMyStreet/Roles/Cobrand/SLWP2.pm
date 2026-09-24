@@ -216,8 +216,15 @@ my %RESOLUTION_CODES = (
 lock_hash(%RESOLUTION_CODES);
 
 sub resolution_text {
-    my ($self, $resolution_id) = @_;
-    return $RESOLUTION_CODES{$resolution_id} if exists $RESOLUTION_CODES{$resolution_id};
+    my ($self, $resolution_id, $event) = @_;
+    my %codes = %RESOLUTION_CODES;
+    if ($event) {
+        my $service_ids = $SERVICE_IDS{$self->moniker};
+        if ($event->{service_id} == $service_ids->{bulky} || $event->{service_id} == $service_ids->{small_items}) {
+            $codes{66} = 'Not presented';
+        }
+    }
+    return $codes{$resolution_id} if exists $codes{$resolution_id};
     return '';
 }
 

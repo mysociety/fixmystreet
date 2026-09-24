@@ -270,7 +270,8 @@ around booked_check_missed_collection => sub {
                 $missed_event->{date}, 'is_bulky',
             );
             my $resolution_valid = $self->waste_check_can_raise_dispute(
-                type => 'missed_collection_report',
+                type => 'missed collection event',
+                resolution_key => $missed_event->{resolution},
             );
 
             if ($current_dispute && $current_dispute->{closed}) {
@@ -289,6 +290,7 @@ around booked_check_missed_collection => sub {
                 $missed->{$guid}{report_locked_out_date}, 'is_bulky',
             );
             my $resolution_valid = $self->waste_check_can_raise_dispute(
+                type => 'bulky collection',
                 resolution_key => $missed->{$guid}{resolution_id},
             );
             if ($current_dispute && $current_dispute->{closed}) {
@@ -307,7 +309,7 @@ sub parse_event_missed {
 
     $event->{resolution} = $orig_event->{ResolutionCodeId};
     if ($event->{resolution}) {
-        $event->{resolution_reason} = $self->resolution_text($event->{resolution});
+        $event->{resolution_reason} = $self->resolution_text($event->{resolution}, $event);
     }
     if ($event->{closed}) {
         $event->{date} = Integrations::Echo::Events::construct_bin_date($orig_event->{ResolvedDate});
@@ -471,7 +473,11 @@ sub _setup_missed_collection_disputes_for_service {
             $missed_event->{date} );
 
         if ( $window eq 'within' ) {
-            if ($self->waste_check_can_raise_dispute( type => 'missed_collection_report' )) {
+            my $resolution_valid = $self->waste_check_can_raise_dispute(
+                type => 'missed collection event',
+                resolution_key => $missed_event->{resolution},
+            );
+            if ($resolution_valid) {
                 $row->{dispute}{missed_event} = $missed_event;
                 $row->{dispute}{allowed} = 1;
             }
@@ -604,6 +610,7 @@ sub _setup_scheduled_collection_disputes_for_service {
     if (!$dispute_event) {
         if ($row->{last} && $row->{last}->{completed} && $row->{report_locked_out}) {
             if ($self->waste_check_can_raise_dispute(
+                    type => 'scheduled collection',
                     resolution_key => $row->{last}{resolution_id}
                 )) {
                 my $within = $self->_check_date_within_dispute_window($row->{last}->{completed});
