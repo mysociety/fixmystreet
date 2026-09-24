@@ -52,6 +52,12 @@ sub admin_user_domain { 'canalrivertrust.org.uk' }
 sub abuse_reports_only { 1 }
 sub contact_extra_fields { [ 'display_name' ] }
 
+=item * We do not send questionnaires.
+
+=cut
+
+sub send_questionnaires { 0 }
+
 =item * Single sign on is enabled from the cobrand feature 'oidc_login'
 
 =cut
