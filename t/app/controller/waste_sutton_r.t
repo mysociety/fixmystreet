@@ -1043,12 +1043,16 @@ FixMyStreet::override_config {
                         EventDate => { DateTime => "2022-09-11T18:03:00Z" },
                         ResolvedDate => { DateTime => "2022-09-11T18:03:00Z" },
                         EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
-                        Data => { ExtensibleDatum => [ { DatatypeName => 'Justification', Value => $test->{value} } ] },
+                        Data => { ExtensibleDatum => [
+                            { DatatypeName => 'Justification', Value => $test->{value} },
+                            { DatatypeName => 'Investigation Notes field', Value => 'Sorry or okay' },
+                        ] },
                     } ] });
 
                     $mech->get_ok($problem_url);
                     $mech->content_like(qr/Missed collection dispute.*disabled/s);
                     $mech->content_like(qr/$test->{text}/s);
+                    $mech->content_contains('Sorry or okay');
                     $mech->content_contains('Our investigation is complete');
                 };
             }
