@@ -136,10 +136,15 @@ sub munge_report_new_contacts {
 
     foreach my $c (@$contacts) {
         my $clean_name = $c->category_display;
-        if ($clean_name =~ s/ \(CRT:.*?\)//) {
-            $c->set_extra_metadata(display_name => $clean_name);
-        }
+        # NOTE This is not actually saved to the DB
+        $c->set_extra_metadata(display_name => $clean_name);
     }
+}
+
+sub category_display_name {
+    my ( $self, $name ) = @_;
+    $name =~ s/ \(CRT:.*?\)//;
+    return $name;
 }
 
 sub admin_contact_validate_category {
