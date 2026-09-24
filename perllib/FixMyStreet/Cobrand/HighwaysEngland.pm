@@ -368,6 +368,7 @@ sub munge_report_new_contacts {
         my $clean_name = $c->category_display;
         if ($clean_name =~ s/ \($code\)//) {
             $c->set_extra_metadata(display_name => $clean_name);
+            $c->update;
         }
     }
 }

@@ -138,6 +138,7 @@ sub munge_report_new_contacts {
         my $clean_name = $c->category_display;
         if ($clean_name =~ s/ \(CRT:.*?\)//) {
             $c->set_extra_metadata(display_name => $clean_name);
+            $c->update;
         }
     }
 }

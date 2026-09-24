@@ -15,7 +15,7 @@ my $body    = $mech->create_body_ok(
 
 my $bad_boat = $mech->create_contact_ok(
     body_id => $body->id,
-    category => 'Bad boat (CRT)',
+    category => 'Bad boat (CRT: ABC)',
     email => 'bad_boat@crt.dev',
 );
 
@@ -91,6 +91,36 @@ FixMyStreet::override_config {
                 'Cannot leave update on closed report' );
         }
     }
+
+    $bad_boat->discard_changes;
+    is $bad_boat->get_extra_metadata('display_name'), undef,
+        'Category has no display name initially';
+
+    $mech->log_in_ok( $standard_user_1->email );
+    ok $mech->host('canalrivertrust');
+    $mech->get_ok('/report/new?longitude=-2.2458&latitude=51.86506');
+
+    # click through to the report page
+    $mech->follow_link_ok( { text_regex => qr/skip this step/i, } );
+    $mech->submit_form_ok(
+        {   button      => 'submit_register',
+            with_fields => {
+                category => 'Bad boat (CRT: ABC)',
+                detail   => 'Test report details',
+                title    => 'Test Report',
+            }
+        }
+    );
+
+    $bad_boat->discard_changes;
+    is $bad_boat->get_extra_metadata('display_name'), 'Bad boat',
+        'Category display name added during new report journey';
+
+    $report
+        = FixMyStreet::DB->resultset('Problem')->order_by('-id')->first;
+    $mech->get_ok( '/report/' . $report->id );
+    $mech->text_like( qr/Reported.*in the Bad boat category/,
+        'Display name used in meta line' );
 };
 
 FixMyStreet::override_config {
@@ -112,7 +142,7 @@ FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
     BASE_URL => 'http://www.example.org',
     COBRAND_FEATURES => {
-       category_groups => { canalrivertrust => 1 },
+        category_groups => { canalrivertrust => 1 },
     }
 }, sub {
     subtest 'Displays and protects category names' => sub {
@@ -121,18 +151,18 @@ FixMyStreet::override_config {
         $mech->follow_link_ok({ text => 'Add new category' });
         $mech->content_contains('Parent categories');
         $mech->submit_form_ok( { with_fields => {
-                                                 category => 'Access issues (CRT)',
-                                                 group => 'Aqueduct',
-                                                 email => 'AccessIssues@test.com',
-                                                }
-                               });
+                category => 'Access issues (CRT)',
+                group => 'Aqueduct',
+                email => 'AccessIssues@test.com',
+            }
+        });
         $mech->content_contains('Category must end with (CRT: &lt;group_name&gt;)');
         $mech->submit_form_ok( { with_fields => {
-                                                 category => 'Access issues (CRT: Aqueduct)',
-                                                 group => 'Aqueduct',
-                                                 email => 'AccessIssues@test.com',
-                                                }
-                               });
+                category => 'Access issues (CRT: Aqueduct)',
+                group => 'Aqueduct',
+                email => 'AccessIssues@test.com',
+            }
+        });
         $mech->content_contains('New category contact added');
 
         $mech->get_ok('/around');
@@ -141,7 +171,7 @@ FixMyStreet::override_config {
         $mech->follow_link_ok(
             { text_regex => qr/skip this step/i, },
             "follow 'skip this step' link"
-                             );
+        );
 
         $mech->content_contains('data-category_display="Access issues"');
     };
