@@ -1,0 +1,9 @@
+[% IF is_staff %]
+    [% IF unit.additional_open %]
+        <span class="waste-service-descriptor">
+            An additional collection request has been made
+        </span>
+    [% ELSE %]
+        <a href="[% c.uri_for_action('waste/report', [ property.id ]) %]?additional=1&amp;service-[% unit.service_id %]=1[% '&original_booking_id=' _ original_booking IF original_booking %]" class="waste-service-link waste-service-descriptor waste-service-staff">Request an additional [% unit.service_name FILTER lower %] collection</a>
+    [% END %]
+[% END %]
