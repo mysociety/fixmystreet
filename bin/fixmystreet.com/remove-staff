@@ -1,0 +1,29 @@
+#!/usr/bin/env perl
+
+# Script to remove staff users from a body in bulk.
+
+use strict;
+use warnings;
+use v5.14;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use FixMyStreet::Script::RemoveStaff;
+use Getopt::Long::Descriptive;
+
+my ($opts, $usage) = describe_options(
+    '%c %o',
+    ['commit|c', 'Whether to commit changes to the database.'],
+    ['body|b=s', 'Which body ID to remove the staff from.', { required => 1 } ],
+    ['staff=s',  'The newline-delimited list of staff emails to remove.',
+                  { required => 1}],
+    ['help|h',   'Print usage message and exit.']
+);
+$usage->die if $opts->help;
+
+FixMyStreet::Script::RemoveStaff::run($opts);
