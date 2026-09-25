@@ -193,7 +193,7 @@ function non_highways_body_selected(highways_body_name) {
 function add_highways_warning(road_name, highways_body_name) {
     var $warning = $('<div class="box-warning" id="highways"><p>It looks like you clicked on the <strong>' + road_name + '</strong> which is managed by <strong>' + highways_body_name + '</strong>. ' +
         'Does your report concern something on this road, or somewhere else (e.g a road crossing it)?<p></div>');
-    var $page = $('<div data-page-name="highwaysengland" class="js-reporting-page js-reporting-page--active js-reporting-page--highways"></div>');
+    var $page = $('<div data-page-name="nationalhighways" class="js-reporting-page js-reporting-page--active js-reporting-page--highways"></div>');
     var $radios = $('<fiedset class="govuk-fieldset govuk-radios"></fieldset>');
 
     $('<div>')
@@ -234,7 +234,12 @@ function add_highways_warning(road_name, highways_body_name) {
     $page = $warning.parent();
     $page.append('<button type="button" class="btn btn--block js-reporting-page--next">Continue</button>');
 
-    $('.js-reporting-page').first().before($page);
+    // Make sure placed after canals if canals is present, so ordering/back works
+    if ($('.js-reporting-page--canals').length) {
+        $('.js-reporting-page--canals').after($page);
+    } else {
+        $('.js-reporting-page').first().before($page);
+    }
     $page.nextAll('.js-reporting-page').removeClass('js-reporting-page--active');
     highways_body_selected(highways_body_name);
 }

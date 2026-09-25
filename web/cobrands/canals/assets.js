@@ -156,7 +156,6 @@ function display_next() {
     // 'Somewhere else' selected; go to highways question if appropriate
     if (fixmystreet.highways_canals.canals_somewhere_else) {
         if (fixmystreet.highways_canals.highways_asset_selected) {
-            $('.js-reporting-page--canals').remove();
             var highways_layer = fixmystreet.map.getLayersByName('highways')[0];
 
             highways_layer.fixmystreet.actions.found(highways_layer, highways_layer.selected_feature);
