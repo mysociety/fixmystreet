@@ -17,6 +17,7 @@ var defaults = {
 
 fixmystreet.assets.add(defaults, {
     wfs_feature: "Highways",
+    name: "highways",
     stylemap: fixmystreet.assets.stylemap_invisible,
     always_visible: true,
 
@@ -42,6 +43,25 @@ fixmystreet.assets.add(defaults, {
     nearest_radius: 15,
     actions: {
         found: function(layer, feature) {
+            fixmystreet.highways_canals.highways_asset_selected = true;
+
+            var canals_layer = fixmystreet.map.getLayersByName('canals')[0];
+
+            if ( canals_layer && !fixmystreet.highways_canals.canals_layer_queried ) {
+                // There is a canals layer but we have not determined if a
+                // canal has been selected
+                return;
+            }
+
+            if ( canals_layer &&
+                fixmystreet.highways_canals.canals_layer_queried &&
+                fixmystreet.highways_canals.canals_asset_selected &&
+                !fixmystreet.highways_canals.canals_somewhere_else) {
+                // We have determined that a canal has been selected as well
+                // as a highway, but canal question has not been submitted
+                return;
+            }
+
             var highways_body_name = feature.attributes.ROA_NUMBER ? 'National Highways' : 'Traffic Scotland';
             var highways_body_cat_signifier = _set_body_cat_signifier(highways_body_name);
             var category = fixmystreet.reporting.selectedCategory().category;
@@ -171,10 +191,10 @@ function non_highways_body_selected(highways_body_name) {
 }
 
 function add_highways_warning(road_name, highways_body_name) {
-  var $warning = $('<div class="box-warning" id="highways"><p>It looks like you clicked on the <strong>' + road_name + '</strong> which is managed by <strong>' + highways_body_name + '</strong>. ' +
-                   'Does your report concern something on this road, or somewhere else (e.g a road crossing it)?<p></div>');
-  var $page = $('<div data-page-name="highwaysengland" class="js-reporting-page js-reporting-page--active js-reporting-page--highways"></div>');
-  var $radios = $('<fiedset class="govuk-fieldset govuk-radios"></fieldset>');
+    var $warning = $('<div class="box-warning" id="highways"><p>It looks like you clicked on the <strong>' + road_name + '</strong> which is managed by <strong>' + highways_body_name + '</strong>. ' +
+        'Does your report concern something on this road, or somewhere else (e.g a road crossing it)?<p></div>');
+    var $page = $('<div data-page-name="nationalhighways" class="js-reporting-page js-reporting-page--active js-reporting-page--highways"></div>');
+    var $radios = $('<fiedset class="govuk-fieldset govuk-radios"></fieldset>');
 
     $('<div>')
         .addClass('govuk-radios__item')
@@ -214,7 +234,12 @@ function add_highways_warning(road_name, highways_body_name) {
     $page = $warning.parent();
     $page.append('<button type="button" class="btn btn--block js-reporting-page--next">Continue</button>');
 
-    $('.js-reporting-page').first().before($page);
+    // Make sure placed after canals if canals is present, so ordering/back works
+    if ($('.js-reporting-page--canals').length) {
+        $('.js-reporting-page--canals').after($page);
+    } else {
+        $('.js-reporting-page').first().before($page);
+    }
     $page.nextAll('.js-reporting-page').removeClass('js-reporting-page--active');
     highways_body_selected(highways_body_name);
 }

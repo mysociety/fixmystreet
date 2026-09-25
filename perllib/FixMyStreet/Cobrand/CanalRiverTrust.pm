@@ -148,4 +148,32 @@ sub open311_extra_data_include {
     return $open311_only;
 }
 
+sub report_new_is_on_canal {
+    my $self = shift;
+
+    my ($x, $y) = (
+        $self->{c}->stash->{longitude},
+        $self->{c}->stash->{latitude},
+    );
+
+    my $url
+        = FixMyStreet->config('STAGING_SITE')
+        ? 'https://tilma.staging.mysociety.org/mapserver/crt'
+        : 'https://tilma.mysociety.org/mapserver/crt';
+
+    my $cfg = {
+        url => $url,
+        srsname => 'urn:ogc:def:crs:EPSG:4326',
+        typename => 'Canals',
+        filter => "<Filter><DWithin><PropertyName>geom</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point><Distance units='m'>20</Distance></DWithin></Filter>",
+        outputformat => 'GML3',
+        accept_feature => sub { 1 },
+    };
+
+    my $ukc = FixMyStreet::Cobrand::UKCouncils->new;
+    my $features = $ukc->_fetch_features($cfg) || [];
+
+    return @$features ? 1 : 0;
+}
+
 1;

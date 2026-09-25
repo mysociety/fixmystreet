@@ -195,6 +195,16 @@ sub munge_report_new_bodies {
         }
     }
 
+    if ( $bodies{'Canal & River Trust'} ) {
+        my $c = $self->{c};
+        my $crt = FixMyStreet::Cobrand::CanalRiverTrust->new({ c => $c });
+        my $on_canal = $c->stash->{on_canal} = $crt->report_new_is_on_canal;
+
+        if (!$on_canal) {
+            %$bodies = map { $_->id => $_ } grep { $_->get_column('name') ne 'Canal & River Trust' } values %$bodies;
+        }
+    }
+
     if ( $bodies{'Thamesmead'} ) {
         my $thamesmead = FixMyStreet::Cobrand::Thamesmead->new({ c => $self->{c} });
         $thamesmead->munge_thamesmead_body($bodies);
