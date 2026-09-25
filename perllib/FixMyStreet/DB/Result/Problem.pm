@@ -779,7 +779,6 @@ sub meta_line {
     my $meta = '';
 
     my $category = $problem->category_display;
-    $category = $cobrand->call_hook(change_category_text => $category) || $category;
 
     # Call a hook on the cobrand to check if the problem should be treated as anonymous
     my $anonymous = $cobrand->call_hook('is_problem_anonymous');

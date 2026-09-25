@@ -48,7 +48,7 @@ ok $r->{error}, "searching for lowecase road only generates error";
 my $mech = FixMyStreet::TestMech->new;
 my $highways = $mech->create_body_ok(164186, 'National Highways', { send_method => 'Email::Highways', cobrand => 'highwaysengland' });
 
-$mech->create_contact_ok(email => 'testareaemail@nh', body_id => $highways->id, category => 'Pothole (NH)', extra => { anonymous_allowed => 1 });
+my $pothole = $mech->create_contact_ok(email => 'testareaemail@nh', body_id => $highways->id, category => 'Pothole (NH)', extra => { anonymous_allowed => 1 });
 
 my $superuser = $mech->create_user_ok('super@example.com', name => 'Admin', from_body => $highways, password => 'password', is_superuser => 1);
 
@@ -98,6 +98,10 @@ FixMyStreet::override_config {
     ok $mech->host('highwaysengland.example.org');
 
     subtest "check where heard from saved" => sub {
+        $pothole->discard_changes;
+        is $pothole->get_extra_metadata('display_name'), undef,
+            'Category has no display name initially';
+
         $mech->get_ok('/around');
         $mech->submit_form_ok( { with_fields => { pc => 'M1, J16', } }, "submit location" );
         $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
@@ -116,9 +120,17 @@ FixMyStreet::override_config {
         );
         $mech->content_contains('Thank you');
 
+        $pothole->discard_changes;
+        is $pothole->get_extra_metadata('display_name'), 'Pothole',
+            'Category display name added during new report journey';
+
         my $report = FixMyStreet::DB->resultset("Problem")->first;
         ok $report, "Found the report";
         is $report->get_extra_metadata('where_hear'), 'Facebook', 'saved where hear';
+
+        $mech->get_ok( '/report/' . $report->id );
+        $mech->text_like( qr/Reported.*in the Pothole category/,
+            'Display name used in meta line' );
 
         $mech->clear_emails_ok;
         FixMyStreet::Script::Reports::send();
