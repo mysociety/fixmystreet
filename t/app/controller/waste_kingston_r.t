@@ -822,10 +822,38 @@ FixMyStreet::override_config {
 
         my $comment;
 
-        subtest 'Resolution that allows dispute' => sub {
+        subtest 'Resolution that does not allow dispute' => sub {
             $e->mock('GetEventsForObject', sub { [ {
                 %event_defaults,
                 ResolutionCodeId => 1359, # H&S - Damaged container
+            } ] });
+
+            subtest 'Raising a dispute only available within window' => sub {
+                set_fixed_time('2022-09-09T15:30:00Z');
+                get_problem_page();
+                $mech->content_lacks($dispute_label, 'not allowed before window opens');
+
+                set_fixed_time('2022-09-09T16:01:00Z');
+                get_problem_page();
+                $mech->content_lacks($dispute_label, 'allowed just after window opens');
+
+                set_fixed_time('2022-09-13T23:59:00Z');
+                get_problem_page();
+                $mech->content_lacks($dispute_label, 'allowed just before window closes');
+
+                set_fixed_time('2022-09-14T00:01:00Z');
+                get_problem_page();
+                like $mech->text,
+                    qr/The crew have closed your collection task as 'not collected'.*Health and safety reasons/;
+                $mech->content_like(qr/name="category" value="Missed collection dispute"[^>]+disabled/s);
+                $mech->content_contains($dispute_label, 'shown but disabled just after window closes');
+            };
+        };
+
+        subtest 'Resolution that allows dispute' => sub {
+            $e->mock('GetEventsForObject', sub { [ {
+                %event_defaults,
+                ResolutionCodeId => 66, # Not presented
             } ] });
 
             subtest 'Raising a dispute only available within window' => sub {
@@ -844,7 +872,7 @@ FixMyStreet::override_config {
                 set_fixed_time('2022-09-14T00:01:00Z');
                 get_problem_page();
                 like $mech->text,
-                    qr/The crew have closed your collection task as 'not collected'.*Health and safety reasons/;
+                    qr/The crew have closed your collection task as 'not collected'.*Bin not presented/;
                 $mech->content_like(qr/name="category" value="Missed collection dispute"[^>]+disabled/s);
                 $mech->content_contains($dispute_label, 'shown but disabled just after window closes');
             };
@@ -854,7 +882,7 @@ FixMyStreet::override_config {
 
                 get_problem_page();
                 like $mech->text,
-                    qr/The crew have closed your collection task as 'not collected'.*Health and safety reasons/;
+                    qr/The crew have closed your collection task as 'not collected'.*Bin not presented/;
                 $mech->submit_form(
                     with_fields => { category => 'Missed collection dispute' },
                 );
@@ -956,6 +984,7 @@ FixMyStreet::override_config {
             $e->mock('GetEventsForObject', sub { [ {
                 %event_defaults,
                 EventStateId => 19241, # Completed
+                ResolutionCodeId => 66, # Not presented
             } ] });
 
             subtest 'Follow dispute link' => sub {

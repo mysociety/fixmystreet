@@ -792,29 +792,19 @@ sub bulky_recent_date {
 
 =head2 waste_check_can_raise_dispute
 
-Checks if disputes can be raised for the service and resolution text.
+Checks if disputes can be raised for the service and resolution ID. Can
+only raise dispute if the reason crew gave (either to the original task
+or the missed report) is 'Not presented' (66).
 
 =cut
 
 sub waste_check_can_raise_dispute {
     my ($self, %args) = @_;
 
-    %args = (
-        resolution_key => '',
-        type => '',
-        %args,
-    );
+    my $resolution = $args{resolution_key} || 0;
 
-    # Can raise dispute against any resolution of a missed collection report
-    if ( $args{type} eq 'missed_collection_report' ) {
-        return 1;
-    }
-
-    # Can only raise dispute against original collection if the reason
-    # crew gave is 'Not presented'
-    if ( $args{resolution_key} eq 66 ) {
-        return 1;
-    }
+    return 1 if $resolution eq 66;
+    return 0;
 }
 
 1;

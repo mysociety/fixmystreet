@@ -1144,6 +1144,14 @@ sub enquiry : Chained('property') : Args(0) {
         $c->detach;
     }
 
+    if (my $report = $c->stash->{original_booking_report}) {
+        unless ($c->user_exists && ($c->stash->{is_staff} || $report->user->id == $c->user->id)) {
+            my $property_uri = $c->uri_for_action( 'waste/bin_days', $c->stash->{property_id} );
+            my $uri = $c->uri_for( '/auth', { r => $property_uri } );
+            $c->res->redirect($uri);
+        }
+    }
+
     $c->forward('setup_categories_and_bodies');
 
     my $category = $c->get_param('category');
@@ -1180,13 +1188,7 @@ sub enquiry : Chained('property') : Args(0) {
             # TODO Return if no event?
 
         } elsif ( my $report = $c->stash->{original_booking_report} ) {
-            # NOTE!
-            # original_booking_report may actually be missed collection report
-            # against an original booking, so check against that too
-            my $original_booking_event
-                = $c->stash->{booked_missed}{ $report->external_id }
-                || $c->stash->{booked_missed}{ $report->get_extra_field_value
-                    ('Original_Event_ID') };
+            my $original_booking_event = $c->stash->{booked_missed}{$report->external_id};
 
             $c->detach('property_redirect')
                 unless $original_booking_event->{dispute}{allowed};

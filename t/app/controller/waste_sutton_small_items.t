@@ -445,6 +445,7 @@ FixMyStreet::override_config {
             $mech->log_in_ok($email);
             $mech->get_ok($base_path);
             $mech->content_contains('Cancel booking', 'Logged in staff/user offered cancellation');
+            $mech->clear_emails_ok;
             $mech->get_ok("$base_path/small_items/cancel/" . $report->id);
             $mech->content_lacks('I acknowledge that the collection fee is non-refundable', 'No charge for small items');
             $mech->content_contains('I confirm I wish to cancel my small items collection', 'Must confirm cancellation');
@@ -470,9 +471,8 @@ FixMyStreet::override_config {
             };
 
             subtest 'Email received by user' => sub {
-                $mech->clear_emails_ok;
                 FixMyStreet::Script::Alerts::send_updates();
-                like $mech->get_text_body_from_email, qr/Booking cancelled by customer/, 'Booking cancellation email sent';
+                like $mech->get_text_body_from_email, qr/Small items collection slot @{[$report->id]} scheduled for .* has been cancelled/, 'Only cancellation email sent';
             };
             # Set report active again
             $report->state('confirmed');

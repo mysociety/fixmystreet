@@ -48,7 +48,7 @@ END;
             by yourself, a neighbour, or your Managing Agent
         [% END %]
         on [% date.format(service.report_open.date, '%A, %-d %B') %].
-        If your bin has still not been collected, you can escalate the report now and a crew will be back to collect your bin within 2 working days.
+        We’re sorry if your bin has still not been collected, you can escalate the report now and a crew will be back to collect your bin within 2 working days.
         </p>
         </div>
     </div>
@@ -63,33 +63,35 @@ END;
                     <p>The crew marked this collection as completed. If your [% IF type == 'bulky' %]bulky waste was not collected[% ELSIF type == 'small' %]small items were not collected[% ELSE %]bin has not been emptied[% END %], you can dispute this and we will investigate. If we find that the collection task was closed incorrectly, we will return to collect the [% IF !type %]bin[% ELSE %]waste[% END %].</p>
                 [% END %]
             [% ELSE %]
-                [% IF type == 'bulky' OR type == 'small' %]
                 <p>The crew have closed your collection task as 'not collected' because[%
                     IF resolution %]: [% resolution | staff_html_markup({ is_body_user => 1 }) %]
                     [% END %]
-                    </p>
-
-                    <p>If it is less than 2 working days since your collection day, you can dispute the reason given
+              [% IF type == 'bulky' OR type == 'small' %]
+                </p>
+                <p>If it is less than 2 working days since your collection day, you can dispute the reason given
                     and we will investigate. If we find that the collection task was closed incorrectly,
                     we will return to collect the [% IF type == 'bulky' %]bulky waste[% ELSE %]small items[% END %]. Our website gives more information
                     on [% IF type == 'bulky' %]<a href="[% bulky_url %]">bulky waste collections</a>[% ELSE %]<a href="[% small_items_url %]">small items collections</a>[% END %]</p>
-                [% ELSE %]
-                <p>The crew have closed your collection task as 'not collected' because[%
-                    IF resolution %]: [% resolution | staff_html_markup({ is_body_user => 1 }) %]
-                    [% END %]
+              [% ELSE %]
                     Please resolve the issue so the bin can be collected on the next scheduled collection. <a href="[% your_collection_url %]">Check our website</a> for more information on how your bin should be presented and what you can put in it.
                 </p>
                 <p>If it is less than 2 working days, you can dispute the reason given and we will investigate. If we find that the collection task was closed incorrectly, we will return to collect the bin.</p>
-                [% END %]
+              [% END %]
             [% END %]
         [% ELSE %]
             [% IF service.dispute.open %]
                 We are investigating the problem with this collection.
             [% ELSIF service.dispute.closed.justified == 'yes' %]
-                Thanks for letting us know about the issue. We will return to complete your request.
+                <p>Thanks for letting us know about the issue. We will return to complete your request.</p>
+              [% IF service.dispute.closed.closure_notes %]
+                <p>Please see the collection team’s notes below:<br>“[% service.dispute.closed.closure_notes %]”</p>
+              [% END %]
             [% ELSIF service.dispute.closed.justified == 'no' %]
-                <p>Unfortunately, we cannot come back to complete your request. We have now closed this request.</p>
-                <p>If you’re not happy with how we’ve handled your request, you can <a href="https://www.sutton.gov.uk/council/complaints-and-feedback/make-complaint-or-leave-feedback">make a complaint</a>.</p>
+                <p>Unfortunately, we cannot come back to complete your request.</p>
+              [% IF service.dispute.closed.closure_notes %]
+                <p>Please see the collection team’s notes below:<br>“[% service.dispute.closed.closure_notes %]”</p>
+              [% END %]
+                <p>We have now closed this request. If you’re not happy with how we’ve handled your request, you can <a href="https://www.sutton.gov.uk/council/complaints-and-feedback/make-complaint-or-leave-feedback">make a complaint</a>.</p>
             [% END %]
         [% END %]
         </div>
@@ -112,18 +114,13 @@ END;
     [% ELSIF service.report_locked_out %]
     <div class="govuk-warning-text info">
         <div class="govuk-warning-text__content">
-        [% IF type == 'bulky' OR type == 'small' %]
         <p>The crew have closed your collection task as 'not collected' because[%
             IF resolution %]: [% resolution | staff_html_markup({ is_body_user => 1 }) %]
             [% END %]
-            </p>
-        [% ELSE %]
-        <p>The crew have closed your collection task as 'not collected' because[%
-            IF resolution %]: [% resolution | staff_html_markup({ is_body_user => 1 }) %]
-            [% END %]
+        [% IF type != 'bulky' AND type != 'small' %]
             Please resolve the issue so the bin can be collected on the next scheduled collection. <a href="[% your_collection_url %]">Check our website</a> for more information on how your bin should be presented and what you can put in it.
-        </p>
         [% END %]
+        </p>
         </div>
     </div>
     [% # this handles missed bulky collections where it's not collected at the end of the day %]

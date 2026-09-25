@@ -228,7 +228,7 @@ subtest 'updating of waste reports' => sub {
                     Value => 2, # No
                 };
                 push @$data, {
-                    DatatypeName => 'Notes',
+                    DatatypeName => 'Investigation Notes field',
                     Value => 'Sorry, we disagree',
                 };
             }
@@ -379,14 +379,14 @@ subtest 'updating of waste reports' => sub {
         my $update = FixMyStreet::DB->resultset("Comment")->order_by('-id')->first;
         is $update->photo, '34c2a90ba9eb225b87ca1bac05fddd0e08ac865f.jpeg';
         FixMyStreet::Script::Alerts::send_updates();
-        my $body = $mech->get_email->as_string;
+        my $email = $mech->get_email->as_string;
         my $id = $report->id;
-        like $body, qr/Reference: LBS-$id/;
-        like $body, qr/Armchair/;
-        like $body, qr/26 September/;
-        like $body, qr/Your collection has now been completed/;
+        like $email, qr/Reference: LBS-$id/;
+        like $email, qr/Armchair/;
+        like $email, qr/26 September/;
+        like $email, qr/Your collection has now been completed/;
         $mech->host('sutton.example.org');
-        (my $token) = $body =~ m#http://sutton.example.org(/R/.*?)"#;
+        (my $token) = $email =~ m#http://sutton.example.org(/R/.*?)"#;
         $mech->get_ok($token);
         (my $photo_link_thumbnail) = $mech->content =~ m#Photo of this report" src="(/photo.*?1)"#;
         (my $photo_link_full) = $mech->content =~ m#a href="(/photo.*?1)"#;
@@ -402,6 +402,43 @@ subtest 'updating of waste reports' => sub {
         is $report->state, 'unable to fix', 'A state change';
         $update = FixMyStreet::DB->resultset("Comment")->order_by('-id')->first;
         is $update->text, 'Sorry, we disagree', 'Correct update text';
+
+        # Make sure none remaining
+        FixMyStreet::Script::Alerts::send_updates();
+        $mech->clear_emails_ok;
+
+        # Now repeat but with a template, as that changes what happens
+        FixMyStreet::DB->resultset('ResponseTemplate')->create({
+            body_id => $body->id,
+            auto_response => 1,
+            title => 'Dispute unjustified',
+            text => 'Unfortunately, we cannot come back: {{description}}',
+            email_text => 'We cannot come back: {{description}}',
+            state => 'unable to fix',
+        });
+        $report->update({ state => 'confirmed' });
+        $mech2->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+        is $report->comments->count, 7, 'A new update';
+        $report->discard_changes;
+        is $report->state, 'unable to fix', 'A state change';
+        $update = FixMyStreet::DB->resultset("Comment")->order_by('-id')->first;
+        is $update->text, 'Unfortunately, we cannot come back: Sorry, we disagree', 'Correct update text';
+        FixMyStreet::Script::Alerts::send_updates();
+        $email = $mech->get_email->as_string;
+        like $email, qr/We cannot come back: Sorry, we disagree/;
+        $mech->clear_emails_ok;
+
+        # Now repeat but in different category, as bulky has different templates...
+        $report->update({ category => 'Report missed collection', state => 'confirmed' });
+        $mech2->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+        is $report->comments->count, 8, 'A new update';
+        $report->discard_changes;
+        is $report->state, 'unable to fix', 'A state change';
+        $update = FixMyStreet::DB->resultset("Comment")->order_by('-id')->first;
+        is $update->text, 'Unfortunately, we cannot come back: Sorry, we disagree', 'Correct update text';
+        FixMyStreet::Script::Alerts::send_updates();
+        $email = $mech->get_email->as_string;
+        like $email, qr/We cannot come back: Sorry, we disagree/;
     };
 };
 
