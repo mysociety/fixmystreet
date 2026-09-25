@@ -2,7 +2,7 @@
 
 [% email_summary %]
 
-[% email_sanitize_html(update, 'item_text_original') | replace('<p>', '<p style="' _ list_item_p_style _ '">') %]
+[% email_sanitize_html(update, private_email ? "item_private_email_text" : undef) | replace('<p>', '<p style="' _ list_item_p_style _ '">') %]
 
 [% TRY %][% INCLUDE 'waste/_email_comment_bulky_extra.html' %][% CATCH file %][% END %]
 

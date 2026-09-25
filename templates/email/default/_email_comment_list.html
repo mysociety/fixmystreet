@@ -9,6 +9,13 @@
       [% INCLUDE 'waste/_email_comment_bulky.html' %]
     [% ELSE %]
       [% email_sanitize_html(update, private_email ? "item_private_email_text" : undef) | replace('<p>', '<p style="' _ list_item_p_style _ '">') %]
+
+      [% IF NOT private_email AND update.item_state_change %]
+        <p style="[% list_item_p_style %]">[% update.item_state_change %]</p>
+      [% ELSIF private_email AND update.item_private_state_change %]
+        <p style="[% list_item_p_style %]">[% update.item_private_state_change %]</p>
+      [% END %]
+
       [% IF NOT private_email %]
       <p class="user-name" style="[% list_item_date_style %]">
         [%~ IF update.item_anonymous %]

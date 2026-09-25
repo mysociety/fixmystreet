@@ -7,6 +7,13 @@
 [% END -%]
 [% '(' _ cobrand.prettify_dt(row.confirmed) _ ') ' IF cobrand.include_time_in_update_alerts -%]
 [% email_sanitize_text(row, private_email ? "item_private_email_text" : undef) -%]
+[% IF NOT private_email AND row.item_state_change %]
+
+[% row.item_state_change %]
+[% ELSIF private_email AND row.item_private_state_change %]
+
+[% row.item_private_state_change %]
+[% END -%]
 [% TRY %][% INCLUDE 'waste/_email_comment_extra.txt' %][% CATCH file %][% END -%]
 [% END %]
 

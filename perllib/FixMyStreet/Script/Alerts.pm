@@ -126,23 +126,20 @@ sub send_alert_type {
             # this might throw up the odd false positive but only in cases where the
             # state has changed and there was already update text
             if ($row->{item_problem_state} && $last_problem_state ne $row->{item_problem_state}) {
-                my $update = '';
                 unless ( $cobrand->call_hook( skip_alert_state_changed_to => $report ) ) {
                     my $cobrand_name = $report->cobrand_name_for_state($cobrand);
                     my $state = FixMyStreet::DB->resultset("State")->display($row->{item_problem_state}, 1, $cobrand_name);
 
-                    $update = _('State changed to:') . ' ' . $state;
-                }
-
-                $row->{item_text_original} = $row->{item_text};
-                $row->{item_text} = $row->{item_text} ? $row->{item_text} . "\n\n" . $update :
-                                                        $update;
-                if ($row->{item_private_email_text} && $report->cobrand_data ne 'waste') {
-                    $row->{item_private_email_text} = $row->{item_private_email_text} . "\n\n" . $update;
+                    my $update = _('State changed to:') . ' ' . $state;
+                    $row->{item_state_change} = $update;
+                    # No state change for waste reports with private email text
+                    if ($report->cobrand_data ne 'waste') {
+                        $row->{item_private_state_change} = $update;
+                    }
                 }
                 $last_problem_state = $row->{item_problem_state};
             }
-            next unless $row->{item_text};
+            next unless $row->{item_text} || $row->{item_state_change};
         }
 
         if ($last_alert_id && $last_alert_id != $row->{alert_id}) {
