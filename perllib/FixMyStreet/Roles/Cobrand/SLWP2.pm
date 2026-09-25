@@ -771,15 +771,16 @@ sub open311_waste_update_extra {
     my $data = Integrations::Echo::force_arrayref($event->{Data}, 'ExtensibleDatum');
     my @media;
     my $justified = '';
-    my $override_description;
+    my %overrides;
     foreach (@$data) {
         if ($_->{DatatypeName} eq 'Post Collection Photo' || $_->{DatatypeName} eq 'Pre Collection Photo') {
             my $value = decode_base64($_->{Value});
             my $type = FixMyStreet::PhotoStorage->detect_type($value);
             push @media, "data:image/$type,$value";
         }
-        if ($_->{DatatypeName} eq 'Notes' && $event->{EventTypeId} == $EVENT_TYPE_IDS{dispute}) {
-            $override_description = $_->{Value};
+        if ($_->{DatatypeName} eq 'Investigation Notes field' && $event->{EventTypeId} == $EVENT_TYPE_IDS{dispute}) {
+            $overrides{description} = $_->{Value};
+            $overrides{prefer_template} = 0;
         }
         if ($_->{DatatypeName} eq 'Justification') {
             if ($_->{Value} == 1) {
@@ -790,26 +791,24 @@ sub open311_waste_update_extra {
         }
     }
 
-    my $override_status;
     my $event_type = $cfg->{event_types}{$event->{EventTypeId}};
     my $state_id = $event->{EventStateId};
     my $resolution_id = $event->{ResolutionCodeId} || '';
     my $description = $event_type->{states}{$state_id}{name} || '';
     if ($description eq 'Not Completed' && !$resolution_id) {
-        $override_status = "";
+        $overrides{status} = "";
     }
     if ($event->{EventTypeId} == $EVENT_TYPE_IDS{dispute}) {
         if ($justified eq 'yes') {
-            $override_status = 'fixed - council';
+            $overrides{status} = 'fixed - council';
         } elsif ($justified eq 'no') {
-            $override_status = 'unable to fix';
+            $overrides{status} = 'unable to fix';
         }
     }
 
     return (
         @media ? ( media_url => \@media ) : (),
-        defined $override_status ? (status => $override_status ) : (),
-        $override_description ? (description => $override_description ) : (),
+        %overrides,
     );
 }
 
