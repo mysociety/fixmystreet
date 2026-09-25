@@ -5,10 +5,8 @@
         <img style="[% list_item_photo_style %]" src="[% inline_image(update.get_first_image_fp) %]" alt="">
       </a>
     [%~ END %]
-    [% IF report.category == 'Bulky collection' AND (update.item_problem_state == 'closed' OR update.item_problem_state == 'fixed - council' OR update.item_problem_state == 'unable to fix') %]
-      [% INCLUDE 'waste/_bulky_email_comment_end.html' %]
-    [% ELSIF cobrand.moniker == 'sutton' AND report.category == 'Small items collection' AND (update.item_problem_state == 'closed' OR update.item_problem_state == 'fixed - council' OR update.item_problem_state == 'unable to fix') %]
-      [% INCLUDE 'waste/_bulky_email_comment_end.html' %]
+    [% IF (report.category == 'Bulky collection' OR report.category == 'Small items collection') AND (update.item_problem_state == 'closed' OR update.item_problem_state == 'fixed - council' OR update.item_problem_state == 'unable to fix') %]
+      [% INCLUDE 'waste/_email_comment_bulky.html' %]
     [% ELSE %]
       [% email_sanitize_html(update, private_email ? "item_private_email_text" : undef) | replace('<p>', '<p style="' _ list_item_p_style _ '">') %]
       [% IF NOT private_email %]
@@ -21,20 +19,7 @@
         [% '(' _ cobrand.prettify_dt(update.confirmed) _ ') ' IF cobrand.include_time_in_update_alerts -%]
       </p>
       [% END %]
-      [% IF (cobrand.moniker == 'sutton' OR cobrand.moniker == 'kingston') AND report.category == 'Report missed collection' AND (update.item_problem_state == 'closed' OR update.item_problem_state == 'unable to fix' OR update.item_problem_state == 'fixed') %]
-        [%
-          service_id = report.get_extra_field_value('service_id');
-          cfg = cobrand.feature('echo');
-          IF service_id == cfg.small_items_service_id OR service_id == cfg.bulky_service_id;
-              IF report.get_extra_field_value('Original_Event_ID');
-                original_booking_id = report.get_extra_field_value('Original_Event_ID');
-              END;
-          END;
-        %]
-        <p>
-          <a href="[% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') %]/enquiry?template=problem&service_id=[% service_id %][% IF original_booking_id %]&original_booking_event=[% original_booking_id %][% END %]">Report a problem with this missed collection</a>
-        </p>
-      [% END %]
+      [% TRY %][% INCLUDE 'waste/_email_comment_extra.html' %][% CATCH file %][% END %]
     [% END %]
     </div>
 [% END %]
