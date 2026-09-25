@@ -169,4 +169,94 @@ sub open311_extra_data_include {
     return $open311_only;
 }
 
+# Populates region_c if for some reason it failed to be populated during
+# report creation.
+# TODO Do we want to set anything beyond region_c, which is not
+# very specific?
+sub open311_update_missing_data {
+    my ($self, $row, $h, $contact ) = @_;
+
+    return if $row->get_extra_field_data('region_c');
+
+    my $feature = $self->lookup_site_code($row);
+    my $region = $feature->{'ms:Canals'}{'ms:region'};
+
+    $row->update_extra_field({
+        name => 'region_c',
+        description => 'Region',
+        value => $region,
+    }) if $region;
+}
+
+# Canal 'region'
+sub lookup_site_code {
+    my ( $self, $row ) = @_;
+
+    my ( $x, $y ) = ( $row->longitude, $row->latitude );
+
+    my $cfg = $self->lookup_site_code_config( $x, $y );
+
+    my $ukc = FixMyStreet::Cobrand::UKCouncils->new;
+    my $features = $ukc->_fetch_features( $cfg, $x, $y );
+
+    return $self->_nearest_feature( $cfg, $x, $y, $features );
+}
+
+sub lookup_site_code_config {
+    my ( $self, $x, $y ) = @_;
+
+    my $url
+        = FixMyStreet->config('STAGING_SITE')
+        ? 'https://tilma.staging.mysociety.org/mapserver/crt'
+        : 'https://tilma.mysociety.org/mapserver/crt';
+
+    return {
+        url => $url,
+        srsname => 'urn:ogc:def:crs:EPSG:4326',
+        typename => 'Canals',
+        filter => "<Filter><DWithin><PropertyName>geom</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point><Distance units='m'>20</Distance></DWithin></Filter>",
+        outputformat => 'GML3',
+        accept_feature => sub { 1 },
+    };
+}
+
+# Default _nearest_feature() code handles JSON, but we need to handle XML
+# for Canals
+sub _nearest_feature {
+    my ( $self, $cfg, $x, $y, $features ) = @_;
+
+    # We have a list of features, and we want to find the one closest to the
+    # report location.
+    my $chosen = '';
+    my $nearest;
+
+    my $ukc = FixMyStreet::Cobrand::UKCouncils->new;
+
+    for my $feature ( @{ $features || [] } ) {
+        # Should be a LineString
+        my $geo = $feature->{'ms:Canals'}{'ms:msGeometry'}{'gml:LineString'};
+
+        next unless $geo;
+
+        # Chances are there is only one canal region nearby, but look for
+        # nearest feature just in case
+        my $coords = $geo->{'gml:posList'}{'content'};
+        my @coords = split / /, $coords;
+
+        # Similar to _nearest_feature in Buckinghamshire.pm
+        for ( my $i=0; $i<@coords-2; $i+=2 ) {
+            my $distance = $ukc->_distanceToLine($x, $y,
+                [ $coords[$i], $coords[$i+1] ],
+                [ $coords[$i+2], $coords[$i+3] ]
+            );
+            if ( !defined $nearest || $distance < $nearest ) {
+                $chosen = $feature;
+                $nearest = $distance;
+            }
+        }
+    }
+
+    return $chosen;
+}
+
 1;
