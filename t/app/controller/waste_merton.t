@@ -627,13 +627,13 @@ FixMyStreet::override_config {
         FixMyStreet::Script::Reports::send();
         $mech->clear_emails_ok;
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('Report a problem with a non-recyclable waste collection', 'Can report a problem with non-recyclable waste');
-        $mech->content_contains('Report a problem with a food waste collection', 'Can report a problem with food waste');
+        $mech->content_contains('Report a spillage or other problem with a non-recyclable waste collection', 'Can report a problem with non-recyclable waste');
+        $mech->content_contains('Report a spillage or other problem with a food waste collection', 'Can report a problem with food waste');
         my $root = HTML::TreeBuilder->new_from_content($mech->content());
         my $panel = $root->look_down(id => 'panel-1075');
         is $panel->as_text =~ /.*Please note that missed collections can only be reported.*/, 1, "Paper and card past reporting deadline";
-        $mech->content_lacks('Report a problem with a paper and card collection', 'Can not report a problem with paper and card as past reporting deadline');
-        $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable waste collection' });
+        $mech->content_lacks('Report a spillage or other problem with a paper and card collection', 'Can not report a problem with paper and card as past reporting deadline');
+        $mech->follow_link_ok({ text => 'Report a spillage or other problem with a non-recyclable waste collection' });
         $mech->submit_form_ok( { with_fields => { category => 'Bin not returned' } });
         $mech->submit_form_ok( { with_fields => { extra_Notes => 'Hello' } });
         $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
@@ -656,7 +656,7 @@ FixMyStreet::override_config {
         is $cgi->param('attribute[Notes]'), 'Hello';
         like $cgi->param('description'), qr/Bin not returned concerning Non-recyclable waste collection/;
         $mech->get_ok('/waste/12345');
-        $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable waste collection' });
+        $mech->follow_link_ok({ text => 'Report a spillage or other problem with a non-recyclable waste collection' });
         $mech->submit_form_ok( { with_fields => { category => 'Waste spillage' } });
         $mech->submit_form_ok( { with_fields => { extra_Notes => 'Rubbish left on driveway' } });
         $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
@@ -688,7 +688,7 @@ FixMyStreet::override_config {
             ServiceId => 1067,
         } ] });
         $mech->get_ok('/waste/12345');
-        $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable waste collection' });
+        $mech->follow_link_ok({ text => 'Report a spillage or other problem with a non-recyclable waste collection' });
         $mech->content_like(qr/value="Bin not returned"\s+disabled/s);
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
