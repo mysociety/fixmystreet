@@ -216,6 +216,21 @@ FixMyStreet::override_config {
         $mech->back;
         $e->mock('GetTasks', sub { [] });
     };
+    subtest 'Finished collection, unknown resolution code' => sub {
+        $e->mock('GetTasks', sub { [ {
+            Ref => { Value => { anyType => [ 17430692, 8287 ] } },
+            State => { Name => 'Not Completed' },
+            Resolution => { Name => 'Wrong Bin/Bag Presented', Ref => { Value => { 'anyType' => 199 } } },
+            CompletedDate => { DateTime => '2022-09-09T16:00:00Z' }
+        } ] });
+        set_fixed_time('2022-09-09T16:30:00Z');
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Wrong Bin/Bag Presented');
+        $mech->follow_link_ok( { url_regex => qr/service_id=940/}, 'Follow "Report a problem" link for food waste' );
+        $mech->content_contains('Wrong Bin/Bag Presented');
+        $mech->back;
+        $e->mock('GetTasks', sub { [] });
+    };
     subtest 'Request a new bin' => sub {
         $mech->follow_link_ok( { text => 'Request a bin, box, caddy or bags' } );
 		# 27 (1), 46 (1), 12 (1), 1 (1)
