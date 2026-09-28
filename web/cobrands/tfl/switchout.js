@@ -81,6 +81,11 @@ $(function() {
         $('#asset_location').val(toTitleCase(feature.attributes.LOCATION));
         $('#asset_borough').val(BOROUGHS[feature.attributes.BOROUGH_NO]);
         $('#asset_site_id').val(feature.attributes.ABBREVIATED_ID);
+        var type = 'Junction';
+        if (feature.attributes.LOCATION.indexOf('BY') > -1) {
+            type = 'Pedestrian Crossing';
+        }
+        $('#asset_type').val(type);
         $('#continue')[0].disabled = false;
     }
 
@@ -88,6 +93,7 @@ $(function() {
         $('#asset_location').val('');
         $('#asset_borough').val('');
         $('#asset_site_id').val('');
+        $('#asset_type').val('');
         $('#continue')[0].disabled = true;
     }
 

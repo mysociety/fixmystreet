@@ -37,6 +37,7 @@ subtest 'Switch out application form submission' => sub {
             asset_location => 'Bromley High Street',
             asset_borough => 'Bromley',
             asset_site_id => '123/456',
+            asset_type => 'Junction',
             latitude => => 51.4021,
             longitude => 0.01578,
         }});
@@ -129,14 +130,13 @@ subtest 'Switch out application form submission' => sub {
             additional_information => 'Additional',
         }});
 
-        $mech->submit_form_ok({ with_fields => { payment => 'Invoice' }});
-
         $mech->submit_form_ok({ with_fields => {
             payment_company => 'Invoice',
             payment_name => 'Payment name',
             payment_email => 'payment@example.org',
             payment_phone => '01234 567890',
             payment_po => 'PO',
+            payment_behalf => 'Neither',
         }});
 
         $mech->form_with_fields('terms_accepted');

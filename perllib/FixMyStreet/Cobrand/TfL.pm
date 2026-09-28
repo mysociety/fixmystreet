@@ -807,6 +807,7 @@ sub post_report_sent {
 sub licence_detail {
     my ($self, $text) = @_;
     $text =~ s/(<p style="margin: 0 0 0.8em 0;">\s*)\[(.*?)\]/$1<strong>$2<\/strong>/g;
+    $text =~ s/<\/p>\s*<p[^>]*>/<br><br>/g; # For copying out of emails
     return FixMyStreet::Template::SafeString->new($text);
 }
 
