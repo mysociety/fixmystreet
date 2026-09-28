@@ -258,7 +258,7 @@ for my $page (1..$MAX_DATES) {
         template => 'date.html',
     });
     has_field "switch_out_date_$page" => (
-        required => 1, type => 'DateTime', label => 'Proposed switch out date', set_validate => 'validate_datetime',
+        required => 1, type => 'DateTime', label => 'Switch out date', set_validate => 'validate_datetime',
         messages => { datetime_invalid => 'Please enter a valid date', },
     );
     has_field "switch_out_date_$page.year" => ( type => 'Year' );
@@ -266,12 +266,13 @@ for my $page (1..$MAX_DATES) {
     has_field "switch_out_date_$page.day" => ( type => 'MonthDay' );
     has_field "switch_out_time_$page" => (
         type => 'Select',
-        label => 'Proposed switch out time',
+        label => 'Switch out time',
         required => 1,
         options => \@time_options,
     );
     has_field "restore_date_$page" => (
-        required => 1, type => 'DateTime', label => 'Proposed restore date', set_validate => 'validate_datetime',
+        required_when => { "restore_time_$page" => sub { $_[0] } },
+        type => 'DateTime', label => 'Restore date', set_validate => 'validate_datetime',
         messages => { datetime_invalid => 'Please enter a valid date', },
     );
     has_field "restore_date_$page.year" => ( type => 'Year' );
@@ -279,8 +280,10 @@ for my $page (1..$MAX_DATES) {
     has_field "restore_date_$page.day" => ( type => 'MonthDay' );
     has_field "restore_time_$page" => (
         type => 'Select',
-        label => 'Proposed restore time',
-        required => 1,
+        label => 'Restore time',
+        required_when => { "restore_date_$page" => sub {
+            $_[0] && ($_[0]->{day} || $_[0]->{month} || $_[0]->{year})
+        } },
         options => \@time_options,
     );
     has_field "switch_out_date_notice_$page" => (
@@ -746,7 +749,7 @@ sub validate {
         my $off = $self->construct_datetime("switch_out_date_$page", "switch_out_time_$page");
         if ($off) {
             my $on = $self->construct_datetime("restore_date_$page", "restore_time_$page");
-            if ($on <= $off) {
+            if ($on && $on <= $off) {
                 $self->add_form_error('The end time must be after the start time');
             }
         }
