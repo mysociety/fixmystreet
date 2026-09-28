@@ -100,7 +100,7 @@ has_field 'location_matches' => (
 );
 
 has_page map => (
-    fields => ['asset_location', 'asset_borough', 'asset_site_id', 'latitude', 'longitude', 'continue'],
+    fields => ['asset_location', 'asset_borough', 'asset_site_id', 'asset_type', 'latitude', 'longitude', 'continue'],
     title => 'Select traffic signal location you would like to switch out',
     template => 'switchout/map.html',
     next => 'emergency',
@@ -135,19 +135,29 @@ has_page map => (
 
 has_field asset_location => (
     required => 1,
+    readonly => 1,
     label => 'Location',
     type => 'Text',
 );
 
 has_field asset_borough => (
     required => 1,
+    readonly => 1,
     label => 'Borough',
     type => 'Text',
 );
 
 has_field asset_site_id => (
     required => 1,
+    readonly => 1,
     label => 'Site ID',
+    type => 'Text',
+);
+
+has_field asset_type => (
+    required => 1,
+    readonly => 1,
+    label => 'Type',
     type => 'Text',
 );
 

@@ -37,6 +37,7 @@ subtest 'Switch out application form submission' => sub {
             asset_location => 'Bromley High Street',
             asset_borough => 'Bromley',
             asset_site_id => '123/456',
+            asset_type => 'Junction',
             latitude => => 51.4021,
             longitude => 0.01578,
         }});
