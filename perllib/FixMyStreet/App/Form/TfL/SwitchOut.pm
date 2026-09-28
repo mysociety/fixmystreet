@@ -173,7 +173,7 @@ has_field longitude => (
 
 has_page emergency => (
     fields => ['emergency', 'continue'],
-    title => 'Is there a potential threat to life or property?',
+    title => 'Switch out',
     next => sub { $_[0]->{emergency} eq 'Yes' ? 'call_us' : 'when_1' },
 );
 
@@ -189,8 +189,10 @@ has_field emergency => (
 );
 
 has_page call_us => (
+    fields => ['continue'],
     title => 'Important Notice',
     intro => 'call_us.html',
+    next => 'when_1',
 );
 
 sub when_page_update_field_list {
