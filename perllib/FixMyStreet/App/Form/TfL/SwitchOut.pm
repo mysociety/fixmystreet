@@ -545,51 +545,10 @@ has_field additional_information => (
 
 has_page payment => (
     fields => ['payment', 'continue'],
-    title => 'Payment',
-    next => sub { $_[0]->{payment} eq 'Invoice' ? 'payment_invoice' : 'payment_bacs' },
-);
-
-has_field payment => (
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'How would you like to pay?',
-    required => 1,
-    options => [
-        { label => 'Invoice', value => 'Invoice' },
-        { label => 'BACS', value => 'BACS' },
-    ],
-);
-
-has_page payment_bacs => (
-    title => 'BACS details',
-    fields => ['payment_swo_ref', 'payment_bank_account', 'payment_bacs_naming_convention', 'payment_behalf', 'continue'],
-    intro => 'bacs.html',
-    next => 'terms',
-    tags => { hide => sub { return $_[0]->form->saved_data->{payment} ne 'BACS' } },
-);
-
-has_field payment_swo_ref => (
-    type => 'Text',
-    label => 'Customer unique SWO ref',
-    required => 1,
-);
-has_field payment_bank_account => (
-    type => 'Text',
-    label => 'Customer bank account number',
-    required => 1,
-);
-has_field payment_bacs_naming_convention => (
-    type => 'Text',
-    label => 'BACS naming convention',
-    required => 1,
-);
-
-has_page payment_invoice => (
     title => 'Payment details',
     fields => ['payment_company', 'payment_name', 'payment_email', 'payment_phone', 'payment_po', 'payment_behalf', 'continue'],
     intro => 'invoice.html',
-    next => 'terms',
-    tags => { hide => sub { return $_[0]->form->saved_data->{payment} ne 'Invoice' } },
+    next => sub { $_[0]->{payment_behalf} eq 'Neither' ? 'terms' : 'payment_on_behalf' }
 );
 
 has_field payment_company => (
@@ -629,8 +588,52 @@ has_field payment_po => (
 );
 
 has_field payment_behalf => (
-    type => 'Text',
+    required => 1,
+    type => 'Select',
+    widget => 'RadioGroup',
     label => 'If your works are on behalf of TfL or a London Borough, please state below',
+    options => [
+        { label => 'TfL', value => 'TfL' },
+        { label => 'London Borough', value => 'London Borough' },
+        { label => 'Neither', value => 'Neither' },
+    ],
+);
+
+has_page payment_on_behalf => (
+    fields => ['on_behalf_contact_name', 'on_behalf_contact_email', 'on_behalf_scheme_name', 'on_behalf_sm_permit_number', 'on_behalf_additional', 'continue'],
+    title => 'On behalf of details',
+    next => 'terms',
+    update_field_list => sub {
+        my $form = shift;
+        my $saved_data = $form->saved_data;
+        my $type = $saved_data->{payment_behalf};
+        return {
+            "on_behalf_contact_name" => { label => "$type contact name" },
+            "on_behalf_contact_email" => { label => "$type contact email" },
+        };
+    },
+    tags => { hide => sub { $_[0]->form->saved_data->{"payment_behalf"} eq 'Neither' } },
+);
+
+has_field on_behalf_contact_name => (
+    label => 'Contact name',
+    type => 'Text', required => 1
+);
+has_field on_behalf_contact_email => (
+    label => 'Contact email',
+    type => 'Text', required => 1
+);
+has_field on_behalf_scheme_name => (
+    label => 'Scheme/works name',
+    type => 'Text', required => 1
+);
+has_field on_behalf_sm_permit_number => (
+    label => 'Street Manager permit number',
+    type => 'Text', required => 1
+);
+has_field on_behalf_additional => (
+    label => 'Additional details as applicable',
+    type => 'Text',
 );
 
 has_page terms => (

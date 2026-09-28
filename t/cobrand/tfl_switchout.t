@@ -130,14 +130,13 @@ subtest 'Switch out application form submission' => sub {
             additional_information => 'Additional',
         }});
 
-        $mech->submit_form_ok({ with_fields => { payment => 'Invoice' }});
-
         $mech->submit_form_ok({ with_fields => {
             payment_company => 'Invoice',
             payment_name => 'Payment name',
             payment_email => 'payment@example.org',
             payment_phone => '01234 567890',
             payment_po => 'PO',
+            payment_behalf => 'Neither',
         }});
 
         $mech->form_with_fields('terms_accepted');
