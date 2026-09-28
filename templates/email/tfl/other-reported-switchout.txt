@@ -1,0 +1,9 @@
+Subject: Switch out application - FMS[% report.id %]
+
+Please allow up to 24 hours for an update. We will contact you sooner if we require any further information.
+
+Application details
+
+[% report.detail %]
+
+[% signature %]
