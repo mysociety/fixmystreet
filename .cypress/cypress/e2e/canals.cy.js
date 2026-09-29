@@ -16,8 +16,8 @@ describe('Canals tests on non-CRT sites', function() {
             cy.nextPageReporting();
             cy.get('#form_category_fieldset').should('be.visible');
             cy.get('.hidden-canals-choice').contains('A pothole in pavement');
-            cy.get('.hidden-canals-choice').contains('Boating etiquette (CRT)').should('not.exist');
-            cy.pickCategory('Boating etiquette (CRT)');
+            cy.get('.hidden-canals-choice').contains('Boating etiquette').should('not.exist');
+            cy.pickCategory('Boating etiquette');
             cy.nextPageReporting();
             cy.nextPageReporting();
             cy.get('#js-councils_text').contains('These will be sent to Canal & River Trust');
@@ -27,7 +27,7 @@ describe('Canals tests on non-CRT sites', function() {
             cy.nextPageReporting();
             cy.get('#form_category_fieldset').should('be.visible');
             cy.get('.hidden-canals-choice').contains('A pothole in pavement').should('not.exist');
-            cy.get('.hidden-canals-choice').contains('Boating etiquette (CRT)');
+            cy.get('.hidden-canals-choice').contains('Boating etiquette');
             cy.pickCategory('A pothole in pavement');
             cy.nextPageReporting();
             cy.nextPageReporting();
@@ -45,8 +45,8 @@ describe('Canals tests on non-CRT sites', function() {
             cy.nextPageReporting();
             cy.get('#form_category_fieldset').should('be.visible');
             cy.get('.hidden-canals-choice').contains('A pothole in pavement');
-            cy.get('.hidden-canals-choice').contains('Boating etiquette (CRT)').should('not.exist');
-            cy.pickCategory('Boating etiquette (CRT)');
+            cy.get('.hidden-canals-choice').contains('Boating etiquette').should('not.exist');
+            cy.pickCategory('Boating etiquette');
             cy.nextPageReporting();
             cy.nextPageReporting();
             cy.get('#js-councils_text').contains('These will be sent to Canal & River Trust');
@@ -56,7 +56,7 @@ describe('Canals tests on non-CRT sites', function() {
             cy.nextPageReporting();
             cy.get('#form_category_fieldset').should('be.visible');
             cy.get('.hidden-canals-choice').contains('A pothole in pavement').should('not.exist');
-            cy.get('.hidden-canals-choice').contains('Boating etiquette (CRT)');
+            cy.get('.hidden-canals-choice').contains('Boating etiquette');
             cy.pickCategory('A pothole in pavement');
             cy.nextPageReporting();
             cy.nextPageReporting();
