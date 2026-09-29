@@ -88,6 +88,8 @@ sub parse {
                         } elsif ($_->{Value} == 2) {
                             $justified = 'no';
                         }
+                    } elsif ($_->{DatatypeName} eq 'Investigation Notes field') {
+                        $event->{closure_notes} = $_->{Value};
                     }
                 }
             }

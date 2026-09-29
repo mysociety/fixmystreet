@@ -1,0 +1,4 @@
+[% IF report.category == 'Report missed collection' AND (row.item_problem_state == 'closed' OR row.item_problem_state == 'unable to fix' OR row.item_problem_state == 'fixed') %]
+
+To report a problem with this missed collection visit your bin page
+[% END %]

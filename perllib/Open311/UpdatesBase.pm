@@ -332,6 +332,7 @@ sub comment_text_for_request {
 
     if ($template) {
         $template =~ s/\{\{description}}/$desc/;
+        $email_text =~ s/\{\{description}}/$desc/;
         return ($template, $email_text);
     }
 

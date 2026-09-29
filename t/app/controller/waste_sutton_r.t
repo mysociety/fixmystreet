@@ -216,6 +216,21 @@ FixMyStreet::override_config {
         $mech->back;
         $e->mock('GetTasks', sub { [] });
     };
+    subtest 'Finished collection, unknown resolution code' => sub {
+        $e->mock('GetTasks', sub { [ {
+            Ref => { Value => { anyType => [ 17430692, 8287 ] } },
+            State => { Name => 'Not Completed' },
+            Resolution => { Name => 'Wrong Bin/Bag Presented', Ref => { Value => { 'anyType' => 199 } } },
+            CompletedDate => { DateTime => '2022-09-09T16:00:00Z' }
+        } ] });
+        set_fixed_time('2022-09-09T16:30:00Z');
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Wrong Bin/Bag Presented');
+        $mech->follow_link_ok( { url_regex => qr/service_id=940/}, 'Follow "Report a problem" link for food waste' );
+        $mech->content_contains('Wrong Bin/Bag Presented');
+        $mech->back;
+        $e->mock('GetTasks', sub { [] });
+    };
     subtest 'Request a new bin' => sub {
         $mech->follow_link_ok( { text => 'Request a bin, box, caddy or bags' } );
 		# 27 (1), 46 (1), 12 (1), 1 (1)
@@ -1043,12 +1058,16 @@ FixMyStreet::override_config {
                         EventDate => { DateTime => "2022-09-11T18:03:00Z" },
                         ResolvedDate => { DateTime => "2022-09-11T18:03:00Z" },
                         EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
-                        Data => { ExtensibleDatum => [ { DatatypeName => 'Justification', Value => $test->{value} } ] },
+                        Data => { ExtensibleDatum => [
+                            { DatatypeName => 'Justification', Value => $test->{value} },
+                            { DatatypeName => 'Investigation Notes field', Value => 'Sorry or okay' },
+                        ] },
                     } ] });
 
                     $mech->get_ok($problem_url);
                     $mech->content_like(qr/Missed collection dispute.*disabled/s);
                     $mech->content_like(qr/$test->{text}/s);
+                    $mech->content_contains('Sorry or okay');
                     $mech->content_contains('Our investigation is complete');
                 };
             }
@@ -1303,7 +1322,6 @@ FixMyStreet::override_config {
                 mark_open     => 0,
                 mark_fixed    => 0,
                 state         => 'confirmed',
-                photo         => $sample_file->slurp,
             }
         );
 
@@ -1334,15 +1352,7 @@ FixMyStreet::override_config {
             $mech->get_ok($l->path_query);
             $mech->content_contains('Contaminated (builder’s waste)', 'details of missed bin collection displayed');
             $mech->submit_form_ok({ with_fields => { category => "Missed collection dispute" } });
-
-            # XXX Email link used 'original_booking_id' param here to denote
-            # missed collection report ID, but 'original_booking_id' should
-            # really only refer to bulky/small item reports, as it breaks the
-            # report a problem page if present (which assumes it is only for
-            # those and overwrites the service). Also, photo does not appear
-            # when form accessed from web below. XXX
             $mech->content_contains('Contaminated (builder’s waste)', 'details of missed bin collection displayed');
-            #$mech->content_contains('This photo provides the evidence', 'Has resolution photo text');
         };
 
         subtest 'Create dispute for non complete missed bin report' => sub {

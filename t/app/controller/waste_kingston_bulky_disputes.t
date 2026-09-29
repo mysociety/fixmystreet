@@ -527,12 +527,47 @@ FixMyStreet::override_config {
             ResolvedDate => { DateTime => '2023-07-02T15:00:00Z' },
         );
 
-        subtest 'Dispute allowed for any resolution' => sub {
+        subtest 'Dispute not allowed for other resolutions' => sub {
             my $late_allowed_date = '2023-07-28T22:59:59Z'; # 2023-07-28T23:59:59 GMT
 
             my $missed_collection_report_event = {
                 %missed_collection_report_event_defaults,
                 ResolutionCodeId => 617, # No access - Parked vehicle
+            };
+
+            # Mock 'completed' bulky report and missed collection report in Echo
+            $echo->mock('GetEventsForObject', sub { [
+                $completed_bulky_event, $missed_collection_report_event
+            ] });
+
+            subtest 'Check dispute window' => sub {
+                set_fixed_time('2023-07-02T14:59:59Z');
+                get_problem_page();
+                $mech->content_lacks($dispute_label, 'cannot report just before window opens');
+
+                set_fixed_time('2023-07-29T00:00:00Z'); # 2023-07-29T01:00:00 GMT
+                $mech->get_ok('/waste/12345');
+                $mech->content_contains( 'None booked',
+                    'cannot report just after window closes (no booking)' );
+
+                set_fixed_time('2023-07-02T15:00:01Z');
+                get_problem_page();
+                $mech->content_lacks($dispute_label, 'can report just after window opens');
+
+                set_fixed_time($late_allowed_date);
+                get_problem_page();
+                $mech->content_lacks($dispute_label, 'can report just before window closes');
+            };
+
+            set_fixed_time($late_allowed_date);
+
+        };
+        subtest 'Dispute allowed for any resolution' => sub {
+            my $late_allowed_date = '2023-07-28T22:59:59Z'; # 2023-07-28T23:59:59 GMT
+
+            my $missed_collection_report_event = {
+                %missed_collection_report_event_defaults,
+                ResolutionCodeId => 66, # Not presented
             };
 
             # Mock 'completed' bulky report and missed collection report in Echo
@@ -564,7 +599,7 @@ FixMyStreet::override_config {
             subtest 'Follow dispute link' => sub {
                 get_problem_page();
                 like $mech->text,
-                    qr/The crew have closed your collection task as 'not collected' because:.*No access due to parked vehicle/;
+                    qr/The crew have closed your collection task as 'not collected' because:.*Not presented/;
                 $mech->submit_form(
                     with_fields => { category => 'Missed collection dispute' },
                 );
@@ -643,6 +678,7 @@ FixMyStreet::override_config {
                 $completed_bulky_event,
                 {
                     %missed_collection_report_event_defaults,
+                    ResolutionCodeId => 66, # Not presented
                     EventStateId => 19241, # Completed
                 },
             ] });

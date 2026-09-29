@@ -2,11 +2,9 @@
 
 [% email_summary %]
 
-[% IF cobrand.moniker == 'sutton' OR cobrand.moniker == 'kingston' %]
-To report a problem with this collection visit your bin page
-[% END %]
+[% TRY %][% INCLUDE 'waste/_email_comment_bulky_extra.txt' %][% CATCH file %][% END %]
 
-[% email_sanitize_text(row, 'item_text_original') %]
+[% email_sanitize_text(row, private_email ? "item_private_email_text" : undef) -%]
 
 Collection date: [% collection_date %]
 
