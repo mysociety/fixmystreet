@@ -66,7 +66,7 @@ $(function() {
 
     // Can't use vector layer on reports, too big, use tiles instead
     var layer;
-    if (fixmystreet.page === 'reports') {
+    if (fixmystreet.page === 'reports' || fixmystreet.page === 'my') {
         layer = new OpenLayers.Layer.Canals();
         fixmystreet.map.addLayer(layer);
         layer.setVisibility(true);
