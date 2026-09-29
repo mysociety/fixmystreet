@@ -221,6 +221,14 @@ input[type="checkbox"],
   box-shadow: none;
 }
 
+div.form-error, p.form-error {
+  border-radius: 10px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  padding: 0.5em;
+  line-height: 120%;
+}
+
 /* NAVBAR */
 #site-header {
   .js-nav-open & {
@@ -320,8 +328,10 @@ input[type="checkbox"],
     
     &:focus {
       border-color: $cobrand_yellow;
-      outline: 3px solid $cobrand_yellow;
-      box-shadow: 0px 0px 0px 5px #000;
+      outline: 3px solid transparent;
+      box-shadow:
+      inset 0 0 0 2px $cobrand_yellow,
+      inset 0 0 0 5px #000;
     }
   }
 
@@ -377,6 +387,12 @@ input[type="checkbox"],
   border: none;
 }
 
+#pc-error.form-error + div {
+  input#pc {
+    border-top-left-radius: 0;
+  }
+}
+
 /* OTHERS */
 .item-list__item,
 .item-list--reports__item {
@@ -421,6 +437,10 @@ input[type="checkbox"],
   }
 }
 
+.container--sidebar {
+  gap: 1rem;
+}
+
 /* MAPPAGE */
 .map-fullscreen {
   #map_box {
@@ -457,6 +477,10 @@ html.js .form-section-preview,
   border-color: $cobrand_gravel_500;
 }
 
+#key-tools a:focus {
+  background-color: $primary;
+}
+
 /* AUTH PAGE */
 
 body.authpage {
@@ -471,6 +495,24 @@ body.authpage {
   }
 }
 
+/* CONTACT FORM */
+.help-contact-form {
+  .required-text--optional {
+    // Not an ideal solution, but replacing this would be to backtrack their current layout so it has the same behaviour than the other FMS cobrands.
+    display: none;
+  }
+
+  .govuk-form-group {
+    &:has(.required-text--optional) {
+      label {
+        &::after {
+          content: " (Optional)";
+        }
+      }
+    }
+  }
+}
+
 /* SITE MESSAGE */
 .site-message {
   // Took from https://www.figma.com/design/pgFRt1j7ayP0C7UKV7Tm46/CRT-Design-System--1-?node-id=6340-3505&m=dev
@@ -479,6 +521,7 @@ body.authpage {
   padding: 1.5rem;
   border: none;
   word-wrap: break-word;
+  border-radius: 10px;
 
   a {
     color: $primary_text;
