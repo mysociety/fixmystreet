@@ -93,7 +93,7 @@ function add_canals_warning(canal_name) {
         '</strong> which is managed by <strong>' +
         body_name +
         '</strong>. ' +
-        'Does your report concern something on this canal, or somewhere else (e.g a road crossing it)?<p></div>'
+        'Does your report relate to an issue on or along the canal, or something else nearby?<p></div>'
     );
 
     var $page = $('<div data-page-name="canalrivertrust" class="js-reporting-page js-reporting-page--active js-reporting-page--canals"></div>');
