@@ -146,10 +146,13 @@
         fixmystreet.markers.addFeatures( current_duplicate_markers );
 
         // Hide any asset layer that might be visible and get confused with the duplicates
+        // and save them on the fixmystreet object
         var layers = fixmystreet.map.getLayersBy('assets', true);
+        fixmystreet.savedAssetsLayers = [];
         for (var i = 0; i<layers.length; i++) {
             if (!layers[i].fixmystreet.always_visible && layers[i].getVisibility()) {
                 layers[i].setVisibility(false);
+                fixmystreet.savedAssetsLayers.push(layers[i]);
             }
         }
 
@@ -170,9 +173,12 @@
         }
         fixmystreet.markers.removeFeatures( current_duplicate_markers );
 
-        // In order to reinstate a hidden assets layer, let's pretend we've
-        // just picked the category anew, but skip ourselves
-        $(fixmystreet).trigger('report_new:category_change', { skip_duplicates: true });
+        // Show the  asset layers which we hid whilst showing duplicate
+        // reports
+        for (var i = 0; i<fixmystreet.savedAssetsLayers.length; i++) {
+            fixmystreet.savedAssetsLayers[i].setVisibility(true);
+        }
+        delete fixmystreet.savedAssetsLayers;
     }
 
     function inspect_form_state_change() {
