@@ -31,6 +31,16 @@ END;
 
 %]
 
+[% closed_with_resolution = BLOCK %]
+    <p>The crew have closed your collection task as 'not collected'[%
+      IF resolution %] because:</p>
+      [% resolution | staff_html_markup({ is_body_user => 1 }) %]
+      [% ELSE %].</p>[% END %]
+  [% IF type != 'bulky' AND type != 'small' %]
+    <p>Please resolve the issue so the bin can be collected on the next scheduled collection. <a href="[% your_collection_url %]">Check our website</a> for more information on how your bin should be presented and what you can put in it.</p>
+  [% END %]
+[% END %]
+
 [% enquiry_message = BLOCK %]
     [% IF service.escalations.missed.open %]
     <div class="govuk-warning-text info">
@@ -63,17 +73,13 @@ END;
                     <p>The crew marked this collection as completed. If your [% IF type == 'bulky' %]bulky waste was not collected[% ELSIF type == 'small' %]small items were not collected[% ELSE %]bin has not been emptied[% END %], you can dispute this and we will investigate. If we find that the collection task was closed incorrectly, we will return to collect the [% IF !type %]bin[% ELSE %]waste[% END %].</p>
                 [% END %]
             [% ELSE %]
-                <p>The crew have closed your collection task as 'not collected'[%
-                  IF resolution %] because:</p>
-                  [% resolution | staff_html_markup({ is_body_user => 1 }) %]
-                  [% ELSE %].</p>[% END %]
+                [% closed_with_resolution | safe %]
               [% IF type == 'bulky' OR type == 'small' %]
                 <p>If it is less than 2 working days since your collection day, you can dispute the reason given
                     and we will investigate. If we find that the collection task was closed incorrectly,
                     we will return to collect the [% IF type == 'bulky' %]bulky waste[% ELSE %]small items[% END %]. Our website gives more information
                     on [% IF type == 'bulky' %]<a href="[% bulky_url %]">bulky waste collections</a>[% ELSE %]<a href="[% small_items_url %]">small items collections</a>[% END %]</p>
               [% ELSE %]
-                <p>Please resolve the issue so the bin can be collected on the next scheduled collection. <a href="[% your_collection_url %]">Check our website</a> for more information on how your bin should be presented and what you can put in it.</p>
                 <p>If it is less than 2 working days, you can dispute the reason given and we will investigate. If we find that the collection task was closed incorrectly, we will return to collect the bin.</p>
               [% END %]
             [% END %]
@@ -98,28 +104,26 @@ END;
     [% ELSIF service.report_open OR service.report_open_non_actionable %]
     <div class="govuk-warning-text info">
         <div class="govuk-warning-text__content">
-        [% SET report_date = service.report_open.date || service.report_open_non_actionable.date %]
-        <p>A [% service.service_name FILTER lower %] collection was reported as missed
-        [% IF communal_property %]
-            by yourself, a neighbour, or your Managing Agent
-        [% END %]
-        on [% date.format(report_date, '%A, %-d %B') %].
-        [% SET resolve_date = service.target OR service.report_open.target %]
-        We aim to resolve this by the end of the day on [% date.format(resolve_date, '%A, %-d %B') %].
-        If it has still not been collected, you will be able to come back to this page to escalate the reported missed collection.
-        </p>
+          [% IF service.report_open.closed %]
+            [% closed_with_resolution | safe %]
+          [% ELSE %]
+            [% SET report_date = service.report_open.date || service.report_open_non_actionable.date %]
+            <p>A [% service.service_name FILTER lower %] collection was reported as missed
+            [% IF communal_property %]
+                by yourself, a neighbour, or your Managing Agent
+            [% END %]
+            on [% date.format(report_date, '%A, %-d %B') %].
+            [% SET resolve_date = service.target OR service.report_open.target %]
+            We aim to resolve this by the end of the day on [% date.format(resolve_date, '%A, %-d %B') %].
+            If it has still not been collected, you will be able to come back to this page to escalate the reported missed collection.
+            </p>
+          [% END %]
         </div>
     </div>
     [% ELSIF service.report_locked_out %]
     <div class="govuk-warning-text info">
         <div class="govuk-warning-text__content">
-            <p>The crew have closed your collection task as 'not collected'[%
-              IF resolution %] because:</p>
-              [% resolution | staff_html_markup({ is_body_user => 1 }) %]
-              [% ELSE %].</p>[% END %]
-          [% IF type != 'bulky' AND type != 'small' %]
-            <p>Please resolve the issue so the bin can be collected on the next scheduled collection. <a href="[% your_collection_url %]">Check our website</a> for more information on how your bin should be presented and what you can put in it.</p>
-          [% END %]
+            [% closed_with_resolution | safe %]
         </div>
     </div>
     [% # this handles missed bulky collections where it's not collected at the end of the day %]

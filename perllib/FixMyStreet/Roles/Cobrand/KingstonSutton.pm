@@ -469,22 +469,21 @@ sub _setup_missed_collection_disputes_for_service {
         # And no existing dispute since last collection
         && !$dispute_event
     ) {
-        my $window = $self->_check_date_within_dispute_window(
-            $missed_event->{date} );
+        my $resolution_valid = $self->waste_check_can_raise_dispute(
+            type => 'missed collection event',
+            resolution_key => $missed_event->{resolution},
+        );
+        if ($resolution_valid) {
+            my $window = $self->_check_date_within_dispute_window(
+                $missed_event->{date} );
 
-        if ( $window eq 'within' ) {
-            my $resolution_valid = $self->waste_check_can_raise_dispute(
-                type => 'missed collection event',
-                resolution_key => $missed_event->{resolution},
-            );
-            if ($resolution_valid) {
+            if ( $window eq 'within' ) {
                 $row->{dispute}{missed_event} = $missed_event;
                 $row->{dispute}{allowed} = 1;
+            } elsif ( $window eq 'after' ) {
+                $row->{dispute}{missed_event} = $missed_event;
+                $row->{dispute}{too_late} = 1;
             }
-        }
-        elsif ( $window eq 'after' ) {
-            $row->{dispute}{missed_event} = $missed_event;
-            $row->{dispute}{too_late} = 1;
         }
     } elsif ($missed_event && $dispute_event) {
         if ($dispute_event->{closed}) {
