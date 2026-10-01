@@ -315,14 +315,14 @@ canalrivertrust:
   # Structures
   - name: CRT Bridges
     asset_category:
-      - Bridges (CRT)
+      - 'Bridges (CRT: ABC)'
     asset_item: bridge
     template: arcgis_spot
     http_options:
       url: https://services.arcgis.com/DknzyjEEie5tEW0u/arcgis/rest/services/Canal_And_River_Trust_Bridges_View/FeatureServer/0/query
 
   - name: CRT Tunnels
-    asset_category: Tunnel (CRT)
+    asset_category: 'Tunnel (CRT: ABC)'
     asset_item: tunnel
     template: arcgis_default
     http_options:
@@ -340,7 +340,7 @@ canalrivertrust:
     feature_code: sap_description
 
   - name: CRT Tunnel Portals
-    asset_category: Tunnel (CRT)
+    asset_category: 'Tunnel (CRT: ABC)'
     asset_item: portal
     template: arcgis_spot
     http_options:
@@ -353,7 +353,7 @@ canalrivertrust:
 
   # CSF Facilities
   - name: CRT Elsan
-    asset_category: Elsan (CRT)
+    asset_category: 'Elsan (CRT: ABC)'
     asset_item: elsan
     template: web_csf_facilities
     http_options:

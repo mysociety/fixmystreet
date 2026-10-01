@@ -136,7 +136,17 @@ FEATURE
 
     sub (GET + /mapserver/highways + ?*) {
         my ($self, $args) = @_;
-        my $json = $self->as_json([]);
+
+        my $json;
+        if (
+            $args->{Filter} =~ /(-2.603439,51.496194)|(-2.604812,51.496194)/ ) {
+            # Coordinates for category_tests.cy.js; return no features
+            $json = $self->as_json([]);
+        } else {
+            # Otherwise, return a bare minimum 'feature'
+            $json = $self->as_json([{ geometry => { type => '' } }]);
+        }
+
         return [ 200, [ 'Content-Type' => 'application/json' ], [ $json ] ];
     },
 
@@ -172,6 +182,12 @@ FEATURE
 '</wfs:FeatureCollection>'
             ] ];
         }
+    },
+
+    sub (GET + /mapserver/merton + ?*) {
+        my ($self, $args) = @_;
+        my $json = $self->as_json([{}]);
+        return [ 200, [ 'Content-Type' => 'application/json' ], [ $json ] ];
     },
 
     sub (GET + /mapserver/thamesmead + ?*) {
@@ -234,7 +250,29 @@ FEATURE
         } else {
             return [ 200, [ 'Content-Type' => 'application/xml' ], [ $thamesmead_asset_not_found ] ];
         }
-    }
+    },
+
+    sub (GET + /mapserver/crt + ?*) {
+        my ($self, $args) = @_;
+        return [ 200, [ 'Content-Type' => 'application/xml' ], [
+'<?xml version="1.0" encoding="UTF-8" ?>
+<wfs:FeatureCollection
+   xmlns:ms="http://mapserver.gis.umn.edu/mapserver"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:wfs="http://www.opengis.net/wfs"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://mapserver.gis.umn.edu/mapserver https://tilma.staging.mysociety.org
+:80/mapserver/crt?SERVICE=WFS&amp;VERSION=1.1.0&amp;REQUEST=DescribeFeatureType&amp;TYPENAME=Cana
+ls&amp;OUTPUTFORMAT=SFE_XMLSCHEMA  http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.
+0/wfs.xsd">
+    <gml:featureMember>
+    </gml:featureMember>
+</wfs:FeatureCollection>'
+        ] ];
+    },
 }
+
+LWP::Protocol::PSGI->register(t::Mock::Tilma->to_psgi_app, host => qr/tilma/);
 
 __PACKAGE__->run_if_script;

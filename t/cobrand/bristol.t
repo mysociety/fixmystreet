@@ -5,14 +5,10 @@ use FixMyStreet::Script::Reports;
 use Open311::PopulateServiceList;
 use Open311::PostServiceRequestUpdates;
 use Test::MockModule;
-use t::Mock::Tilma;
 use CGI::Simple;
 use File::Temp 'tempdir';
 use FixMyStreet::Script::CSVExport;
 use DateTime;
-
-my $tilma = t::Mock::Tilma->new;
-LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => qr/tilma/);
 
 # Create test data
 my $comment_user = $mech->create_user_ok('bristol@example.net');
