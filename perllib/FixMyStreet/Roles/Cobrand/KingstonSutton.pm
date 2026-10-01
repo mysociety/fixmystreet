@@ -271,7 +271,7 @@ around booked_check_missed_collection => sub {
             );
             my $resolution_valid = $self->waste_check_can_raise_dispute(
                 type => 'missed collection event',
-                resolution_key => $missed_event->{resolution},
+                event => $missed_event,
             );
 
             if ($current_dispute && $current_dispute->{closed}) {
@@ -471,7 +471,7 @@ sub _setup_missed_collection_disputes_for_service {
     ) {
         my $resolution_valid = $self->waste_check_can_raise_dispute(
             type => 'missed collection event',
-            resolution_key => $missed_event->{resolution},
+            event => $missed_event,
         );
         if ($resolution_valid) {
             my $window = $self->_check_date_within_dispute_window(

@@ -941,7 +941,6 @@ FixMyStreet::override_config {
             $e->mock('GetEventsForObject', sub { [ {
                 %event_defaults,
                 EventStateId => 19241, # Completed
-                ResolutionCodeId => 66, # Not presented
             } ] });
 
             subtest 'Follow dispute link' => sub {
