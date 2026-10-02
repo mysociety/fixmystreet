@@ -1343,6 +1343,9 @@ fixmystreet.assets.merton.park_found = function(layer) {
     if (park_name == 'Morden Hall Park') {
         layer.fixmystreet.no_asset_msg_id = '#js-not-a-park-morden-hall';
         fixmystreet.message_controller.road_not_found(layer, function() { return true; });
+    } else if (park_name == 'Watermeads Nature Reserve') {
+        layer.fixmystreet.no_asset_msg_id = '#js-not-a-park-watermeads';
+        fixmystreet.message_controller.road_not_found(layer, function() { return true; });
     } else if (park_name === 'Mitcham Common' || park_name === 'Mitcham Common Conservators') {
         layer.fixmystreet.no_asset_msg_id = '#js-not-a-park-mitcham-common';
         fixmystreet.message_controller.road_not_found(layer, function() { return true; });
