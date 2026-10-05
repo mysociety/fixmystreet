@@ -244,6 +244,9 @@ sub dashboard_export_problems_add_columns {
             $staff_user = $self->csv_staff_user_lookup($by, $user_lookup);
             $staff_role = join(',', @{$userroles->{$by} || []});
         }
+        if (my $assigned = $problems_to_user->{$report->id}) {
+            $assigned_to = $assigned->{name};
+        }
 
         my $address = '';
         if ( $report->geocode ) {
@@ -256,7 +259,7 @@ sub dashboard_export_problems_add_columns {
             user_name_display => $report->name,
             staff_user => $staff_user,
             staff_role => $staff_role,
-            assigned_to => $problems_to_user->{$report->id} || '',
+            assigned_to => $assigned_to,
             current_ward => $current_ward,
             old_ward => $old_ward,
             response_time => $response_time->($hashref),
