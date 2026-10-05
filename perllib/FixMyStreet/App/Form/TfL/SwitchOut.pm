@@ -483,65 +483,9 @@ has_field permit_nature => (
     required => 1,
 );
 
-my $upload_fields = ['upload_document_1', 'upload_document_2', 'upload_document_3',
-    'missing_explanation', 'additional_information',
-    'continue'];
-
-has_page uploads => (
-    fields => $upload_fields,
-    title => 'Upload required documents',
-    intro => 'uploads.html',
-    next => 'payment',
-    update_field_list => sub {
-        my ($form) = @_;
-        my $fields = {};
-        foreach (@$upload_fields) {
-            next unless $_ =~ /^upload_/;
-            $form->handle_upload($_, $fields);
-        }
-        return $fields;
-    },
-    post_process => sub {
-        my ($form) = @_;
-        foreach (@$upload_fields) {
-            next unless $_ =~ /^upload_/;
-            $form->process_upload($_);
-        }
-    },
-);
-
-has_field upload_document_1 => (
-    required_when => {
-        'missing_explanation' => sub {
-            my ($val, $field) = @_;
-            !$val && !$field->get_tag('files');
-        }
-    },
-    type => 'FileIdUpload',
-    label => 'Traffic Management Drawing, Stage Diagram and Temporary Signal Timings Documents',
-);
-
-has_field upload_document_2 => (
-    type => 'FileIdUpload',
-    label => 'Additional supporting documentation part 2',
-);
-
-has_field upload_document_3 => (
-    type => 'FileIdUpload',
-    label => 'Additional supporting documentation part 3',
-);
-
-has_field missing_explanation => (
-    type => 'Text',
-    widget => 'Textarea',
-    label => 'If any of the requested information is unavailable, please provide details below. Our team will review the information provided and advise whether your application can proceed.',
-);
-
-has_field additional_information => (
-    type => 'Text',
-    widget => 'Textarea',
-    label => 'Please provide any additional information relevant to this application that TfL or our contractors may need when reviewing your request or attending the site.',
-);
+# Upload page is next in flow (via next above), but page order in this file is
+# the order pages are shown on summary page/email, and TfL want upload to come
+# after payment
 
 has_page payment => (
     fields => ['payment', 'continue'],
@@ -634,6 +578,66 @@ has_field on_behalf_sm_permit_number => (
 has_field on_behalf_additional => (
     label => 'Additional details as applicable',
     type => 'Text',
+);
+
+my $upload_fields = ['upload_document_1', 'upload_document_2', 'upload_document_3',
+    'missing_explanation', 'additional_information',
+    'continue'];
+
+has_page uploads => (
+    fields => $upload_fields,
+    title => 'Upload required documents',
+    intro => 'uploads.html',
+    next => 'payment',
+    update_field_list => sub {
+        my ($form) = @_;
+        my $fields = {};
+        foreach (@$upload_fields) {
+            next unless $_ =~ /^upload_/;
+            $form->handle_upload($_, $fields);
+        }
+        return $fields;
+    },
+    post_process => sub {
+        my ($form) = @_;
+        foreach (@$upload_fields) {
+            next unless $_ =~ /^upload_/;
+            $form->process_upload($_);
+        }
+    },
+);
+
+has_field upload_document_1 => (
+    required_when => {
+        'missing_explanation' => sub {
+            my ($val, $field) = @_;
+            !$val && !$field->get_tag('files');
+        }
+    },
+    type => 'FileIdUpload',
+    label => 'Traffic Management Drawing, Stage Diagram and Temporary Signal Timings Documents',
+);
+
+has_field upload_document_2 => (
+    type => 'FileIdUpload',
+    label => 'Additional supporting documentation part 2',
+);
+
+has_field upload_document_3 => (
+    type => 'FileIdUpload',
+    label => 'Additional supporting documentation part 3',
+);
+
+has_field missing_explanation => (
+    type => 'Text',
+    widget => 'Textarea',
+    label => 'If any of the requested information is unavailable, please provide details below. Our team will review the information provided and advise whether your application can proceed.',
+);
+
+has_field additional_information => (
+    type => 'Text',
+    widget => 'Textarea',
+    label => 'Please provide any additional information relevant to this application that TfL or our contractors may need when reviewing your request or attending the site.',
 );
 
 has_page terms => (

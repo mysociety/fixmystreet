@@ -131,7 +131,11 @@ sub pin_colour {
     return 'orange-work'; # all the other `open_states` like "in progress"
 }
 
-sub path_to_pin_icons { '/i/pins/whole-shadow-cone-spot/' }
+sub path_to_pin_icons {
+    my $self = shift;
+    return '/i/pins/whole-shadow-traffic-light-spot/' if $self->{c}->namespace eq 'form/switchout';
+    return '/i/pins/whole-shadow-cone-spot/';
+}
 
 =item * Superusers and TfL staff can access the TfL admin
 
