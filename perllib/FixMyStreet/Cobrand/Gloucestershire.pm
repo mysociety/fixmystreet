@@ -199,6 +199,21 @@ around open311_extra_data_include => sub {
     return $open311_only;
 };
 
+=head2 open311_munge_update_params
+
+We want to include whether the update was made by the probem reporter.
+
+=cut
+
+around open311_munge_update_params => sub {
+    my ($orig, $self, $params, $comment, $body) = @_;
+
+    $self->$orig($params, $comment, $body);
+
+    if ($comment->user_id eq $comment->problem->user_id) {
+        $params->{'attribute[by_reporter]'} = 1;
+    }
+};
 
 sub disambiguate_location {
     my $self = shift;
