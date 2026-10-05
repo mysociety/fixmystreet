@@ -23,7 +23,7 @@ my %states = map { $_->label => $_ } @$states;
 
 subtest 'Open/closed database data is as expected' => sub {
     my $open = $rs->open;
-    is @$open, 5;
+    is @$open, 6;
     my $closed = $rs->closed;
     is @$closed, 6;
 };
@@ -59,7 +59,7 @@ subtest 'msgstr gets translated if available when the language changes' => sub {
 };
 
 is_deeply [ sort FixMyStreet::DB::Result::Problem->open_states ],
-    ['action scheduled', 'confirmed', 'in progress', 'investigating', 'planned'], 'open states okay';
+    ['action scheduled', 'confirmed', 'in progress', 'investigating', 'planned', 'twin'], 'open states okay';
 is_deeply [ sort FixMyStreet::DB::Result::Problem->closed_states ],
     ['cancelled', 'closed', 'duplicate', 'internal referral', 'not responsible', 'unable to fix'], 'closed states okay';
 is_deeply [ sort FixMyStreet::DB::Result::Problem->fixed_states ],
