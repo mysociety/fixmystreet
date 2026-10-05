@@ -22,7 +22,6 @@ has current_body => ( is => 'rw' );
 has current_open311 => ( is => 'rwp', lazy => 1, builder => 1 );
 has open311_config => ( is => 'ro' ); # If we need to pass in a devolved contact
 
-Readonly::Scalar my $AREA_ID_OXFORDSHIRE => 2237;
 Readonly::Scalar my $AREA_ID_HACKNEY => 2508;
 
 sub fetch {
@@ -164,6 +163,7 @@ sub _process_update {
     my ($self, $request, $p) = @_;
     my $open311 = $self->current_open311;
     my $body = $self->current_body;
+    my $cobrand = $body->get_cobrand_handler;
 
     $self->_handle_assigned_user($request, $p);
     $self->_handle_category_change($request, $p);
@@ -239,8 +239,8 @@ sub _process_update {
 
     # don't update state unless it's an allowed state
     if ( FixMyStreet::DB::Result::Problem->visible_states()->{$state} &&
-        # For Oxfordshire, don't allow changes back to Open from other open states
-        !( $body->areas->{$AREA_ID_OXFORDSHIRE} && $state eq 'confirmed' && $p->is_open ) &&
+        # Let the cobrand stop particular state changes, e.g. back to open
+        !( $cobrand && $cobrand->call_hook(open311_skip_update_state => $state, $p) ) &&
         # Don't let it change between the (same in the front end) fixed states
         !( $p->is_fixed && FixMyStreet::DB::Result::Problem->fixed_states()->{$state} ) ) {
 
@@ -274,7 +274,6 @@ sub _process_update {
     my $state_change = $comment->problem_state && $state ne $old_state;
     $comment->state('hidden') unless $text_change || $photo_change || $state_change;
 
-    my $cobrand = $body->get_cobrand_handler;
     $cobrand->call_hook(open311_get_update_munging => $comment, $state, $request)
         if $cobrand;
 

@@ -57,7 +57,7 @@ $bodies{2494}->body_areas->create({ area_id => 2494 });
 $bodies{2636}->body_areas->create({ area_id => 2636 });
 
 my $national_body = FixMyStreet::DB->resultset("Body")->create({ name => 'National Body' });
-$national_body->body_areas->create({ area_id => $_ }) for 2482, 2651;
+$national_body->body_areas->create({ area_id => $_ }) for 2482, 2237, 2651;
 
 my $contact = FixMyStreet::DB->resultset('Contact')->find_or_create({
     state => 'confirmed',
@@ -691,8 +691,11 @@ for my $test (
             current_open311 => $o,
             current_body => $bodies{2237},
         );
-        $update->process_body;
-
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'oxfordshire',
+        }, sub {
+            $update->process_body;
+        };
 
         is $problemB->comments->count, 1, 'comment count';
         $problemB->discard_changes;
@@ -704,6 +707,30 @@ for my $test (
         $problemB->comments->delete;
     };
 }
+
+subtest 'OPEN status for action scheduled problem changes state (non-Oxfordshire body covering Oxfordshire)' => sub {
+    my $p = create_problem($national_body->id);
+    my $local_requests_xml = setup_xml($p->external_id, $p->id, 'OPEN');
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/servicerequestupdates.xml', $local_requests_xml);
+
+    $p->update({ state => 'action scheduled' });
+
+    my $update = Open311::GetServiceRequestUpdates->new(
+        system_user => $user,
+        current_open311 => $o,
+        current_body => $national_body,
+    );
+    $update->process_body;
+
+    $p->discard_changes;
+    my $c = $p->comments->first;
+    ok $c, 'comment exists';
+    is $c->problem_state, 'confirmed', 'problem_state correct';
+    is $p->state, 'confirmed', 'correct problem state';
+    $p->comments->delete;
+    $p->delete;
+};
 
 for (
     { id => 2494, cobrand => 'bexley' },
