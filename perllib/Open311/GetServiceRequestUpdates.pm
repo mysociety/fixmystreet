@@ -3,7 +3,6 @@ package Open311::GetServiceRequestUpdates;
 use Moo;
 extends 'Open311::UpdatesBase';
 
-use Readonly;
 use DateTime::Format::W3CDTF;
 
 has '+send_comments_flag' => ( default => 1 );
@@ -12,27 +11,27 @@ has end_date => ( is => 'ro', default => sub { undef } );
 
 has comments_created => ( is => 'rw', default => 0 );
 
-Readonly::Scalar my $AREA_ID_BROMLEY     => 2482;
-
 sub parse_dates {
     my $self = shift;
     my $body = $self->current_body;
+    my $cobrand = $body->get_cobrand_handler;
+    my $skip_default_dates = $cobrand && $cobrand->call_hook('open311_skip_default_update_dates');
 
     my @args = ();
 
     my $dt = DateTime->now();
 
-    # default to asking for last 2 hours worth if not Bromley
+    # default to asking for last 2 hours worth unless the cobrand says not to
     if ($self->start_date) {
         push @args, DateTime::Format::W3CDTF->format_datetime( $self->start_date );
-    } elsif ( ! $body->areas->{$AREA_ID_BROMLEY} ) {
+    } elsif ( !$skip_default_dates ) {
         my $start_dt = $dt->clone->add( hours => -2 );
         push @args, DateTime::Format::W3CDTF->format_datetime( $start_dt );
     }
 
     if ($self->end_date) {
         push @args, DateTime::Format::W3CDTF->format_datetime( $self->end_date );
-    } elsif ( ! $body->areas->{$AREA_ID_BROMLEY} ) {
+    } elsif ( !$skip_default_dates ) {
         push @args, DateTime::Format::W3CDTF->format_datetime( $dt );
     }
 

@@ -56,6 +56,9 @@ $bodies{2237}->body_areas->create({ area_id => 2237 });
 $bodies{2494}->body_areas->create({ area_id => 2494 });
 $bodies{2636}->body_areas->create({ area_id => 2636 });
 
+my $national_body = FixMyStreet::DB->resultset("Body")->create({ name => 'National Body' });
+$national_body->body_areas->create({ area_id => $_ }) for 2482, 2651;
+
 my $contact = FixMyStreet::DB->resultset('Contact')->find_or_create({
     state => 'confirmed',
     editor => 'Test',
@@ -917,6 +920,46 @@ subtest 'using start and end date' => sub {
 
     is $c->param('start_date'), $start, 'start date used';
     is $c->param('end_date'), $end, 'end date used';
+};
+
+subtest 'non-Bromley body covering Bromley area uses default end date' => sub {
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
+
+    my $start_dt = DateTime->now(formatter => DateTime::Format::W3CDTF->new);
+    $start_dt->subtract( days => 1 );
+
+    my $update = Open311::GetServiceRequestUpdates->new(
+        system_user => $user,
+        start_date => $start_dt,
+        current_open311 => $o,
+        current_body => $national_body,
+    );
+    $update->process_body;
+
+    my $c = CGI::Simple->new( $o->test_req_used->uri->query );
+    is $c->param('start_date'), "$start_dt", 'start date used';
+    ok $c->param('end_date'), 'end date defaulted';
+};
+
+subtest 'Bromley body does not send default dates' => sub {
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
+
+    my $update = Open311::GetServiceRequestUpdates->new(
+        system_user => $user,
+        current_open311 => $o,
+        current_body => $bodies{2482},
+    );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+    }, sub {
+        $update->process_body;
+    };
+
+    my $c = CGI::Simple->new( $o->test_req_used->uri->query );
+    is $c->param('start_date'), undef, 'no start date';
+    is $c->param('end_date'), undef, 'no end date';
 };
 
 subtest 'check that existing comments are not duplicated' => sub {

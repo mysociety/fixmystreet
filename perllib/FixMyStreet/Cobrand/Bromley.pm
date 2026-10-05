@@ -522,6 +522,14 @@ sub open311_waste_update_extra {
     );
 }
 
+=head2 open311_skip_default_update_dates
+
+Bromley's endpoint is asked for updates without a date range by default.
+
+=cut
+
+sub open311_skip_default_update_dates { 1 }
+
 =head2 open311_get_update_munging
 
 This is used to perform Bromley's custom redirecting between Confirm and Echo
