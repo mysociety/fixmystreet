@@ -51,13 +51,15 @@ my %bodies = (
         cobrand => 'dumfries',
     }),
     2651 => FixMyStreet::DB->resultset("Body")->create({ name => 'Edinburgh' }),
+    2508 => FixMyStreet::DB->resultset("Body")->create({ name => 'Hackney', cobrand => 'hackney' }),
 );
 $bodies{2237}->body_areas->create({ area_id => 2237 });
 $bodies{2494}->body_areas->create({ area_id => 2494 });
 $bodies{2636}->body_areas->create({ area_id => 2636 });
+$bodies{2508}->body_areas->create({ area_id => 2508 });
 
 my $national_body = FixMyStreet::DB->resultset("Body")->create({ name => 'National Body' });
-$national_body->body_areas->create({ area_id => $_ }) for 2482, 2237, 2651;
+$national_body->body_areas->create({ area_id => $_ }) for 2482, 2237, 2508, 2651;
 
 my $contact = FixMyStreet::DB->resultset('Contact')->find_or_create({
     state => 'confirmed',
@@ -731,6 +733,47 @@ subtest 'OPEN status for action scheduled problem changes state (non-Oxfordshire
     $p->comments->delete;
     $p->delete;
 };
+
+for my $test (
+    {
+        desc => 'latest_data_only OPEN status for action scheduled problem is ignored (Hackney)',
+        body => $bodies{2508},
+        comments => 0,
+        end_state => 'action scheduled',
+    },
+    {
+        desc => 'latest_data_only OPEN status for action scheduled problem changes state (non-Hackney body covering Hackney)',
+        body => $national_body,
+        comments => 1,
+        end_state => 'confirmed',
+    },
+) {
+    subtest $test->{desc} => sub {
+        my $p = create_problem($test->{body}->id);
+        my $local_requests_xml = setup_xml($p->external_id, $p->id, 'OPEN', undef, '<latest_data_only>1</latest_data_only>');
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+        Open311->_inject_response('/servicerequestupdates.xml', $local_requests_xml);
+
+        $p->update({ state => 'action scheduled' });
+
+        my $update = Open311::GetServiceRequestUpdates->new(
+            system_user => $user,
+            current_open311 => $o,
+            current_body => $test->{body},
+        );
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'hackney',
+        }, sub {
+            $update->process_body;
+        };
+
+        $p->discard_changes;
+        is $p->comments->count, $test->{comments}, 'comment count';
+        is $p->state, $test->{end_state}, 'correct problem state';
+        $p->comments->delete;
+        $p->delete;
+    };
+}
 
 for (
     { id => 2494, cobrand => 'bexley' },
