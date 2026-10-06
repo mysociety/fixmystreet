@@ -6,7 +6,7 @@
     PROCESS "maps/${map.type}.html";
     SET bodyclass = 'mappage';
     INCLUDE 'header.html',
-        title = tprintf(loc('%s - Summary reports'), body.name)
+        title = c.cobrand.all_reports_single_body ? loc('Summary reports') : tprintf(loc('%s - Summary reports'), body.name)
 %]
 
 [% map_html | safe %]
