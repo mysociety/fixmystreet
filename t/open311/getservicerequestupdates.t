@@ -51,10 +51,15 @@ my %bodies = (
         cobrand => 'dumfries',
     }),
     2651 => FixMyStreet::DB->resultset("Body")->create({ name => 'Edinburgh' }),
+    2508 => FixMyStreet::DB->resultset("Body")->create({ name => 'Hackney', cobrand => 'hackney' }),
 );
 $bodies{2237}->body_areas->create({ area_id => 2237 });
 $bodies{2494}->body_areas->create({ area_id => 2494 });
 $bodies{2636}->body_areas->create({ area_id => 2636 });
+$bodies{2508}->body_areas->create({ area_id => 2508 });
+
+my $national_body = FixMyStreet::DB->resultset("Body")->create({ name => 'National Body' });
+$national_body->body_areas->create({ area_id => $_ }) for 2482, 2237, 2508, 2651;
 
 my $contact = FixMyStreet::DB->resultset('Contact')->find_or_create({
     state => 'confirmed',
@@ -707,8 +712,11 @@ for my $test (
             current_open311 => $o,
             current_body => $bodies{2237},
         );
-        $update->process_body;
-
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'oxfordshire',
+        }, sub {
+            $update->process_body;
+        };
 
         is $problemB->comments->count, 1, 'comment count';
         $problemB->discard_changes;
@@ -718,6 +726,71 @@ for my $test (
         is $c->problem_state, $test->{problem_state}, 'problem_state correct';
         is $problemB->state, $test->{end_state}, 'correct problem state';
         $problemB->comments->delete;
+    };
+}
+
+subtest 'OPEN status for action scheduled problem changes state (non-Oxfordshire body covering Oxfordshire)' => sub {
+    my $p = create_problem($national_body->id);
+    my $local_requests_xml = setup_xml($p->external_id, $p->id, 'OPEN');
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/servicerequestupdates.xml', $local_requests_xml);
+
+    $p->update({ state => 'action scheduled' });
+
+    my $update = Open311::GetServiceRequestUpdates->new(
+        system_user => $user,
+        current_open311 => $o,
+        current_body => $national_body,
+    );
+    $update->process_body;
+
+    $p->discard_changes;
+    my $c = $p->comments->first;
+    ok $c, 'comment exists';
+    is $c->problem_state, 'confirmed', 'problem_state correct';
+    is $p->state, 'confirmed', 'correct problem state';
+    $p->comments->delete;
+    $p->delete;
+};
+
+for my $test (
+    {
+        desc => 'latest_data_only OPEN status for action scheduled problem is ignored (Hackney)',
+        body => $bodies{2508},
+        comments => 0,
+        end_state => 'action scheduled',
+    },
+    {
+        desc => 'latest_data_only OPEN status for action scheduled problem changes state (non-Hackney body covering Hackney)',
+        body => $national_body,
+        comments => 1,
+        end_state => 'confirmed',
+    },
+) {
+    subtest $test->{desc} => sub {
+        my $p = create_problem($test->{body}->id);
+        my $local_requests_xml = setup_xml($p->external_id, $p->id, 'OPEN', undef, '<latest_data_only>1</latest_data_only>');
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+        Open311->_inject_response('/servicerequestupdates.xml', $local_requests_xml);
+
+        $p->update({ state => 'action scheduled' });
+
+        my $update = Open311::GetServiceRequestUpdates->new(
+            system_user => $user,
+            current_open311 => $o,
+            current_body => $test->{body},
+        );
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'hackney',
+        }, sub {
+            $update->process_body;
+        };
+
+        $p->discard_changes;
+        is $p->comments->count, $test->{comments}, 'comment count';
+        is $p->state, $test->{end_state}, 'correct problem state';
+        $p->comments->delete;
+        $p->delete;
     };
 }
 
@@ -936,6 +1009,46 @@ subtest 'using start and end date' => sub {
 
     is $c->param('start_date'), $start, 'start date used';
     is $c->param('end_date'), $end, 'end date used';
+};
+
+subtest 'non-Bromley body covering Bromley area uses default end date' => sub {
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
+
+    my $start_dt = DateTime->now(formatter => DateTime::Format::W3CDTF->new);
+    $start_dt->subtract( days => 1 );
+
+    my $update = Open311::GetServiceRequestUpdates->new(
+        system_user => $user,
+        start_date => $start_dt,
+        current_open311 => $o,
+        current_body => $national_body,
+    );
+    $update->process_body;
+
+    my $c = CGI::Simple->new( $o->test_req_used->uri->query );
+    is $c->param('start_date'), "$start_dt", 'start date used';
+    ok $c->param('end_date'), 'end date defaulted';
+};
+
+subtest 'Bromley body does not send default dates' => sub {
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
+
+    my $update = Open311::GetServiceRequestUpdates->new(
+        system_user => $user,
+        current_open311 => $o,
+        current_body => $bodies{2482},
+    );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+    }, sub {
+        $update->process_body;
+    };
+
+    my $c = CGI::Simple->new( $o->test_req_used->uri->query );
+    is $c->param('start_date'), undef, 'no start date';
+    is $c->param('end_date'), undef, 'no end date';
 };
 
 subtest 'check that existing comments are not duplicated' => sub {

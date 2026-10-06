@@ -159,6 +159,13 @@ sub open311_config_updates {
     $params->{use_customer_reference} = 1;
 }
 
+sub open311_skip_update_state {
+    my ($self, $state, $problem) = @_;
+
+    # Don't allow changes back to open from other open states
+    return $state eq 'confirmed' && $problem->is_open;
+}
+
 sub open311_pre_send {
     my ($self, $row, $open311) = @_;
 

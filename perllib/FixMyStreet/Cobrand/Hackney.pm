@@ -150,6 +150,13 @@ sub open311_skip_existing_contact {
     return $contact->get_extra_metadata("open311_protect") ? 1 : 0;
 }
 
+sub open311_skip_latest_data_update {
+    my ($self, $state, $problem) = @_;
+
+    # Don't let it change back to open from another state
+    return $state eq 'confirmed';
+}
+
 sub open311_filter_contacts_for_deletion {
     my ($self, $contacts) = @_;
 

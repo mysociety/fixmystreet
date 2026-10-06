@@ -22,9 +22,6 @@ has current_body => ( is => 'rw' );
 has current_open311 => ( is => 'rwp', lazy => 1, builder => 1 );
 has open311_config => ( is => 'ro' ); # If we need to pass in a devolved contact
 
-Readonly::Scalar my $AREA_ID_OXFORDSHIRE => 2237;
-Readonly::Scalar my $AREA_ID_HACKNEY => 2508;
-
 sub fetch {
     my ($self, $open311) = @_;
 
@@ -211,10 +208,7 @@ sub _process_update {
             && $text eq $latest->text
             && $state eq ($latest->problem_state || '');
 
-        # For Hackney, don't let it change back to open from another state
-        if ($body->areas->{$AREA_ID_HACKNEY} && $state eq 'confirmed') {
-            return;
-        }
+        return if $cobrand && $cobrand->call_hook(open311_skip_latest_data_update => $state, $p);
     }
 
     # An update shouldn't precede an auto-internal update nor should it be earlier than when the
@@ -255,8 +249,8 @@ sub _process_update {
 
     # don't update state unless it's an allowed state
     if ( FixMyStreet::DB::Result::Problem->visible_states()->{$state} &&
-        # For Oxfordshire, don't allow changes back to Open from other open states
-        !( $body->areas->{$AREA_ID_OXFORDSHIRE} && $state eq 'confirmed' && $p->is_open ) &&
+        # Let the cobrand stop particular state changes, e.g. back to open
+        !( $cobrand && $cobrand->call_hook(open311_skip_update_state => $state, $p) ) &&
         # Don't let it change between the (same in the front end) fixed states
         !( $p->is_fixed && FixMyStreet::DB::Result::Problem->fixed_states()->{$state} ) ) {
 
