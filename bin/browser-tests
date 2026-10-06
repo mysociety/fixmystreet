@@ -145,6 +145,7 @@ sub run {
     if ($run_server) {
         require FixMyStreet::TestAppProve;
         require t::Mock::MapIt;
+        require t::Mock::Tilma;
         require YAML;
         require Path::Tiny;
         my $asset_layers = YAML::Load(Path::Tiny::path('data/test-asset-layers.yml')->slurp);
