@@ -23,7 +23,7 @@ describe('Canal and highway cross', function() {
                     cy.wait('@tfl-tilma');
             });
             it('Select "on canal" option', function() {
-                cy.get('#form_category_fieldset').should('not.be.visible');
+                cy.get('.box-warning#canals').should('be.visible');
                 cy.nextPageReporting(); // Canal option selected by default
 
                 cy.get('#form_category_fieldset').should('be.visible');
@@ -52,12 +52,13 @@ describe('Canal and highway cross', function() {
 
                 cy.get('#js-councils_text').contains('These will be sent to Canal & River Trust');
             });
+
             it('Select "somewhere else" -> "on highway" option', function() {
-                cy.get('#form_category_fieldset').should('not.be.visible');
+                cy.get('.box-warning#canals').should('be.visible');
                 cy.get('#js-not-canals').click();
                 cy.nextPageReporting();
 
-                cy.get('#form_category_fieldset').should('not.be.visible');
+                cy.get('.box-warning#highways').should('be.visible');
                 cy.nextPageReporting(); // Highway option selected by default
 
                 cy.get('#form_category_fieldset').should('be.visible');
@@ -90,13 +91,15 @@ describe('Canal and highway cross', function() {
                 cy.get('#js-councils_text').contains('These will be sent to National Highways');
             });
             it('Select "somewhere else" -> "somewhere else" option', function() {
-                cy.get('#form_category_fieldset').should('not.be.visible');
+                cy.get('.box-warning#canals').should('be.visible');
                 cy.get('#js-not-canals').click();
                 cy.nextPageReporting();
 
-                cy.get('#form_category_fieldset').should('not.be.visible');
+                cy.get('.box-warning#highways').should('be.visible');
                 cy.get('#js-not-highways').click();
                 cy.nextPageReporting();
+
+                cy.get('#form_category_fieldset').should('be.visible');
 
                 // Standard shown. Includes 'Has canal subcategory' because it
                 // also has a non-canals subcategory.

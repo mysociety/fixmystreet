@@ -160,6 +160,13 @@ function display_next() {
 
             highways_layer.fixmystreet.actions.found(highways_layer, highways_layer.selected_feature);
         }
+    } else {
+        // In case highways layer was loaded & found before canals layer
+        // loaded (not likely but it can trigger in tests at least):
+        // make sure highways warning & hidden classes are removed, and
+        // canals categories are shown.
+        $('.js-reporting-page--highways').remove();
+        regenerate_category(true);
     }
 }
 
@@ -193,6 +200,9 @@ function regenerate_category(canals_body_flag) {
             });
 
             $(this).parent().toggleClass('hidden-canals-choice', hidden == inputs.length);
+
+            // Make sure no 'hidden-highways-choice'
+            $(this).parent().toggleClass('hidden-highways-choice', false);
         }
     });
 
@@ -209,6 +219,8 @@ function _update_category(input, canals_body_flag) {
         (!canals_categories && !canals_body_flag) ||
         input.data(canals_cat_signifier.toLowerCase());
     input.parent().toggleClass('hidden-canals-choice', !to_show);
+    // Make sure no 'hidden-highways-choice'
+    input.parent().toggleClass('hidden-highways-choice', false);
     return to_show ? 0 : 1;
 }
 
