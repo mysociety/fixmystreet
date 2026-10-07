@@ -2,6 +2,8 @@
 
 <div id="js-roads-responsibility" class="box-warning hidden" aria-live="polite">
 [% TRY %][% INCLUDE 'report/new/roads_message.html' %][% CATCH file %][% END %]
+[% # XXX Not needed for Scottish cobrands and maybe some others %]
+[% INCLUDE 'report/new/canals_asset_messages.html' %]
 </div>
 
 <div id="problem_form">
