@@ -94,7 +94,7 @@ describe('National Highways litter picking test', function() {
 });
 
 describe('Stopper messages', function() {
-    it.only('shows the correct stopper message on .com', function() {
+    it('shows the correct stopper message on .com', function() {
         cy.intercept('**/mapserver/highways*', {fixture: 'highways.xml'}).as('highways-tilma');
         cy.intercept('**/report/new/ajax*', {fixture: 'highways-ajax.json'}).as('report-ajax');
         cy.visit('/');

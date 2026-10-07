@@ -39,6 +39,15 @@ sub pick_asset_layers {
         %cobrands = map { $_ => $cobrands->{$_} } ($cobrand);
     }
 
+    # Add canals assets.
+    # Do not include National Highways as it does not load
+    # fixmystreet-uk-councils/assets.js.
+    # XXX Not needed for Scottish cobrands and maybe some others
+    $cobrands{canalrivertrust} = $cobrands->{canalrivertrust}
+        if !exists $cobrands{canalrivertrust}
+            && $cobrand ne 'highwaysengland'
+            && $cobrand ne 'borsetshire';
+
     my $layers = [];
     for my $moniker (sort keys %cobrands) {
         my @layers = @{ $cobrands{$moniker} || [] };
