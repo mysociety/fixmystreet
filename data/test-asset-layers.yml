@@ -301,6 +301,7 @@ canalrivertrust:
       actions:
         asset_found: fixmystreet.assets.canalrivertrust.asset_found
         asset_not_found: fixmystreet.assets.canalrivertrust.asset_not_found
+      no_asset_msg_id: '#js-not-a-canal-asset'
       feature_code: sap_description
     - name: web_csf_facilities
       template: arcgis_spot
