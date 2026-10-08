@@ -266,7 +266,7 @@ FOR request IN service.disputes.container.keys;
     report = service.disputes.container.$request.report;
     SET field = {
         value = 'Dispute container delivery|' _ request,
-        label = 'Dispute a container delivery (' _ report.title _ ')',
+        label = 'Dispute a container delivery' _ (report ? ' (' _ report.title _ ')' : ''),
         hint_class = 'govuk-hint--unfaded',
     };
     IF service.disputes.container.$request.open;
