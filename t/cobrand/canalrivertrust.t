@@ -219,6 +219,20 @@ subtest 'open311_update_missing_data' => sub {
     };
 };
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'canalrivertrust' ],
+    COBRAND_FEATURES => {
+        contact_us_url => { canalrivertrust => 'https://crt.example.org/contact' },
+    },
+}, sub {
+    subtest 'FAQ contact links use contact_us_url' => sub {
+        $mech->get_ok('/faq');
+        $mech->content_lacks('href="/contact"');
+        my @links = grep { $_->url eq 'https://crt.example.org/contact' } $mech->links;
+        is @links, 2, 'FAQ and sidebar link to contact_us_url';
+    };
+};
+
 sub _fetch_features_mock {
     [   {   'ms:Canals' => {
                 'gml:boundedBy' => {
