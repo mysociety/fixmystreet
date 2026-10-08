@@ -832,8 +832,11 @@ sub owns_problem {
         @bodies = values %{$report->bodies};
     }
 
-    # Want to ignore National Highways here
-    my %areas = map { %{$_->areas} } grep { $_->get_column('name') !~ /National Highways/ } @bodies;
+    # Want to ignore National Highways and Canals here
+    my %areas = map { %{$_->areas} } grep {
+        $_->get_column('name') !~ /National Highways/
+        && $_->get_column('name') ne 'Canal & River Trust';
+    } @bodies;
 
     foreach my $area_id ($self->area_ids_for_problems) {
         return 1 if $areas{$area_id};
