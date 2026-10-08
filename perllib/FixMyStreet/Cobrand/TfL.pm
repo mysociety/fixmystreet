@@ -243,7 +243,7 @@ sub borough_for_report {
 
 sub categories_restriction {
     my ($self, $rs) = @_;
-    my $bodies = [ 'TfL', 'National Highways' ];
+    my $bodies = [ 'TfL', 'National Highways', 'Canal & River Trust' ];
     push @$bodies, @{$self->feature('categories_restriction_bodies') || []};
     $rs = $rs->search( { 'body.name' => $bodies } );
     return $rs unless $self->{c}->stash->{categories_for_point}; # Admin page
