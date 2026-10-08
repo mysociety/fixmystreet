@@ -1,5 +1,6 @@
 use FixMyStreet::TestMech;
 use Test::MockModule;
+use Path::Tiny;
 
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
@@ -174,6 +175,99 @@ FixMyStreet::override_config {
         );
 
         $mech->content_contains('data-category_display="Access issues"');
+    };
+};
+
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'canalrivertrust' ],
+    MAPIT_URL => 'http://mapit.uk/',
+    BASE_URL => 'http://www.example.org',
+}, sub {
+    my $lwp_mock = Test::MockModule->new('LWP::Simple');
+    my @urls;
+    subtest 'URL for calling asset correctly formed when pattern recognised' => sub {
+        for my $test (
+                      {
+                       url => "https://services.arcgis.com/DknzyjEEie5tEW0u/arcgis/rest/services/Canal_And_River_Trust_Bridges_View/FeatureServer/0/query?outFields=waterway_name,sap_description&f=geojson&outSR=4326&inSR=3857&where=sap_description+like+'%25BRIDGE 60[^0-9]%25'",
+                       search_term => 'Harold Bridge 60'
+                      },
+                      {
+                       url => "https://services.arcgis.com/DknzyjEEie5tEW0u/arcgis/rest/services/Canal_And_River_Trust_Bridges_View/FeatureServer/0/query?outFields=waterway_name,sap_description&f=geojson&outSR=4326&inSR=3857&where=sap_description+like+'%25BRIDGE 60[^0-9]%25'",
+                       search_term => 'Bridge: 60 Near Redcar'
+                      },
+                      {
+                       url => "https://services.arcgis.com/DknzyjEEie5tEW0u/arcgis/rest/services/Canal_And_River_Trust_Bridges_View/FeatureServer/0/query?outFields=waterway_name,sap_description&f=geojson&outSR=4326&inSR=3857&where=sap_description+like+'%25BRIDGE 60[^0-9]%25'",
+                       search_term => 'Harold Bridge:60 Near Redcar'
+                      },
+                      {
+                       url => "https://services.arcgis.com/DknzyjEEie5tEW0u/arcgis/rest/services/Canal_And_River_Trust_Locks_View/FeatureServer/0/query?outFields=waterway_name,sap_description&f=geojson&outSR=4326&inSR=3857&where=sap_description+like+'%25LOCK 60[^0-9]%25'+and+waterway_name+like+%27%25UNION%25%27",
+                       search_term => 'Harold Lock:60 Grand Union Canal near'
+                      },
+                      {
+                       url => "https://services.arcgis.com/DknzyjEEie5tEW0u/arcgis/rest/services/Canal_And_River_Trust_Locks_View/FeatureServer/0/query?outFields=waterway_name,sap_description&f=geojson&outSR=4326&inSR=3857&where=sap_description+like+'%25LOCK 60[^0-9]%25'+and+waterway_name+like+%27%25LEE%25%27",
+                       search_term => 'Harold Lock:60 Lee Navigation near'
+                      },
+                      {
+                       url => "https://services.arcgis.com/DknzyjEEie5tEW0u/arcgis/rest/services/Canal_And_River_Trust_Locks_View/FeatureServer/0/query?outFields=waterway_name,sap_description&f=geojson&outSR=4326&inSR=3857&where=sap_description+like+'%25LOCK 60[^0-9]%25'",
+                       search_term => 'loCk 60'
+                      },
+         )
+          {
+              $mech->get_ok('/around');
+              $lwp_mock->mock('get', sub {
+                                  my ($url) = shift;
+                                  push @urls, $url;
+                                  return path(__FILE__)->sibling('canal_bridges.json')->slurp_utf8;
+                              });
+              my $search = $test->{search_term };
+              $mech->submit_form_ok( { with_fields => { pc => "$search" } },
+                                     'submit location' );
+              is $urls[0], $test->{url}, 'Url formed correctly for fetching asset data';
+              is $urls[1], undef, 'OSM not called as asset data returned';
+              @urls = ();
+              $mech->content_contains('<a href="/around?lat=52.6845444296468&amp;lon=-1.49444979949942&amp;zoom=5">Bridge 60, Varnham&#39;s Bridge, Ashby Canal</a>', 'Returns asset results');
+          }
+    };
+
+    subtest 'If no data returned for asset search try OSM search' => sub {
+        $lwp_mock->mock('get', sub {
+                            my ($url) = shift;
+                            push @urls, $url;
+                            return '';
+                        });
+        $mech->submit_form_ok( { with_fields => { pc => 'Bridge 60' } },
+                               'submit location' );
+        is $urls[0], "https://services.arcgis.com/DknzyjEEie5tEW0u/arcgis/rest/services/Canal_And_River_Trust_Bridges_View/FeatureServer/0/query?outFields=waterway_name,sap_description&f=geojson&outSR=4326&inSR=3857&where=sap_description+like+'%25BRIDGE 60[^0-9]%25'";
+        is $urls[1], 'https://nominatim.openstreetmap.org/search?countrycodes=gb&email=support@fixmystreet.com&format=json&q=bridge+60', 'OSM called when no data returned for asset';
+        @urls = ();
+    };
+
+    subtest 'Only OSM called if not an asset searching pattern' => sub {
+        for my $test (
+                      {
+                       url => "https://nominatim.openstreetmap.org/search?countrycodes=gb&email=support\@fixmystreet.com&format=json&q=60+bridge+street",
+                       search_term => '60 Bridge Street'
+                      },
+                      {
+                       url => "https://nominatim.openstreetmap.org/search?countrycodes=gb&email=support\@fixmystreet.com&format=json&q=bridge+street+20",
+                       search_term => 'Bridge Street 20'
+                      },
+        )
+          {
+              $mech->get_ok('/around');
+              $lwp_mock->mock('get', sub {
+                                  my ($url) = shift;
+                                  push @urls, $url;
+                                  return '';
+                              });
+              my $search = $test->{search_term };
+              $mech->submit_form_ok( { with_fields => { pc => "$search" } },
+                                     'submit location' );
+              is $urls[0], $test->{url}, 'OSM called as query does not match pattern';
+              is $urls[1], undef, 'Confirm no other calls made although layer check would have been first';
+              @urls = ();
+          }
     };
 };
 

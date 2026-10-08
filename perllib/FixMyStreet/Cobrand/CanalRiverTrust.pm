@@ -25,6 +25,7 @@ sub restriction { { cobrand => shift->moniker } }
 sub hide_areas_on_reports { 1 }
 sub suggest_duplicates { 1 }
 sub all_reports_single_body { { name => 'Canal & River Trust' } }
+sub get_geocoder { 'CanalRiverTrust' }
 
 =over 4
 
