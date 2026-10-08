@@ -21,6 +21,7 @@ use DateTime;
 use Getopt::Long::Descriptive;
 use Open311::GetServiceRequests;
 use Open311::GetServiceRequestUpdates;
+use DateTime::Format::W3CDTF;
 
 use CronFns;
 
@@ -31,8 +32,8 @@ my ($opts, $usage) = describe_options(
     '%c %o',
     ['reports', 'fetch reports'],
     ['updates', 'fetch updates'],
-    ['start|s:f', 'start time to use (hours before now), defaults to one (reports) or two (updates)' ],
-    ['end|e:f', 'end time to use (hours before now), defaults to zero' ],
+    ['start|s:s', 'start time to use (hours before now, or datetime), defaults to one (reports) or two (updates)' ],
+    ['end|e:s', 'end time to use (hours before now, or datetime), defaults to zero' ],
     ['report-ids|r:s', 'comma-separated list of service request IDs to fetch (use with --reports and --body)'],
     ['skip-existing', 'skip report IDs that already exist in the database (use with --report-ids)'],
     ['body|b:s@', 'body name(s) to only fetch these bodies' ],
@@ -63,10 +64,19 @@ if ($opts->report_ids) {
 
 my $dt = DateTime->now();
 if ($opts->start) {
-    $params{start_date} = $dt->clone->add(hours => -$opts->start);
+    if ($opts->start =~ /^\d+\.?\d*$/) {
+        $params{start_date} = $dt->clone->add(hours => -$opts->start);
+    } else {
+        $params{start_date} = DateTime::Format::W3CDTF->parse_datetime($opts->start);
+    }
 }
+
 if ($opts->end) {
-    $params{end_date} = $dt->clone->add(hours => -$opts->end);
+    if ($opts->end =~ /^\d+\.?\d*$/) {
+        $params{end_date} = $dt->clone->add(hours => -$opts->end);
+    } else {
+        $params{end_date} = DateTime::Format::W3CDTF->parse_datetime($opts->start);
+    }
 }
 
 if ($opts->reports) {

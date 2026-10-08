@@ -577,7 +577,6 @@ sub _setup_container_request_disputes_for_service {
     foreach my $request ($request_events->list) {
         my $guid = $request->{guid};
         my $request_report = $request->{report};
-        next unless $request_report;
 
         $row->{disputes}{container}{$guid}{report} = $request_report;
 

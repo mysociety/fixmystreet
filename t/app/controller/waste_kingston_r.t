@@ -1763,6 +1763,15 @@ FixMyStreet::override_config {
             is $mech->uri->path_query, '/faq?dispute-url?uprn=1000000002&service_id=966&event_id=112112321';
         };
 
+        subtest 'Making a dispute, event only in Echo' => sub {
+            $container_report->delete;
+            $mech->get_ok('/waste/12345');
+            $mech->follow_link_ok( { url_regex => qr/service_id=966/}, 'Follow "Report a problem" link for Non-Recyclable Waste collection' );
+            $mech->content_contains('Dispute container delivery|container-request-event-guid');
+            $mech->submit_form_ok( { with_fields => { category => 'Dispute container delivery|container-request-event-guid' } } );
+            is $mech->uri->path_query, '/faq?dispute-url?uprn=1000000002&service_id=966&event_id=112112321';
+        };
+
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
 
