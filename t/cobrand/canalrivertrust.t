@@ -100,6 +100,10 @@ FixMyStreet::override_config {
     $mech->text_contains('Bad boat', 'Display name');
     $mech->text_lacks('Bad boat (CRT: ABC)', 'Original name not displayed');
 
+    $mech->content_contains('Damage to bridge', 'Canal-specific title hint');
+    $mech->content_contains('making the lock very difficult to operate', 'Canal-specific detail hint');
+    $mech->content_lacks('10 inch pothole', 'Default title hint not shown');
+
     # click through to the report page
     $mech->follow_link_ok( { text_regex => qr/skip this step/i, } );
     $mech->submit_form_ok(

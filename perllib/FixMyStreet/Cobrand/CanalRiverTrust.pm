@@ -116,6 +116,20 @@ Changes the default name error message.
 
 =cut
 
+=head2 new_report_title_field_hint / new_report_detail_field_hint
+
+Canal-specific examples rather than the default pothole ones.
+
+=cut
+
+sub new_report_title_field_hint {
+    "e.g. ‘Damage to bridge’ or ‘Broken paddle’"
+}
+
+sub new_report_detail_field_hint {
+    "e.g. ‘Paddle is not working and is making the lock very difficult to operate’"
+}
+
 sub report_validation {
     my ($self, $report, $errors) = @_;
 
