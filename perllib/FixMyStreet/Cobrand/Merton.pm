@@ -225,22 +225,7 @@ sub check_report_is_on_cobrand_asset {
         };
         $features = $self->_fetch_features($cfg, $x, $y);
     };
-
-    # Some parks on the layer are not Merton's responsibility,
-    # so run the same the checks as the park_found JavaScript.
-    my %not_merton_parks = map { $_ => 1 } (
-        'Morden Hall Park',
-        'Watermeads Nature Reserve',
-        'Mitcham Common Conservators',
-        'Wimbledon Common',
-    );
-    my @parks = grep {
-        my $props = $_->{properties} || {};
-        my $park_name = $props->{ParkName} || '';
-        !$not_merton_parks{$park_name};
-    } @{ $features || [] };
-
-    return $parks[0];
+    return $features->[0];
 }
 
 sub _fetch_features_url {
