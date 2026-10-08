@@ -1,0 +1,371 @@
+{
+   "contacts" : [
+      {
+         "category" : "Roadwork, signs and barriers",
+         "email" : "Roadwork",
+         "extra" : {
+            "group" : [ "Road and cycle path faults (including potholes)" ],
+            "_fields" : [
+               {
+                  "code" : "Where",
+                  "datatype" : "singlevaluelist",
+                  "description" : "Where is the sign/barrier?",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "true",
+                  "values" : [ { "key" : "Lane", "name" : "Lane of Travel" }, { "key" : "Edge", "name" : "Edge of Road" }, { "key" : "Centre", "name" : "Centre of Road" }, { "key" : "Footway", "name" : "Footway" }, { "key": "Verge", "name": "Verge" } ],
+                  "variable" : "true"
+               },
+               {
+                  "code" : "Obstruction",
+                  "datatype" : "singlevaluelist",
+                  "description" : "Is it causing an obstruction?",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "true",
+                  "values" : [ { "key" : "Road", "name" : "Yes – Obstruction to road" }, { "key" : "Pavement", "name" : "Yes – Obstruction to pavement/private access" }, { "key": "No", "name": "No" } ],
+                  "variable" : "true"
+               },
+               {
+                  "code" : "Location",
+                  "datatype" : "singlevaluelist",
+                  "description" : "Whose roadworks/signs/barrier are they?",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "true",
+                  "values" : [ { "key" : "Us", "name" : "Highways / Ringway / Hertfordshire County Council" }, { "key" : "Utility", "name" : "Utility companies, e.g. Thames Water / BT" }, { "key": "Unknown", "name": "Unknown" } ],
+                  "variable" : "true"
+               },
+               {
+                  "code" : "Complete",
+                  "datatype" : "singlevaluelist",
+                  "description" : "Are the works complete?",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "false",
+                  "values" : [ { "key" : "Yes", "name" : "Yes" }, { "key" : "No", "name" : "No" } ],
+                  "variable" : "true"
+               },
+               {
+                  "code" : "Permit",
+                  "datatype" : "text",
+                  "description" : "If there is a permit number please state:",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "false",
+                  "variable" : "true"
+               }
+            ]
+         },
+         "non_public" : false,
+         "send_method" : "",
+         "state" : "confirmed"
+      },
+      {
+         "category" : "Mud on road or cycle lane",
+         "email" : "Mud",
+         "extra" : {
+            "group" : [ "Road and cycle path faults (including potholes)" ],
+            "_fields" : [
+               {
+                  "code" : "Where",
+                  "datatype" : "singlevaluelist",
+                  "description" : "Where is the mud?",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "true",
+                  "values" : [ { "key" : "Lane", "name" : "Lane of Travel" }, { "key" : "Edge", "name" : "Edge of Road" }, { "key" : "Centre", "name" : "Centre of Road" }, { "key" : "Cycle", "name" : "Designated Cycle Route" } ],
+                  "variable" : "true"
+               },
+               {
+                  "code" : "Spread",
+                  "datatype" : "singlevaluelist",
+                  "description" : "How widespread is the mud? Please provide your best estimate",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "true",
+                  "values" : [ { "key" : "Single", "name" : "Single patches, less than 2m" }, { "key" : "Continuous", "name" : "Continuous patches, greater than 2m" } ],
+                  "variable" : "true"
+               },
+               {
+                  "code" : "Location",
+                  "datatype" : "singlevaluelist",
+                  "description" : "Is it on a straight road, or bend/junction?",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "true",
+                  "values" : [ { "key" : "Straight", "name" : "Straight" }, { "key" : "Bend/junction", "name" : "Bend/junction" } ],
+                  "variable" : "true"
+               },
+               {
+                  "code" : "Cause",
+                  "datatype" : "singlevaluelist",
+                  "description" : "What is causing the mud on the road or cycle lane?",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "false",
+                  "values" : [ { "key" : "Vehicles", "name" : "Vehicles" }, { "key" : "Property", "name" : "A property" }, { "key": "Site", "name": "A site" } ],
+                  "variable" : "true"
+               }
+            ]
+         },
+         "non_public" : false,
+         "send_method" : "",
+         "state" : "confirmed"
+      },
+      {
+         "category" : "Pothole",
+         "email" : "Pothole",
+         "extra" : {
+            "group" : [ "Road and cycle path faults (including potholes)" ],
+            "_fields" : [
+               {
+                  "code" : "Type",
+                  "datatype" : "singlevaluelist",
+                  "description" : "Road type (from asset layer)",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "true",
+                  "values" : [ { "key" : "A", "name" : "A" }, { "key" : "B", "name" : "B" }, { "key" : "C", "name" : "C" }, { "key" : "U", "name" : "Unclassified" } ],
+                  "variable" : "true"
+               },
+               {
+                  "code" : "Where",
+                  "datatype" : "singlevaluelist",
+                  "description" : "Where is the pothole?",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "true",
+                  "values" : [ { "key" : "Lane", "name" : "Lane of Travel" }, { "key" : "Edge", "name" : "Edge of Road" }, { "key" : "Centre", "name" : "Centre of Road" }, { "key" : "Cycle", "name" : "Designated Cycle Route" } ],
+                  "variable" : "true"
+               },
+               {
+                  "code" : "Depth1",
+                  "datatype" : "singlevaluelist",
+                  "description" : "[If road] What is the depth? Please provide your best estimate",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "false",
+                  "values" : [ { "key" : "0", "name" : "Less than 50mm" }, { "key" : "50", "name" : "50-100mm" }, { "key": "100", "name": "Greater than 100mm" } ],
+                  "variable" : "true"
+               },
+               {
+                  "code" : "Depth2",
+                  "datatype" : "singlevaluelist",
+                  "description" : "[If cycle route] What is the depth? Please provide your best estimate",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "false",
+                  "values" : [ { "key" : "0", "name" : "Less than 40mm" }, { "key" : "40", "name" : "40-100mm" }, { "key": "100", "name": "Greater than 100mm" } ],
+                  "variable" : "true"
+               },
+               {
+                  "code" : "Width",
+                  "datatype" : "singlevaluelist",
+                  "description" : "What is the width? Please provide your best estimate",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "true",
+                  "values" : [ { "key" : "0", "name" : "Less than 300mm" }, { "key" : "300", "name" : "More than 300mm" } ],
+                  "variable" : "true"
+               },
+               {
+                  "code" : "Chunks",
+                  "datatype" : "singlevaluelist",
+                  "description" : "Are there chunks of loose material on the road around the size of a tennis ball?",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "false",
+                  "values" : [ { "key" : "Yes", "name" : "Yes" }, { "key" : "No", "name" : "No" } ],
+                  "variable" : "true"
+               }
+            ]
+         },
+         "non_public" : false,
+         "send_method" : "",
+         "state" : "confirmed"
+      },
+      {
+         "category" : "Sudden change in surface level",
+         "email" : "Sudden",
+         "extra" : {
+            "group" : [ "Road and cycle path faults (including potholes)" ],
+            "_fields" : [
+               {
+                  "code" : "Where",
+                  "datatype" : "singlevaluelist",
+                  "description" : "Where is the abrupt level difference?",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "true",
+                  "values" : [ { "key" : "Lane", "name" : "Lane of Travel" }, { "key" : "Edge", "name" : "Edge of Road" }, { "key" : "Centre", "name" : "Centre of Road" }, { "key" : "Cycle", "name" : "Designated Cycle Route" } ],
+                  "variable" : "true"
+               },
+               {
+                  "code" : "Depth1",
+                  "datatype" : "singlevaluelist",
+                  "description" : "[If road] What is the depth of the level difference?",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "false",
+                  "values" : [ { "key" : "0", "name" : "<50mm" }, { "key" : "50", "name" : "50-100mm" }, { "key": "100", "name": ">100mm" } ],
+                  "variable" : "true"
+               },
+               {
+                  "code" : "Depth2",
+                  "datatype" : "singlevaluelist",
+                  "description" : "[If cycle route] What is the depth of the level difference?",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "false",
+                  "values" : [ { "key" : "0", "name" : "<40mm" }, { "key" : "40", "name" : "40-100mm" }, { "key": "100", "name": ">100mm" } ],
+                  "variable" : "true"
+               },
+               {
+                  "code" : "Description",
+                  "datatype" : "singlevaluelist",
+                  "description" : "What best describes the section of road",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "false",
+                  "values" : [
+                    { "key": "S", "name": "Straight" },
+                    { "key": "C", "name": "Gentle Curve" },
+                    { "key": "J", "name": "Sweeping Bend or Close to Junction or Narrow Road" },
+                    { "key": "T", "name": "Tight Blind Bend" }
+                  ],
+                  "variable" : "true"
+               }
+            ]
+         },
+         "non_public" : false,
+         "send_method" : "",
+         "state" : "confirmed"
+      },
+      {
+         "category" : "Manhole or drain cover missing, damaged or loose",
+         "email" : "ManholeDamaged",
+         "extra" : {
+            "group" : [ "Road and cycle path faults (including potholes)" ],
+            "_fields" : [
+               {
+                  "code" : "Noise",
+                  "datatype" : "singlevaluelist",
+                  "description" : "Is the cover causing a noise nuisance?",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "true",
+                  "values" : [ { "key" : "Yes", "name" : "Yes" }, { "key" : "No", "name" : "No" } ],
+                  "variable" : "true"
+               },
+               {
+                  "code" : "Problem",
+                  "datatype" : "singlevaluelist",
+                  "description" : "What is the problem with the cover?",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "false",
+                  "values" : [ { "key" : "Loose", "name" : "Loose or Rocking" }, { "key" : "Damaged", "name" : "Damaged or Broken" }, { "key" : "Collapsed", "name" : "Collapsed or Missing" } ],
+                  "variable" : "true"
+               },
+               {
+                  "code" : "Where",
+                  "datatype" : "singlevaluelist",
+                  "description" : "Where is the cover?",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "false",
+                  "values" : [ { "key" : "Lane", "name" : "Lane of Travel" }, { "key" : "Edge", "name" : "Edge of Road" }, { "key" : "Centre", "name" : "Centre of Road" }, { "key" : "Cycle", "name" : "Designated Cycle Route" } ],
+                  "variable" : "true"
+               },
+               {
+                  "code" : "Which",
+                  "datatype" : "singlevaluelist",
+                  "description" : "Is the Cover for a Gully, Manhole or Other?",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "false",
+                  "values" : [ { "key" : "Gully", "name" : "Gully" }, { "key" : "Manhole", "name" : "Manhole" }, { "key" : "Other", "name" : "Other" } ],
+                  "variable" : "true"
+               },
+               {
+                  "code" : "Barriers",
+                  "datatype" : "singlevaluelist",
+                  "description" : "Signs, Cones and/or Barriers around Damage?",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "false",
+                  "values" : [ { "key" : "Yes", "name" : "Yes" }, { "key" : "No", "name" : "No" } ],
+                  "variable" : "true"
+               }
+            ]
+         },
+         "non_public" : false,
+         "send_method" : "",
+         "state" : "confirmed"
+      },
+      {
+         "category" : "Manhole or drain cover sunken",
+         "email" : "ManholeSunken",
+         "extra" : {
+            "group" : [ "Road and cycle path faults (including potholes)" ],
+            "_fields" : [
+               {
+                  "code" : "Noise",
+                  "datatype" : "singlevaluelist",
+                  "description" : "Is the cover causing a noise nuisance?",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "true",
+                  "values" : [ { "key" : "Yes", "name" : "Yes" }, { "key" : "No", "name" : "No" } ],
+                  "variable" : "true"
+               },
+               {
+                  "code" : "Where",
+                  "datatype" : "singlevaluelist",
+                  "description" : "Where is the cover?",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "false",
+                  "values" : [ { "key" : "Lane", "name" : "Lane of Travel" }, { "key" : "Edge", "name" : "Edge of Road" }, { "key" : "Centre", "name" : "Centre of Road" }, { "key" : "Cycle", "name" : "Designated Cycle Route" } ],
+                  "variable" : "true"
+               },
+               {
+                  "code" : "Depth1",
+                  "datatype" : "singlevaluelist",
+                  "description" : "[If road] What is the depth? Please provide your best estimate",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "false",
+                  "values" : [ { "key" : "0", "name" : "Less than 50mm" }, { "key" : "50", "name" : "50-100mm" }, { "key": "100", "name": "Greater than 100mm" } ],
+                  "variable" : "true"
+               },
+               {
+                  "code" : "Depth2",
+                  "datatype" : "singlevaluelist",
+                  "description" : "[If cycle route] What is the depth? Please provide your best estimate",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "false",
+                  "values" : [ { "key" : "0", "name" : "Less than 40mm" }, { "key" : "40", "name" : "40-100mm" }, { "key": "100", "name": "Greater than 100mm" } ],
+                  "variable" : "true"
+               },
+               {
+                  "code" : "Which",
+                  "datatype" : "singlevaluelist",
+                  "description" : "Is the Cover for a Gully, Manhole or Other?",
+                  "order" : 0,
+                  "protected" : "true",
+                  "required" : "false",
+                  "values" : [ { "key" : "Gully", "name" : "Gully" }, { "key" : "Manhole", "name" : "Manhole" }, { "key" : "Other", "name" : "Other" } ],
+                  "variable" : "true"
+               }
+               
+            ]
+         },
+         "non_public" : false,
+         "send_method" : "",
+         "state" : "confirmed"
+      }
+   ]
+}
