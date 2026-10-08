@@ -159,7 +159,11 @@ district-level categories on their cobrand - just a few, namely 'Litter',
 sub categories_restriction {
     my ($self, $rs) = @_;
     return $rs->search( { -or => [
-        'body.name' => [ "Lincolnshire County Council", 'National Highways' ],
+        'body.name' => [
+            'Lincolnshire County Council',
+            'National Highways',
+            'Canal & River Trust',
+        ],
 
         # District categories:
         'me.category' => { -in => [
