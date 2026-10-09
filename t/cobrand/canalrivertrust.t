@@ -101,6 +101,10 @@ FixMyStreet::override_config {
     $mech->text_contains('Bad boat', 'Display name');
     $mech->text_lacks('Bad boat (CRT: ABC)', 'Original name not displayed');
 
+    $mech->content_contains('Damage to bridge', 'Canal-specific title hint');
+    $mech->content_contains('making the lock very difficult to operate', 'Canal-specific detail hint');
+    $mech->content_lacks('10 inch pothole', 'Default title hint not shown');
+
     # click through to the report page
     $mech->follow_link_ok( { text_regex => qr/skip this step/i, } );
     $mech->submit_form_ok(
@@ -213,6 +217,20 @@ subtest 'open311_update_missing_data' => sub {
 
             is $report->get_extra_field_value('region_c'), 'Another region';
         };
+    };
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'canalrivertrust' ],
+    COBRAND_FEATURES => {
+        contact_us_url => { canalrivertrust => 'https://crt.example.org/contact' },
+    },
+}, sub {
+    subtest 'FAQ contact links use contact_us_url' => sub {
+        $mech->get_ok('/faq');
+        $mech->content_lacks('href="/contact"');
+        my @links = grep { $_->url eq 'https://crt.example.org/contact' } $mech->links;
+        is @links, 2, 'FAQ and sidebar link to contact_us_url';
     };
 };
 
