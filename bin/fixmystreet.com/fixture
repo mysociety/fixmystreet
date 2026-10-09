@@ -151,6 +151,7 @@ if ($opt->test_fixtures) {
     $bodies->{HE}->update;
     my $cats = join(', ', @{$params->{categories}});
     say "Created body $params->{name} for MapIt area ID $params->{area_id}, categories $cats";
+    $bodies->{HE}->body_areas->find_or_create({ area_id => '2226' }); # Gloucestershire
 
     my $incorrect = FixMyStreet::DB->resultset('Contact')->find({
         body => $bodies->{HE},
@@ -163,16 +164,20 @@ if ($opt->test_fixtures) {
     $incorrect->update;
 
     # Canal & River Trust
-    my $params = {
+    $params = {
         name => 'Canal & River Trust',
         area_id => 2507, # Islington
-        categories => ['Bridges (CRT)', 'Elsan (CRT)', 'Tunnel (CRT)', 'Boating etiquette (CRT)'],
+        categories => [
+            'Bridges (CRT: ABC)', 'Elsan (CRT: ABC)', 'Tunnel (CRT: ABC)', 'Boating etiquette (CRT: ABC)',
+            { group => 'Has canal subcategory', category => 'Canal (CRT: XYZ)' },
+        ],
     };
     $bodies->{CRT} = FixMyStreet::DB::Factory::Body->find_or_create($params);
     $bodies->{CRT}->cobrand('canalrivertrust');
     $bodies->{CRT}->update;
-    my $cats = join(', ', @{$params->{categories}});
+    $cats = join(', ', @{$params->{categories}});
     say "Created body $params->{name} for MapIt area ID $params->{area_id}, categories $cats";
+    $bodies->{CRT}->body_areas->find_or_create({ area_id => '2226' }); # Gloucestershire
 
     foreach (
         { area_id => 2482, categories => [
@@ -217,6 +222,7 @@ if ($opt->test_fixtures) {
         { area_id => 2226, categories => [
                 { group => 'A pothole in pavement', category => 'A pothole in pavement' },
                 { group => 'A pothole in road', category => 'A pothole in road' },
+                { group => 'Has canal subcategory', category => 'Not canal' }, # Shared with Canal & River Trust above
             ],
             name => 'Gloucestershire County Council', cobrand => 'gloucestershire' },
         { area_id => 2325, categories => [ { category => 'Broken glass' } ], name => 'Gloucester City Council', cobrand => 'gloucester' },

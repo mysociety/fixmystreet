@@ -210,8 +210,28 @@ sub lookup_site_code {
     return $self->_nearest_feature( $cfg, $e, $n, $features );
 }
 
+sub report_new_is_on_canal {
+    my $self = shift;
+
+    # Easting, northing.
+    my ( $e, $n ) = Utils::convert_latlon_to_en(
+        $self->{c}->stash->{latitude},
+        $self->{c}->stash->{longitude},
+    );
+
+    # Same distance (nearest_radius) as in web/cobrands/canalrivertrust/assets.js
+    my $cfg = $self->lookup_site_code_config( $e, $n, 20 );
+
+    my $ukc = FixMyStreet::Cobrand::UKCouncils->new;
+    my $features = $ukc->_fetch_features($cfg) || [];
+
+    return @$features ? 1 : 0;
+}
+
 sub lookup_site_code_config {
-    my ( $self, $e, $n ) = @_;
+    my ( $self, $e, $n, $metres ) = @_;
+
+    $metres //= 1000;
 
     my $url
         = FixMyStreet->config('STAGING_SITE')
@@ -224,9 +244,9 @@ sub lookup_site_code_config {
         # is designed for EPSG:27700
         srsname => 'urn:ogc:def:crs:EPSG::27700',
         typename => 'Canals',
-        # Arbitrarily searches within 1 km radius
+        # By default, arbitrarily searches within 1 km radius
         # TODO Is this enough?
-        filter => "<Filter><DWithin><PropertyName>geom</PropertyName><gml:Point><gml:coordinates>$e,$n</gml:coordinates></gml:Point><Distance units='m'>1000</Distance></DWithin></Filter>",
+        filter => "<Filter><DWithin><PropertyName>geom</PropertyName><gml:Point><gml:coordinates>$e,$n</gml:coordinates></gml:Point><Distance units='m'>$metres</Distance></DWithin></Filter>",
         outputformat => 'GML3',
         accept_feature => sub { 1 },
     };
