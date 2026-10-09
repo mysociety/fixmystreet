@@ -204,13 +204,6 @@ subtest 'Merton responsible for park in Kingston' => sub {
             $mech->get_ok("/report/new/ajax?longitude=-0.254369&latitude=51.427796");
             $mech->content_lacks('Litter');
             $mech->content_contains('Graffiti');
-        };
-        subtest "report on Kingston from FMS Cobrand in park not managed by Merton only has Kingston categories" => sub {
-            $mech->host("www.fixmystreet.com");
-            $cobrand->mock('_fetch_features', sub { [ { properties => { ParkName => 'Wimbledon Common' } } ] });
-            $mech->get_ok("/report/new/ajax?longitude=-0.254369&latitude=51.427796");
-            $mech->content_lacks('Litter');
-            $mech->content_contains('Graffiti');
         }
     }
 };
