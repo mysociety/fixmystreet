@@ -100,6 +100,8 @@ FixMyStreet::override_config {
 
     $mech->text_contains('Bad boat', 'Display name');
     $mech->text_lacks('Bad boat (CRT: ABC)', 'Original name not displayed');
+    $mech->content_contains('There are similar problems nearby that we’re already aware of, is one of them yours?');
+    $mech->content_lacks('to the council');
 
     $mech->content_contains('Damage to bridge', 'Canal-specific title hint');
     $mech->content_contains('making the lock very difficult to operate', 'Canal-specific detail hint');
@@ -116,6 +118,8 @@ FixMyStreet::override_config {
             }
         }
     );
+    $mech->content_contains('It’s on its way to Canal &amp; River Trust right now.');
+    $mech->content_lacks('to the council');
 
     $bad_boat->discard_changes;
     is $bad_boat->get_extra_metadata('display_name'), undef,
