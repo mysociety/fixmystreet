@@ -90,6 +90,11 @@ FixMyStreet::override_config {
             $mech->get_ok( '/report/' . $report->id );
             $mech->content_lacks( 'Provide an update',
                 'Cannot leave update on closed report' );
+            if ( $host eq 'canalrivertrust' ) {
+                $mech->text_contains( 'This report is not accepting further public updates.',
+                    'Canal-specific updates disallowed message' );
+                $mech->text_lacks( 'closed to updates from the public' );
+            }
         }
     }
 
