@@ -33,6 +33,27 @@ OpenLayers.Protocol.ArcgisHTTP = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
     CLASS_NAME: "OpenLayers.Protocol.ArcgisHTTP"
 });
 
+/* Aberdeenshire */
+
+fixmystreet.assets.aberdeenshire = {};
+
+var aberdeenshire_grit_bin_enquiry_status_stopper_messages = {
+    "E10": "TODO",
+    "E20": "TODO",
+    "E36": "TODO",
+};
+
+fixmystreet.assets.aberdeenshire.grit_bin_asset_found = function(asset) {
+    var enquiry_status = asset.attributes.latest_enquiry_status;
+    var no_asset_message = aberdeenshire_grit_bin_enquiry_status_stopper_messages[enquiry_status];
+    if (no_asset_message) {
+        asset.layer.fixmystreet.no_asset_message = no_asset_message;
+        fixmystreet.message_controller.asset_not_found.call(this);
+    } else {
+        fixmystreet.message_controller.asset_found.call(this);
+    }
+};
+
 /* Bath & NE Somerset */
 
 fixmystreet.assets.banes = {};
