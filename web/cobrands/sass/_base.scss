@@ -2899,6 +2899,8 @@ body.authpage {
     display: flex;
     flex-wrap: wrap;
     width: 100%;
+    // Prevents overly long forms on smaller screens
+    max-width: 25rem;
     background: #fff;
     border: 1px solid $primary_b;
   }
