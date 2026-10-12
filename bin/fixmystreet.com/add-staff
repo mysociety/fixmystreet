@@ -1,0 +1,30 @@
+#!/usr/bin/env perl
+
+# Script to add / update staff users to a body in bulk.
+
+use strict;
+use warnings;
+use v5.14;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use FixMyStreet::Script::AddStaff;
+use Getopt::Long::Descriptive;
+
+my ($opts, $usage) = describe_options(
+    '%c %o',
+    ['commit|c', 'Whether to commit changes to the database.'],
+    ['body|b=s', 'Which body ID to add thestaff to.', { required => 1 } ],
+    ['staff=s',  'The headered CSV file to use. ' .
+                  'Must have email, name. ' .
+                  'May also include role and area.', { required => 1}],
+    ['help|h',   'Print usage message and exit.']
+);
+$usage->die if $opts->help;
+
+FixMyStreet::Script::AddStaff::run($opts);
