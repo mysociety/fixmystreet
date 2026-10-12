@@ -56,18 +56,19 @@
 </div>
 
 [% IF unsent_reports.size %]
-<h2>[% loc('Reports waiting to be sent') %]</h2>
+<h2>[% tprintf( nget(loc('%d report waiting to be sent'), loc('%d reports waiting to be sent'), unsent_reports.size), unsent_reports.size ) %]</h2>
 
 <table cellspacing="0" cellpadding="2" border="1">
     <tr>
         <th>[% loc('ID') %]</th>
         <th>[% loc('Title') %]</th>
-        <th>[% loc('Name') %]</th>
         <th>[% loc('Body') %]</th>
-        <th>[% loc('State') %]</th>
+        <th>[% loc('Age') %]</th>
+        <th>[% loc('Failures') %]</th>
+        <th>[% loc('Last failure') %]</th>
         <th>*</th>
     </tr>
-    [% INCLUDE 'admin/problem_row.html' problems = unsent_reports %]
+    [% INCLUDE 'admin/unsent_problem_row.html' problems = unsent_reports %]
 </table>
 [% END %]
 
