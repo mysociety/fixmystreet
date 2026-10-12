@@ -209,7 +209,7 @@ sub setup_page_data : Private {
         "$table.category" => { '!=', 'Bulky cancel' },
     }, {
         join => 'contact',
-        columns => [ "$table.category", 'contact.extra', 'contact.category' ],
+        columns => [ "$table.category", 'contact.extra', 'contact.category', 'contact.body_id' ],
         distinct => 1,
         order_by => [ "$table.category" ],
     } )->all;

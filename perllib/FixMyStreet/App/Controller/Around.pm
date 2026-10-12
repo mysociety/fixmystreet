@@ -314,7 +314,7 @@ sub check_and_stash_category : Private {
     my @categories = $rs->search(
         $where,
         {
-            columns => [ 'id', 'category', 'extra' ],
+            columns => [ 'id', 'category', 'extra', 'body_id' ],
             distinct => 1
         }
     )->all_sorted;
