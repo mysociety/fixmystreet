@@ -1,0 +1,81 @@
+@import "_variables";
+@import "../sass/layout";
+
+/* NAVBAR */
+#site-logo {
+  background-image: url("/cobrands/hertfordshire/images/logo.svg");
+  background-size: auto 80%;
+  height: $mappage-header-height;
+  width: 7rem;
+}
+
+.nav-menu--main {
+    a {
+        &:hover {
+            color: $primary;
+        }
+    }
+
+    span {
+        color: $primary_text;
+    }
+}
+
+/* BUTTONS */
+.nav-menu--main a.report-a-problem-btn {
+    @include button-variant($bg-top: $cobrand_purple, $bg-bottom: $cobrand_purple, $border: $cobrand_purple, $text: #fff, $hover-bg-bottom: $cobrand_purple_600, $hover-bg-top: $cobrand_purple_600, $hover-border: $cobrand_purple_600, $hover-text: #fff);
+    text-decoration: none;
+}
+
+
+/* FRONTPAGE */
+
+#front-main {
+    padding: 4rem 1rem;
+}
+
+.frontpage .content {
+    margin: 3rem 0;
+}
+
+/* MAP PAGE */
+
+/* FOOTER */
+.cobrand-footer {
+    padding: 40px 0;
+
+    .cobrand-footer-inner {
+        flex-direction: row;
+
+        .cobrand-footer-col {
+            flex-basis: 30%;
+        }
+    }
+
+    .cobrand-footer-slogan {
+        background-image: url("/cobrands/hertfordshire/images/logo.svg");
+        background-repeat: no-repeat;
+        background-size: 138px auto;
+        background-position-y: top;
+        background-position-x: right;
+        height: 100px;
+        width: 180px;
+        margin-top: 0;
+    }
+
+    .cobrand-footer-col--social {
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .cobrand-footer-social-links {
+        display: flex;
+        gap: 1rem;
+        flex-direction: row;
+        justify-content: flex-end;
+    }
+
+    .cobrand-footer-mobile {
+        display: none;
+    }
+}

@@ -1,0 +1,152 @@
+@import "../sass/h5bp";
+@import "_variables";
+@import "../sass/mixins";
+
+@import "../sass/base";
+
+/*TYPOGRAPHY */
+
+h1, h2, h3 {
+  font-weight: bold;
+}
+
+a {
+    &:focus {
+        color: $primary_b !important;
+        background-color: $cobrand_yellow !important;
+    }
+}
+
+ul {
+    ::marker {
+        color: $cobrand_fuccia;
+    }
+
+    >li {
+        list-style-type: disc;
+    }
+}
+
+/* BUTTONS */
+a#geolocate_link,
+#report-cta {
+    @include button-variant($bg-top: $cobrand_purple, $bg-bottom: $cobrand_purple, $border: $cobrand_purple, $text: #fff, $hover-bg-bottom: $cobrand_purple_600, $hover-bg-top: $cobrand_purple_600, $hover-border: $cobrand_purple_600, $hover-text: #fff);
+    text-decoration: none;
+}
+
+/* NAVBAR */
+#site-logo {
+    background-image: url("/cobrands/hertfordshire/images/logo.svg");
+    background-size: auto 3rem;
+    background-position-y: 6px;
+    width: 6rem;
+
+    &:focus {
+        background-image: url("/cobrands/hertfordshire/images/logo-black.svg");
+    }
+}
+
+.nav-menu--main {
+    a {
+        text-decoration: none;
+
+        &:visited {
+        color: $primary;
+        }
+    }
+
+    span {
+        background-color: $primary;
+        color: $primary_text;
+        text-decoration: underline;
+    }
+}
+
+/* FRONTPAGE */
+
+#front-main-container {
+    box-sizing: border-box;
+}
+
+ol.big-numbers>li:before {
+    color: $primary;
+}
+
+/* OTHERS */
+.item-list__item.item-list--reports__item a {
+    text-decoration: none;
+}
+
+
+/* SITE MESSAGE */
+// https://www.hertfordshire.gov.uk/services/adult-social-services/care-and-carers/arranging-and-paying-for-care/adult-care-how-to-get-care-and-support-from-us.aspx
+.site-message {
+    color: $primary_b;
+    padding: 1.5rem;
+    background-color: $cobrand_white;
+    border: none;
+    border-left: 3px solid $cobrand_fuccia;
+    word-wrap: break-word;
+}
+
+/* FOOTER */
+.cobrand-footer {
+    font-size: 0.95rem;
+    background-color: $primary;
+    color: $primary_text;
+    padding: 25px 0;
+
+    .cobrand-footer-inner {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 2rem;
+    }
+
+    h3 {
+        font-size: 1.25rem;
+        font-weight: 400;
+        margin-top: 0;
+    }
+
+    a {
+        color: $primary_text;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    ul {
+        margin-left: 0;
+
+        li {
+            list-style: none;
+            padding-left: 0;
+        }
+    }
+
+    .cobrand-footer-logo {
+        display: flex;
+        justify-content: right;
+    }
+
+    .cobrand-footer-mobile {
+        margin-bottom: 38px;
+    }
+
+    .cobrand-footer-col--social {
+        display: flex;
+
+        .cobrand-footer-social-links {
+            display: flex;
+            gap: 1rem;
+            flex-direction: row;
+        }
+    }
+
+}
+
+@import "../fixmystreet-uk-councils/societyworks-footer";
