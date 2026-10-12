@@ -906,10 +906,11 @@ body.authpage {
 .big-green-banner {
   top: auto;
   margin: (-1em/1.375) (-1em/1.375) 0 (-1em/1.375);
-  font-size: 1.375em;
-  padding: flip(1em 2em 1em 1em, 1em 1em 1em 2em);
+  font-size: 1.65em;
+  padding: flip(0.75em 2em 0.75em 1em, 0.75em 1em 0.75em 2em);
   background: $col_click_map inline-image("../fixmystreet/images/chevron-white-#{$right}.svg") $right center no-repeat;
   background-size: 43px 33px;
+  letter-spacing: 1%;
 
   span {
     display: block;

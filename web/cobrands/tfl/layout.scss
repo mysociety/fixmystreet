@@ -137,15 +137,12 @@ body.mappage {
 
   .big-green-banner {
     display: block;
-    text-transform: none;
   }
 }
 
 body.mappage #footer { display: none; }
 
 .big-green-banner {
-  text-transform: none;
-
   // Prevent blue button from touching blue logo above.
   // The 3px border is stolen from the official TFL website header.
   border-top: 3px solid #121315;
