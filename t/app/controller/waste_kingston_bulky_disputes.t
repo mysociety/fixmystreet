@@ -320,7 +320,7 @@ FixMyStreet::override_config {
             } ] });
 
             subtest 'Check dispute window' => sub {
-                set_fixed_time('2023-07-01T14:59:59Z');
+                set_fixed_time('2023-06-30T22:59:59Z');
                 get_problem_page();
                 $mech->content_lacks($dispute_label, 'cannot report just before window opens');
 
@@ -576,7 +576,7 @@ FixMyStreet::override_config {
             ] });
 
             subtest 'Check dispute window' => sub {
-                set_fixed_time('2023-07-02T14:59:59Z');
+                set_fixed_time('2023-07-01T22:59:59Z');
                 get_problem_page();
                 $mech->content_lacks($dispute_label, 'cannot report just before window opens');
 

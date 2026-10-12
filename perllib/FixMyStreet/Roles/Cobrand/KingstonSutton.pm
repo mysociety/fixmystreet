@@ -336,30 +336,31 @@ sub _check_for_open_disputes {
     return $open_dispute;
 }
 
+sub _check_within_window {
+    my ($start, $days) = @_;
+    my $wd = FixMyStreet::WorkingDays->new();
+
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    $start = $start->clone->truncate(to => 'day');
+    my $end = $wd->add_days($start, $days)->add(days => 1);
+
+    return 'after' if $now >= $end;
+    return 'within' if $now >= $start && $now < $end;
+    return '';
+}
+
 sub _check_date_within_dispute_window {
     my ($self, $date, $is_bulky) = @_;
 
-    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-
     # And 2 working days (from 6pm) have passed.
     # 20 days for Kingston bulky.
-    my $wd_count
-        = $self->{c}->cobrand->moniker eq 'kingston' && $is_bulky
+    my $days
+        = $self->moniker eq 'kingston' && $is_bulky
             ? $self->bulky_dispute_window_days
             : 2;
-    $wd_count = 0 if FixMyStreet->config('STAGING_SITE') && !FixMyStreet->test_mode;
+    $days = 0 if FixMyStreet->config('STAGING_SITE') && !FixMyStreet->test_mode;
 
-    my $wd = FixMyStreet::WorkingDays->new();
-    my $start = $date;
-    my $end = $wd->add_days( $start, $wd_count + 1 )->set_hour(0)->set_minute(0)->set_second(0);
-
-    if ($now >= $end) {
-        return 'after';
-    } elsif ($now >= $start && $now < $end) {
-        return 'within';
-    }
-
-    return '';
+    return _check_within_window($date, $days);
 }
 
 sub munge_bin_services_for_address {
@@ -523,8 +524,6 @@ sub _setup_container_request_escalations_for_service {
 
     # There's an open container request with no matching escalation so
     # we check now to see if it's within the window for an escalation to be raised
-    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-
     my $day_cfg = $self->waste_escalation_window;
     my $start_days = $day_cfg->{container_start};
     my $window_days = $day_cfg->{container_length};
@@ -534,10 +533,10 @@ sub _setup_container_request_escalations_for_service {
         $window_days = 2;
     }
 
-    my $start = $wd->add_days($open_request_event->{date}, $start_days)->set_hour(0);
-    my $end = $wd->add_days($start, $window_days + 1); # Before this
+    my $start = $wd->add_days($open_request_event->{date}, $start_days);
+    my $result = _check_within_window($start, $window_days);
 
-    if ($now >= $start && $now < $end) {
+    if ($result eq 'within') {
         $row->{escalations}{container} = $open_request_event;
     }
 }
@@ -545,23 +544,17 @@ sub _setup_container_request_escalations_for_service {
 =head2 Disputes
 
 Kingston and Sutton have custom behaviour to allow disputes of completed container requests.
-TODO Container specific, but can refactor with scheduled/bulky disputes.
 
 =cut
 
 sub _check_date_within_container_dispute_window {
     my ($self, $date) = @_;
 
-    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-    my $wd = FixMyStreet::WorkingDays->new();
-    my $start = $date->clone->set_hour(0)->set_minute(0)->set_second(0);
     my $days = $self->moniker eq 'kingston' ? 20 : 2;
-    if (FixMyStreet->config('STAGING_SITE') && !FixMyStreet->test_mode) {
-        $days = 1;
-    }
-    my $end = $wd->add_days($start, $days+1);
+    $days = 1 if FixMyStreet->config('STAGING_SITE') && !FixMyStreet->test_mode;
 
-    return 1 if $now >= $start && $now < $end;
+    my $result = _check_within_window($date, $days);
+    return 1 if $result eq 'within';
     return 0;
 }
 
