@@ -39,7 +39,7 @@ need adding in the cobrand with add_csv_columns.
 
 =item user_details - fetch the report `user_email` and `user_phone`
 
-=item assigned_to - include the name of the assigned user in `assigned_to`
+=item assigned_to - include the name of the assigned user in `assigned_to`, and when they were assigned in `assigned_at`
 
 =item db_state - store the actual database state name (if the state column is changed by the cobrand)
 
@@ -215,7 +215,7 @@ EOF
         push @sql_join, 'users admin_log_user ON ranked_admin_log.user_id = admin_log_user.id';
     }
     if ($EXTRAS->{assigned_to}{$cobrand->moniker}) {
-        push @sql_select, "planned_user.name as assigned_to";
+        push @sql_select, "planned_user.name as assigned_to", "to_json(date_trunc('second', user_planned_reports.added))#>>'{}' as assigned_at";
         push @sql_join, '"user_planned_reports" ON "user_planned_reports"."report_id" = "me"."id" AND "user_planned_reports"."removed" IS NULL';
         push @sql_join, '"users" "planned_user" ON "planned_user"."id" = "user_planned_reports"."user_id"';
     }
