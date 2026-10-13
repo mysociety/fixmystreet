@@ -35,4 +35,6 @@ sub lookup_site_code_config { {
     accept_feature => sub { 1 }
 } }
 
+sub send_questionnaires { 0 }
+
 1;
