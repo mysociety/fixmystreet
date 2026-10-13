@@ -127,6 +127,12 @@ sub disambiguate_location {
     };
 }
 
+=item * We have aerial maps
+
+=cut
+
+sub has_aerial_maps { 'tilma.mysociety.org/mapcache/gmaps/lincsaerial@{grid}' }
+
 =back
 
 =cut
