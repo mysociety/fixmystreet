@@ -30,6 +30,15 @@ my $staff_user = $mech->create_user_ok(
     from_body => $body,
 );
 $staff_user->user_body_permissions->create({ body => $body, permission_type => 'category_edit' });
+my $dash_user = $mech->create_user_ok(
+    'dash@email.com',
+    name      => 'Dash User',
+    from_body => $body,
+);
+$dash_user->user_body_permissions->create({
+    body => $body,
+    permission_type => 'view_dashboard',
+});
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'fixmystreet', 'canalrivertrust', 'gloucestershire' ],
@@ -96,6 +105,25 @@ FixMyStreet::override_config {
                 $mech->text_lacks( 'closed to updates from the public' );
             }
         }
+
+        note 'Dashboard access';
+        $mech->log_out_ok;
+        $mech->get_ok('/dashboard');
+        is $mech->uri->path, '/auth', 'no user: redirects to login';
+
+        $mech->log_in_ok( $standard_user_1->email );
+        $mech->get('/dashboard');
+        is $mech->status, 404, 'standard user: no permission';
+
+        $mech->log_in_ok( $staff_user->email );
+        $mech->get('/dashboard');
+        $host eq 'fixmystreet'
+            ? ( is $mech->status, 200, 'staff user: no permission but can access on fixmystreet' )
+            : ( is $mech->status, 404, 'staff user: no permission' );
+
+        $mech->log_in_ok( $dash_user->email );
+        $mech->get('/dashboard');
+        is $mech->status, 200, 'staff user: has permission';
     }
 
     for my $host ( qw/fixmystreet canalrivertrust gloucestershire/ ) {
