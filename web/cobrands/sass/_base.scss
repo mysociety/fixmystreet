@@ -2901,6 +2901,7 @@ body.authpage {
     width: 100%;
     background: #fff;
     border: 1px solid $primary_b;
+    max-width: 24rem;
   }
   input#pc {
     flex: 86 0 auto;
