@@ -58,6 +58,7 @@ sub process_switchout : Private {
                 my $desc = $field->{desc};
                 $desc .= ':' unless !$desc || $desc =~ /[?:.]$/;
                 $desc .= $field->{name} eq 'terms_accepted' ? "\n" : ' ';
+                $desc = "\n$desc" if $field->{name} eq 'additional_information';
 
                 $section .= "$desc$pretty\n";
             }
