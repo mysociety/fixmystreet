@@ -728,6 +728,13 @@ around 'munge_sendreport_params' => sub {
     $params->{From} = [ $self->do_not_reply_email, $self->contact_name ];
     delete $params->{'Reply-To'} if $params->{'Reply-To'};
 
+    if ($row->cobrand_data eq 'switchout') {
+        my $emergency = $row->get_extra_metadata('emergency') || '';
+        if ($emergency eq 'Yes') {
+            $params->{Importance} = 'High';
+        }
+    }
+
     if ($row->cobrand_data eq 'licence' || $row->cobrand_data eq 'switchout') {
         my @attachments;
 

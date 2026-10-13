@@ -101,6 +101,12 @@ subtest 'Switch out application form submission' => sub {
 
 
         $mech->submit_form_ok({ with_fields => {
+            temporary_signals_used => 'Yes',
+            site_contact_name => 'Site Contact',
+            site_phone => '01234 567890',
+        }});
+        $mech->submit_form_ok({ with_fields => {
+            temporary_signals_used => 'Yes',
             temporary_signal_company_name => 'Temporary Ltd',
             temporary_signal_phone => '01234 567890',
             site_contact_name => 'Site Contact',
@@ -125,11 +131,14 @@ subtest 'Switch out application form submission' => sub {
             permit_nature => 'Fixing green bulb',
         }});
 
+        $mech->submit_form_ok;
+        $mech->content_contains('Please provide a file');
         $mech->submit_form_ok({ with_fields => {
             upload_document_1 => [ $sample_pdf, encode_utf8('“insurance”.pdf'), Content_Type => 'application/pdf' ],
-            additional_information => 'Additional',
         }});
 
+        $mech->submit_form_ok;
+        $mech->content_contains('Company paying invoice field is required');
         $mech->submit_form_ok({ with_fields => {
             payment_company => 'Invoice',
             payment_name => 'Payment name',
@@ -142,7 +151,9 @@ subtest 'Switch out application form submission' => sub {
         $mech->form_with_fields('terms_accepted');
         $mech->current_form->find_input('terms_accepted', undef, 1)->value('TfL Traffic Signal Switch Out Guidance and Terms & Conditions');
         $mech->current_form->find_input('terms_accepted', undef, 2)->value('TfL Traffic Signal Switch Out Fee structure');
-        $mech->submit_form_ok;
+        $mech->submit_form_ok({ with_fields => {
+            additional_information => 'Additional',
+        }});
 
         $mech->content_contains('Application summary', 'Summary page rendered');
         $mech->content_lacks('Lead company name', 'Lead fields hidden when same as applicant');
@@ -189,13 +200,16 @@ subtest 'Switch out application form submission' => sub {
             my $id = $problem->id;
 
             my @email = $mech->get_email;
+            $mech->clear_emails_ok;
+
             my @email_parts;
             $email[0]->walk_parts(sub {
                 my ($part) = @_;
                 push @email_parts, [ { $part->header_pairs }, $part->body ];
             });
             like $email_parts[0][0]{'Content-Type'}, qr{multipart/mixed};
-            is $email_parts[0][0]{'Subject'}, 'Switch out application - 123/456';
+            my $date = join('/', $start_date->day, $start_date->month, $start_date->year);
+            is $email_parts[0][0]{'Subject'}, "Switch out application - 123/456 $date Neither";
             is $email_parts[0][0]{'To'}, 'TfL <switchout@tfl.gov.uk.example.org>';
             like $email_parts[1][0]{'Content-Type'}, qr{multipart/related};
             like $email_parts[2][0]{'Content-Type'}, qr{multipart/alternative};
@@ -265,6 +279,99 @@ subtest 'Switch out application form submission' => sub {
             $mech->log_out_ok;
             $mech->get("/report/" . $problem->id);
             is $mech->res->code, 403;
+        };
+
+        subtest 'Emergency application' => sub {
+            $mech->get_ok('/form/switchout');
+            $mech->submit_form_ok({ button => 'start' });
+            $mech->submit_form_ok({ with_fields => { location => 'BR1 3UH' }});
+
+            $mech->submit_form_ok({ with_fields => {
+                asset_location => 'Bromley High Street',
+                asset_borough => 'Bromley',
+                asset_site_id => '123/456',
+                asset_type => 'Junction',
+                latitude => => 51.4021,
+                longitude => 0.01578,
+            }});
+
+            $mech->submit_form_ok({ with_fields => { emergency => 'Yes' }});
+            $mech->submit_form_ok; # Emergency message page
+
+            my $start_date = DateTime->today->add(weeks => 2);
+            $mech->submit_form_ok({ with_fields => {
+                'switch_out_date_1.day' => $start_date->day,
+                'switch_out_date_1.month' => $start_date->month,
+                'switch_out_date_1.year' => $start_date->year,
+                'switch_out_time_1' => '00:30',
+                'restore_date_1.day' => $start_date->day,
+                'restore_date_1.month' => $start_date->month,
+                'restore_date_1.year' => $start_date->year,
+                'restore_time_1' => '01:30',
+            }});
+
+            $mech->submit_form_ok({ with_fields => {
+                temporary_signals_used => 'No',
+                site_contact_name => 'Site Contact',
+                site_phone => '01234 567890',
+            }});
+
+            $mech->submit_form_ok({ with_fields => {
+                organisation => 'Test Scaffolding Ltd',
+                name => 'Test Person',
+                email => 'test@example.com',
+                phone => '01234 567890',
+            }});
+
+            $mech->submit_form_ok({ with_fields => {
+                lead_same_as_applicant => 1,
+            }});
+
+            $mech->submit_form_ok({ with_fields => {
+                permit_ha => 'TfL',
+                permit_contact => 'London',
+                permit_number => '2',
+                permit_nature => 'Fixing green bulb',
+            }});
+
+            $mech->submit_form_ok; # No attachments, is okay
+            $mech->submit_form_ok; # No payment details, is okay
+
+            $mech->form_with_fields('terms_accepted');
+            $mech->current_form->find_input('terms_accepted', undef, 1)->value('TfL Traffic Signal Switch Out Guidance and Terms & Conditions');
+            $mech->current_form->find_input('terms_accepted', undef, 2)->value('TfL Traffic Signal Switch Out Fee structure');
+            $mech->submit_form_ok;
+
+            $mech->content_contains('Application summary', 'Summary page rendered');
+            $mech->content_lacks('Lead company name', 'Lead fields hidden when same as applicant');
+
+            $mech->submit_form_ok({ with_fields => { confirmation => 1 } });
+
+            $mech->content_contains('Application is pending', 'Shows confirmation page');
+
+            my $problem = FixMyStreet::DB->resultset('Problem')
+                ->search({ category => 'Switch out application' })
+                ->order_by({ -desc => 'id' })->first;
+            is $problem->cobrand_data, 'switchout';
+
+            subtest 'sent emails' => sub {
+                FixMyStreet::Script::Reports::send();
+                my $id = $problem->id;
+
+                my @email = $mech->get_email;
+                $mech->clear_emails_ok;
+
+                my @email_parts;
+                $email[0]->walk_parts(sub {
+                    my ($part) = @_;
+                    push @email_parts, [ { $part->header_pairs }, $part->body ];
+                });
+                like $email_parts[0][0]{'Content-Type'}, qr{multipart/mixed};
+                my $date = join('/', $start_date->day, $start_date->month, $start_date->year);
+                is $email_parts[0][0]{'Subject'}, "Switch out application - 123/456 $date Not provided";
+                is $email_parts[0][0]{'Importance'}, "High";
+                is $email_parts[0][0]{'To'}, 'TfL <switchout@tfl.gov.uk.example.org>';
+            };
         };
     };
 };

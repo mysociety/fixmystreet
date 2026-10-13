@@ -11,6 +11,8 @@ use LWP::Protocol::PSGI;
 use Open311;
 use Open311::GetUpdates;
 use t::Mock::MyGovScotOIDC;
+use FixMyStreet::Script::CSVExport;
+use File::Temp 'tempdir';
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -54,10 +56,27 @@ my $contact = $mech->create_contact_ok(
     email => 'potholes@dumgal.gov.uk'
 );
 
+my $contact_other = $mech->create_contact_ok(
+    body_id => $body->id,
+    category => 'Other',
+    email => 'other@dumgal.gov.uk'
+);
+$contact_other->set_extra_fields(
+    { code => 'fms_layer_owner', datatype => 'string', automated => 'hidden_field' },
+    { code => 'question', datatype => 'string' },
+);
+$contact_other->update;
+
 my $reporter = $mech->create_user_ok('reporter@example.com', name => 'Reporter');
 my $staff_user = $mech->create_user_ok('staff@dumgal.gov.uk', name => 'Staff User', from_body => $body);
 my $other_user = $mech->create_user_ok('other@example.com', name => 'Other User');
 my $superuser = $mech->create_user_ok('super@example.com', name => 'Superuser', is_superuser => 1);
+
+my $role = FixMyStreet::DB->resultset("Role")->create({
+    body => $body, name => 'Role A', permissions => ['moderate', 'user_edit', 'report_inspect', 'contribute_as_body', 'view_dashboard'] });
+my $roleB = FixMyStreet::DB->resultset("Role")->create({ body => $body, name => 'Role B' });
+$staff_user->add_to_roles($role);
+$staff_user->update;
 
 # Create problem once and reuse it
 my $problem = FixMyStreet::DB->resultset('Problem')->create({
@@ -963,6 +982,38 @@ subtest 'state_groups_inspect' => sub {
         'not responsible',
         'unable to fix'
     ];
+};
+
+subtest 'Dashboard CSV extra columns' => sub {
+    my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'dumfries',
+        PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
+    }, sub {
+        my ($report) = $mech->create_problems_for_body( 1, $body->id, 'Title', {
+            extra => {
+                contributed_by => $staff_user->id,
+           },
+        } );
+        $report->update_extra_field({ name => 'question', value => 'Answer' });
+        $report->update;
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/dashboard?export=1');
+
+        $mech->content_contains('"Reported As","Staff User","Staff Role",fms_layer_owner,question');
+        $mech->content_like(qr/.*staff\@dumgal.gov.uk,"Role A",,Answer/);
+
+        FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
+        $mech->get_ok('/dashboard?export=1');
+        $mech->content_contains('"Reported As","Staff User","Staff Role",fms_layer_owner,question');
+        $mech->content_like(qr/.*staff\@dumgal.gov.uk,"Role A",,Answer/);
+
+        $mech->get_ok('/dashboard?export=1&role=' . $role->id);
+        $mech->content_contains("Role A");
+        $mech->get_ok('/dashboard?export=1&role=' . $roleB->id);
+        $mech->content_lacks("Role A");
+    };
 };
 
 done_testing();

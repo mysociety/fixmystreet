@@ -801,7 +801,13 @@ or the missed report) is 'Not presented' (66).
 sub waste_check_can_raise_dispute {
     my ($self, %args) = @_;
 
-    my $resolution = $args{resolution_key} || 0;
+    my $resolution;
+    if ($args{type} eq 'missed collection event') {
+        return 1 if $args{event}{completed};
+        $resolution = $args{event}{resolution} || 0;
+    } else {
+        $resolution = $args{resolution_key} || 0;
+    }
 
     return 1 if $resolution eq 66;
     return 0;

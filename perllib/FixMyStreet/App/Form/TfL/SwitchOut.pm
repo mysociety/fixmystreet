@@ -228,7 +228,9 @@ sub when_page_fields {
             return 'when_' . ($page+1) if $_[1]->{"add_another_same_times"};
             return 'on_site';
         };
-        push @$fields, "switch_out_date_notice_$page", 'add_another', "add_another_same_times";
+        push @$fields, "switch_out_date_notice", 'add_another', "add_another_same_times";
+    } else {
+        push @$fields, "switch_out_date_notice_last";
     }
 
     return (
@@ -286,13 +288,20 @@ for my $page (1..$MAX_DATES) {
         } },
         options => \@time_options,
     );
-    has_field "switch_out_date_notice_$page" => (
-        type => 'Notice',
-        label => 'Do you require additional switch out and restore attendances at this location?',
-        required => 0,
-        widget => 'NoRender',
-    ) if $page < $MAX_DATES;
 }
+
+has_field "switch_out_date_notice" => (
+    type => 'Notice',
+    label => 'Do you require additional switch out and restore attendances at this location?',
+    required => 0,
+    widget => 'NoRender',
+);
+has_field "switch_out_date_notice_last" => (
+    type => 'Notice',
+    label => 'For any further switchouts, please complete the form and contact the Response Desk.',
+    required => 0,
+    widget => 'NoRender',
+);
 
 has_field 'add_another' => (
     type => 'Submit',
@@ -312,22 +321,39 @@ has_field 'add_another_same_times' => (
 );
 
 has_page on_site => (
-    fields => ['temporary_signal_company_name', 'temporary_signal_phone', 'site_contact_name', 'site_phone', 'continue'],
+    fields => ['temporary_signals_used', 'temporary_signal_company_name', 'temporary_signal_phone', 'site_contact_name', 'site_phone', 'continue'],
     title => 'Contacts for works on site',
     intro => 'on-site.html',
     next => 'applicant',
 );
 
+has_field temporary_signals_used => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'Are temporary signals in use?',
+    required => 1,
+    options => [
+        { label => 'Yes', value => 'Yes', data_show => '#form-temporary_signal_company_name-row,#form-temporary_signal_phone-row' },
+        { label => 'No', value => 'No', data_hide => '#form-temporary_signal_company_name-row,#form-temporary_signal_phone-row' },
+    ],
+);
+
 has_field temporary_signal_company_name => (
     type => 'Text',
     label => 'Temporary signal company name',
-    required => 1,
+    required_when => { 'temporary_signals_used' => sub { $_[0] eq 'Yes' } },
+    tags => {
+        initial_hidden => 1,
+    },
 );
 
 has_field temporary_signal_phone => (
     type => 'Text',
     label => 'Temporary signal 24hr contact number',
-    required => 1,
+    required_when => { 'temporary_signals_used' => sub { $_[0] eq 'Yes' } },
+    tags => {
+        initial_hidden => 1,
+    },
     validate_method => sub {
         my $self = shift;
         my $parsed = FixMyStreet::SMS->parse_username($self->value);
@@ -487,34 +513,42 @@ has_field permit_nature => (
 # the order pages are shown on summary page/email, and TfL want upload to come
 # after payment
 
+my $no_payment_in_emergency = {
+    "payment_name" => sub {
+        my ($val, $field) = @_;
+        my $emergency = $field->form->saved_data->{emergency};
+        return $emergency eq 'No' ? 1 : 0;
+    },
+};
+
 has_page payment => (
     fields => ['payment', 'continue'],
     title => 'Payment details',
     fields => ['payment_company', 'payment_name', 'payment_email', 'payment_phone', 'payment_po', 'payment_behalf', 'continue'],
     intro => 'invoice.html',
-    next => sub { $_[0]->{payment_behalf} eq 'Neither' ? 'terms' : 'payment_on_behalf' }
+    next => sub { my $pb = $_[0]->{payment_behalf} || ''; $pb eq 'TfL' || $pb eq 'London Borough' ? 'payment_on_behalf' : 'terms' }
 );
 
 has_field payment_company => (
     type => 'Text',
     label => 'Company paying invoice',
-    required => 1,
+    required_when => $no_payment_in_emergency,
 );
 
 has_field payment_name => (
     type => 'Text',
     label => 'Contact name',
-    required => 1,
+    required_when => $no_payment_in_emergency,
 );
 
 has_field payment_email => (
-    required => 1,
+    required_when => $no_payment_in_emergency,
     type => 'Email',
     label => 'Contact email address',
 );
 
 has_field payment_phone => (
-    required => 1,
+    required_when => $no_payment_in_emergency,
     type => 'Text',
     label => 'Contact telephone number',
     validate_method => sub {
@@ -526,13 +560,13 @@ has_field payment_phone => (
 );
 
 has_field payment_po => (
-    required => 1,
+    required_when => $no_payment_in_emergency,
     type => 'Text',
     label => 'Purchase Order Number',
 );
 
 has_field payment_behalf => (
-    required => 1,
+    required_when => $no_payment_in_emergency,
     type => 'Select',
     widget => 'RadioGroup',
     label => 'If your works are on behalf of TfL or a London Borough, please state below',
@@ -556,7 +590,7 @@ has_page payment_on_behalf => (
             "on_behalf_contact_email" => { label => "$type contact email" },
         };
     },
-    tags => { hide => sub { $_[0]->form->saved_data->{"payment_behalf"} eq 'Neither' } },
+    tags => { hide => sub { ($_[0]->form->saved_data->{"payment_behalf"}||'') eq 'Neither' } },
 );
 
 has_field on_behalf_contact_name => (
@@ -581,8 +615,7 @@ has_field on_behalf_additional => (
 );
 
 my $upload_fields = ['upload_document_1', 'upload_document_2', 'upload_document_3',
-    'missing_explanation', 'additional_information',
-    'continue'];
+    'missing_explanation', 'continue'];
 
 has_page uploads => (
     fields => $upload_fields,
@@ -608,12 +641,6 @@ has_page uploads => (
 );
 
 has_field upload_document_1 => (
-    required_when => {
-        'missing_explanation' => sub {
-            my ($val, $field) = @_;
-            !$val && !$field->get_tag('files');
-        }
-    },
     type => 'FileIdUpload',
     label => 'Traffic Management Drawing, Stage Diagram and Temporary Signal Timings Documents',
 );
@@ -634,14 +661,8 @@ has_field missing_explanation => (
     label => 'If any of the requested information is unavailable, please provide details below. Our team will review the information provided and advise whether your application can proceed.',
 );
 
-has_field additional_information => (
-    type => 'Text',
-    widget => 'Textarea',
-    label => 'Please provide any additional information relevant to this application that TfL or our contractors may need when reviewing your request or attending the site.',
-);
-
 has_page terms => (
-    fields => ['terms_accepted', 'continue'],
+    fields => ['terms_accepted', 'additional_information', 'continue'],
     title => 'Terms and conditions confirmation',
     next => 'summary',
 );
@@ -675,6 +696,15 @@ sub options_terms_accepted {
     }
     return @labels;
 }
+
+has_field additional_information => (
+    type => 'Text',
+    widget => 'Textarea',
+    label => 'Additional information',
+    tags => {
+        hint => 'Please provide any additional information relevant to this application that TfL or our contractors may need when reviewing your request or attending the site. If this is a retrospective request please input TfL Reference.',
+    },
+);
 
 has_page summary => (
     fields => ['confirmation', 'submit'],
@@ -740,10 +770,15 @@ sub validate_datetime {
 }
 
 # Overall form validation
+sub checkable {
+    my $field = shift;
+    return $field->is_active && $field->has_result && !$field->has_errors ? 1 : 0;
+}
+
 sub construct_datetime {
     my ($self, $d, $t) = @_;
     my $field = $self->field($d);
-    return unless $field->is_active && $field->has_result && !$field->has_errors;
+    return unless checkable($field);
     my $date = $field->value;
     my ($h, $m) = split /:/, $self->field($t)->value or return;
     return $date->set_hour($h)->set_minute($m);
@@ -759,6 +794,16 @@ sub validate {
             if ($on && $on <= $off) {
                 $self->add_form_error('The end time must be after the start time');
             }
+        }
+    }
+
+    my $upload_1 = $self->field('upload_document_1');
+    if (checkable($upload_1)) {
+        my $emergency = $self->saved_data->{emergency};
+        my $explanation = $self->field('missing_explanation')->value;
+        my $key = $upload_1->_file_key;
+        if ($emergency eq 'No' && !$explanation && !$key) {
+            $upload_1->add_error('Please provide a file');
         }
     }
 

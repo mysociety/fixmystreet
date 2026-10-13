@@ -683,7 +683,7 @@ FixMyStreet::override_config {
             } ] });
 
             subtest 'Raising a dispute only available within window' => sub {
-                set_fixed_time('2022-09-09T15:30:00Z');
+                set_fixed_time('2022-09-08T22:59:00Z');
                 get_problem_page();
                 $mech->content_lacks($dispute_label, 'not allowed before window opens');
 
@@ -794,25 +794,16 @@ FixMyStreet::override_config {
                 ResolutionCodeId => 1359, # H&S - Damaged container
             } ] });
 
-            subtest 'Raising a dispute only available within window' => sub {
-                set_fixed_time('2022-09-09T15:30:00Z');
-                get_problem_page();
-                $mech->content_lacks($dispute_label, 'not allowed before window opens');
-
-                set_fixed_time('2022-09-09T16:01:00Z');
-                get_problem_page();
-                $mech->content_lacks($dispute_label, 'allowed just after window opens');
-
-                set_fixed_time('2022-09-13T23:59:00Z');
-                get_problem_page();
-                $mech->content_lacks($dispute_label, 'allowed just before window closes');
-
-                set_fixed_time('2022-09-14T00:01:00Z');
-                get_problem_page();
-                like $mech->text,
-                    qr/The crew have closed your collection task as 'not collected'.*Health and safety reasons/;
-                $mech->content_like(qr/name="category" value="Missed collection dispute"[^>]+disabled/s);
-                $mech->content_contains($dispute_label, 'shown but disabled just after window closes');
+            subtest 'Raising a dispute not possible at any time' => sub {
+                # Before opens, just after open, just before closure, just after closure
+                foreach ( '2022-09-09T15:30:00Z', '2022-09-09T16:01:00Z', '2022-09-13T23:59:00Z', '2022-09-14T00:01:00Z' ) {
+                    set_fixed_time($_);
+                    get_problem_page();
+                    like $mech->text,
+                        qr/The crew have closed your collection task as 'not collected'.*Health and safety reasons/;
+                    $mech->content_lacks($dispute_label, 'not allowed before window opens');
+                    $mech->content_like(qr/redirect-missed[^>]*disabled>/, 'Cannot report as missed');
+                }
             };
         };
 
@@ -823,7 +814,7 @@ FixMyStreet::override_config {
             } ] });
 
             subtest 'Raising a dispute only available within window' => sub {
-                set_fixed_time('2022-09-09T15:30:00Z');
+                set_fixed_time('2022-09-08T22:59:00Z');
                 get_problem_page();
                 $mech->content_lacks($dispute_label, 'not allowed before window opens');
 
@@ -950,7 +941,6 @@ FixMyStreet::override_config {
             $e->mock('GetEventsForObject', sub { [ {
                 %event_defaults,
                 EventStateId => 19241, # Completed
-                ResolutionCodeId => 66, # Not presented
             } ] });
 
             subtest 'Follow dispute link' => sub {
@@ -1732,6 +1722,15 @@ FixMyStreet::override_config {
 
         subtest 'Making a dispute' => sub {
             set_fixed_time($window_start_time);
+            $mech->get_ok('/waste/12345');
+            $mech->follow_link_ok( { url_regex => qr/service_id=966/}, 'Follow "Report a problem" link for Non-Recyclable Waste collection' );
+            $mech->content_contains('Dispute container delivery|container-request-event-guid');
+            $mech->submit_form_ok( { with_fields => { category => 'Dispute container delivery|container-request-event-guid' } } );
+            is $mech->uri->path_query, '/faq?dispute-url?uprn=1000000002&service_id=966&event_id=112112321';
+        };
+
+        subtest 'Making a dispute, event only in Echo' => sub {
+            $container_report->delete;
             $mech->get_ok('/waste/12345');
             $mech->follow_link_ok( { url_regex => qr/service_id=966/}, 'Follow "Report a problem" link for Non-Recyclable Waste collection' );
             $mech->content_contains('Dispute container delivery|container-request-event-guid');

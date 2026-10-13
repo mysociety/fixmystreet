@@ -603,7 +603,7 @@ sub waste_task_resolutions {
 
         # Special handling if last instance is today e.g. if it's before a
         # particular hour and outstanding, show it as in progress
-        if ($row->{last}{date}->ymd eq $now->ymd) {
+        if ($row->{last}{date} && $row->{last}{date}->ymd eq $now->ymd) {
             $self->waste_on_the_day_criteria($completed, $state, $now, $row);
         }
 

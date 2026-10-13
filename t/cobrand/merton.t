@@ -4,6 +4,7 @@ use HTML::Selector::Element qw(find);
 use FixMyStreet::Script::Reports;
 use FixMyStreet::Script::Alerts;
 use Open311::PostServiceRequestUpdates;
+use File::Temp 'tempdir';
 
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
@@ -382,9 +383,13 @@ subtest 'Does not send updates on now-email categories' => sub {
 };
 
 subtest 'Dashboard CSV extra columns' => sub {
+  my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
   FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'merton',
     MAPIT_URL => 'http://mapit.uk/',
+    PHOTO_STORAGE_OPTIONS => {
+        UPLOAD_DIR => $UPLOAD_DIR,
+    },
   }, sub {
     $problem1->update_extra_field({ name => 'ParkName', value => 'Lavender Park' });
     $problem1->update_extra_field({ name => 'uprn', value => '48100068' });

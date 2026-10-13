@@ -271,7 +271,7 @@ around booked_check_missed_collection => sub {
             );
             my $resolution_valid = $self->waste_check_can_raise_dispute(
                 type => 'missed collection event',
-                resolution_key => $missed_event->{resolution},
+                event => $missed_event,
             );
 
             if ($current_dispute && $current_dispute->{closed}) {
@@ -336,30 +336,31 @@ sub _check_for_open_disputes {
     return $open_dispute;
 }
 
+sub _check_within_window {
+    my ($start, $days) = @_;
+    my $wd = FixMyStreet::WorkingDays->new();
+
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    $start = $start->clone->truncate(to => 'day');
+    my $end = $wd->add_days($start, $days)->add(days => 1);
+
+    return 'after' if $now >= $end;
+    return 'within' if $now >= $start && $now < $end;
+    return '';
+}
+
 sub _check_date_within_dispute_window {
     my ($self, $date, $is_bulky) = @_;
 
-    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-
     # And 2 working days (from 6pm) have passed.
     # 20 days for Kingston bulky.
-    my $wd_count
-        = $self->{c}->cobrand->moniker eq 'kingston' && $is_bulky
+    my $days
+        = $self->moniker eq 'kingston' && $is_bulky
             ? $self->bulky_dispute_window_days
             : 2;
-    $wd_count = 0 if FixMyStreet->config('STAGING_SITE') && !FixMyStreet->test_mode;
+    $days = 0 if FixMyStreet->config('STAGING_SITE') && !FixMyStreet->test_mode;
 
-    my $wd = FixMyStreet::WorkingDays->new();
-    my $start = $date;
-    my $end = $wd->add_days( $start, $wd_count + 1 )->set_hour(0)->set_minute(0)->set_second(0);
-
-    if ($now >= $end) {
-        return 'after';
-    } elsif ($now >= $start && $now < $end) {
-        return 'within';
-    }
-
-    return '';
+    return _check_within_window($date, $days);
 }
 
 sub munge_bin_services_for_address {
@@ -469,22 +470,21 @@ sub _setup_missed_collection_disputes_for_service {
         # And no existing dispute since last collection
         && !$dispute_event
     ) {
-        my $window = $self->_check_date_within_dispute_window(
-            $missed_event->{date} );
+        my $resolution_valid = $self->waste_check_can_raise_dispute(
+            type => 'missed collection event',
+            event => $missed_event,
+        );
+        if ($resolution_valid) {
+            my $window = $self->_check_date_within_dispute_window(
+                $missed_event->{date} );
 
-        if ( $window eq 'within' ) {
-            my $resolution_valid = $self->waste_check_can_raise_dispute(
-                type => 'missed collection event',
-                resolution_key => $missed_event->{resolution},
-            );
-            if ($resolution_valid) {
+            if ( $window eq 'within' ) {
                 $row->{dispute}{missed_event} = $missed_event;
                 $row->{dispute}{allowed} = 1;
+            } elsif ( $window eq 'after' ) {
+                $row->{dispute}{missed_event} = $missed_event;
+                $row->{dispute}{too_late} = 1;
             }
-        }
-        elsif ( $window eq 'after' ) {
-            $row->{dispute}{missed_event} = $missed_event;
-            $row->{dispute}{too_late} = 1;
         }
     } elsif ($missed_event && $dispute_event) {
         if ($dispute_event->{closed}) {
@@ -524,8 +524,6 @@ sub _setup_container_request_escalations_for_service {
 
     # There's an open container request with no matching escalation so
     # we check now to see if it's within the window for an escalation to be raised
-    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-
     my $day_cfg = $self->waste_escalation_window;
     my $start_days = $day_cfg->{container_start};
     my $window_days = $day_cfg->{container_length};
@@ -535,10 +533,10 @@ sub _setup_container_request_escalations_for_service {
         $window_days = 2;
     }
 
-    my $start = $wd->add_days($open_request_event->{date}, $start_days)->set_hour(0);
-    my $end = $wd->add_days($start, $window_days + 1); # Before this
+    my $start = $wd->add_days($open_request_event->{date}, $start_days);
+    my $result = _check_within_window($start, $window_days);
 
-    if ($now >= $start && $now < $end) {
+    if ($result eq 'within') {
         $row->{escalations}{container} = $open_request_event;
     }
 }
@@ -546,23 +544,17 @@ sub _setup_container_request_escalations_for_service {
 =head2 Disputes
 
 Kingston and Sutton have custom behaviour to allow disputes of completed container requests.
-TODO Container specific, but can refactor with scheduled/bulky disputes.
 
 =cut
 
 sub _check_date_within_container_dispute_window {
     my ($self, $date) = @_;
 
-    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-    my $wd = FixMyStreet::WorkingDays->new();
-    my $start = $date->clone->set_hour(0)->set_minute(0)->set_second(0);
     my $days = $self->moniker eq 'kingston' ? 20 : 2;
-    if (FixMyStreet->config('STAGING_SITE') && !FixMyStreet->test_mode) {
-        $days = 1;
-    }
-    my $end = $wd->add_days($start, $days+1);
+    $days = 1 if FixMyStreet->config('STAGING_SITE') && !FixMyStreet->test_mode;
 
-    return 1 if $now >= $start && $now < $end;
+    my $result = _check_within_window($date, $days);
+    return 1 if $result eq 'within';
     return 0;
 }
 
@@ -578,7 +570,6 @@ sub _setup_container_request_disputes_for_service {
     foreach my $request ($request_events->list) {
         my $guid = $request->{guid};
         my $request_report = $request->{report};
-        next unless $request_report;
 
         $row->{disputes}{container}{$guid}{report} = $request_report;
 
@@ -912,7 +903,13 @@ sub dashboard_export_include_all_states { 1 }
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
 
-    $csv->modify_csv_header( Detail => 'Address' );
+    my $sutton = $self->moniker eq 'sutton';
+    if ($sutton) {
+        $csv->splice_csv_column('user_name_display', address => 'Address');
+        $csv->splice_csv_column('user_name_display', reason => 'Reason');
+    } else {
+        $csv->modify_csv_header( Detail => 'Address' );
+    }
 
     my $config = $self->wasteworks_config || {};
     my $max_items = max(
@@ -935,7 +932,7 @@ sub dashboard_export_problems_add_columns {
         current_bins => 'Bin count declared',
         quantity => 'Subscription quantity',
         # Escalations
-        $self->moniker eq 'sutton' ? (original_ref => 'Original reference') : (),
+        $sutton ? (original_ref => 'Original reference') : (),
         map { "item_" . $_ => "Item $_" } (1..$max_items),
     );
 
@@ -959,10 +956,21 @@ sub dashboard_export_problems_add_columns {
         }
 
         my $detail = $csv->dbi ? $report->{detail} : $report->detail;
-        $detail =~ s/^.*?\n\n//; # Remove waste category
+        my %detail;
+        if ($sutton) {
+            my ($reason) = $detail =~ /^Reason: (.*)$/m;
+            %detail = (
+                detail => $detail,
+                address => $csv->_extra_metadata($report, 'property_address') || '',
+                reason => $reason || '',
+            );
+        } else {
+            $detail =~ s/^.*?\n\n//; # Remove waste category
+            %detail = ( detail => $detail );
+        }
 
         my $data = {
-            detail => $detail,
+            %detail,
             $csv->dbi ? (
                 user_name_display => $report->{name},
                 payment_reference => $report->{extra}{payment_reference} || '',

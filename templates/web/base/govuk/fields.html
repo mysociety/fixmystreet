@@ -160,7 +160,7 @@
             Day
           </label>
           <input class="govuk-input govuk-date-input__input govuk-input--width-2[% IF error %] govuk-input--error[% END %]"
-            id="[% field.id %].day" name="[% field.html_name %].day" type="text" value="[% field.fif.day %]" pattern="[0-9]*" inputmode="numeric">
+            id="[% field.id %].day" name="[% field.html_name %].day" type="text" value="[% field.fif.day %]" pattern="[0-9]*" inputmode="numeric" maxlength=2>
         </div>
       </div>
       <div class="govuk-date-input__item">
@@ -169,7 +169,7 @@
             Month
           </label>
           <input class="govuk-input govuk-date-input__input govuk-input--width-2[% IF error %] govuk-input--error[% END %]"
-            id="[% field.id %].month" name="[% field.html_name %].month" type="text" value="[% field.fif.month %]" pattern="[0-9]*" inputmode="numeric">
+            id="[% field.id %].month" name="[% field.html_name %].month" type="text" value="[% field.fif.month %]" pattern="[0-9]*" inputmode="numeric" maxlength=2>
         </div>
       </div>
       <div class="govuk-date-input__item">
@@ -178,7 +178,7 @@
             Year
           </label>
           <input class="govuk-input govuk-date-input__input govuk-input--width-4[% IF error %] govuk-input--error[% END %]"
-            id="[% field.id %].year" name="[% field.html_name %].year" type="text" value="[% field.fif.year %]" pattern="[0-9]*" inputmode="numeric">
+            id="[% field.id %].year" name="[% field.html_name %].year" type="text" value="[% field.fif.year %]" pattern="[0-9]*" inputmode="numeric" maxlength=4>
         </div>
       </div>
     </div>
