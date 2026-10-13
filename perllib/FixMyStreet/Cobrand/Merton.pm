@@ -225,6 +225,7 @@ sub check_report_is_on_cobrand_asset {
         };
         $features = $self->_fetch_features($cfg, $x, $y);
     };
+
     return $features->[0];
 }
 
