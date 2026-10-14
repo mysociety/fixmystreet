@@ -704,7 +704,13 @@ function update_floating_button_messaging(layer, messaging) {
     var id = 'js-responsibility-message-' + uid;
     var message = messaging.zoom || (layer.fixmystreet.asset_message_when_disabled ? messaging.asset : messaging.responsibility || messaging.asset);
     var obj = $('#' + id);
-    if (message) {
+
+    // If on Canal & River Trust site and canal-not-found message is showing
+    // (i.e. pin is not on a canal), do not show other asset messages.
+    var crt_not_on_canal = $('.js-crt-canal-not-found:visible').length &&
+        layer.fixmystreet.name !== 'canals_crt';
+
+    if (message && !crt_not_on_canal) {
         var $div = $('<div id="' + id + '" class="js-floating-button-message"></div>').html(message);
         if (obj.length) {
             obj.replaceWith($div);
@@ -717,6 +723,9 @@ function update_floating_button_messaging(layer, messaging) {
         }
         if (messaging.responsibility) {
             $div.addClass('js-not-an-asset');
+            if (layer.fixmystreet.name === 'canals_crt') {
+                $div.addClass('js-crt-canal-not-found');
+            }
         } else {
             $div.removeClass('js-not-an-asset');
         }
