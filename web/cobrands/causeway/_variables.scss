@@ -1,0 +1,205 @@
+/* This styling is based on https://drive.google.com/file/d/1nBfiQEAxYIP-Ve_AAIe8GRd6nCYL06_-/view and https://www.causeway.com/
+*/
+
+/* COLOURS */
+$cobrand_orange: #f87a63; // Secondary button
+$cobrand_lavander_300: #f2efff;
+$cobrand_lavander_600: #6542ff;
+$cobrand_lavander_900: #200d3f; // Headings
+$cobrand_lavander: #957dff; // Links
+$cobrand_purple: #301b5d;
+$cobrand_red: #eb0000;
+$cobrand_yellow: #fd0; // unknown
+$cobrand_white: #fff;
+$cobrand_black: #434049; // Body colour
+$cobrand_green: #03cf9e;
+
+$cobrand_grey: #f2f2f2; // Body bg colour
+$cobrand_grey_300: #e0e0e0; // Active and Hover navbar link
+$cobrand_black_900: #000; // Some focus states and hover color for navlinks
+$cobrand_teal: #056689; // Buttons & Links
+$cobrand_teal_600: #034158; // Button Hover and Focus
+
+$primary: $cobrand_purple;
+$yellow: $cobrand_yellow;
+
+$primary_b: $cobrand_black;
+$primary_text: $cobrand_white;
+
+/* FRONTPAGE */
+$base_bg: $cobrand_white;
+$base_fg: $cobrand_black;
+$front_stats_bg: $cobrand_white;
+$layout_front_stats_color: $primary;
+
+/* LINKS */
+$primary_link_color: $cobrand_lavander_600;
+$primary_link_hover_color: $cobrand_lavander;
+$primary_link_decoration: none;
+$primary_link_hover_decoration: none;
+
+$link-color: $cobrand_lavander_600;
+$link-hover-color: $cobrand_lavander;
+$link-visited-color: $primary;
+$link-text-decoration: none;
+$link-hover-text-decoration: none;
+
+/* BUTTONS */
+$button-padding-top: 0.6875rem;
+$button-padding-bottom: 0.6875rem;
+$button-padding-left: 1.375rem;
+$button-padding-right: 1.375rem;
+$button-border-radius: 100px;
+
+// Usage 
+/*
+a#geolocate_link {
+    @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
+    @include focus-state;
+}
+*/
+$button-primary-bg-top: $primary;
+$button-primary-bg-bottom: $primary;
+$button-primary-border: $primary;
+$button-primary-text: $primary_text;
+$button-primary-hover-bg-bottom: $cobrand_lavander;
+$button-primary-hover-bg-top: $cobrand_lavander;
+$button-primary-hover-border: $primary;
+$button-primary-hover-text: $primary_text;
+
+$geolocation-link: $primary;
+$geolocation-link-border: $primary;
+
+/* FONTS */
+
+$heading-font: "Plus Jakarta Sans", Arial, sans-serif;
+$body-font: "Instrument Sans", Arial, sans-serif; // Except for button that use Plus Jakarta 700
+$meta-font: "Instrument Sans", Arial, sans-serif;
+
+/* NAVBAR */
+
+$nav_colour: $cobrand_purple;
+$nav_background_colour: transparent;
+$nav_hover_background_colour: transparent;
+
+$mappage-header-height: calc(3.75rem + 4px);
+$header-top-border: false;
+// $header-top-border-width: 0.25em;
+// $header-top-border: $header-top-border-width solid $primary;
+$menu-image: "menu-black";
+// $close-menu-image: "close-#{$menu-image}";
+
+/* OTHER VARIABLES */
+
+$container-max-width: 71.25rem;
+
+$col_click_map: $primary;
+$col_fixed_label: $primary;
+// $col_fixed_label_light: mix($col_fixed_label, #fff, 10%);
+
+$search-help-background: #fff3f3;
+$search-help-header-font-size-desktop: 1.25em;
+
+$dropzone-button-text: $primary_text;
+
+$pagination_background: $cobrand_lavander_300;
+$itemlist_item_background:  $base_bg;
+$itemlist_item_background_hover: $cobrand_lavander_300;
+$col_big_numbers: $primary;
+
+// $form-control-border-color: #aaaaaa;
+$mobile-sticky-sidebar-button-menu-image: "menu-white";
+
+$front-main-color: $primary;
+$postcodeform-background: transparent;
+$postcodeform-color: $primary;
+$front-main-background: url("/cobrands/causeway/images/hero-bg.svg") right 0 / 56% no-repeat, linear-gradient(180deg, #feebe8 0%, #fff 100%);
+
+$postcodeform-color-desktop: $primary;
+$front-main-color-desktop: $primary;
+$front-main-background-desktop: url("/cobrands/causeway/images/hero-bg.svg") right 0 / 38% no-repeat, linear-gradient(180deg, #feebe8 0%, #fff 100%);
+$front-main-container-background-desktop: transparent;
+
+$sticky-sidebar-bg-color: $cobrand_lavander_300;
+
+.btn {
+  font-family: $heading-font;
+  font-weight: 700;
+  transition: color .2s ease,opacity .1s ease, background-color .2s ease, border .2s ease, background .2s ease;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  border: 2px solid;
+
+  &:after {
+    background: $primary;
+    border-radius: 100px;
+    content: "";
+    height: calc(100% + 4px);
+    left: -2px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    top: -2px;
+    transition: all .32s ease-in-out;
+    width: 44px;
+    z-index: -1;
+  }
+
+  &:hover {
+    border-color: $primary !important;
+    background: $cobrand_lavander !important;
+    color: $cobrand_white !important;
+    &::after {
+        opacity: 1;
+        width: calc(100% + 4px);
+    }
+  }
+}
+
+.btn-orange {
+  background: $cobrand_orange !important;
+  border-color: transparent !important;
+  color: $primary !important;
+}
+
+.btn-teal {
+  font-family: $heading-font;
+  font-weight: 700;
+  transition: color .2s ease,opacity .1s ease, background-color .2s ease, background .2s ease;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  background-color: $cobrand_green;
+  border: 2px solid;
+  border-color: $cobrand_green;
+
+  &:hover {
+    background-color: $cobrand_lavander;
+  }
+
+  &:after {
+    background: $primary;
+    border-radius: 100px;
+    content: "";
+    height: calc(100% + 4px);
+    left: -2px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    top: -2px;
+    transition: all .32s ease-in-out;
+    width: 44px;
+    z-index: -1;
+  }
+
+  &:hover {
+    background-color: $cobrand_lavander;
+    color: $cobrand_white;
+    border-color: $primary;
+    &::after {
+        opacity: 1;
+        width: calc(100% + 4px);
+    }
+  }
+}

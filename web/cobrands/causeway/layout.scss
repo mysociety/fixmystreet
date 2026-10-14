@@ -1,0 +1,122 @@
+@import "_variables";
+@import "../sass/layout";
+
+/* NAVBAR */
+#site-logo {
+  background-image: url("/cobrands/causeway/images/logo.svg");
+  background-size: auto 2.25rem;
+  width: 10.5rem;
+}
+
+#main-nav .nav-menu--main {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+
+  a {
+    border-radius: 100px;
+    padding: 5px 15px;
+    line-height: 172%;
+
+    transition: color .2s ease,opacity .1s ease, box-shadow .5s ease, background-color .32s ease;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+
+    // This is not exactly the same effect Causeway has in their navbar
+    &:after {
+      background: $cobrand_lavander_300;
+      border-radius: 100px;
+      content: "";
+      height: calc(100% + 4px);
+      left: -2px;
+      opacity: 0;
+      overflow: hidden;
+      position: absolute;
+      top: -2px;
+      transition: all .62s ease-in-out;
+      width: 44px;
+      z-index: -1;
+    }
+
+    &:hover {
+      background-color: $cobrand_lavander;
+      color: $primary;
+      // Prevents that odd blurry border when the hover is active
+      box-shadow: inset 0px 0px 0 100px $cobrand_lavander_300;
+      &::after {
+          opacity: 1;
+          width: calc(100% + 4px);
+      }
+    }
+  }
+
+  a.report-a-problem-btn {
+    border-radius: 100px;
+    padding: $button-padding-top $button-padding-left;
+    line-height: 100%;
+
+    @extend .btn;
+    @extend .btn-orange;
+    text-decoration: none;
+    font-family: $heading-font;
+    font-weight: 700;
+  }
+}
+
+/* FRONTPAGE */
+
+#front-main {
+  padding: 4rem 0;
+
+  #front-main-container { 
+    background-position: 0;
+    background-size: 100%;
+
+    h1 {
+      font-size: 3rem;
+      max-width: 33.125rem;
+    }
+  }
+}
+
+.js #photoForm, .no-js #photoForm, .badge, .dropzone {
+  background-color: $cobrand_lavander_300;
+
+  .dropzone-desktop {
+    color: $primary;
+  }
+}
+
+/* MAP PAGE */
+
+/* FOOTER */
+.cobrand-footer {
+  --wrapper: 1728px;
+  --intro-width: 320px;
+  --menu-spacing: 1.5rem;
+  --margin: 1rem;
+
+  .container {
+    max-width: var(--wrapper);
+  }
+
+
+  &__main {
+    gap: 3rem;
+    grid-template-columns: 320px 1fr;
+  }
+
+  &__menus {
+      gap: 4rem 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(calc((var(--wrapper) - var(--intro-width)) / 5 - var(--menu-spacing) * 2 - var(--margin) / 2), 1fr));
+  }
+
+  &__secondary {
+    .container {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+  }
+}
