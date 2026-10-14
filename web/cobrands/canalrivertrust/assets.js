@@ -21,6 +21,7 @@ fixmystreet.assets.add(defaults, {
     stylemap: canal_stylemap,
     always_visible: true,
     non_interactive: true,
+    exclusive_message: true,
     road: true,
     usrn: [
         {

@@ -24,7 +24,24 @@ describe('Canal & River Trust asset messaging tests', function() {
         cy.wait('@crt-tilma');
         cy.wait('@nearby-ajax');
         cy.wait('@crt-bridges');
+        // Not on canal
         cy.get('.js-not-an-asset').should('be.visible');
+        cy.get('.js-not-an-asset').invoke('text').should(
+            'match', /Not maintained by us/
+        );
+        cy.get('.js-not-an-asset').invoke('text').should(
+            'not.match', /Please select a bridge/
+        );
+        cy.get('.js-reporting-page--next').should('be.disabled');
+        // Move to canal
+        cy.get('#map_box').click(430,385);
+        cy.wait('@crt-tilma');
+        cy.wait('@report-ajax');
+        cy.wait('@crt-bridges');
+        cy.get('.js-not-an-asset').should('be.visible');
+        cy.get('.js-not-an-asset').invoke('text').should(
+            'not.match', /Not maintained by us/
+        );
         cy.get('.js-not-an-asset').invoke('text').should(
             'match', /Please select a bridge/
         );
@@ -37,17 +54,36 @@ describe('Canal & River Trust asset messaging tests', function() {
         cy.get('.js-reporting-page--next').should('not.be.disabled');
 
         // Moving pin away from bridge should disable form again
-        cy.get('#map_box').click(430,385);
+        cy.get('#map_box').click(440,350);
         cy.wait('@crt-tilma');
         cy.wait('@report-ajax');
         cy.wait('@crt-bridges');
         cy.get('.js-not-an-asset').should('be.visible');
-
+        cy.get('.js-not-an-asset').invoke('text').should(
+            'not.match', /Not maintained by us/
+        );
         cy.get('.js-not-an-asset').invoke('text').should(
             'match', /Please select a bridge/
         );
         cy.get('.js-reporting-page--next').should('be.disabled');
+        // Move pin away from canal - 'not maintained' msg should show instead
+        cy.get('#map_box').click(450,360);
+        cy.wait('@crt-tilma');
+        cy.wait('@report-ajax');
+        cy.wait('@crt-bridges');
+        cy.get('.js-not-an-asset').invoke('text').should(
+            'match', /Not maintained by us/
+        );
+        cy.get('.js-not-an-asset').invoke('text').should(
+            'not.match', /Please select a bridge/
+        );
+        cy.get('.js-reporting-page--next').should('be.disabled');
+
         // Elsan
+        cy.get('#map_box').click(440,325);
+        cy.wait('@crt-tilma');
+        cy.wait('@report-ajax');
+        cy.wait('@crt-bridges');
         cy.pickCategory('Elsan');
         cy.wait('@crt-elsan');
         cy.wait('@nearby-ajax');
@@ -64,7 +100,7 @@ describe('Canal & River Trust asset messaging tests', function() {
         cy.get('.js-reporting-page--next').should('not.be.disabled');
 
         // Moving pin away from elsan should disable form again
-        cy.get('#map_box').click(430,355);
+        cy.get('#map_box').click(430,300);
         cy.wait('@crt-tilma');
         cy.wait('@report-ajax');
         cy.wait('@crt-elsan');
@@ -124,7 +160,7 @@ describe('Canal & River Trust asset messaging tests', function() {
         cy.get('.js-reporting-page--next').should('not.be.disabled');
 
         // Select a tunnel
-        cy.get('#map_box').click(75,230);
+        cy.get('#map_box').click(75,260);
         cy.wait('@crt-tilma');
         cy.wait('@report-ajax');
         cy.wait('@crt-tunnels');
