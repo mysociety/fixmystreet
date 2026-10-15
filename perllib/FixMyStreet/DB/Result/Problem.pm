@@ -539,7 +539,7 @@ sub send_logged_email {
     my ($self, $h, $nomail, $cobrand) = @_;
 
     my $to = { To => $self->user->email };
-    if ($h->{report}->cobrand_data eq 'licence') {
+    if ($h->{report}->cobrand_data eq 'licence' || $h->{report}->cobrand_data eq 'switchout') {
         my $email = $h->{report}->get_extra_metadata('sent_to');
         $to->{Cc} = join(',', @$email) if $email && @$email;
     }
