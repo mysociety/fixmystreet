@@ -108,6 +108,21 @@ sub fetch_area_children {
     return $areas;
 }
 
+=item * Pins are grey for closed, green for fixed, yellow for confirmed, orange for all other open states
+
+=cut
+
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+
+    return 'canalrivertrust/grey' if $p->is_closed;
+    return 'canalrivertrust/apple' if $p->is_fixed; # Green
+    return 'canalrivertrust/dawn' if $p->state eq 'confirmed'; # Yellow
+
+    # All other 'open' states
+    return 'canalrivertrust/sunset'; # Orange
+}
+
 =back
 
 =head2 report_validation
