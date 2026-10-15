@@ -662,9 +662,9 @@ has_field missing_explanation => (
 );
 
 has_page terms => (
-    fields => ['terms_accepted', 'additional_information', 'continue'],
+    fields => ['terms_accepted', 'continue'],
     title => 'Terms and conditions confirmation',
-    next => 'summary',
+    next => 'additional',
 );
 
 has_field terms_accepted => (
@@ -681,8 +681,8 @@ has_field terms_accepted => (
 
 sub options_terms_accepted {
     my @urls = (
-        '',
-        '',
+        '', # TODO
+        '', # TODO
     );
     my @labels = (
         'TfL Traffic Signal Switch Out Guidance and Terms & Conditions',
@@ -696,6 +696,12 @@ sub options_terms_accepted {
     }
     return @labels;
 }
+
+has_page additional => (
+    fields => ['additional_information', 'continue'],
+    title => 'Additional information',
+    next => 'summary',
+);
 
 has_field additional_information => (
     type => 'Text',

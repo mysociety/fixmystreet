@@ -151,6 +151,7 @@ subtest 'Switch out application form submission' => sub {
         $mech->form_with_fields('terms_accepted');
         $mech->current_form->find_input('terms_accepted', undef, 1)->value('TfL Traffic Signal Switch Out Guidance and Terms & Conditions');
         $mech->current_form->find_input('terms_accepted', undef, 2)->value('TfL Traffic Signal Switch Out Fee structure');
+        $mech->submit_form_ok;
         $mech->submit_form_ok({ with_fields => {
             additional_information => 'Additional',
         }});
@@ -175,6 +176,7 @@ subtest 'Switch out application form submission' => sub {
         # Detail string should group fields by section with headers and blank lines,
         # making it easier to distinguish e.g. applicant vs contractor answers
         my $detail = $problem->detail;
+        like $detail, qr/^\[Additional information\]/;
         like $detail, qr/\[Contacts for works on site\]/, 'Detail contains section header';
         like $detail, qr/\[Applicant details\]/, 'Detail contains Applicant section header';
         like $detail, qr/\n\n/, 'Detail has blank lines between sections';
@@ -341,6 +343,7 @@ subtest 'Switch out application form submission' => sub {
             $mech->current_form->find_input('terms_accepted', undef, 1)->value('TfL Traffic Signal Switch Out Guidance and Terms & Conditions');
             $mech->current_form->find_input('terms_accepted', undef, 2)->value('TfL Traffic Signal Switch Out Fee structure');
             $mech->submit_form_ok;
+            $mech->submit_form_ok; # No additional info
 
             $mech->content_contains('Application summary', 'Summary page rendered');
             $mech->content_lacks('Lead company name', 'Lead fields hidden when same as applicant');

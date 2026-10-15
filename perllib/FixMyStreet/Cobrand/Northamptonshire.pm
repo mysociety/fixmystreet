@@ -107,6 +107,8 @@ sub privacy_policy_url {
     'https://www3.northamptonshire.gov.uk/councilservices/council-and-democracy/transparency/information-policies/privacy-notice/place/Pages/street-doctor.aspx'
 }
 
+sub open311_skip_service_list { 1 }
+
 sub open311_extra_data_exclude { [ 'emergency' ] }
 
 sub open311_get_update_munging {

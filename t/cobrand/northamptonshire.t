@@ -3,6 +3,7 @@ use File::Temp 'tempdir';
 use FixMyStreet::TestMech;
 use Catalyst::Test 'FixMyStreet::App';
 use FixMyStreet::Script::Reports;
+use Open311::PopulateServiceList;
 use Open311::PostServiceRequestUpdates;
 
 use_ok 'FixMyStreet::Cobrand::Northamptonshire';
@@ -88,6 +89,18 @@ subtest 'Check district categories hidden on cobrand' => sub {
 
         $mech->content_contains('Trees');
         $mech->content_lacks('Flytipping');
+    };
+};
+
+subtest 'check services override' => sub {
+    my $q = FixMyStreet::DB->resultset('Body')->search({ id => $nh->id });
+    my $processor = Open311::PopulateServiceList->new( bodies => $q );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'northamptonshire' ],
+    }, sub {
+        $processor->process_bodies;
+        my $req = Open311->test_req_used;
+        is $req, undef;
     };
 };
 

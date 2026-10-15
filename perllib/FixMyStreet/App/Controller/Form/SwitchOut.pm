@@ -5,6 +5,7 @@ use namespace::autoclean;
 BEGIN { extends 'FixMyStreet::App::Controller::Form' }
 
 use utf8;
+use List::Util qw(first);
 use Try::Tiny;
 use FixMyStreet::App::Form::TfL::SwitchOut;
 
@@ -45,8 +46,14 @@ sub process_switchout : Private {
     # Build detail string from form fields, grouped by section
     my $detail = "";
     if ($form->can('fields_for_display')) {
+        # Move additional information page to the start of the detail
+        my @stages = @{$form->fields_for_display};
+        my $additional = first { $_->{title} eq 'Additional information' } @stages;
+        @stages = grep { $_->{title} ne 'Additional information' } @stages;
+        unshift @stages, $additional;
+
         my @sections;
-        for my $stage (@{ $form->fields_for_display }) {
+        for my $stage (@stages) {
             next if $stage->{hide};
             my @visible_fields = grep { !$_->{hide} } @{ $stage->{fields} };
             next unless @visible_fields;
@@ -58,7 +65,6 @@ sub process_switchout : Private {
                 my $desc = $field->{desc};
                 $desc .= ':' unless !$desc || $desc =~ /[?:.]$/;
                 $desc .= $field->{name} eq 'terms_accepted' ? "\n" : ' ';
-                $desc = "\n$desc" if $field->{name} eq 'additional_information';
 
                 $section .= "$desc$pretty\n";
             }
