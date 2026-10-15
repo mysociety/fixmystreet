@@ -31,9 +31,18 @@ my $staff_user = $mech->create_user_ok(
 );
 
 $staff_user->user_body_permissions->create({ body => $body, permission_type => 'category_edit' });
+my $dash_user = $mech->create_user_ok(
+    'dash@email.com',
+    name      => 'Dash User',
+    from_body => $body,
+);
+$dash_user->user_body_permissions->create({
+    body => $body,
+    permission_type => 'view_dashboard',
+});
 
 FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ 'fixmystreet', 'canalrivertrust' ],
+    ALLOWED_COBRANDS => [ 'fixmystreet', 'canalrivertrust', 'gloucestershire' ],
     MAPIT_URL        => 'http://mapit.uk/',
     STAGING_FLAGS    => { skip_must_have_2fa => 1 },
     COBRAND_FEATURES => {
@@ -97,44 +106,70 @@ FixMyStreet::override_config {
                 $mech->text_lacks( 'closed to updates from the public' );
             }
         }
+
+        note 'Dashboard access';
+        $mech->log_out_ok;
+        $mech->get_ok('/dashboard');
+        is $mech->uri->path, '/auth', 'no user: redirects to login';
+
+        $mech->log_in_ok( $standard_user_1->email );
+        $mech->get('/dashboard');
+        is $mech->status, 404, 'standard user: no permission';
+
+        $mech->log_in_ok( $staff_user->email );
+        $mech->get('/dashboard');
+        $host eq 'fixmystreet'
+            ? ( is $mech->status, 200, 'staff user: no permission but can access on fixmystreet' )
+            : ( is $mech->status, 404, 'staff user: no permission' );
+
+        $mech->log_in_ok( $dash_user->email );
+        $mech->get('/dashboard');
+        is $mech->status, 200, 'staff user: has permission';
     }
 
-    $mech->log_in_ok( $standard_user_1->email );
-    ok $mech->host('canalrivertrust');
-    $mech->get_ok('/report/new?longitude=-2.2458&latitude=51.86506');
+    for my $host ( qw/fixmystreet canalrivertrust gloucestershire/ ) {
+        $mech->log_in_ok( $standard_user_1->email );
+        ok $mech->host($host);
+        $mech->get_ok('/report/new?longitude=-2.2458&latitude=51.86506');
 
-    $mech->text_contains('Bad boat', 'Display name');
-    $mech->text_lacks('Bad boat (CRT: ABC)', 'Original name not displayed');
-    $mech->content_contains('There are similar problems nearby that we’re already aware of, is one of them yours?');
-    $mech->content_lacks('to the council');
+        $mech->text_contains('Bad boat', 'Display name');
+        $mech->text_lacks('Bad boat (CRT: ABC)', 'Original name not displayed');
 
-    $mech->content_contains('Damage to bridge', 'Canal-specific title hint');
-    $mech->content_contains('making the lock very difficult to operate', 'Canal-specific detail hint');
-    $mech->content_lacks('10 inch pothole', 'Default title hint not shown');
-
-    # click through to the report page
-    $mech->follow_link_ok( { text_regex => qr/skip this step/i, } );
-    $mech->submit_form_ok(
-        {   button      => 'submit_register',
-            with_fields => {
-                category => 'Bad boat (CRT: ABC)',
-                detail   => 'Test report details',
-                title    => 'Test Report',
-            }
+        if ($host eq 'canalrivertrust') {
+            $mech->content_contains('There are similar problems nearby that we’re already aware of, is one of them yours?');
+            $mech->content_lacks('to the council');
+            $mech->content_contains('Damage to bridge', 'Canal-specific title hint');
+            $mech->content_contains('making the lock very difficult to operate', 'Canal-specific detail hint');
+            $mech->content_lacks('10 inch pothole', 'Default title hint not shown');
         }
-    );
-    $mech->content_contains('It’s on its way to Canal &amp; River Trust right now.');
-    $mech->content_lacks('to the council');
 
-    $bad_boat->discard_changes;
-    is $bad_boat->get_extra_metadata('display_name'), undef,
-        'Category display name not saved';
+        # click through to the report page
+        $mech->follow_link_ok( { text_regex => qr/skip this step/i, } );
+        $mech->submit_form_ok(
+            {   button      => 'submit_register',
+                with_fields => {
+                    category => 'Bad boat (CRT: ABC)',
+                    detail   => 'Test report details',
+                    title    => 'Test Report',
+                }
+            }
+        );
 
-    $report
-        = FixMyStreet::DB->resultset('Problem')->order_by('-id')->first;
-    $mech->get_ok( '/report/' . $report->id );
-    $mech->text_like( qr/Reported.*in the Bad boat category/,
-        'Display name used in meta line' );
+        if ($host eq 'canalrivertrust') {
+            $mech->content_contains('It’s on its way to Canal &amp; River Trust right now.');
+            $mech->content_lacks('to the council');
+        }
+
+        $bad_boat->discard_changes;
+        is $bad_boat->get_extra_metadata('display_name'), undef,
+            'Category display name not saved';
+
+        $report
+            = FixMyStreet::DB->resultset('Problem')->order_by('-id')->first;
+        $mech->get_ok( '/report/' . $report->id );
+        $mech->text_like( qr/Reported.*in the Bad boat category/,
+            'Display name used in meta line' );
+    }
 };
 
 FixMyStreet::override_config {

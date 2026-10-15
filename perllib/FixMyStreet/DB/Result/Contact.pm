@@ -129,8 +129,13 @@ sub category_display {
     my $name = $self->get_extra_metadata('display_name') || $self->translate_column('category');
 
     # E.g. Canal & River Trust does not save a display name in the DB but we
-    # want to strip the cobrand-specific suffix
-    my $cobrand = $self->result_source->schema->cobrand;
+    # want to strip the cobrand-specific suffix.
+    # NOTE Sometimes there is no body_id, e.g. 'Pick a category' placeholder
+    # category set in Report/New.pm -> setup_categories_and_bodies.
+    my $cobrand
+        = $self->body_id
+        ? $self->body->get_cobrand_handler
+        : $self->result_source->schema->cobrand;
     return $name unless $cobrand;
     return $cobrand->call_hook(category_display_name => $name) // $name;
 }

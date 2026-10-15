@@ -280,6 +280,11 @@ sub munge_report_new_contacts {
         $nh->munge_report_new_contacts($contacts, 'TS');
     }
 
+    if ( $bodies{'Canal & River Trust'} ) {
+        my $crt = FixMyStreet::Cobrand::CanalRiverTrust->new({ c => $self->{c} });
+        $crt->munge_report_new_contacts($contacts);
+    }
+
     if ( $bodies{'Brent Council'} ) {
         my $brent = FixMyStreet::Cobrand::Brent->new({ c => $self->{c} });
         $brent->munge_cobrand_asset_categories($contacts);

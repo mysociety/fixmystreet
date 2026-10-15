@@ -263,7 +263,7 @@ sub council_rss_alert_options {
     my %areas = map { $_->{type} => $_ } values %$all_areas;
 
     my @bodies = FixMyStreet::DB->resultset('Body')->active->search({
-        name => { -not_in => ['TfL', 'National Highways'] }
+        name => { -not_in => ['TfL', 'National Highways', 'Canal & River Trust'] }
     }, {
         prefetch => 'body_areas',
     })->for_areas(keys %$all_areas)->all;

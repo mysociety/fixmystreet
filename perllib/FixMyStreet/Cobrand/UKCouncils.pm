@@ -549,6 +549,11 @@ sub munge_report_new_contacts {
         $nh->munge_report_new_contacts($contacts, 'TS');
     }
 
+    if ( $bodies{'Canal & River Trust'} ) {
+        my $crt = FixMyStreet::Cobrand::CanalRiverTrust->new({ c => $self->{c} });
+        $crt->munge_report_new_contacts($contacts);
+    }
+
     $self->call_hook(munge_cobrand_asset_categories => $contacts);
 
 }

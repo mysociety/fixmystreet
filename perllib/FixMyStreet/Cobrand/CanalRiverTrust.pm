@@ -187,6 +187,25 @@ sub admin_contact_validate_category {
     return $category =~ /\(CRT: \w.*?\)/ ? "" : "Category must end with (CRT: <group_name>).";
 }
 
+=item * Make sure only permissioned staff can access the dashboard
+
+As this cobrand lacks a council_area_id, we currently need this to
+prevent all staff access.
+
+=cut
+
+sub dashboard_permission {
+    my $self = shift;
+    my $c = $self->{c};
+
+    # Default behaviour if no user, or is a superuser
+    return if !$c->user_exists || $c->user->is_superuser;
+    # Otherwise, check the permission
+    if ($c->user->from_body && $c->user->has_permission_to('view_dashboard', $self->body->id)) {
+        return $self->body->id;
+    }
+}
+
 sub open311_extra_data_include {
     my ($self, $row, $h) = @_;
 
