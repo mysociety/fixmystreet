@@ -375,7 +375,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/faq');
         $mech->content_lacks('href="/contact"');
         my @links = grep { $_->url eq 'https://crt.example.org/contact' } $mech->links;
-        is @links, 2, 'FAQ and sidebar link to contact_us_url';
+        is @links, 4, 'FAQ and sidebar link to contact_us_url';
     };
 };
 
