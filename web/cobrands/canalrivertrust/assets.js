@@ -17,6 +17,7 @@ var defaults = {
 };
 
 fixmystreet.assets.add(defaults, {
+    name: "canals_crt",
     wfs_feature: "Canals",
     stylemap: canal_stylemap,
     always_visible: true,
