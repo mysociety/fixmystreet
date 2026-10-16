@@ -186,6 +186,7 @@ recommends 'Linux::Inotify2' if $^O eq 'linux';
 recommends 'Mac::FSEvents' if $^O eq 'darwin';
 
 # Modules used by the test suite
+requires 'App::ForkProve';
 requires 'Test::PostgreSQL', '1.27';
 requires 'CGI::Simple';
 requires 'HTML::Selector::Element';

@@ -8987,6 +8987,19 @@ DISTRIBUTIONS
       common::sense 3.74
     requirements:
       ExtUtils::MakeMaker 0
+  forkprove-v0.4.10
+    pathname: M/MI/MIYAGAWA/forkprove-v0.4.10.tar.gz
+    provides:
+      App::ForkProve 0.004010
+      App::ForkProve::PipeIterator undef
+      App::ForkProve::SourceHandler undef
+      forkprove undef
+    requirements:
+      App::Prove 3.25
+      ExtUtils::MakeMaker 6.30
+      TAP::Harness 3.25
+      parent 0.221
+      version 0.77
   gettext-1.05
     pathname: P/PV/PVANDRY/gettext-1.05.tar.gz
     provides:
