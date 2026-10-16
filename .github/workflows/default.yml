@@ -62,4 +62,4 @@ jobs:
         echo "WITH_POSTGIS=1" >> "$GITHUB_ENV"
 
     - name: Run tests
-      run: ~/perl5/perlbrew/bin/perlbrew exec script/test --jobs 3 t
+      run: ~/perl5/perlbrew/bin/perlbrew exec script/test --preload --jobs 3 t
