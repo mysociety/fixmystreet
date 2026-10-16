@@ -28,9 +28,9 @@ throws_ok(
 is $config->{GAZE_URL}, 'https://gaze.mysociety.org/gaze', "GAZE_URL unchanged";
 
 # check that we can get the value by key as well
-is FixMyStreet->config('GAZE_URL'), 'https://gaze.mysociety.org/gaze',
-  "GAZE_URL correct when got by key";
-is FixMyStreet->config('BAD_KEY_DOES_NOT_EXIST'), undef, "config miss is undef";
+is(FixMyStreet->config('GAZE_URL'), 'https://gaze.mysociety.org/gaze',
+  "GAZE_URL correct when got by key");
+is(FixMyStreet->config('BAD_KEY_DOES_NOT_EXIST'), undef, "config miss is undef");
 
 # all done
 done_testing();
