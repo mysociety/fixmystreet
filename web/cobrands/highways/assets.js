@@ -90,6 +90,7 @@ fixmystreet.assets.add(defaults, {
             }
         },
         not_found: function(layer) {
+            fixmystreet.highways_canals.highways_asset_selected = false;
             if (fixmystreet.body_overrides.get_only_send().match(/^(National Highways|Traffic Scotland)/)) {
                 var match = fixmystreet.body_overrides.get_only_send().match(/^(National Highways|Traffic Scotland)/);
                 highways_body_name = match[1];
