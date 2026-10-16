@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding="UTF-8" ?>
+<wfs:FeatureCollection
+   xmlns:ms="http://mapserver.gis.umn.edu/mapserver"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:wfs="http://www.opengis.net/wfs"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://mapserver.gis.umn.edu/mapserver https://tilma.staging.mysociety.org:80/mapserver/crt?SERVICE=WFS&amp;VERSION=1.1.0&amp;REQUEST=DescribeFeatureType&amp;TYPENAME=Facilities&amp;OUTPUTFORMAT=text/xml;%20subtype=gml/3.1.1  http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+    <gml:featureMember>
+      <ms:Facilities gml:id="Facilities.201">
+        <ms:msGeometry>
+          <gml:Point srsName="EPSG:3857">
+            <gml:pos srsDimension="2">-10794.029437 6716106.561319</gml:pos>
+          </gml:Point>
+        </ms:msGeometry>
+        <ms:OBJECTID>201</ms:OBJECTID>
+        <ms:sap_func_loc>RE-008-061</ms:sap_func_loc>
+        <ms:facility_type>elsan_point</ms:facility_type>
+        <ms:is_trust_owned>1</ms:is_trust_owned>
+      </ms:Facilities>
+    </gml:featureMember>
+</wfs:FeatureCollection>

@@ -1,10 +1,10 @@
 describe('Canal & River Trust asset messaging tests', function() {
     beforeEach(function() {
         cy.intercept('POST', '**/mapserver/crt', {fixture: 'canals-islington.xml'}).as('crt-tilma');
-        cy.intercept('**/Canal_And_River_Trust_Bridges_View/**', {fixture: 'canal-bridges.json'}).as('crt-bridges');
-        cy.intercept('**/Web_CSF_Facilities/**', {fixture: 'canal-elsan.json'}).as('crt-elsan');
-        cy.intercept('**/Canal_And_River_Trust_Tunnels_View/**', {fixture: 'canal-tunnels.json'}).as('crt-tunnels');
-        cy.intercept('**/Canal_And_River_Trust_Tunnel_Portals_View/**', {fixture: 'canal-tunnel-portals.json'}).as('crt-tunnel-portals');
+        cy.intercept('GET', '**/mapserver/crt*Bridges*', {fixture: 'canal-bridges.xml'}).as('crt-bridges');
+        cy.intercept('GET', '**/mapserver/crt*Facilities*', {fixture: 'canal-elsan.xml'}).as('crt-elsan');
+        cy.intercept('GET', '**/mapserver/crt*Tunnels*', {fixture: 'canal-tunnels.xml'}).as('crt-tunnels');
+        cy.intercept('GET', '**/mapserver/crt*Tunnel_Portals*', {fixture: 'canal-tunnel-portals.xml'}).as('crt-tunnel-portals');
         cy.intercept('**/report/new/ajax*').as('report-ajax');
         cy.intercept('/around/nearby*').as('nearby-ajax');
 
@@ -136,6 +136,58 @@ describe('Canal & River Trust asset messaging tests', function() {
         cy.wait('@nearby-ajax');
         cy.get('.js-not-an-asset').should('not.exist');
         cy.get('.js-floating-button-message').should('not.exist');
+        cy.get('.js-reporting-page--next').should('not.be.disabled');
+    });
+    it('does not allow reporting on assets the Trust does not own', function() {
+        cy.intercept('GET', '**/mapserver/crt*Bridges*', {fixture: 'canal-bridges-not-trust-owned.xml'}).as('crt-bridges');
+        cy.pickCategory('Bridges');
+        cy.wait('@nearby-ajax');
+        cy.wait('@crt-bridges');
+        cy.get('.js-reporting-page--next').should('be.disabled');
+
+        cy.get('circle:visible').first().click();
+        cy.get('.js-not-an-asset').should('be.visible');
+        cy.get('.js-not-an-asset').invoke('text').should(
+            'match', /selected a bridge that isn’t maintained by the Canal & River Trust/
+        );
+        cy.get('.js-not-an-asset').invoke('text').should('not.match', /You have selected/);
+        cy.get('.js-reporting-page--next').should('be.disabled');
+    });
+    it('does not allow reporting on tunnels the Trust does not own', function() {
+        cy.intercept('GET', '**/mapserver/crt*Tunnels*', {fixture: 'canal-tunnels-not-trust-owned.xml'}).as('crt-tunnels');
+        cy.pickCategory('Tunnel');
+        cy.wait('@nearby-ajax');
+        cy.wait('@crt-tunnels');
+
+        cy.get('#map_box').click(20,289);
+        cy.wait('@crt-tilma');
+        cy.wait('@report-ajax');
+        cy.wait('@crt-tunnels');
+        cy.get('.js-not-an-asset').should('be.visible');
+        cy.get('.js-not-an-asset').invoke('text').should(
+            'match', /selected a tunnel that isn’t maintained by the Canal & River Trust/
+        );
+        cy.get('.js-not-an-asset').invoke('text').should('not.match', /You have selected/);
+        cy.get('.js-reporting-page--next').should('be.disabled');
+    });
+    it('allows reporting on a tunnel after selecting a portal the Trust does not own', function() {
+        cy.intercept('GET', '**/mapserver/crt*Tunnel_Portals*', {fixture: 'canal-tunnel-portals-not-trust-owned.xml'}).as('crt-tunnel-portals');
+        cy.pickCategory('Tunnel');
+        cy.wait('@nearby-ajax');
+        cy.wait('@crt-tunnel-portals');
+
+        cy.get('circle:visible').first().click();
+        cy.get('.js-not-an-asset').invoke('text').should(
+            'match', /selected a portal that isn’t maintained by the Canal & River Trust/
+        );
+        cy.get('.js-reporting-page--next').should('be.disabled');
+
+        cy.get('#map_box').click(20,289);
+        cy.wait('@crt-tilma');
+        cy.wait('@report-ajax');
+        cy.wait('@crt-tunnels');
+        cy.get('.js-floating-button-message').invoke('text').should('match', /You have selected tunnel Islington Tunnel/);
+        cy.get('.js-not-an-asset').should('not.exist');
         cy.get('.js-reporting-page--next').should('not.be.disabled');
     });
 });
