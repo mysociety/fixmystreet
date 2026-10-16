@@ -18,6 +18,19 @@ use Module::Pluggable
 
 my @ALL_COBRAND_CLASSES = __PACKAGE__->_cobrands;
 
+# Cobrand packages defined after this module was loaded (e.g. by a test file
+# run in a process that preloaded us) won't be in the above, so add them.
+sub _all_cobrand_classes {
+    my %seen = map { $_ => 1 } @ALL_COBRAND_CLASSES;
+    my @extra;
+    foreach (sort keys %FixMyStreet::Cobrand::) {
+        next unless /^(\w+)::$/;
+        my $class = "FixMyStreet::Cobrand::$1";
+        push @extra, $class if !$seen{$class} && $class->can('moniker');
+    }
+    return (@ALL_COBRAND_CLASSES, @extra);
+}
+
 =head2 get_allowed_cobrands
 
 Return an array reference of allowed cobrand monikers and hostname substrings.
@@ -60,7 +73,7 @@ for those that have found classes.
 sub available_cobrand_classes {
     my $class = shift;
 
-    my %all = map { $_->moniker => $_ } @ALL_COBRAND_CLASSES;
+    my %all = map { $_->moniker => $_ } $class->_all_cobrand_classes;
     my @avail;
     foreach (@{ $class->get_allowed_cobrands }) {
         #next unless $all{$_->{moniker}};
