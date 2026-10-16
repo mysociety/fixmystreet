@@ -92,6 +92,12 @@ body_validation_rules = {
           maxlength: 50
         }
     }, confirm_validation_rules),
+    'Royal Borough of Greenwich': {
+        phone: {
+            validUkPhone: true,
+            maxlength: 20
+        }
+    },
     'Rutland County Council': {
         title: {
           required: true,
