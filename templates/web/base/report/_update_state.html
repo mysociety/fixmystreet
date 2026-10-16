@@ -15,3 +15,14 @@
     <br />[% loc('Still open, via questionnaire') %]
   [% END %]
 </p>
+
+<!-- TODO Conditional is missing. This should only be displayed when a non-staff and anonymous user is posting -->
+<p class="meta-anonymous">
+  [% INCLUDE 'icons/warning-circle.html' width='1.25em' height='1.25em' %] 
+  Please be aware this update was posted anonymously by another FixMyStreet user, not by [% problem.body %].
+</p>
+<!-- TODO Conditional is missing. This should only be displayed when the authority is proving the update. -->
+<p class="meta-verified">
+  [% INCLUDE 'icons/verified.html' width='1.5em' height='1.5em' %] 
+  Update posted by <strong>[% problem.body %]</strong>.
+</p>
