@@ -129,11 +129,12 @@ describe('Canal and highway cross', function() {
 
                 cy.get('#js-councils_text').contains('These will be sent to Gloucestershire County Council');
 
-                // Test going back
-                cy.go('back');
-                cy.go('back');
-                cy.go('back');
-                cy.go('back');
+                // Test going back. cy.go doesn't wait for these in-page
+                // navigations, so check each lands before the next.
+                ['#photo', '#subcategory', '#category', '#nationalhighways'].forEach(function(hash) {
+                    cy.go('back');
+                    cy.location('hash').should('eq', hash);
+                });
                 cy.get('#js-highways').click();
                 cy.nextPageReporting();
                 cy.pickCategory('Driver on phone');

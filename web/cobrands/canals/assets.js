@@ -73,6 +73,7 @@ fixmystreet.assets.add(defaults, {
         },
         not_found: function(layer) {
             fixmystreet.highways_canals.canals_layer_queried = true;
+            fixmystreet.highways_canals.canals_asset_selected = false;
 
             if (fixmystreet.body_overrides.get_only_send() === body_name) {
                 fixmystreet.body_overrides.remove_only_send();
@@ -81,6 +82,16 @@ fixmystreet.assets.add(defaults, {
             $('.js-reporting-page--canals').remove();
             if (!$('.js-reporting-page--active').length) {
                 $('.js-reporting-page').first().addClass('js-reporting-page--active');
+            }
+
+            // The highways layer may have found a road before this layer
+            // was queried, and deferred to us. Now we know there is no
+            // canal, let it show its question.
+            if (fixmystreet.highways_canals.highways_asset_selected) {
+                var highways_layer = fixmystreet.map.getLayersByName('highways')[0];
+                if (highways_layer) {
+                    highways_layer.fixmystreet.actions.found(highways_layer, highways_layer.selected_feature);
+                }
             }
         }
     }

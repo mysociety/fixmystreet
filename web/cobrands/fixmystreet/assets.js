@@ -1370,8 +1370,11 @@ In all the below, the message matched/used is as follows:
   no_asset_msgs_class to make sure they all get hidden correctly.
 
 .asset_found / .asset_not_found - used with VectorAsset actions;
-  found will hide matching messages, and enable the report form (unless a
-  stopper message or a responsibility message is being shown).
+  asset_found(asset, [criterion], [msg_id]): found will hide matching
+  messages, and enable the report form (unless a stopper message or a
+  responsibility message is being shown). If a criterion function is
+  supplied and returns false for the asset, it is treated as not found,
+  showing the message given as msg_id (or the default as above).
   not found will disable the report form, hide matching messages, and,
   if no stopper message, then show the relevant message ID.
 
@@ -1569,8 +1572,15 @@ fixmystreet.message_controller = (function() {
     $(fixmystreet).on('report_new:category_change', check_for_stopper);
 
     return {
-        asset_found: function() {
-            responsibility_off(this, 'asset');
+        // An asset was found. If some assets should still cause disabling/message,
+        // then you should pass in a criterion function to test the found asset,
+        // plus an ID of the message to be shown
+        asset_found: function(asset, criterion, msg_id) {
+            if (criterion && !criterion(asset)) {
+                responsibility_on(this, 'asset', msg_id);
+            } else {
+                responsibility_off(this, 'asset');
+            }
             return ($('#' + stopperId).length);
         },
 
@@ -1621,13 +1631,14 @@ fixmystreet.message_controller = (function() {
 
         // For canal tunnels. Using road_not_found above means that sometimes
         // the responsibility message is not shown because there is a
-        // fixmystreet.assets.selectedFeature().
-        tunnel_not_found: function(layer) {
+        // fixmystreet.assets.selectedFeature(). Pass msg_id to show a
+        // message other than the layer's no_asset_msg_id.
+        tunnel_not_found: function(layer, msg_id) {
             if (!layer.visibility) {
                 responsibility_off(layer, 'road');
             }
             else {
-                responsibility_on(layer, 'road');
+                responsibility_on(layer, 'road', msg_id);
             }
         },
 

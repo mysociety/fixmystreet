@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding="UTF-8" ?>
+<wfs:FeatureCollection
+   xmlns:ms="http://mapserver.gis.umn.edu/mapserver"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:wfs="http://www.opengis.net/wfs"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://mapserver.gis.umn.edu/mapserver https://tilma.staging.mysociety.org:80/mapserver/crt?SERVICE=WFS&amp;VERSION=1.1.0&amp;REQUEST=DescribeFeatureType&amp;TYPENAME=Tunnel_Portals&amp;OUTPUTFORMAT=text/xml;%20subtype=gml/3.1.1  http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+    <gml:featureMember>
+      <ms:Tunnel_Portals gml:id="Tunnel_Portals.401">
+        <ms:msGeometry>
+          <gml:Point srsName="EPSG:3857">
+            <gml:pos srsDimension="2">-12802.932958 6716443.562549</gml:pos>
+          </gml:Point>
+        </ms:msGeometry>
+        <ms:OBJECTID>401</ms:OBJECTID>
+        <ms:sap_func_loc>RE-007-005-01</ms:sap_func_loc>
+        <ms:sap_description>Islington Tunnel West Portal</ms:sap_description>
+        <ms:waterway_name>Regent's Canal</ms:waterway_name>
+        <ms:is_trust_owned>1</ms:is_trust_owned>
+      </ms:Tunnel_Portals>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Tunnel_Portals gml:id="Tunnel_Portals.402">
+        <ms:msGeometry>
+          <gml:Point srsName="EPSG:3857">
+            <gml:pos srsDimension="2">-11426.854948 6716152.012920</gml:pos>
+          </gml:Point>
+        </ms:msGeometry>
+        <ms:OBJECTID>402</ms:OBJECTID>
+        <ms:sap_func_loc>RE-007-005-08</ms:sap_func_loc>
+        <ms:sap_description>Islington Tunnel East Portal</ms:sap_description>
+        <ms:waterway_name>Regent's Canal</ms:waterway_name>
+        <ms:is_trust_owned>1</ms:is_trust_owned>
+      </ms:Tunnel_Portals>
+    </gml:featureMember>
+</wfs:FeatureCollection>

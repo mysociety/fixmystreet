@@ -688,26 +688,83 @@ fixmystreet.assets.camden.filter_column = new OpenLayers.Filter.Comparison({
 
 fixmystreet.assets.canalrivertrust = {};
 
+function crt_owns_feature(f) {
+    return f && f.attributes && f.attributes.is_trust_owned == 1;
+}
+
+function crt_does_not_own_feature(f) {
+    return !crt_owns_feature(f);
+}
+
+// Assets the Trust doesn't own are shown in grey, and can be
+// selected but block reporting (see asset_found below)
+var crt_owned_default_style = new OpenLayers.Style({
+    fillColor: "#868686",
+    fillOpacity: 0.6,
+    strokeColor: "#000000",
+    strokeOpacity: 0.6,
+    strokeWidth: 2,
+    pointRadius: 4,
+    title: 'Not maintained by the Canal & River Trust'
+});
+crt_owned_default_style.addRules([
+    create_rule(crt_owns_feature, {
+        fillColor: "#FFFF00",
+        pointRadius: 6,
+        title: ''
+    }),
+    create_rule(crt_does_not_own_feature)
+]);
+
+fixmystreet.assets.canalrivertrust.owned_stylemap = new OpenLayers.StyleMap({
+    'default': crt_owned_default_style,
+    'select': fixmystreet.assets.style_default_select,
+    'hover': fixmystreet.assets.style_default_hover
+});
+
 fixmystreet.assets.canalrivertrust.asset_found = function(asset) {
-    fixmystreet.message_controller.asset_found.call(this, asset);
-    fixmystreet.assets.named_select_action_found.call(this, asset);
+    fixmystreet.message_controller.asset_found.call(this, asset, crt_owns_feature, '#js-not-trust-owned');
+    if (crt_owns_feature(asset)) {
+        fixmystreet.assets.named_select_action_found.call(this, asset);
+    } else {
+        fixmystreet.assets.named_select_action_not_found.call(this);
+    }
 };
 fixmystreet.assets.canalrivertrust.asset_not_found = function() {
     fixmystreet.message_controller.asset_not_found.call(this);
+    fixmystreet.assets.named_select_action_not_found.call(this);
 };
 
 // Tunnels (treated as 'road' assets) and tunnel portals (spot assets).
 // Follow similar pattern to Bucks PROWs and spot assets on those PROWs.
 
-fixmystreet.assets.canalrivertrust.tunnel_stylemap = new OpenLayers.StyleMap({
-    'default': new OpenLayers.Style({
+// Unowned tunnels are dark and wide enough to stand out from the canal line
+var crt_tunnel_default_style = new OpenLayers.Style({
+    strokeColor: "#333333",
+    strokeOpacity: 0.9,
+    strokeWidth: 6,
+    title: 'Not maintained by the Canal & River Trust'
+});
+crt_tunnel_default_style.addRules([
+    create_rule(crt_owns_feature, {
         strokeColor: "#790d8a",
         strokeOpacity: 0.8,
-        strokeWidth: 4
-    })
+        strokeWidth: 4,
+        title: ''
+    }),
+    create_rule(crt_does_not_own_feature)
+]);
+
+fixmystreet.assets.canalrivertrust.tunnel_stylemap = new OpenLayers.StyleMap({
+    'default': crt_tunnel_default_style
 });
 
 fixmystreet.assets.canalrivertrust.tunnel_found = function(layer, feature) {
+    // A selected portal takes precedence over the nearest tunnel
+    if (!crt_owns_feature(feature) && !fixmystreet.assets.selectedFeature()) {
+        fixmystreet.assets.canalrivertrust.tunnel_not_found(layer, '#js-not-trust-owned');
+        return;
+    }
     fixmystreet.message_controller.road_found(layer, feature);
     if ( fixmystreet.assets.selectedFeature() ) {
         // Hide non-stopper message if spot selected
@@ -717,12 +774,21 @@ fixmystreet.assets.canalrivertrust.tunnel_found = function(layer, feature) {
     fixmystreet.assets.named_select_action_found.call(layer, feature);
 };
 
-fixmystreet.assets.canalrivertrust.tunnel_not_found = function(layer) {
-    fixmystreet.message_controller.tunnel_not_found(layer);
+fixmystreet.assets.canalrivertrust.tunnel_not_found = function(layer, msg_id) {
+    fixmystreet.message_controller.tunnel_not_found(layer, msg_id);
 
     // Force deletion of 'You have selected tunnel...' message as it does
     // not otherwise happen if e.g. another category selected
     delete layer.map_messaging.asset;
+};
+
+// Selecting a portal the Trust doesn't own shows a message on this layer
+// (see asset_found), so clear it on deselect. Picking a portal is optional
+// (the tunnel layer shows the "please select" message), so don't show
+// one here, as asset_not_found would.
+fixmystreet.assets.canalrivertrust.portal_not_found = function() {
+    fixmystreet.message_controller.asset_found.call(this);
+    fixmystreet.assets.named_select_action_not_found.call(this);
 };
 
 /* Central Bedfordshire */

@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding="UTF-8" ?>
+<wfs:FeatureCollection
+   xmlns:ms="http://mapserver.gis.umn.edu/mapserver"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:wfs="http://www.opengis.net/wfs"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://mapserver.gis.umn.edu/mapserver https://tilma.staging.mysociety.org:80/mapserver/crt?SERVICE=WFS&amp;VERSION=1.1.0&amp;REQUEST=DescribeFeatureType&amp;TYPENAME=Tunnels&amp;OUTPUTFORMAT=text/xml;%20subtype=gml/3.1.1  http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+    <gml:featureMember>
+      <ms:Tunnels gml:id="Tunnels.301">
+        <ms:msGeometry>
+          <gml:LineString srsName="EPSG:3857">
+            <gml:posList srsDimension="2">-11426.146345 6716152.026090 -11427.238285 6716152.229164 -11557.319487 6716179.963967 -12776.824863 6716439.871858 -12801.748075 6716444.225820</gml:posList>
+          </gml:LineString>
+        </ms:msGeometry>
+        <ms:OBJECTID>301</ms:OBJECTID>
+        <ms:sap_func_loc>RE-007-005</ms:sap_func_loc>
+        <ms:sap_description>Islington Tunnel</ms:sap_description>
+        <ms:waterway_name>Regent's Canal</ms:waterway_name>
+        <ms:is_trust_owned>1</ms:is_trust_owned>
+      </ms:Tunnels>
+    </gml:featureMember>
+</wfs:FeatureCollection>

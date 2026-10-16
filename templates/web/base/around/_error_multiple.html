@@ -11,6 +11,7 @@
             <img src="[% match.icon %]" alt="">
           [% END %]
              <a href="/around?lat=[% match.latitude | uri %]&amp;lon=[% match.longitude | uri ~%]
+             [%~ IF match.zoom %]&amp;zoom=[% match.zoom %][% END ~%]
              [%~ IF photo_id %]&amp;photo_id=[% photo_id %][% END ~%]
              [%~ IF c.get_param('category') %]&amp;category=[% c.get_param('category') | uri %][% END ~%]
              [%~ IF c.get_param('filter_category') %]&amp;filter_category=[% c.get_param('filter_category') | uri %][% END ~%]

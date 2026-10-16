@@ -81,6 +81,9 @@ describe('National Highways tests', function() {
         // the sidebar is blank and reporting cannot continue.
         cy.intercept('**/mapserver/highways*', {fixture: 'highways-scotland-dumfries.xml'}).as('highways-tilma');
         cy.intercept('**/report/new/ajax*', {fixture: 'highways-scotland-ajax.json'}).as('report-ajax');
+        // Make the canals layer load after the highways layer, which defers
+        // to it, to check the highways question still appears
+        cy.intercept('**/mapserver/crt*', {fixture: 'canals-empty.xml', delay: 1000}).as('crt-tilma');
 
         // Visit at coordinates centred on a Traffic Scotland road (Dumfries High Street).
         // The WFS layer fires one_time_select on loadend using the page lat/lon and finds

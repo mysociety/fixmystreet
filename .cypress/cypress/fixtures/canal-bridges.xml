@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding="UTF-8" ?>
+<wfs:FeatureCollection
+   xmlns:ms="http://mapserver.gis.umn.edu/mapserver"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:wfs="http://www.opengis.net/wfs"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://mapserver.gis.umn.edu/mapserver https://tilma.staging.mysociety.org:80/mapserver/crt?SERVICE=WFS&amp;VERSION=1.1.0&amp;REQUEST=DescribeFeatureType&amp;TYPENAME=Bridges&amp;OUTPUTFORMAT=text/xml;%20subtype=gml/3.1.1  http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+    <gml:featureMember>
+      <ms:Bridges gml:id="Bridges.101">
+        <ms:msGeometry>
+          <gml:Point srsName="EPSG:3857">
+            <gml:pos srsDimension="2">-9104.896012 6716865.341413</gml:pos>
+          </gml:Point>
+        </ms:msGeometry>
+        <ms:OBJECTID>101</ms:OBJECTID>
+        <ms:sap_func_loc>RE-009-005</ms:sap_func_loc>
+        <ms:sap_description>Bridge 43, Whitmore Road Bridge</ms:sap_description>
+        <ms:waterway_name>Regent's Canal</ms:waterway_name>
+        <ms:is_trust_owned>1</ms:is_trust_owned>
+      </ms:Bridges>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Bridges gml:id="Bridges.102">
+        <ms:msGeometry>
+          <gml:Point srsName="EPSG:3857">
+            <gml:pos srsDimension="2">-9974.330360 6716641.940467</gml:pos>
+          </gml:Point>
+        </ms:msGeometry>
+        <ms:OBJECTID>102</ms:OBJECTID>
+        <ms:sap_func_loc>RE-009-002</ms:sap_func_loc>
+        <ms:sap_description>Bridge 41, New North Road (A1200)`</ms:sap_description>
+        <ms:waterway_name>Regent's Canal</ms:waterway_name>
+        <ms:is_trust_owned>1</ms:is_trust_owned>
+      </ms:Bridges>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Bridges gml:id="Bridges.103">
+        <ms:msGeometry>
+          <gml:Point srsName="EPSG:3857">
+            <gml:pos srsDimension="2">-11147.614463 6716088.420888</gml:pos>
+          </gml:Point>
+        </ms:msGeometry>
+        <ms:OBJECTID>103</ms:OBJECTID>
+        <ms:sap_func_loc>RE-008-002</ms:sap_func_loc>
+        <ms:sap_description>Bridge 38, Froglane Bridge</ms:sap_description>
+        <ms:waterway_name>Regent's Canal</ms:waterway_name>
+        <ms:is_trust_owned>1</ms:is_trust_owned>
+      </ms:Bridges>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Bridges gml:id="Bridges.104">
+        <ms:msGeometry>
+          <gml:Point srsName="EPSG:3857">
+            <gml:pos srsDimension="2">-10479.652347 6716283.414490</gml:pos>
+          </gml:Point>
+        </ms:msGeometry>
+        <ms:OBJECTID>104</ms:OBJECTID>
+        <ms:sap_func_loc>RE-008-013</ms:sap_func_loc>
+        <ms:sap_description>Bridge 40, Packington Square Bridge</ms:sap_description>
+        <ms:waterway_name>Regent's Canal</ms:waterway_name>
+        <ms:is_trust_owned>1</ms:is_trust_owned>
+      </ms:Bridges>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Bridges gml:id="Bridges.105">
+        <ms:msGeometry>
+          <gml:Point srsName="EPSG:3857">
+            <gml:pos srsDimension="2">-10794.029437 6716106.561319</gml:pos>
+          </gml:Point>
+        </ms:msGeometry>
+        <ms:OBJECTID>105</ms:OBJECTID>
+        <ms:sap_func_loc>RE-008-010</ms:sap_func_loc>
+        <ms:sap_description>Bridge 39, Wharf Road</ms:sap_description>
+        <ms:waterway_name>Regent's Canal</ms:waterway_name>
+        <ms:is_trust_owned>1</ms:is_trust_owned>
+      </ms:Bridges>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Bridges gml:id="Bridges.106">
+        <ms:msGeometry>
+          <gml:Point srsName="EPSG:3857">
+            <gml:pos srsDimension="2">-9635.820396 6716880.906248</gml:pos>
+          </gml:Point>
+        </ms:msGeometry>
+        <ms:OBJECTID>106</ms:OBJECTID>
+        <ms:sap_func_loc>RE-009-004</ms:sap_func_loc>
+        <ms:sap_description>Bridge 42, Rosemary Branch Bridge (B102)</ms:sap_description>
+        <ms:waterway_name>Regent's Canal</ms:waterway_name>
+        <ms:is_trust_owned>1</ms:is_trust_owned>
+      </ms:Bridges>
+    </gml:featureMember>
+</wfs:FeatureCollection>
