@@ -91,6 +91,45 @@ sub get_config {
     return $config_out;
 }
 
+# Load the slow-to-compile code once, then fork for each test file rather than
+# starting a new perl for each one. Test::MockTime must be first, as it only
+# overrides time() in code compiled after it.
+my @PRELOAD = qw(
+    Test::MockTime
+    Catalyst
+    Catalyst::View::TT
+    Catalyst::Model::DBIC::Schema
+    Template
+    FixMyStreet::Cobrand
+    FixMyStreet::DB::Schema
+);
+
+sub preload {
+    require App::ForkProve;
+    require Class::Method::Modifiers;
+    require Module::Runtime;
+    require FixMyStreet;
+    require mySociety::Locale;
+
+    # As FixMyStreet::Test does, before anything else is loaded
+    FixMyStreet->test_mode(1);
+    mySociety::Locale::gettext_domain('FixMyStreet', 1);
+
+    Module::Runtime::require_module($_) for @PRELOAD;
+
+    # So the t::Mock:: modules can be found by the forked tests
+    unshift @INC, FixMyStreet->path_to()->stringify;
+
+    # Each test is run with do(), which searches @INC for a relative path
+    # (giving it an absolute __FILE__, which e.g. uniquify_email relies on),
+    # so make sure it is relative to the current directory instead.
+    Class::Method::Modifiers::install_modifier('App::ForkProve::SourceHandler', 'before', 'make_iterator', sub {
+        my ($class, $src) = @_;
+        my $file = $src->meta->{file};
+        $file->{dir} = "./$file->{dir}" unless $file->{dir} =~ m{^\.?/};
+    });
+}
+
 sub run {
     my ($class, @args) = @_;
     local @ARGV = @args;
@@ -100,11 +139,13 @@ sub run {
 
     my $recurse;
     my @state;
+    my $preload;
 
     GetOptions (
         # our own config variables
         'config=s'    => \$config_file,
         'db-config=s' => \$db_config_file,
+        'preload'     => \$preload,
 
         # App::Prove variables we want to munge
         'r|recurse' => \$recurse,
@@ -115,6 +156,8 @@ sub run {
     local $ENV{FMS_OVERRIDE_CONFIG} = $config_out;
     # Don't warn over use of Regex dispatch type
     local $ENV{CATALYST_NOWARN_DEPRECATE} = 1;
+
+    $class->preload if $preload;
 
     my $prove = App::Prove->new;
     $prove->process_args(@ARGV);

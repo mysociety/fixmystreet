@@ -33,6 +33,14 @@ Postgres cluster and database.  We can override this by doing:
     bin/run-tests --db-config=general.yml # e.g. use your current DB settings
     bin/run-tests --all-config=general.yml # e.g. use your current DB settings
 
+To load the codebase once and fork for each test file, which is quicker when
+running many tests:
+
+    bin/run-tests --preload --jobs 4 t/
+
+(No new perl is started, so this ignores perl switches such as
+HARNESS_PERL_SWITCHES, e.g. for Devel::Cover.)
+
 (NB: passing --state=save automagically is experimental, and will be removed if
 it turns out to be annoying.)
 
