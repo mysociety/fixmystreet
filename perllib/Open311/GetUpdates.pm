@@ -8,10 +8,17 @@ use Open311;
 has '+send_comments_flag' => ( default => 0 );
 has ext_to_int_map => ( is => 'rw' );
 
-has report_criteria => ( is => 'ro', default => sub { {
-        state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
+has open => ( is => 'ro' );
+
+has report_criteria => ( is => 'lazy', default => sub {
+    my @states = $_[0]->open
+        ? FixMyStreet::DB::Result::Problem->open_states()
+        : FixMyStreet::DB::Result::Problem->visible_states();
+    return {
+        state => \@states,
         external_id => { '!=', '' },
-    } } );
+    };
+});
 
 sub process_body {
     my ($self) = @_;
@@ -37,8 +44,15 @@ sub update_reports {
         $request->{description} = $request->{status_notes};
 
         my $p = $self->find_problem($request) or next;
-        next if $request->{comment_time} < $p->lastupdate;
-        # But what if update at our end later than update their end...
+        # Can do a better check for our fetching of Dudley updates
+        if ($self->current_body->name eq 'Dudley Borough Council' && $request->{account_id}) {
+            $request->{update_id} = $request->{account_id};
+            my $c = $p->comments->search( { external_id => $request->{update_id} } );
+            next if $c->first;
+        } else {
+            next if $request->{comment_time} < $p->lastupdate;
+            # But what if update at our end later than update their end...
+        }
 
         $self->process_update($request, $p);
     }

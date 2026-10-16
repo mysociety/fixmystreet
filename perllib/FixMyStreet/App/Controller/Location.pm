@@ -141,22 +141,24 @@ sub determine_location_from_pc : Private {
     $c->stash->{location_error} = $error;
 
     # Log failure in a log db
-    try {
-        my $dbfile = FixMyStreet->path_to('../data/analytics.sqlite');
-        my $db = DBI->connect("dbi:SQLite:dbname=$dbfile", undef, undef, { PrintError => 0 }) or die "$DBI::errstr\n";
-        my $sth = $db->prepare("INSERT INTO location_searches_with_no_results
-            (datetime, cobrand, geocoder, url, user_input)
-            VALUES (?, ?, ?, ?, ?)") or die $db->errstr . "\n";
-        my $rv = $sth->execute(
-            POSIX::strftime("%Y-%m-%d %H:%M:%S", localtime(time())),
-            $c->cobrand->moniker,
-            $c->cobrand->get_geocoder(),
-            $c->stash->{geocoder_url},
-            $pc,
-        );
-    } catch {
-        $c->log->debug("Unable to log to analytics.sqlite: $_");
-    };
+    my $dbfile = FixMyStreet->path_to('../data/analytics.sqlite');
+    if (-e $dbfile) {
+        try {
+            my $db = DBI->connect("dbi:SQLite:dbname=$dbfile", undef, undef, { PrintError => 0 }) or die "$DBI::errstr\n";
+            my $sth = $db->prepare("INSERT INTO location_searches_with_no_results
+                (datetime, cobrand, geocoder, url, user_input)
+                VALUES (?, ?, ?, ?, ?)") or die $db->errstr . "\n";
+            my $rv = $sth->execute(
+                POSIX::strftime("%Y-%m-%d %H:%M:%S", localtime(time())),
+                $c->cobrand->moniker,
+                $c->cobrand->get_geocoder(),
+                $c->stash->{geocoder_url},
+                $pc,
+            );
+        } catch {
+            $c->log->debug("Unable to log to analytics.sqlite: $_");
+        };
+    }
 
     return;
 }

@@ -2901,6 +2901,7 @@ body.authpage {
     width: 100%;
     background: #fff;
     border: 1px solid $primary_b;
+    max-width: 24rem;
   }
   input#pc {
     flex: 86 0 auto;
@@ -3652,19 +3653,6 @@ $site-message-border: 1px solid #525252 !default;
 
 .keyboard-instructions-wrapper, .keyboard-pin {
   display: none;
-}
-
-.badge {
-  padding: 0.25em 0.35em;
-  margin-right: 0.25em;
-  text-transform: uppercase;
-  font-weight: 600;
-  background-color: mix($primary, #fff, 30%);
-  border: 1px solid darken($primary, 10%);
-  font-size: 0.85rem;
-  color: #222;
-  border-radius: 4px;
-  vertical-align: middle;
 }
 
 // Mygovscot styling

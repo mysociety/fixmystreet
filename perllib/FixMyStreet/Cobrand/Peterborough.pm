@@ -77,7 +77,7 @@ sub disambiguate_location {
         %{ $self->SUPER::disambiguate_location() },
         centre => '52.6085234396978,-0.253091266573947',
         bounds => [ 52.5060949603654, -0.497663559599628, 52.6752139533306, -0.0127696975457487 ],
-        result_only_if => 'City of Peterborough',
+        result_only_if => 'City of Peterborough|Peterborough, Cambridgeshire',
         result_strip => ', City of Peterborough, (East of England|Cambridgeshire and Peterborough), England',
     };
 }
@@ -263,6 +263,10 @@ sub get_body_sender {
             }
         }
 
+        if ($self->{_fetch_features_failed}) {
+            return { method => 'Noop' }; # Skip until GIS is working
+        }
+
         # is on land that is handled by bartec so send
         if ( $features && scalar @$features ) {
             return $self->SUPER::get_body_sender($body, $problem);
@@ -314,7 +318,7 @@ sub _send_extra_flytipping_email {
 
     $row->push_extra_fields(@$extra_fields) if $extra_fields;
 
-    my $sender = FixMyStreet::SendReport::Email->new( to => [ $args{dest} ] );
+    my $sender = FixMyStreet::SendReport::Email->new( to => $args{dest} );
     $sender->send($row, \%send_h);
 
     if ($sender->success && @sent_to_before_send) {
@@ -372,15 +376,18 @@ sub open311_post_send {
     my $emails = $self->feature('open311_email') || {};
     my %flytipping_cats = map { $_ => 1 } @{ $self->_flytipping_categories };
     if ( $emails->{flytipping} && $flytipping_cats{$row->category} ) {
-        my $dest = [ $emails->{flytipping}, "Environmental Services" ];
-        $self->_send_extra_flytipping_email(
-            $row,
-            $h,
-            dest => $dest,
-            send_context => { flytipping_extra => 1 },
-        );
+        if (!$row->get_extra_metadata('contributed_by')) {
+            # We only want to send this email for non-staff reporters.
+            my $dest = [ [ $emails->{flytipping}, "Environmental Services" ] ];
+            $self->_send_extra_flytipping_email(
+                $row,
+                $h,
+                dest => $dest,
+                send_context => { flytipping_extra => 1 },
+            );
+        }
         if ($emails->{flytipping_witnessed} && $self->_witnessed_general_flytipping($row)) {
-            my $dest2 = [ $emails->{flytipping_witnessed}, "Environmental Enforcement" ];
+            my $dest2 = [ [ $emails->{flytipping_witnessed}, "Environmental Enforcement" ] ];
             $self->_send_extra_flytipping_email(
                 $row,
                 $h,
@@ -389,7 +396,7 @@ sub open311_post_send {
             );
         }
         if ($emails->{flytipping_cctv} && $self->_report_is_in_cctv_zone($row)) {
-            my $dest3 = [ $emails->{flytipping_cctv}, 'Environmental Enforcement' ];
+            my $dest3 = [ [ $emails->{flytipping_cctv}, 'Environmental Enforcement' ] ];
             $self->_send_extra_flytipping_email(
                 $row,
                 $h,
@@ -404,6 +411,11 @@ sub open311_post_send {
                 ],
             );
         }
+    } elsif ( $emails->{sharps} && $row->category eq 'Sharps' ) {
+        my @emails = split(/,/, $emails->{sharps});
+        $self->_send_extra_flytipping_email(
+            $row, $h, dest => [ @emails ],
+        );
     }
 }
 

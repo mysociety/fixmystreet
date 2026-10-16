@@ -344,6 +344,12 @@ my ($email_contact) = $mech->create_contact_ok(
     email => 'Passthrough-test@example.org',
 );
 
+my ($prow_contact) = $mech->create_contact_ok(
+    body_id => $body->id,
+    category => 'Public Rights of Way',
+    email => 'Passthrough-prow@example.org',
+);
+
 FixMyStreet::override_config {
     STAGING_FLAGS => { send_reports => 1 },
     MAPIT_URL => 'http://mapit.uk/',
@@ -398,6 +404,12 @@ FixMyStreet::override_config {
         $req = Open311->test_req_used;
         $c = CGI::Simple->new($req->content);
         is $c->param('service_code'), $email_contact->email, 'Report resent in new category';
+
+        $mech->submit_form_ok({ with_fields => { category => 'Public Rights of Way' } });
+        FixMyStreet::Script::Reports::send();
+        $req = Open311->test_req_used;
+        $c = CGI::Simple->new($req->content);
+        is $c->param('service_code'), $prow_contact->email, 'Report resent in new category';
     };
 };
 

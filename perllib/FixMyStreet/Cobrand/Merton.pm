@@ -8,7 +8,7 @@ with 'FixMyStreet::Roles::Cobrand::OpenUSRN';
 with 'FixMyStreet::Cobrand::Merton::Waste';
 with 'FixMyStreet::Roles::Open311Multi';
 
-sub council_area_id { [2500, 2480, 2501] }
+sub council_area_id { [2500, 2480, 2501, 2498] }
 sub council_area { 'Merton' }
 sub council_name { 'Merton Council' }
 sub council_url { 'merton' }
@@ -211,7 +211,42 @@ sub check_report_is_on_cobrand_asset {
     };
 
     my $features = $self->_fetch_features($cfg);
+
+    # Above is checking for our static map layers,
+    # but we need to check the alloy map layers too.
+
+    if (!$features->[0]) {
+        $cfg = {
+            buffer => '10',
+            proxy_url => "https://$host/alloy/layer.php",
+            layer => "parks",
+            url => "https://merton.assets",
+            srs => "27700",
+        };
+        $features = $self->_fetch_features($cfg, $x, $y);
+    };
+
     return $features->[0];
+}
+
+sub _fetch_features_url {
+    my ($self, $cfg) = @_;
+
+    # For non-Alloy we don't need to adjust the URL
+    if ($cfg->{typename}) {
+        return $self->next::method($cfg);
+    }
+
+    # Merton's asset proxy is Alloy, not a standard WFS server.
+    my $uri = URI->new($cfg->{proxy_url});
+    $uri->query_form(
+        layer => $cfg->{layer},
+        url => $cfg->{url},
+        bbox => $cfg->{bbox},
+        srs => $cfg->{srs},
+    );
+
+    return $uri;
 }
 
 sub munge_overlapping_asset_bodies {
@@ -256,5 +291,22 @@ around open311_post_send => sub {
 
     return $orig->($self, $row, $h, $sender);
 };
+
+sub dashboard_export_problems_add_columns {
+    my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        park_name => 'Park name',
+        park_uprn => 'Park UPRN',
+    );
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+        return {
+            park_name => $csv->_extra_field($report, 'ParkName'),
+            park_uprn => $csv->_extra_field($report, 'uprn'),
+        };
+    });
+}
 
 1;

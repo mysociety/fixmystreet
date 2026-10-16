@@ -47,7 +47,7 @@ END;
               <a class="btn btn--primary govuk-!-margin-bottom-2" href="[% c.uri_for_action('waste/bulky/amend_small', [ property.id, booking.id ]) %]">Amend booking</a>
             [% END %]
           [% ELSIF c.cobrand.moniker == 'merton' %]
-            <p>Free bulky waste bookings are final and can’t be changed. To make a change to a paid-for booking made before 1 June 2026, call us on 020 8274 4902 at least 2 working days before your collection day.</p>
+            <p>If you would like to make any changes to your booking, call us on 020 8274 4902 at least 2 working days before your collection day.</p>
           [% END %]
           [% IF c.cobrand.bulky_can_cancel_collection(booking) %]
             [% IF type == 'bulky' %]
@@ -94,9 +94,11 @@ END;
       <div class="waste-services-launch-panel">
           <a class="btn btn--primary govuk-!-margin-bottom-2" href="/report/[% booking.id %]">[% check_key %]</a>
           [% PROCESS 'waste/_service_missed.html' unit=booked_missed.$booking_guid original_booking=booking.id no_default=1 %]
-          [% IF c.cobrand.moniker == 'sutton' %]
+          [% IF c.cobrand.moniker == 'sutton' OR cobrand.moniker == 'kingston' %]
           [% IF booked_missed.$booking_guid.escalations.missed_open %]
-              <span class="waste-service-descriptor">Thank you for reporting an issue with this collection; we are investigating.</span>
+              <span class="waste-service-descriptor">Thank you for reporting an issue with this collection; we are investigating
+                [%~ IF booked_missed.$booking_guid.escalations.missed_open.target %] and aim to resolve this by [% date.format(booked_missed.$booking_guid.escalations.missed_open.target, '%A, %-d %B') %]
+                [%~ END %].</span>
           [% END %]
           [% END %]
       </div>
@@ -129,6 +131,7 @@ END;
     [% END %]
 
   [% IF type == 'bulky' %]
+  [% IF c.cobrand.moniker != 'merton' # No line for Merton %]
   <dl class="govuk-summary-list govuk-!-margin-bottom-3 govuk-!-padding-bottom-0">
     <div class="govuk-summary-list__row">
       <dt class="govuk-summary-list__key">Cost</dt>
@@ -151,6 +154,7 @@ END;
       </dd>
     </div>
   </dl>
+  [% END %]
   [% END %]
 [% END %]
 

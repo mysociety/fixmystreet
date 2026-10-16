@@ -6,7 +6,6 @@ use JSON::MaybeXS;
 use t::Mock::Facebook;
 use t::Mock::Twitter;
 use t::Mock::OpenIDConnect;
-use t::Mock::Tilma;
 
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
@@ -65,8 +64,6 @@ foreach ($body->id, $body2->id, $body3->id) {
 my $resolver = Test::MockModule->new('Email::Valid');
 my $social = Test::MockModule->new('FixMyStreet::App::Controller::Auth::Social');
 $social->mock('generate_nonce', sub { 'MyAwesomeRandomValue' });
-my $tilma = t::Mock::Tilma->new;
-LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => qr/tilma/);
 
 for my $test (&tst_config) {
 
@@ -257,6 +254,13 @@ for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
                 if ($test->{type} eq 'oidc' && $test->{password_change_pattern}) {
                     ok $mech->find_link( text => 'Change password', url_regex => $test->{password_change_pattern} );
                 }
+            }
+
+            if ($state eq 'okay' && $test->{type} eq 'oidc') {
+                # IdP might give us a mixed-case email; check that we store, and
+                # can look it up, lowercase
+                my $user = FixMyStreet::DB->resultset('User')->find( { email => $test->{email} } );
+                is $user->email, $test->{email}, 'User email stored lowercase';
             }
 
             $mech->get('/auth/sign_out');

@@ -73,7 +73,7 @@ sub alter {
             my $bins_wanted = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || $data->{bins};
             my $new_bins = $bins_wanted - $current_bins;
 
-            my $edit_current_allowed = $c->cobrand->call_hook('waste_allow_current_bins_edit');
+            my $edit_current_allowed = $c->cobrand->call_hook('waste_modify_allow_current_bins_edit');
             my $costs = WasteWorks::Costs->new({
                 cobrand => $c->cobrand,
                 discount => $form->saved_data->{apply_discount},

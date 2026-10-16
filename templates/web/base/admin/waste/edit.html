@@ -4,11 +4,16 @@
 
 [% INCLUDE status_message %]
 
+<style>
+.waste_admin_row {
+    display: flex;
+    gap: 1em;
+}
+</style>
+
 [% IF errors %]
     <p class="error">[% loc('Please correct the errors below') %]</p>
 [% END %]
-
-<h2>Site wide configuration</h2>
 
 [% IF errors.site_wide %]
     <div class="form-error">[% errors.site_wide %]</div>
@@ -18,7 +23,7 @@
     <input type="hidden" name="token" value="[% csrf_token %]" >
 
   [% IF cobrand.bulky_enabled %]
-    <h3>Bulky Collections</h3>
+    <h2>Bulky Collections</h2>
 
     <ul>
         <li><a href="[% c.uri_for_action('admin/waste/bulky_items', [ body.id ]) %]">[% loc("Bulky items list") %]</a></li>
@@ -27,7 +32,35 @@
 [% IF cobrand.bulky_points_per_item_pricing %]
     <input type=hidden name="per_item_costs" value=1>
 [% ELSE %]
-    <div style="display:flex;gap:1em;">
+
+[% IF cobrand.moniker == 'merton' # Discount scheme %]
+    <h3>Discount scheme</h3>
+
+    <p>
+    <input type="checkbox" name="discount_enabled" value="1" id="waste_discount_enabled" [% 'checked' IF discount_enabled %] data-show="#discount_configuration">
+    <label class="inline" for="waste_discount_enabled">Allow Bulky Waste discount scheme</label>
+    <div id="discount_configuration" class="waste_admin_row hidden-js">
+        <div>
+            <label for="waste_discount_months">Period between discounted bookings (months)</label>
+            <input class="form-control" type=text name="discount_months" id="waste_discount_months"
+                value="[% discount_months %]">
+        </div>
+        <div>
+            <label for="waste_discount_max_items">Max items per discounted collection</label>
+            <input class="form-control" type=text name="discount_max_items" id="waste_discount_max_items"
+                value="[% discount_max_items %]">
+        </div>
+        <div>
+            <label for="waste_discount_price">Price for discounted collection (in pence)</label>
+            <input class="form-control" type=text max=200 min=1 name="discount_price" id="waste_discount_price"
+                value="[% discount_price %]">
+        </div>
+    </div>
+
+    <h3>Standard pricing and volumes</h3>
+[% END %]
+
+    <div class="waste_admin_row">
     <div>
     <label for="waste_base_price">Price for a collection (in <strong>pence</strong>)</label>
     <input class="form-control" type=text name="base_price" id="waste_base_price"
@@ -49,7 +82,7 @@
     </div>
     </div>
 
-    <div style="display:flex;gap:1em;">
+    <div class="waste_admin_row">
     <div>
     <label for="waste_band1_price">Price for a small collection (in pence)</label>
     <input class="form-control" type=text name="band1_price" id="waste_band1_price"
@@ -93,7 +126,7 @@
   [% END %]
 
   [% IF cobrand.small_items_enabled %]
-    <h3>Small Items Collections</h3>
+    <h2>Small Items Collections</h2>
 
     <ul>
         <li><a href="[% c.uri_for_action('admin/waste/small_items', [ body.id ]) %]">Small items list</a></li>
@@ -132,7 +165,7 @@
         [% 'checked' IF free_mode %]>
     <label class="inline" for="waste_free_mode">Free collection allowed</label>
 
-    <h3>General Options</h3>
+    <h2>General Options</h2>
 
     <p>
     <label for="waste_food_bags_disabled">Food bag ordering disabled</label>

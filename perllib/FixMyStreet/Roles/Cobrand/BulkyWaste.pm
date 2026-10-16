@@ -280,6 +280,8 @@ sub bulky_total_cost {
     my ($self, $data) = @_;
     my $c = $self->{c};
 
+    return if $c->stash->{small_items}; # Small items aren't charged for
+
     my %pop_items;
     if ($self->bulky_pop_item_costs) {
         %pop_items = map { $_->{name} => 1 } grep { $_->{contains_pops} } @{ $self->bulky_items_master_list };
@@ -421,7 +423,10 @@ sub find_booked_collections {
         uprn => $uprn,
     })->order_by('-id')->all;
 
-    my $dt = DateTime->now( time_zone => FixMyStreet->local_time_zone )->truncate( to => 'day' )->subtract ( days => 10 );
+    my $recent_dt = $self->{c}->cobrand->call_hook('bulky_recent_date')
+        // DateTime->now( time_zone => FixMyStreet->local_time_zone )
+            ->truncate( to => 'day' )
+            ->subtract( days => 10 );
     my $out;
     foreach (@reports) {
         my $key
@@ -430,7 +435,7 @@ sub find_booked_collections {
             :                                            'bulky';
 
         my $date = $self->collection_date($_);
-        next if $recent && $date < $dt;
+        next if $recent && $date < $recent_dt;
 
         # If we've already sent it, and we want a full list for display, we don't
         # want to show ones without a reference
@@ -713,15 +718,10 @@ sub bulky_reminders {
         });
     }
 
-    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->truncate( to => 'day' );
 
     while (my $report = $collections->next) {
-        my $r1 = $report->get_extra_metadata('reminder_1');
-        my $r3 = $report->get_extra_metadata('reminder_3');
-        next if $r1; # No reminders left to do
-
         my $dt = $self->collection_date($report);
-
         # Shouldn't happen, but better to be safe.
         next unless $dt;
 
@@ -729,30 +729,36 @@ sub bulky_reminders {
         # already passed) then mark this report as done so we don't see it
         # again tomorrow.
         my $cancelled = $self->bulky_is_cancelled($report);
-        if ( $cancelled || $dt < $now) {
+        if ( $cancelled || $dt <= $now) {
             $report->set_extra_metadata(reminder_1 => 1);
             $report->set_extra_metadata(reminder_3 => 1);
             $report->update;
             next;
         }
 
-        my $d1 = $dt->clone->subtract(days => 1);
-        my $d3 = $dt->clone->subtract(days => 3);
-
         my $h = {
             report => $report,
             cobrand => $self,
         };
-        if (!$r3 && $now >= $d3 && $now < $d1) {
-            $h->{days} = 3;
-            $self->_bulky_send_reminder_email($report, $h, $params);
-            $report->set_extra_metadata(reminder_3 => 1);
-            $report->update;
-        } elsif ($now >= $d1 && $now < $dt) {
-            $h->{days} = 1;
-            $self->_bulky_send_reminder_email($report, $h, $params);
-            $report->set_extra_metadata(reminder_1 => 1);
-            $report->update;
+
+        my @days = (3, 1);
+        # Merton discounted have weekly reminders
+        my $discounted = $report->get_extra_field_value('discounted') || '';
+        if ($discounted) {
+            unshift @days, 56, 49, 42, 35, 28, 21, 14, 7;
+        }
+
+        next if $report->get_extra_metadata("reminder_1"); # No reminders left to do
+
+        foreach my $curr (@days) {
+            my $r = $report->get_extra_metadata("reminder_$curr");
+            my $dc = $dt->clone->subtract(days => $curr);
+            if (!$r && $now == $dc) {
+                $h->{days} = $curr;
+                $self->_bulky_send_reminder_email($report, $h, $params);
+                $report->set_extra_metadata("reminder_$curr" => 1);
+                $report->update;
+            }
         }
     }
 }

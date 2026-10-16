@@ -831,6 +831,14 @@ Show the problem creation graph in the admin interface
 
 sub admin_show_creation_graph { 1 }
 
+=item admin_show_body_stats
+
+Show the body/contact counts on the admin stats page
+
+=cut
+
+sub admin_show_body_stats { 1 }
+
 =item admin_allow_user
 
 Perform checks on whether this user can access admin. By default only superusers

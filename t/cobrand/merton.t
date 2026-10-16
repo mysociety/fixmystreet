@@ -4,6 +4,7 @@ use HTML::Selector::Element qw(find);
 use FixMyStreet::Script::Reports;
 use FixMyStreet::Script::Alerts;
 use Open311::PostServiceRequestUpdates;
+use File::Temp 'tempdir';
 
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
@@ -379,6 +380,25 @@ subtest 'Does not send updates on now-email categories' => sub {
     $comment->discard_changes;
     is $comment->send_fail_count, 0, "comment sending not attempted";
     is $comment->send_state, 'skipped', "skipped sending comment";
+};
+
+subtest 'Dashboard CSV extra columns' => sub {
+  my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
+  FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'merton',
+    MAPIT_URL => 'http://mapit.uk/',
+    PHOTO_STORAGE_OPTIONS => {
+        UPLOAD_DIR => $UPLOAD_DIR,
+    },
+  }, sub {
+    $problem1->update_extra_field({ name => 'ParkName', value => 'Lavender Park' });
+    $problem1->update_extra_field({ name => 'uprn', value => '48100068' });
+    $problem1->update;
+    $mech->log_in_ok( $superuser->email );
+    $mech->get_ok('/dashboard?export=1');
+    $mech->content_contains('"Report ID",Title,Detail,"User Name",Category,Created,Confirmed,Acknowledged,Fixed,Closed,Status,Latitude,Longitude,Query,Ward,Easting,Northing,"Report URL","Device Type","Site Used","Reported As","Park name","Park UPRN"');
+    $mech->content_contains('"Lavender Park",48100068');
+  }
 };
 
 package SOAP::Result;

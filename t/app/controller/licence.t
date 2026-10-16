@@ -12,6 +12,10 @@ my $body = $mech->create_body_ok(2482, 'TfL', { cobrand => 'tfl' });
 my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body, password => 'password');
 $staffuser->user_body_permissions->create({ body => $body, permission_type => 'report_inspect' });
 
+my $bromley = $mech->create_body_ok(2482, 'Bromley Council', { cobrand => 'bromley' });
+my $bromley_staff = $mech->create_user_ok('bromley@example.com', name => 'Council User', from_body => $bromley);
+$bromley_staff->user_body_permissions->create({ body => $bromley, permission_type => 'report_inspect' });
+
 # Create the category for scaffold licences
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
@@ -161,7 +165,7 @@ subtest 'Reporting does not include category' => sub {
         MAPIT_URL => 'http://mapit.uk/',
         COBRAND_FEATURES => {
             internal_ips => { tfl => [ '127.0.0.1' ] },
-            licencing_forms => { tfl => 0 },
+            licencing_forms => { tfl => 1 },
         },
     }, sub {
         $mech->get_ok('/report/new?latitude=51.4039&longitude=0.018697');
@@ -176,6 +180,32 @@ subtest 'Reporting does not include category' => sub {
         $mech->get_ok('/report/' . $report->id);
         $mech->content_contains('Graffiti');
         $mech->content_like(qr/Existing category">\s*<option selected value="Scaffold licence"/);
+    };
+};
+
+subtest 'Council staff cannot see licence category' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['bromley', 'tfl'],
+        MAPIT_URL => 'http://mapit.uk/',
+        COBRAND_FEATURES => {
+            licencing_forms => { tfl => 1 },
+        },
+    }, sub {
+        my ($report) = $mech->create_problems_for_body(1, $bromley, 'Broken street light', {
+            category => 'Street light',
+            areas => ',2482,'
+        });
+        $mech->host('bromley.example.org');
+        $mech->log_in_ok( $bromley_staff->email );
+
+        $mech->get_ok('/report/new?latitude=51.4039&longitude=0.018697');
+        $mech->content_contains('Graffiti');
+        $mech->content_lacks('Scaffold licence');
+
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_contains('Graffiti');
+        $mech->content_like(qr/Existing category">\s*<option selected value="Street light"/);
+        $mech->content_lacks('Scaffold licence');
     };
 };
 

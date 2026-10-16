@@ -141,7 +141,7 @@ If a user loads FixMyStreet while offline they will see the "You are currently o
 
 ## Receiving a response
 
-<img loading="lazy" alt="Reponses from the council via email and published on the report page" src="/assets/img/pro-user-guide/report-response.png" class="admin-screenshot" />
+<img loading="lazy" alt="Responses from the council via email and published on the report page" src="/assets/img/pro-user-guide/report-response.png" class="admin-screenshot" />
 
 Responses from you, the authority, come directly back to the user via the email address they used to make the report. 
 
@@ -161,7 +161,7 @@ Any updates on a report are sent by email to the report maker, unless they opt o
 
 ## Subscribing to alerts
 
-<img loading="lazy" alt="Reponses from the council via email and published on the report page" src="/assets/img/pro-user-guide/local-alerts.png" class="admin-screenshot" />
+<img loading="lazy" alt="Responses from the council via email and published on the report page" src="/assets/img/pro-user-guide/local-alerts.png" class="admin-screenshot" />
 
 FixMyStreet users can sign up to receive an email every time a report is made within a specified area. This can be useful for anyone who wants to keep an eye on issues within their neighbourhood: it’s often used by councillors, community groups, journalists and neighbourhood policing teams, as well as by residents.
 

@@ -30,15 +30,4 @@ sub timeline {
     );
 }
 
-sub summary_count {
-    my ( $rs ) = @_;
-
-    my $params = {
-        group_by => ['me.state'],
-        select   => [ 'me.state', { count => 'me.id' } ],
-        as       => [qw/state state_count/],
-    };
-    return $rs->search(undef, $params);
-}
-
 1;

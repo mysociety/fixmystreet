@@ -331,6 +331,17 @@ subtest 'Dashboard CSV export includes extra staff columns' => sub {
         $mech->content_like(qr/CSV Role/, "CSV export includes staff role after export");
         $mech->content_contains('"User Id"', "User Id column header after export");
         $mech->content_like(qr/,$user_id,4321$/, "User Id data after export");
+
+        subtest 'Also includes hidden reports' => sub {
+            $report->update( { state => 'hidden' } );
+
+            FixMyStreet::Script::CSVExport::process(
+                dbh => FixMyStreet::DB->schema->storage->dbh );
+            $mech->get_ok('/dashboard?export=1');
+            $mech->content_contains('hidden', 'Hidden report shows up');
+
+            $report->update( { state => 'confirmed' } );
+        };
     };
 };
 

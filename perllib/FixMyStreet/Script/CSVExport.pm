@@ -231,7 +231,7 @@ EOF
     if ($EXTRAS->{alerts_count}{$cobrand->moniker}) {
         push @sql_select, '"alerts_table"."alerts_count"';
         push @sql_join, '"alerts_table" ON CAST("alerts_table"."parameter" AS INTEGER) = "me"."id"';
-        push @sql_with, "alerts_table AS (select parameter, count(*) AS alerts_count FROM alert WHERE alert_type='new_updates' AND confirmed IS NOT NULL AND whendisabled IS NULL GROUP BY 1)";
+        push @sql_with, "alerts_table AS (select parameter, count(*) AS alerts_count FROM alert WHERE alert_type='new_updates' AND confirmed = 1 AND whendisabled IS NULL GROUP BY 1)";
     }
 
     my $sql_select = join(', ', @sql_select);
@@ -240,8 +240,10 @@ EOF
 
     my $where_states = '';
     my $all_states = $cobrand->call_hook('dashboard_export_include_all_states');
+    my $include_hidden = $cobrand->call_hook('dashboard_export_include_hidden');
     unless ($all_states) {
         my $states = join(', ', map { "'$_'" } FixMyStreet::DB::Result::Problem->visible_states);
+        $states .= ", 'hidden'" if $include_hidden;
         $where_states = " AND me.state IN ($states)";
     }
     return <<EOF;

@@ -115,6 +115,29 @@ sub geocode_postcode {
     return {};
 }
 
+=head2 geocode_postcode_fallback
+
+If we get no geocoding response, and the string contains what could be a
+postcode, let's try that.
+
+=cut
+
+sub geocode_postcode_fallback {
+    my ( $self, $s ) = @_;
+    $s = uc($s);
+    if (my ($pc) = $s =~ m# (( [A-Z]{1,2}\d{1,2} | [A-Z]{1,2}\d[A-Z] ) \s* \d[A-Z][A-Z]) #x) {
+        if (mySociety::PostcodeUtil::is_valid_postcode($pc)) {
+            my $location = mySociety::MaPit::call('postcode', $pc);
+            return {} if $location->{error} || !$location->{coordsyst};
+            return {
+                latitude  => $location->{wgs84_lat},
+                longitude => $location->{wgs84_lon},
+            };
+        }
+    }
+    return {};
+}
+
 sub short_name {
     my $self = shift;
     my ($area) = @_;

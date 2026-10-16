@@ -166,6 +166,15 @@ sub new_report_detail_field_hint {
     "e.g. ‘This pothole has been here for two months and…’"
 }
 
+sub report_nearby_filter {
+    my ($self, $params, $mode) = @_;
+
+    if ($mode && $mode eq 'inspector') {
+        $params->{limit} = 10;
+        $params->{states} = FixMyStreet::DB::Result::Problem->open_states();
+    }
+}
+
 =head2 pin_colour
 
 BathNES uses the following pin colours:
@@ -304,6 +313,10 @@ backends.
 
 sub category_change_force_resend {
     my ($self, $old, $new) = @_;
+
+    my $PROW = 'Public Rights of Way';
+    # Okay if we're switching to/from PROW category
+    return 1 if $old eq $PROW || $new eq $PROW;
 
     # Get the Open311 identifiers
     my $contacts = $self->{c}->stash->{contacts};

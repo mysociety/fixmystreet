@@ -3,7 +3,6 @@ use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 use FixMyStreet::Script::CSVExport;
 use File::Temp 'tempdir';
-use t::Mock::Tilma;
 use Test::MockTime qw(:all);
 use Test::MockModule;
 use Test::Output;
@@ -13,9 +12,6 @@ my $mech = FixMyStreet::TestMech->new;
 # disable info logs for this test run
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
-
-my $tilma = t::Mock::Tilma->new;
-LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => qr/tilma/);
 
 my $gc = Test::MockModule->new('FixMyStreet::Geocode');
 
@@ -40,10 +36,10 @@ $gc->mock('cache', sub {
                            ],
           'osm_id' => 507095202
         },
-        { # duplicate so we don't jump straight to report page with only one result
+        { # near duplicate so we don't jump straight to report page with only one result
           'osm_type' => 'way',
           'type' => 'tertiary',
-          'display_name' => 'Engineers Way, London Borough of Brent, London, Greater London, England, HA9 0FJ, United Kingdom',
+          'display_name' => 'Engineers Road, London Borough of Brent, London, Greater London, England, HA9 0FJ, United Kingdom',
           'licence' => "Data \x{a9} OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
           'lat' => '51.55904',
           'importance' => '0.40001',
@@ -187,7 +183,7 @@ sub create_contact {
     $contact->update;
 }
 
-$contact = $mech->create_contact_ok(body => $brent, category => 'Fly-tip Small - Less than one bag', email => 'flytipping@brent.example.org');
+$contact = $mech->create_contact_ok(body => $brent, category => 'Fly-tip Small - Less than one bag', email => 'Echo-flytipping');
 $contact->set_extra_fields(
     { code => 'Did_you_see_the_Flytip_take_place?_', required => 1, values => [
         { name => 'Yes', key => 1 }, { name => 'No', key => 0 }
@@ -401,7 +397,7 @@ subtest 'Brent templates provide external_status_code for non-waste reports' => 
         areas => ",2488,", category => 'Overgrown grass', send_state => 'sent' });
         $mech->log_in_ok($super_user->email);
         $mech->get_ok('/admin/report_edit/' . $problem->id);
-        $mech->submit_form_ok({ with_fields => { category => 'Report missed collection' } });
+        $mech->submit_form_ok({ with_fields => { category => 'Fly-tip Small - Less than one bag' } });
         $problem->discard_changes;
         is $problem->send_state, 'unprocessed', "Marked for resending";
         $problem->comments->delete;

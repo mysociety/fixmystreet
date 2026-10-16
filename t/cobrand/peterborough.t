@@ -8,8 +8,7 @@ use Test::LongString;
 use Open311::PostServiceRequestUpdates;
 use t::Mock::Nominatim;
 
-my $mock = Test::MockModule->new('FixMyStreet::Cobrand::Peterborough');
-$mock->mock('_fetch_features', sub {
+sub mock_fetch_features {
     my ($self, $args, $x, $y) = @_;
     if ( $args->{type} && $args->{type} eq 'arcgis' ) {
         # council land
@@ -32,7 +31,9 @@ $mock->mock('_fetch_features', sub {
         return [];
     }
     return [];
-});
+}
+my $mock = Test::MockModule->new('FixMyStreet::Cobrand::Peterborough');
+$mock->mock('_fetch_features', \&mock_fetch_features);
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -71,6 +72,7 @@ my $flytipping = $mech->create_contact_ok(email => 'FLY', body_id => $peterborou
         ], "datatype" => "singlevaluelist", "required" => "true", "variable" => "true", "description" => "Did you witness the fly-tipping or have evidence about who did it?"},
     ],
 });
+$mech->create_contact_ok(email => 'Bartec-Sharps', body_id => $peterborough->id, category => 'Sharps');
 $mech->create_contact_ok(email => 'Bartec-Graffiti', body_id => $peterborough->id, category => 'Non offensive graffiti');
 my $user = $mech->create_user_ok('peterborough@example.org', name => 'Council User', from_body => $peterborough);
 $peterborough->update( { comment_user_id => $user->id } );
@@ -292,6 +294,31 @@ for my $test (
     };
 }
 
+subtest 'GIS failure causes report sending to be deferred' => sub {
+    $mock->unmock('_fetch_features');
+    my $mock_gis = LWP::Protocol::PSGI->register(sub {
+        return [503, ['Content-Type' => 'text/plain'], ['Service Unavailable']];
+    }, host => 'tilma.mysociety.org');
+
+    my ($report) = $mech->create_problems_for_body(1, $peterborough->id, 'Graffiti problem', {
+        category => 'Non offensive graffiti', cobrand => 'peterborough',
+        latitude => 52.5408, longitude => 0.2505,
+    });
+
+    FixMyStreet::override_config {
+        STAGING_FLAGS => { send_reports => 1 },
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'peterborough',
+    }, sub {
+        FixMyStreet::Script::Reports::send();
+    };
+
+    $report->discard_changes;
+    ok !$report->whensent, 'Report was not marked as sent';
+    is $report->send_fail_reason, "No-op", 'Report has been deferred';
+    $mock->mock('_fetch_features', \&mock_fetch_features);
+};
+
 subtest "flytipping on PCC land is sent by open311 and email" => sub {
     FixMyStreet::override_config {
         STAGING_FLAGS => { send_reports => 1 },
@@ -351,6 +378,48 @@ subtest "flytipping on PCC land is sent by open311 and email" => sub {
             $p->discard_changes;
             is $p->get_extra_field_value('Incident_Size'), 'tiny';
         };
+    };
+};
+
+subtest "flytipping on PCC land by staff does not send censorship checking email" => sub {
+    FixMyStreet::override_config {
+        STAGING_FLAGS => { send_reports => 1 },
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'peterborough',
+        COBRAND_FEATURES => { open311_email => { peterborough => {
+            flytipping => 'flytipping@example.org',
+            flytipping_witnessed => 'witnessed@example.org',
+        } } },
+    }, sub {
+        $mech->clear_emails_ok;
+
+        my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', {
+            category => 'General fly tipping',
+            latitude => 52.57146,
+            longitude => -0.24201,
+            areas => ',2566,',
+            cobrand => 'peterborough',
+            geocode => {
+                display_name => '12 A Street, XX1 1SZ',
+                address => {
+                    house_number => '12',
+                    road => 'A Street',
+                    postcode => 'XX1 1SZ'
+                }
+            },
+            extra => {
+                contributed_by => $staffuser->id,
+                _fields => [
+                    { name => 'site_code', value => '12345', },
+                    { name => 'Land_Type', value => 'Highway - L01', },
+                    { name => 'Primary_Waste_Type', value => 'Tyres - W06', },
+                    { name => 'Incident_Size', value => 'Small Van Load - S03', },
+                ],
+            },
+        } );
+
+        FixMyStreet::Script::Reports::send();
+        $mech->email_count_is(0);
     };
 };
 
@@ -589,6 +658,30 @@ subtest "flytipping witnessed in a CCTV camera zone sends three emails" => sub {
         is $email[1]->header('To'), '"Environmental Enforcement" <witnessed@example.org>', 'witnessed enforcement email sent';
         is $email[2]->header('To'), '"Environmental Enforcement" <cctv@example.org>', 'CCTV enforcement email sent';
         like $email[2]->header('Subject'), qr/\[Priority Evidence Available \(Fixed CCTV\)\] Problem Report: /, 'CCTV email uses the CCTV subject prefix';
+    };
+};
+
+subtest "sharps report also emailed" => sub {
+    FixMyStreet::override_config {
+        STAGING_FLAGS => { send_reports => 1 },
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'peterborough',
+        COBRAND_FEATURES => { open311_email => { peterborough => {
+            sharps => 'sharps@example.org,sharps2@example.org',
+        } } },
+    }, sub {
+        $mech->clear_emails_ok;
+
+        my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', {
+            category => 'Sharps',
+        });
+
+        FixMyStreet::Script::Reports::send();
+        $p->discard_changes;
+        is $p->send_state, 'sent', 'Report marked as sent';
+
+        my $email = $mech->get_email;
+        is $email->header('To'), 'sharps@example.org, sharps2@example.org';
     };
 };
 

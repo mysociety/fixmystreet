@@ -18,7 +18,4 @@
 [%- "\n</ul>" IF loop.last %]
 [%- END %]
 
-<h2>[% loc('Update breakdown by state') %]</h2>
-[% PROCESS states object=comments list=comments.keys.sort %]
-
 [% INCLUDE 'admin/footer.html' %]

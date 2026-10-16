@@ -237,4 +237,6 @@ FEATURE
     }
 }
 
+LWP::Protocol::PSGI->register(t::Mock::Tilma->to_psgi_app, host => qr/tilma/);
+
 __PACKAGE__->run_if_script;

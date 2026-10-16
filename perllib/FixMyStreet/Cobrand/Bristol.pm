@@ -39,7 +39,6 @@ sub council_url { return 'bristol'; }
 
 use constant ROADWORKS_CATEGORY => 'Inactive roadworks';
 use constant CYCLE_HANGERS_CATEGORY => 'Damaged cycle hanger (Street furniture)';
-use constant VEHICLE_DWELLING_CATEGORY => 'Vehicle dwelling encampment';
 
 =item * Users with a bristol.gov.uk email can always be found in the admin.
 
@@ -167,6 +166,7 @@ sub dashboard_export_problems_add_columns {
             staff_role => 'Staff Role',
             SizeOfIssue => 'Flytipping size',
             external_id => 'External ID',
+            NE02 => 'Vehicle Registration',
         )
     );
 
@@ -176,7 +176,7 @@ sub dashboard_export_problems_add_columns {
     $csv->csv_extra_data(sub {
         my $report = shift;
 
-        return { SizeOfIssue => $csv->_extra_field($report, 'SizeOfIssue') } if $csv->dbi; # Everything else covered already
+        return { NE02 => $csv->_extra_field($report, 'NE02'), SizeOfIssue => $csv->_extra_field($report, 'SizeOfIssue') } if $csv->dbi; # Everything else covered already
 
         my $by = $csv->_extra_metadata($report, 'contributed_by');
         my $staff_role = '';
@@ -187,6 +187,7 @@ sub dashboard_export_problems_add_columns {
             external_id => $report->external_id,
             staff_role => $staff_role,
             SizeOfIssue => $csv->_extra_field($report, 'SizeOfIssue'),
+            NE02 => $csv->_extra_field($report, 'NE02'),
         };
     });
 }
@@ -366,9 +367,7 @@ category are automatically closed, with an update with explanatory text added.
 sub post_report_sent {
     my ($self, $problem) = @_;
 
-    if ($problem->category eq ROADWORKS_CATEGORY
-        || $problem->category eq VEHICLE_DWELLING_CATEGORY
-        || $problem->category eq CYCLE_HANGERS_CATEGORY) {
+    if ($problem->category eq ROADWORKS_CATEGORY || $problem->category eq CYCLE_HANGERS_CATEGORY) {
         if (my $existing = $problem->comments->search({ external_id => 'auto-internal' })->first) {
             $existing->update({ problem_state => 'closed' });
         }

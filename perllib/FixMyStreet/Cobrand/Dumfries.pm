@@ -94,29 +94,15 @@ sub problems_on_map_restriction {
     ]);
 }
 
-
 =head2 open311_get_update_munging
 
-Dumfries want certain fields shown in updates on FMS.
-
-These values, if present, are passed back from open311-adapter in the <extras>
-element. If the template being used for this update has placeholders matching
-any field configured in the 'response_template_variables' Config entry, they
-get replaced with the value from extras, or an empty string otherwise.
+Store latest inspection time on the report if present,
+and ignore any photos that we already know about.
 
 =cut
 
 sub open311_get_update_munging {
     my ($self, $comment, $state, $request) = @_;
-
-    my $text = $self->open311_get_update_munging_template_variables($comment->text, $request);
-    $comment->text($text);
-
-    if ( $text = $comment->private_email_text ) {
-        $text = $self->open311_get_update_munging_template_variables(
-            $text, $request );
-        $comment->private_email_text($text);
-    }
 
     # If the update includes a latest_inspection_time, store it on the problem
     # If the value is 'NOT COMPLETE', unset the metadata
@@ -499,6 +485,57 @@ sub should_skip_sending_update {
     my ( $self, $update ) = @_;
 
     return $update->user_id != $update->problem->user_id;
+}
+
+sub dashboard_export_problems_add_columns {
+    my ($self, $csv) = @_;
+
+    my @contacts = $csv->body->contacts->order_by('category')->all;
+    my %extra_columns;
+    foreach my $contact (@contacts) {
+        foreach (@{$contact->get_metadata_for_storage}) {
+            $extra_columns{$_->{code}} = $_->{description} || $_->{code};
+        }
+    }
+    my @extra_columns = sort keys %extra_columns;
+    @extra_columns = map { $_ => $extra_columns{$_} } @extra_columns;
+
+    $csv->add_csv_columns(
+        staff_user => 'Staff User',
+        staff_role => 'Staff Role',
+        @extra_columns,
+    );
+
+    my ($user_lookup, $userroles);
+    if (!$csv->dbi) {
+        $user_lookup = $self->csv_staff_users;
+        $userroles = $self->csv_staff_roles($user_lookup);
+    }
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+        my $data = {};
+
+        if (!$csv->dbi) {
+            my $by = $report->get_extra_metadata('contributed_by');
+            my $staff_user = '';
+            my $staff_role = '';
+            if ($by) {
+                $staff_user = $self->csv_staff_user_lookup($by, $user_lookup);
+                $staff_role = join(',', @{$userroles->{$by} || []});
+            }
+            $data = {
+                staff_user => $staff_user,
+                staff_role => $staff_role,
+            };
+        }
+
+        foreach (@{$csv->_extra_field($report)}) {
+            $data->{$_->{name}} = $_->{value};
+        }
+
+        return $data;
+    });
 }
 
 1;

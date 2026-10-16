@@ -14,9 +14,12 @@ has_page about_you => (
 );
 
 has_page summary => (
-    fields => ['submit'],
+    fields => ['submit', 'tandc'],
     title => 'Submit missed collection',
     template => 'waste/summary_report.html',
+    field_ignore_list => sub {
+        return ['tandc'];
+    },
     finished => sub {
         return $_[0]->wizard_finished('process_report_data');
     },

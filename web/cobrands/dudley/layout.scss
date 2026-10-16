@@ -1,0 +1,72 @@
+@import "_variables";
+@import "../sass/layout";
+
+
+/*TYPOGRAPHY */
+.content {
+    color: $primary_b;
+}
+
+/* NAVBAR */
+#site-logo {
+  background-size: auto 4.375rem;
+}
+
+.nav-menu--main {
+    a.report-a-problem-btn {
+        background-color: $cobrand_blue_400;
+
+        &:hover {
+            background-color: $cobrand_blue_400;
+            text-decoration: underline;
+        }
+    }
+
+    span {
+        color: $cobrand_teal;
+    }
+
+}
+
+/* FRONTPAGE */
+#front-main {
+    padding: 3em 1em;
+
+  #front-main-container {
+    h1 {
+      font-size: 2.25rem;
+    }
+  }
+}
+
+/* MAP PAGE */
+
+/* FOOTER */
+.cobrand-footer {
+  &__background {
+    margin-bottom: 30px;
+    padding-top: 30px;
+  }
+
+  &__nav {
+    padding-bottom: 0;
+  }
+
+  &__list,
+  &__strapline {
+    flex-direction: row;
+    align-items: end;
+  }
+
+  &__logo--main {
+    width: auto;
+    height: 89px;
+  }
+
+  &__strapline-title {
+    font-size: 1.5789473684rem;
+    margin: 0;
+  }
+
+}
+

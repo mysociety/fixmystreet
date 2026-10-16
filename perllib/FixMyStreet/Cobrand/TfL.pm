@@ -115,17 +115,22 @@ sub about_hook {
     }
 }
 
-=item * TfL has green pins for closed/fixed, red for confirmed, and orange for everything else
+=item * Customised pin colours
+
+TfL have a grey cross for closed reports; green tick for fixed;
+yellow cone for open; orange at work for other open states.
 
 =cut
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    return 'green' if $p->is_closed;
-    return 'green' if $p->is_fixed;
-    return 'red' if $p->state eq 'confirmed';
-    return 'orange'; # all the other `open_states` like "in progress"
+    return 'grey-cross' if $p->is_closed;
+    return 'green-tick' if $p->is_fixed;
+    return 'yellow-cone' if $p->state eq 'confirmed';
+    return 'orange-work'; # all the other `open_states` like "in progress"
 }
+
+sub path_to_pin_icons { '/i/pins/whole-shadow-cone-spot/' }
 
 =item * Superusers and TfL staff can access the TfL admin
 
@@ -415,6 +420,7 @@ sub dashboard_export_problems_add_columns {
         closure_email_at => "Closure email at",
         reassigned_at => "Reassigned at",
         reassigned_by => "Reassigned by",
+        photo => "Photo",
     );
     $csv->splice_csv_column('fixed', action_scheduled => 'Action scheduled');
 
@@ -450,6 +456,7 @@ sub dashboard_export_problems_add_columns {
                 delivered_to => join(',', @$delivered_to),
                 closure_email_at => $closure_email_at,
                 bike_number => $bike_number,
+                photo => $report->{photo} ? 1 : 0,
             };
             foreach (@{$csv->_extra_field($report)}) {
                 next if $_->{name} eq 'safety_critical';
@@ -497,6 +504,7 @@ sub dashboard_export_problems_add_columns {
             reassigned_at => $reassigned_at,
             reassigned_by => $reassigned_by,
             bike_number => $bike_number,
+            photo => $report->photo ? 1 : 0,
         };
         foreach (@{$csv->_extra_field($report)}) {
             next if $_->{name} eq 'safety_critical';

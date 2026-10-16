@@ -35,8 +35,8 @@ package BexleyAddresses;
 use strict;
 use warnings;
 
-use DBI;
 use FixMyStreet;
+use FixMyStreet::Roles::SQLite;
 use mySociety::PostcodeUtil;
 
 =head2 database_file
@@ -49,13 +49,6 @@ sub database_file {
     FixMyStreet->path_to('../data/bexley-ww-postcodes.sqlite');
 }
 
-sub connect_db {
-    die $! unless -e database_file();
-
-    return DBI->connect( 'dbi:SQLite:dbname=' . database_file(),
-        undef, undef );
-}
-
 =head2 addresses_for_postcode
 
 We only fetch child addresses. These are displayed in a dropdown after user
@@ -66,7 +59,7 @@ has input a postcode.
 sub addresses_for_postcode {
     my $postcode = shift;
 
-    my $db = connect_db() or return [];
+    my $db = FixMyStreet::Roles::SQLite::db_connect_readonly(database_file()) or return [];
 
     # Remove whitespaces, make sure uppercase
     $postcode =~ s/ //g;
@@ -96,7 +89,7 @@ SQL
 sub usrn_for_uprn {
     my $uprn = shift;
 
-    my $db = connect_db() or return '';
+    my $db = FixMyStreet::Roles::SQLite::db_connect_readonly(database_file()) or return '';
 
     return ( $db->selectrow_hashref(
         <<"SQL",
@@ -112,9 +105,7 @@ SQL
 sub address_for_uprn {
     my $uprn = shift;
 
-    die $! unless -e database_file();
-
-    my $db = connect_db() or return '';
+    my $db = FixMyStreet::Roles::SQLite::db_connect_readonly(database_file()) or return '';
 
     my $address_fields = _address_fields();
 

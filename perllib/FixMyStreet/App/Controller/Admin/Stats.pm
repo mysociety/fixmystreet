@@ -13,8 +13,8 @@ sub index : Path : Args(0) {
 sub gather : Private {
     my ($self, $c) = @_;
 
-    $c->forward('state'); # Problem/update stats used on that page
-    $c->forward('/admin/fetch_all_bodies'); # For body stat
+    $c->forward('state'); # Problem stats used on that page
+    $c->forward('body_stats') if $c->cobrand->admin_show_body_stats;
 
     my $alerts = $c->model('DB::Alert')->summary_report_alerts( $c->cobrand->restriction );
 
@@ -25,17 +25,6 @@ sub gather : Private {
     $alert_counts{1} ||= 0;
 
     $c->stash->{alerts} = \%alert_counts;
-
-    my $contacts = $c->model('DB::Contact')->summary_count();
-
-    my %contact_counts =
-      map { $_->state => $_->get_column('state_count') } $contacts->all;
-
-    $contact_counts{confirmed} ||= 0;
-    $contact_counts{unconfirmed} ||= 0;
-    $contact_counts{total} = $contact_counts{confirmed} + $contact_counts{unconfirmed};
-
-    $c->stash->{contacts} = \%contact_counts;
 
     my $questionnaires = $c->model('DB::Questionnaire')->summary_count( $c->cobrand->restriction );
 
@@ -55,6 +44,23 @@ sub gather : Private {
     $c->stash->{questionnaires} = \%questionnaire_counts;
 }
 
+sub body_stats : Private {
+    my ($self, $c) = @_;
+
+    $c->forward('/admin/fetch_all_bodies');
+
+    my $contacts = $c->model('DB::Contact')->summary_count();
+
+    my %contact_counts =
+      map { $_->state => $_->get_column('state_count') } $contacts->all;
+
+    $contact_counts{confirmed} ||= 0;
+    $contact_counts{unconfirmed} ||= 0;
+    $contact_counts{total} = $contact_counts{confirmed} + $contact_counts{unconfirmed};
+
+    $c->stash->{contacts} = \%contact_counts;
+}
+
 sub state : Local : Args(0) {
     my ( $self, $c ) = @_;
 
@@ -70,13 +76,6 @@ sub state : Local : Args(0) {
     $c->stash->{total_problems_live} += $prob_counts{$_} ? $prob_counts{$_} : 0
         for ( FixMyStreet::DB::Result::Problem->visible_states() );
     $c->stash->{total_problems_users} = $c->cobrand->problems->unique_users;
-
-    my $comments = $c->cobrand->updates->summary_count;
-
-    my %comment_counts =
-      map { $_->state => $_->get_column('state_count') } $comments->all;
-
-    $c->stash->{comments} = \%comment_counts;
 }
 
 sub fix_rate : Path('fix-rate') : Args(0) {

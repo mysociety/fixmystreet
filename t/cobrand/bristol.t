@@ -5,14 +5,10 @@ use FixMyStreet::Script::Reports;
 use Open311::PopulateServiceList;
 use Open311::PostServiceRequestUpdates;
 use Test::MockModule;
-use t::Mock::Tilma;
 use CGI::Simple;
 use File::Temp 'tempdir';
 use FixMyStreet::Script::CSVExport;
 use DateTime;
-
-my $tilma = t::Mock::Tilma->new;
-LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => qr/tilma/);
 
 # Create test data
 my $comment_user = $mech->create_user_ok('bristol@example.net');
@@ -90,6 +86,18 @@ my $camp = $mech->create_contact_ok(
     category => 'Vehicle dwelling encampment',
     email => 'camp@example.org',
     send_method => 'Email'
+);
+
+my $abandoned = $mech->create_contact_ok(
+    body_id => $bristol->id,
+    category => 'Abandoned Vehicle',
+    email => 'vehicle@example.org',
+    send_method => 'Email',
+    extra => {
+        _fields => [
+            { code => 'NE02' },
+        ]
+    },
 );
 
 my $flytipping = $mech->create_contact_ok(
@@ -226,7 +234,7 @@ subtest "Categories automatically closed" => sub {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'bristol',
     }, sub {
-        foreach my $test ( $roadworks, $cycle_hanger, $camp ) {
+        foreach my $test ( $roadworks, $cycle_hanger ) {
             my $template = FixMyStreet::DB->resultset("ResponseTemplate")->create({
                 body => $bristol,
                 title => $test->category . ' template',
@@ -590,16 +598,28 @@ subtest 'Dashboard CSV extra columns' => sub {
     MAPIT_URL => 'http://mapit.uk/',
     PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
   }, sub {
-
+    my ($abandoned) = $mech->create_problems_for_body(1, $bristol->id, 'Abandoned Vehicle', {
+       cobrand => 'bristol',
+       category => $abandoned->category,
+       send_state => 'sent',
+    } );
+    $abandoned->update_extra_field( { name  => 'NE02', value => 'ABD 1234' });
+    $abandoned->update;
     $mech->log_in_ok( $comment_user->email );
     $mech->get_ok('/dashboard?export=1');
     $mech->content_contains(',"Reported As","Staff Role"', "'Staff Role' column added");
     $mech->content_contains(',"Staff Role","Flytipping size"', "'Flytipping size' column added");
     $mech->content_contains('default,,Role', "Staff role added");
     $mech->content_contains('website,bristol,,,0', "Flytipping size added");
+    $mech->content_contains('"External ID","Vehicle Registration"', 'Vehicle Registration column added');
+    $mech->content_contains('bristol,,,,,"ABD 1234"', 'Registration added');
     $p->created(DateTime->now->subtract( days => 1));
     $p->confirmed(DateTime->now->subtract( days => 1));
     $p->update;
+    $abandoned->created(DateTime->now->subtract( days => 1));
+    $abandoned->confirmed(DateTime->now->subtract( days => 1));
+    $abandoned->update;
+
     for my $flytipping_report (@flytipping_reports) {
         $flytipping_report->confirmed($p->confirmed);
         $flytipping_report->update;
@@ -610,6 +630,8 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->content_contains(',"Staff Role","Flytipping size"', "'Flytipping size' column added in csv export");
     $mech->content_contains('default,,Role', "Staff role added added in csv export");
     $mech->content_contains('website,bristol,,,0', "Flytipping size added in csv export");
+    $mech->content_contains('"External ID","Vehicle Registration"', 'Vehicle Registration column added');
+    $mech->content_contains('bristol,,,,,"ABD 1234"', 'Registration added');
   };
 };
 

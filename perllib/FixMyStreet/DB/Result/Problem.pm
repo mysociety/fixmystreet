@@ -926,24 +926,31 @@ sub response_templates {
     );
 }
 
+=head2 response_template_for
+
+Given an old/new state and optional new external status code,
+return the matching response template, if any.
+
+=cut
+
 sub response_template_for {
-    my ($self, $body, $state, $old_state, $ext_code, $old_ext_code) = @_;
+    my ($self, $body, $state, $old_state, $ext_code) = @_;
     my $cobrand = $body->get_cobrand_handler;
 
     # Response templates are only triggered if the state/external status has changed.
     # And treat any fixed state as fixed.
     my $state_changed = $state ne $old_state
         && !( $self->is_fixed && FixMyStreet::DB::Result::Problem->fixed_states()->{$state} );
-    my $ext_code_changed = $ext_code && $ext_code ne $old_ext_code;
     my $template;
-    if ($state_changed || $ext_code_changed) {
+
+    if ($state_changed || $ext_code) {
         # make sure that empty string/nulls come last, and templates for a category come earlier.
         my $order = { order_by => \"me.external_status_code DESC NULLS LAST, contact.category" };
         my $state_params = [];
         if ($state_changed) {
             push @$state_params, { 'me.state' => $state, 'me.external_status_code' => ["", undef] };
         }
-        if ($ext_code_changed) {
+        if ($ext_code) {
             # Allow cobrands to use regex matching for wildcard patterns in templates
             if (my $regex_match = $cobrand && $cobrand->call_hook(
                 response_template_external_status_code_regex_match => $ext_code
@@ -1554,7 +1561,7 @@ sub create_related_things {
             blank_updates_permitted => 1,
         );
 
-        my $template = $self->response_template_for($body, 'confirmed', 'dummy', '', '');
+        my $template = $self->response_template_for($body, 'confirmed', 'dummy', '');
         my ($description, $email_text) = $updates->comment_text_for_request($template, {}, $self);
         next unless $description;
 
@@ -1563,7 +1570,7 @@ sub create_related_things {
             external_id => 'auto-internal',
             send_state => 'processed',
             text => $description,
-            private_email_text => $email_text,
+            $email_text ? (private_email_text => $email_text) : (),
             problem_state => 'confirmed',
             state => 'unconfirmed',
             confirmed => \'current_timestamp', # So that it will always be first
@@ -1643,25 +1650,30 @@ sub waste_confirm_payment {
     my $db = $self->result_source->storage;
     my $no_reporter_alert = ($self->get_extra_metadata('contributed_as') || '') eq 'anonymous_user';
 
-    if ($cobrand->suppress_report_sent_email($self)) {
-        # Send bulky confirmation email after report confirmation (see
-        # the suppress_report_sent_email for SLWP)
-        $self->send_logged_email({ report => $self, cobrand => $cobrand }, 0, $cobrand);
-    }
-
     if (my $amendment = $self->get_extra_metadata('amendment_update')) {
         $amendment = FixMyStreet::DB->resultset("Comment")->find($amendment);
         my $data = $amendment->get_extra_metadata('fms_extra_amend');
         my $max_key = $self->category eq 'Small items collection' ? 'small_items_per_collection_max' : 'items_per_collection_max';
         my $max = $cobrand->wasteworks_config->{$max_key} || 5;
         $self->waste_amend_extra_data($cobrand, $max, $data);
+        $self->set_extra_metadata('payment_reference', $reference) if $reference;
         $cobrand->waste_amend_amendment_update($self, $amendment);
         $amendment->unset_extra_metadata('fms_extra_amend');
         $amendment->confirm;
         $amendment->update;
-        $self->set_extra_metadata('payment_reference', $reference) if $reference;
         $self->update;
+        if ($cobrand->suppress_report_sent_email($self)) {
+            # Send bulky confirmation email after report confirmation (see
+            # the suppress_report_sent_email for SLWP)
+            $self->send_logged_email({ report => $self, cobrand => $cobrand }, 0, $cobrand);
+        }
         return;
+    }
+
+    if ($cobrand->suppress_report_sent_email($self)) {
+        # Send bulky confirmation email after report confirmation (see
+        # the suppress_report_sent_email for SLWP)
+        $self->send_logged_email({ report => $self, cobrand => $cobrand }, 0, $cobrand);
     }
 
     my @problems = ($self);
@@ -1684,7 +1696,7 @@ sub waste_confirm_payment {
 
     if ($already_confirmed) {
         $self->discard_changes;
-        $self->bulky_add_payment_confirmation_update($reference);
+        $self->bulky_add_payment_confirmation_update($reference) if $reference;
     }
 
     if (my $previous = $self->get_extra_metadata('previous_booking_id')) {
@@ -1740,6 +1752,7 @@ sub bulky_add_payment_confirmation_update {
         }
     });
     $self->cancel_update_alert($comment->id);
+    $cobrand->call_hook('bulky_extra_confirmation_step', $self);
 }
 
 sub bulky_cancel_collection {

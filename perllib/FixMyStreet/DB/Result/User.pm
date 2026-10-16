@@ -263,8 +263,12 @@ sub questionnaire_notify {
 
 sub latest_anonymity {
     my $self = shift;
-    my $p = $self->problems->order_by('-id')->search(undef, { rows => 1 } )->first;
-    my $c = $self->comments->order_by('-id')->search(undef, { rows => 1 } )->first;
+    my $attrs = {
+        rows => 1,
+        order_by => [ { -desc => 'confirmed' }, { -desc => 'id' } ],
+    };
+    my $p = $self->problems->search(undef, $attrs)->first;
+    my $c = $self->comments->search(undef, $attrs)->first;
     my $p_created = $p ? $p->created->epoch : 0;
     my $c_created = $c ? $c->created->epoch : 0;
     my $obj = $p_created >= $c_created ? $p : $c;

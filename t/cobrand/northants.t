@@ -428,4 +428,37 @@ subtest 'Staff have perms for northamptonshire highways reports' => sub {
 
 }
 
+subtest 'National Highways report sent correctly' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['westnorthants', 'fixmystreet', 'highwaysengland'],
+        MAPIT_URL => 'http://mapit.uk/',
+        BASE_URL => 'https://www.fixmystreet.com',
+        COBRAND_FEATURES => {
+            borough_email_addresses => {
+                highwaysengland => {
+                    'potholes@nh' => [ {
+                        'areas' => [ 'Area 1' ],
+                        'email' => 'area1email@example.org',
+                    } ],
+                },
+            },
+        },
+    }, sub {
+        my $nationalhighways = $mech->create_body_ok(164186, 'National Highways');
+        $mech->create_contact_ok(
+            body_id => $nationalhighways->id,
+            category => 'Potholes',
+            email => 'potholes@nh',
+        );
+        my ($report) = $mech->create_problems_for_body(1, $nationalhighways->id, 'Motorway Problem', {
+            category => 'Potholes',
+            cobrand => 'westnorthants',
+            extra => { _fields => [ { name => 'area_name', value => 'Area 1' }, ], },
+        });
+        FixMyStreet::Script::Reports::send();
+        my @email = $mech->get_email;
+        is $email[0]->header('To'), '"National Highways" <area1email@example.org>';
+    };
+};
+
 done_testing();

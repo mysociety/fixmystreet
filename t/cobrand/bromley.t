@@ -6,6 +6,7 @@ use Test::Warn;
 use DateTime;
 use JSON::MaybeXS;
 use Test::Output;
+use FixMyStreet;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::CSVExport;
 use FixMyStreet::Script::Reports;
@@ -22,13 +23,10 @@ my $mech = FixMyStreet::TestMech->new;
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
-use t::Mock::Tilma;
-my $tilma = t::Mock::Tilma->new;
-LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => qr/tilma/);
-
 # Create test data
 my $user = $mech->create_user_ok( 'bromley@example.com', name => 'Bromley' );
 my $standard_user = $mech->create_user_ok('test@example.com', name => 'Bob Betts');
+my $standard_phone_user = $mech->create_user_ok('+447700900002', name => "Charlie Cell");
 my $body = $mech->create_body_ok( 2482, 'Bromley Council', {
     can_be_devolved => 1, send_extended_statuses => 1, comment_user => $user,
     send_method => 'Open311', endpoint => 'http://endpoint.example.com', jurisdiction => 'FMS', api_key => 'test', send_comments => 1,
@@ -47,9 +45,10 @@ my $contact = $mech->create_contact_ok(
 );
 $contact->set_extra_metadata(id_field => 'service_request_id_ext');
 $contact->set_extra_fields(
-    { code => 'easting', datatype => 'number', },
-    { code => 'northing', datatype => 'number', },
-    { code => 'service_request_id_ext', datatype => 'number', },
+    { code => 'easting', datatype => 'number', automated => 'server_set' },
+    { code => 'northing', datatype => 'number', automated => 'server_set' },
+    { code => 'service_request_id_ext', datatype => 'number', automated => 'server_set' },
+    { code => 'question', datatype => 'string' },
 );
 $contact->update;
 my $streetlights = $mech->create_contact_ok(
@@ -313,6 +312,31 @@ subtest 'ensure flytip information is added to open311 description' => sub {
     like $c->param('description'), qr/Flytip information: Large sofa and household waste/, 'flytip information included in description';
 };
 
+subtest 'email is always sent for open311 updates to passthrough endpoint' => sub {
+    $report->comments->delete;
+    my ($comment) = $mech->create_comment_for_problem(
+        $report,
+        $standard_phone_user,
+        'Name',
+        'Text',
+        0,
+        'confirmed',
+        'open'
+    );
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['bromley'],
+    }, sub {
+        my $updates = Open311::PostServiceRequestUpdates->new;
+        $updates->send;
+        my $req = Open311->test_req_used;
+        my $c = CGI::Simple->new($req->content);
+        my $dnp_email = FixMyStreet->config('DO_NOT_REPLY_EMAIL');
+        is $c->param('email'), FixMyStreet->config('DO_NOT_REPLY_EMAIL'), 'Fallback email used';
+    };
+    $report->comments->delete;
+};
+
 for my $test (
     {
         cobrand => 'bromley',
@@ -481,15 +505,17 @@ subtest 'Dashboard CSV extra columns' => sub {
         ALLOWED_COBRANDS => 'bromley',
         PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     }, sub {
+        $report->update_extra_field({ name => 'question', value => 'Answer' });
+        $report->update;
         $mech->log_in_ok($staffuser->email);
         $mech->get_ok('/dashboard?export=1');
-        $mech->content_contains('"Reported As","Staff User","Staff Role"');
-        $mech->content_like(qr/bromley,,[^,]*staff\@example.com,"Role A"/);
+        $mech->content_contains('"Reported As","Staff User","Staff Role",fms_layer_owner,question');
+        $mech->content_like(qr/bromley,,[^,]*staff\@example.com,"Role A",,Answer/);
 
         FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
         $mech->get_ok('/dashboard?export=1');
-        $mech->content_contains('"Reported As","Staff User","Staff Role"');
-        $mech->content_like(qr/bromley,,[^,]*staff\@example.com,"Role A"/);
+        $mech->content_contains('"Reported As","Staff User","Staff Role",fms_layer_owner,question');
+        $mech->content_like(qr/bromley,,[^,]*staff\@example.com,"Role A",,Answer/);
 
         $mech->get_ok('/dashboard?export=1&role=' . $role->id);
         $mech->content_contains("Role A");

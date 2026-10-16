@@ -1,0 +1,64 @@
+{
+    "contacts": [
+      {
+         "category" : "Pothole",
+         "email" : "newpothole@example.org",
+         "extra" : null,
+         "non_public" : false,
+         "send_method" : "",
+         "state" : "confirmed"
+      },
+      {
+         "category" : "Flytipping",
+         "email" : "flytipping@example.org",
+         "extra" : null,
+         "non_public" : false,
+         "send_method" : "Email",
+         "state" : "confirmed"
+      }
+    ],
+   "roles" : [
+      {
+         "name" : "Admin",
+         "permissions" : ["report_inspect"]
+      },
+      {
+         "name" : "Nothing much",
+         "permissions" : ["dashboard"]
+      }
+   ],
+   "templates" : [
+      {
+         "auto_response" : 0,
+         "categories" : [],
+         "deleted" : 1,
+         "email_text" : null,
+         "external_status_code" : null,
+         "state" : "in progress",
+         "text" : "Ack",
+         "title" : "Ack"
+      },
+      {
+         "auto_response" : 0,
+         "categories" : [],
+         "deleted" : 0,
+         "email_text" : null,
+         "external_status_code" : null,
+         "state" : null,
+         "text" : "Fixed",
+         "title" : "Fixed"
+      }
+   ],
+   "users" : [
+      {
+         "areas" : [],
+         "categories" : [],
+         "email" : "admin@example.org",
+         "name" : "Admin User",
+         "password" : "",
+         "roles" : [
+            "Admin"
+         ]
+      }
+   ]
+}

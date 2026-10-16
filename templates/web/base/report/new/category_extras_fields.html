@@ -11,6 +11,9 @@
       [% IF  meta.datatype == 'multivaluelist' %]
         <fieldset class="group-error-propagate-end">
             <legend class="group-error-place-after">[% (meta.description OR meta.code) | safe %]</legend>
+      [% ELSIF meta.item('values').size AND meta.item('values').size == 2 %]
+        <fieldset class="govuk-radios govuk-radios--small">
+          <legend>[% (meta.description OR meta.code) | safe %]</legend>
       [% ELSIF meta.variable == 'false' %]
         [% (meta.description OR meta.code) | safe %]
       [% ELSE %]
@@ -35,12 +38,26 @@
           </fieldset>
         [% ELSIF meta.item('values').size %]
           [%# singlevaluelist %]
-          <select class="form-control" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
-            <option value="">[% loc('-- Pick an option --') %]</option>
+          [% IF meta.item('values').size == 2 %]
             [% FOR option IN meta.values %]
-              <option value="[% option.key %]"[% IF option.key == report_meta.$x_meta_name.value %] selected[% END %]>[% option.name %]</option>
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" type="radio" name="[% cat_prefix %][% meta_name %]"
+                    [% meta.required == 'true' ? 'required' : '' %]
+                    [% option.key == report_meta.$x_meta_name.value ? 'checked' : '' %]
+                    id="[% cat_prefix %]form_[% meta_name %]_[% option.key %]"
+                    value="[% option.key %]">
+                <label class="govuk-label govuk-radios__label" for="[% cat_prefix %]form_[% meta_name %]_[% option.key %]">[% option.name %]</label>
+              </div>
             [% END %]
-          </select>
+            </fieldset>
+          [% ELSE %]
+            <select class="form-control" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
+              <option value="">[% loc('-- Pick an option --') %]</option>
+              [% FOR option IN meta.values %]
+                <option value="[% option.key %]"[% IF option.key == report_meta.$x_meta_name.value %] selected[% END %]>[% option.name %]</option>
+              [% END %]
+            </select>
+          [% END %]
         [% ELSIF meta.datatype == 'text' %]
           <textarea class="form-control" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>[% report_meta.$x_meta_name.value %]</textarea>
         [% ELSE %]

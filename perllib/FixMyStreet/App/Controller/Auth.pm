@@ -633,7 +633,7 @@ sub ajax_check_auth : Path('ajax/check_auth') {
 =head2 check_auth
 
 Utility page - returns a simple message 'OK' and a 200 response if the user is
-authenticated and a 'Unauthorized' / 401 reponse if they are not.
+authenticated and a 'Unauthorized' / 401 response if they are not.
 
 Mainly intended for testing but might also be useful for ajax calls.
 

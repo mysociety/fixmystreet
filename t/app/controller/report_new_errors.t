@@ -464,7 +464,7 @@ foreach my $test (
             category      => 'Flytip',
         },
         changes => {
-            'Did_you_see_the_flytip?' => '',
+            'Did_you_see_the_flytip?' => undef,
         },
         errors => [ 'This information is required' ],
     },
@@ -481,7 +481,7 @@ foreach my $test (
             name          => 'Bob Example',
             username_register => 'bob@example.com',
             category      => 'Flytip',
-            'Did_you_see_the_flytip?' => '',
+            'Did_you_see_the_flytip?' => undef,
         },
         changes => { },
         errors => [ 'This information is required' ],

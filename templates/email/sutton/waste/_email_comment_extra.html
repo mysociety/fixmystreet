@@ -1,0 +1,14 @@
+[% IF report.category == 'Report missed collection' AND (update.item_problem_state == 'closed' OR update.item_problem_state == 'unable to fix' OR update.item_problem_state == 'fixed') %]
+    [%
+      service_id = report.get_extra_field_value('service_id');
+      cfg = cobrand.feature('echo');
+      IF service_id == cfg.small_items_service_id OR service_id == cfg.bulky_service_id;
+          IF report.get_extra_field_value('Original_Event_ID');
+            original_booking_id = report.get_extra_field_value('Original_Event_ID');
+          END;
+      END;
+    %]
+    <p>
+      <a href="[% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') %]/enquiry?template=problem&service_id=[% service_id %][% IF original_booking_id %]&original_booking_event=[% original_booking_id %][% END %]">Report a problem with this missed collection</a>
+    </p>
+[% END %]

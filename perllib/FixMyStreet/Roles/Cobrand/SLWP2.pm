@@ -8,6 +8,7 @@ FixMyStreet::Roles::Cobrand::SLWP2 - shared code for Kingston and Sutton WasteWo
 
 package FixMyStreet::Roles::Cobrand::SLWP2;
 
+use utf8;
 use Moo::Role;
 with 'FixMyStreet::Roles::Cobrand::Echo';
 with 'FixMyStreet::Roles::Cobrand::BulkyWaste';
@@ -18,6 +19,30 @@ use JSON::MaybeXS;
 use LWP::Simple;
 use MIME::Base64;
 use WasteWorks::Costs;
+
+=head2 waste_on_the_day_criteria
+
+[Kingston/Sutton] [But not in their role as inheritance conflicts]
+If it's before 6pm on the day of collection, treat an Outstanding/Allocated
+task as if it's the next collection and in progress, and do not allow missed
+collection reporting if the task is not completed.
+
+=cut
+
+sub waste_on_the_day_criteria {
+    my ($self, $completed, $state, $now, $row) = @_;
+
+    return unless $now->hour < 18 || $self->moniker eq 'merton';
+    if ($state eq 'Outstanding' || $state eq 'Allocated') {
+        $row->{next} = $row->{last};
+        $row->{next}{state} = 'In progress';
+        delete $row->{last};
+    }
+    if (!$completed) {
+        $row->{report_allowed} = 0;
+        $row->{report_allowed_non_actionable} = 0;
+    }
+}
 
 sub waste_staff_choose_payment_method { 1 }
 around waste_cheque_payments => sub {
@@ -112,6 +137,8 @@ my %EVENT_TYPE_IDS = (
     garden_amend => 3163,
     bulky => 3130,
     small_items => 3144,
+    general_enquiry => 3140,
+    dispute => 3143, # Formal Complain in Echo
 );
 lock_hash(%EVENT_TYPE_IDS);
 
@@ -128,7 +155,7 @@ my %CONTAINERS = (
     paper_140 => 26,
     food_indoor_5 => 43,
     food_indoor_7 => 44,
-    food_indoor_premium => 85,
+    food_outdoor_premium => 85,
     food_outdoor => 46,
     garden_240 => 39,
     garden_140 => 37,
@@ -139,17 +166,67 @@ lock_hash(%CONTAINERS);
 my %GARDEN_CONTAINER_IDS = (
     bin240 => 1915,
     bin140 => 1914,
-    sack => {
-        kingston => 1928,
-        sutton => 1928,
-        merton => 1910,
-    },
+    sack => 1910,
 );
 lock_hash(%GARDEN_CONTAINER_IDS);
 
 my %GARDEN_QUANTITIES = (
     sack => 11,
 );
+
+my %RESOLUTION_CODES = (
+    50 => 'Unable to find the location',
+    200 => 'Damaged bin',
+    1135 => 'Contaminated (builder’s waste)',
+    1134 => 'Contaminated (commercial waste)',
+    1368 => 'Contaminated (electrical items)',
+    1366 => 'Contaminated (food waste)',
+    1374 => 'Contaminated (garden waste)',
+    1373 => 'Contaminated (glass)',
+    1372 => 'Contaminated (hazardous waste)',
+    1376 => 'Contaminated (mixed)',
+    1369 => 'Contaminated (nappies)',
+    1371 => 'Contaminated (other)',
+    1365 => 'Contaminated (paper/card)',
+    1375 => 'Contaminated (plastic)',
+    1364 => 'Contaminated (refuse)',
+    1370 => 'Contaminated (rigid plastic)',
+    1377 => 'Contaminated (tetrapak)',
+    1367 => 'Contaminated (textiles)',
+    606 => 'Excess waste left',
+    1361 => 'Health and safety reasons',
+    1359 => 'Health and safety reasons (damaged bin)',
+    1358 => 'Health and safety reasons',
+    1378 => 'Health and safety reasons',
+    1362 => 'Health and safety reasons',
+    1360 => 'Health and safety reasons',
+    1146 => 'Health and safety reasons',
+    516 => 'Incorrect waste',
+    55 => 'Insufficient information',
+    913 => 'No access due to key or access code not working',
+    615 => 'No access due to dog outside',
+    466 => 'No access due to gate locked',
+    616 => 'No access due to weather conditions',
+    617 => 'No access due to parked vehicle',
+    614 => 'No access due to police incident',
+    613 => 'No access due to road works',
+    66 => 'Bin not presented',
+    646 => 'Various',
+);
+lock_hash(%RESOLUTION_CODES);
+
+sub resolution_text {
+    my ($self, $resolution_id, $event) = @_;
+    my %codes = %RESOLUTION_CODES;
+    if ($event) {
+        my $service_ids = $SERVICE_IDS{$self->moniker};
+        if ($event->{service_id} == $service_ids->{bulky} || $event->{service_id} == $service_ids->{small_items}) {
+            $codes{66} = 'Not presented';
+        }
+    }
+    return $codes{$resolution_id} if exists $codes{$resolution_id};
+    return '';
+}
 
 sub garden_service_id { $SERVICE_IDS{$_[0]->moniker}{garden} }
 
@@ -158,6 +235,8 @@ sub waste_service_to_containers { () }
 sub garden_subscription_event_id { $EVENT_TYPE_IDS{garden_add} }
 
 sub garden_renewal_reduction_sparks_container_removal { 1 }
+
+sub general_enquiry_event_id { $EVENT_TYPE_IDS{general_enquiry} }
 
 sub waste_show_garden_modify {
     my ($self, $unit) = @_;
@@ -260,6 +339,7 @@ sub waste_extra_service_info {
         }
         $self->{c}->stash->{communal_property} = 1 if $service_id == $service_ids->{communal_refuse} || $service_id == $service_ids->{communal_food} || $service_id == $service_ids->{communal_paper} || $service_id == $service_ids->{communal_mixed};
 
+        # detect flat above shop
         if ($service_id == $service_ids->{fas_refuse} || $service_id == $service_ids->{fas_mixed}) {
             $self->{c}->stash->{fas_property} = 1;
         }
@@ -351,17 +431,14 @@ sub waste_service_containers {
     }
 
     my $food_indoor_key = $self->moniker eq 'merton' ? 'food_indoor_7' : 'food_indoor_5';
-    my $food_indoor_premium_key = 'food_indoor_premium';
-    if ($service_name =~ /Food/ && !(
-            $self->{c}->stash->{quantities}->{$CONTAINERS{$food_indoor_key}}
-            || $self->{c}->stash->{quantities}->{$CONTAINERS{$food_indoor_premium_key}}
-        ) ) {
-        if ($self->moniker eq 'sutton') {
-            $request_max->{$CONTAINERS{$food_indoor_premium_key}} = 1;
-            push @$containers, $CONTAINERS{$food_indoor_premium_key}; # Premium food waste bin (kitchen)
-        }
+    my $food_outdoor_premium_key = 'food_outdoor_premium';
+    if ($service_name =~ /Food/ && $self->moniker eq 'sutton' && !$self->{c}->stash->{quantities}->{$CONTAINERS{$food_outdoor_premium_key}}) {
+        push @$containers, $CONTAINERS{$food_outdoor_premium_key}; # Premium outdoor food waste caddy
+        $request_max->{$CONTAINERS{$food_outdoor_premium_key}} = 1;
+    }
+    if ($service_name =~ /Food/ && !$self->{c}->stash->{quantities}->{$CONTAINERS{$food_indoor_key}}) {
         # Can always request a food caddy
-        push @$containers, $CONTAINERS{$food_indoor_key}; # Food waste bin (kitchen)
+        push @$containers, $CONTAINERS{$food_indoor_key}; # Small kitchen food waste caddy
         $request_max->{$CONTAINERS{$food_indoor_key}} = 1;
     }
     if ($self->moniker eq 'kingston' && grep { $_ == $CONTAINERS{recycling_box} } @$containers) {
@@ -379,6 +456,7 @@ sub missed_event_types { return {
     $EVENT_TYPE_IDS{missed_assisted} => 'missed',
     $EVENT_TYPE_IDS{bulky} => 'bulky',
     $EVENT_TYPE_IDS{small_items} => 'small_items',
+    $EVENT_TYPE_IDS{dispute} => 'dispute',
 } }
 
 sub waste_munge_report_data {
@@ -452,8 +530,8 @@ sub garden_container_data_extract {
         next if $end_date lt $today;
         $container_end_date = $end_date if $end_date lt $schedules->{end_date};
         my $asset_id = $_->{AssetTypeId};
-        # Either sack ID should count here
-        if ($asset_id == $GARDEN_CONTAINER_IDS{sack}{sutton} || $asset_id == $GARDEN_CONTAINER_IDS{sack}{merton}) {
+        # Any sack ID should count here
+        if ($asset_id == $GARDEN_CONTAINER_IDS{sack}) {
             $garden_sacks = 1;
             $garden_bins = undef;
             $garden_cost += $costs->sacks_renewal(1, $schedules->{end_date}) / 100;
@@ -515,10 +593,7 @@ sub waste_garden_sub_params {
     }
     $container ||= $GARDEN_CONTAINER_IDS{bin240};
 
-    if (ref $container) { # By cobrand
-        $container = $container->{$self->moniker};
-    }
-    my $sack_id = $GARDEN_CONTAINER_IDS{sack}{$self->moniker};
+    my $sack_id = $GARDEN_CONTAINER_IDS{sack};
 
     $c->set_param('Paid_Container_Type', $container);
     if ($container == $sack_id) {
@@ -670,6 +745,11 @@ sub open311_post_send {
             $row->discard_changes;
         }
     });
+
+    if ( $row->category eq 'Report out-of-time missed collection' ) {
+        $row->update( { state => 'no further action' } );
+    }
+
 }
 
 =item * Look for completion photos on updates, and ignore "Not Completed" without a resolution code
@@ -687,26 +767,45 @@ sub open311_waste_update_extra {
     }
     my $data = Integrations::Echo::force_arrayref($event->{Data}, 'ExtensibleDatum');
     my @media;
+    my $justified = '';
+    my %overrides;
     foreach (@$data) {
         if ($_->{DatatypeName} eq 'Post Collection Photo' || $_->{DatatypeName} eq 'Pre Collection Photo') {
             my $value = decode_base64($_->{Value});
             my $type = FixMyStreet::PhotoStorage->detect_type($value);
             push @media, "data:image/$type,$value";
         }
+        if ($_->{DatatypeName} eq 'Investigation Notes field' && $event->{EventTypeId} == $EVENT_TYPE_IDS{dispute}) {
+            $overrides{description} = $_->{Value};
+            $overrides{prefer_template} = 0;
+        }
+        if ($_->{DatatypeName} eq 'Justification') {
+            if ($_->{Value} == 1) {
+                $justified = 'yes';
+            } elsif ($_->{Value} == 2) {
+                $justified = 'no';
+            }
+        }
     }
 
-    my $override_status;
     my $event_type = $cfg->{event_types}{$event->{EventTypeId}};
     my $state_id = $event->{EventStateId};
     my $resolution_id = $event->{ResolutionCodeId} || '';
     my $description = $event_type->{states}{$state_id}{name} || '';
     if ($description eq 'Not Completed' && !$resolution_id) {
-        $override_status = "";
+        $overrides{status} = "";
+    }
+    if ($event->{EventTypeId} == $EVENT_TYPE_IDS{dispute}) {
+        if ($justified eq 'yes') {
+            $overrides{status} = 'fixed - council';
+        } elsif ($justified eq 'no') {
+            $overrides{status} = 'unable to fix';
+        }
     }
 
     return (
         @media ? ( media_url => \@media ) : (),
-        defined $override_status ? (status => $override_status ) : (),
+        %overrides,
     );
 }
 
@@ -720,33 +819,25 @@ property types allowed to book collections.
 =cut
 
 sub waste_bulky_missed_blocked_codes {
+    # Normally this says Bin not presented which doesn't make sense for bulky
+    my %codes = %RESOLUTION_CODES;
+    $codes{66} = 'Not presented';
     return {
         # Not Completed
-        19185 => {
-            50 => 'Address incorrect',
-            1361 => 'H&S - Aggression / Violence',
-            1359 => 'H&S - Damaged container',
-            1358 => 'H&S - Heavy bin / bag',
-            1378 => 'H&S - Other',
-            1362 => 'H&S - Unsafe equipment',
-            1360 => 'H&S - Unsafe surroundings',
-            1146 => 'H&S - Vermin',
-            913 => 'No access - Changed key',
-            615 => 'No access - Dog out',
-            466 => 'No access - Gate locked',
-            616 => 'No access - Weather',
-            617 => 'No access - Parked vehicle',
-            614 => 'No access - Police incident',
-            613 => 'No access - Road works',
-            66 => 'Not presented',
-            646 => 'Various',
-        },
+        19185 => \%codes,
+        19236 => \%codes,
         # Partially Completed
         19186 => {
             all => 'Partially Completed',
         },
+        19237 => {
+            all => 'Partially Completed',
+        },
         # Cancelled
         19187 => {
+            all => 'Cancelled',
+        },
+        19238 => {
             all => 'Cancelled',
         },
     };
@@ -785,16 +876,22 @@ sub waste_munge_bulky_amend {
     $p->update_extra_field({ name => 'TEM_-_Bulky_Collection_Description', value => join("::", @notes) });
     $p->update_extra_field({ name => 'TEM_-_Bulky_Collection_Item', value => join("::", @ids) });
     $p->update_extra_field({ name => 'Exact_Location', value => $data->{location} });
+    $p->update_extra_field({ name => 'discounted', value => $data->{extra_discounted} }) if $data->{extra_discounted};
 }
 
 sub waste_amend_amendment_update {
     my ($self, $p, $update) = @_;
+    my $payment = $p->get_extra_field_value('payment') || 0;
+    $payment = sprintf( '%.2f', $payment / 100 );
     $update->set_extra_metadata(
         fms_extra_amend_items => $p->get_extra_field_value('TEM_-_Bulky_Collection_Item'),
         fms_extra_amend_notes => $p->get_extra_field_value('TEM_-_Bulky_Collection_Description'),
         fms_extra_amend_location => $p->get_extra_field_value('Exact_Location'),
+        fms_extra_amend_payment_ref => $p->get_extra_metadata('payment_reference'),
+        fms_extra_amend_payment_amount => $payment,
     );
     $update->photo($p->photo);
+    $self->call_hook('bulky_extra_confirmation_step', $p);
 }
 
 sub bulky_can_refund { 0 }
@@ -933,6 +1030,27 @@ sub suppress_report_sent_email {
 
 sub bulky_location_photo_prompt {
     'Help us find your items by attaching a photo of where the items will be left for collection.';
+}
+
+=item bulky_open_overdue
+
+Returns true if the booking is open and after 6pm on the day of the collection.
+
+=cut
+
+sub bulky_open_overdue {
+    my ($self, $event) = @_;
+
+    if ($event->{state} eq 'open' && $self->_bulky_collection_overdue($event)) {
+        return 1;
+    }
+}
+
+sub _bulky_collection_overdue {
+    my $collection_due_date = $_[1]->{date};
+    $collection_due_date->truncate(to => 'day')->set_hour(18);
+    my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    return $today > $collection_due_date;
 }
 
 1;

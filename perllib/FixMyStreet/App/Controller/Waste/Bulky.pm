@@ -98,14 +98,18 @@ sub item_list : Private {
     my $max_items = $c->stash->{booking_maximum};
     my $field_list = [];
 
+    my $hint = $c->cobrand->moniker eq 'merton'
+      ? 'Describe the item so our crew can identify it.<br>Do not include any personal details or location.<br>Describe one item only.'
+      : 'Describe the item to help our crew pick up the right thing';
+
     my $notes_field = {
         type => 'TextArea',
         label => 'Item note',
         maxlength => 100,
-        tags => { hint => 'Describe the item to help our crew pick up the right thing' },
+        tags => { hint => FixMyStreet::Template::SafeString->new($hint) },
     };
     $notes_field->{maxlength} = 255 if $c->cobrand->moniker eq 'merton';
-    if (!$c->cobrand->bulky_item_notes_field_mandatory) {
+    if (!$c->cobrand->bulky_item_notes_field_mandatory && $c->cobrand->moniker ne 'merton') {
         $notes_field->{label} .= ' (optional)';
     }
 
@@ -204,6 +208,24 @@ sub item_list : Private {
     );
     $form->process;
     $c->stash->{blank_form} = $form;
+}
+
+sub discount_reset : PathPart : Chained('setup') : Args(0) {
+    my ($self, $c) = @_;
+    if (
+        $c->cobrand->wasteworks_config->{discount_enabled}
+        && $c->stash->{is_staff}
+        && $c->user->has_body_permission_to('wasteworks_config')
+        && $c->cobrand->moniker eq 'merton'
+    ) {
+        my $uprn = $c->stash->{property}{uprn};
+        my $property = FixMyStreet::DB->resultset("Property")->find($uprn);
+        if ($property) {
+            $property->delete;
+            $c->forward( '/admin/log_edit', [ $uprn, 'property', 'discount_reset' ] );
+        }
+    }
+    $c->detach('/waste/property_redirect');
 }
 
 sub index : PathPart('') : Chained('setup') : Args(0) {
@@ -486,23 +508,18 @@ sub process_bulky_amend : Private {
             });
             $c->stash->{report} = $p;
             $c->cobrand->bulky_total_cost($data);
+            my $update = add_amendment_update($c, $p, $data, 'delayed');
+            $p->set_extra_metadata(amendment_update => $update->id);
+            my $ref = $p->get_extra_metadata('payment_reference');
+            $p->unset_extra_metadata('payment_reference');
             if ($c->stash->{payment}) {
-                my $update = add_amendment_update($c, $p, $data, 'delayed');
-                $p->unset_extra_metadata('payment_reference');
-                $p->set_extra_metadata(amendment_update => $update->id);
                 $p->update_extra_field({ name => 'payment', value => $c->stash->{payment} });
                 # XXX Store old payment reference and payment somewhere else?!
                 $p->update;
                 $c->forward('/waste/pay_process', [ 'bulky', $data, $form ]);
             } else {
-                my $update = add_amendment_update($c, $p, $data, 'immediate');
-                $p->waste_amend_extra_data($c->cobrand, $c->stash->{booking_maximum}, $data);
-                $c->cobrand->waste_amend_amendment_update($p, $update);
-                $update->update;
                 $p->update;
-                if ($c->cobrand->suppress_report_sent_email($p)) {
-                    $p->send_logged_email({ report => $p, cobrand => $c->cobrand }, 0, $c->cobrand);
-                }
+                $c->forward('/waste/confirm_subscription', [$ref]);
             }
         } else {
             # In this case we want to update the event to mark it as cancelled,
@@ -515,20 +532,12 @@ sub process_bulky_amend : Private {
                 $c->forward('process_bulky_data', [ $form ]) or return;
             }
 
-            # If there wasn't payment, we reach here and can set the things
-            $c->forward('cancel_collection', [ $p, 'amendment' ]);
-            my $new = $c->stash->{report};
-            $new->set_extra_metadata(previous_booking_id => $p->id);
-            foreach (qw(payment_reference)) {
-                $new->set_extra_metadata($_ => $p->get_extra_metadata($_)) if $p->get_extra_metadata($_);
-            }
-            $new->detail($new->detail . " | Previously submitted as " . $p->external_id);
-            $new->update;
-            $update->confirm;
-            $update->update;
-            $new->bulky_add_payment_confirmation_update($p->get_extra_metadata('payment_reference')) if $p->get_extra_metadata('payment_reference');
-            if ($c->cobrand->suppress_report_sent_email($new)) {
-                $new->send_logged_email({ report => $new, cobrand => $c->cobrand }, 0, $c->cobrand);
+            if (!$c->stash->{payment}) {
+                my $new = $c->stash->{report};
+                $new->set_extra_metadata(previous_booking_id => $p->id);
+                $new->detail($new->detail . " | Previously submitted as " . $p->external_id);
+                $new->update;
+                $c->forward('/waste/confirm_subscription', [$p->get_extra_metadata('payment_reference')]);
             }
         }
     } else {
@@ -562,16 +571,12 @@ sub add_amendment_update {
 
     my $update = $p->add_to_comments({
         text => "Booking amended",
-        user => $c->cobrand->body->comment_user || $p->user,
-        extra => { bulky_amendment => 1 },
-        $type eq 'immediate' ? (
-            state => 'confirmed',
-        ) : (
-            state => 'unconfirmed',
-            extra => {
-                fms_extra_amend => $data,
-            },
-        ),
+        user => $c->user_exists ? $c->user->obj : ($c->cobrand->body->comment_user || $p->user),
+        extra => {
+            bulky_amendment => 1,
+            $type eq 'delayed' ? (fms_extra_amend => $data) : (),
+        },
+        $type eq 'immediate' ? (state => 'confirmed') : (state => 'unconfirmed'),
     });
     # We don't want to send an update if amending, they'll get a new report logged email
     $p->cancel_update_alert($update->id);
@@ -603,13 +608,14 @@ sub add_cancellation_update {
     my $description = $c->stash->{non_user_cancel} ? "Booking cancelled" : $type eq 'delayed' ? "Booking cancelled due to amendment" : "Booking cancelled by customer";
     my $update = $p->add_to_comments({
         text => $description,
-        user => $c->cobrand->body->comment_user || $p->user,
+        user => $c->user_exists ? $c->user->obj : ($c->cobrand->body->comment_user || $p->user),
         extra => { bulky_cancellation => 1 },
         problem_state => 'cancelled',
         $type eq 'immediate' ? (state => 'confirmed') : (state => 'unconfirmed'),
     });
-    # We don't want to send an update if amending, they'll get a new report logged email
-    $p->cancel_update_alert($update->id) if $type eq 'delayed';
+    # We don't want to send an update alert, we send the email directly
+    # ourselves
+    $p->cancel_update_alert($update->id);
     return $update;
 }
 
@@ -625,12 +631,24 @@ sub process_bulky_cancellation : Private {
 
     $c->forward('cancel_collection', [ $collection_report, 'cancellation' ]);
 
-    $c->cobrand->call_hook('bulky_send_cancellation_confirmation' => $collection_report);
+    my $can_refund = $c->cobrand->call_hook(bulky_can_refund => $collection_report);
+
+    # Send a cancellation email directly
+    if ($c->cobrand->bulky_cancel_by_update && $collection_report->user->email) {
+        my $refund_amount = $c->cobrand->call_hook(bulky_refund_amount => $collection_report)
+            // $collection_report->get_extra_field_value('payment');
+        $c->send_email('waste/bulky-confirm-cancellation.txt', {
+            to => [ [ $collection_report->user->email, $collection_report->name ] ],
+            report => $collection_report,
+            refund_amount => $can_refund ? $refund_amount : 0,
+            collection_date => $c->cobrand->bulky_nice_collection_date($collection_report),
+        });
+    }
 
     # Was collection a free one? If so, reset 'FREE BULKY USED' on premises.
     $c->cobrand->call_hook('unset_free_bulky_used');
 
-    if ( $c->cobrand->call_hook(bulky_can_refund => $collection_report) ) {
+    if ($can_refund) {
         $c->cobrand->call_hook(bulky_refund_collection => $collection_report);
         $c->stash->{entitled_to_refund} = 1;
     }

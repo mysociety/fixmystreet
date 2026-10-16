@@ -545,12 +545,14 @@ subtest 'Check Aberdeenshire template interpolation' => sub {
         text => "Target date: {{targetDate}}\nCategory: {{featureCCAT}}\nSpeed limit: {{featureSPD}}",
         email_text => "EMAIL: Target date: {{targetDate}}\nCategory: {{featureCCAT}}\nSpeed limit: {{featureSPD}}",
         auto_response => 1,
-        state => "in progress"
+        state => '',
+        external_status_code => 39,
     });
 
     my $aber_problem = create_problem($bodies{2648}->id);
     my $local_requests_xml = setup_xml($aber_problem->external_id, $aber_problem->id, 'IN_PROGRESS', '',
         '<targetDate>2025-12-31T10:30:00</targetDate><featureCCAT>3A</featureCCAT><featureSPD>60mph</featureSPD>');
+    $local_requests_xml =~ s#</request_update>#<external_status_code>39</external_status_code></request_update>#;
 
     my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
     Open311->_inject_response('/servicerequestupdates.xml', $local_requests_xml);
@@ -582,11 +584,11 @@ subtest 'Check Aberdeenshire template interpolation' => sub {
     # Also test jobStartDate interpolation
     $tpl->update({
         text => "Job start date: {{jobStartDate}}\nTarget date: {{targetDate}}",
-        state => "action scheduled"
     });
 
     $local_requests_xml = setup_xml($aber_problem->external_id, $aber_problem->id, 'ACTION_SCHEDULED', '',
         '<jobStartDate>2025-11-15T09:00:00</jobStartDate><targetDate>2025-12-31T10:30:00</targetDate>');
+    $local_requests_xml =~ s#</request_update>#<external_status_code>39</external_status_code></request_update>#;
     Open311->_inject_response('/servicerequestupdates.xml', $local_requests_xml);
 
     $aber_problem->lastupdate( DateTime->now()->subtract( days => 1 ) );
@@ -604,6 +606,23 @@ subtest 'Check Aberdeenshire template interpolation' => sub {
     $c = $aber_problem->comments->first;
     ok $c, 'comment exists';
     is $c->text, "Job start date: 15/11/2025\nTarget date: 31/12/2025", 'template correctly interpolated with jobStartDate';
+
+    $aber_problem->comments->delete;
+    # another update that only changes the extra data/response variables and leaves state/external status alone
+    $local_requests_xml = setup_xml($aber_problem->external_id, $aber_problem->id, 'ACTION_SCHEDULED', '',
+        '<jobStartDate>2026-01-20T09:00:00</jobStartDate><targetDate>2026-02-28T10:30:00</targetDate>');
+    $local_requests_xml =~ s#</request_update>#<external_status_code>39</external_status_code></request_update>#;
+    Open311->_inject_response('/servicerequestupdates.xml', $local_requests_xml);
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'aberdeenshire',
+    }, sub {
+        $update->process_body;
+    };
+    $aber_problem->discard_changes;
+    $c = $aber_problem->comments->first;
+    is $aber_problem->comments->count, 1, 'comment count';
+    is $c->state, 'confirmed', 'comment is visible';
+    is $c->text, "Job start date: 20/01/2026\nTarget date: 28/02/2026", 'new template vars used';
 
     $aber_problem->comments->delete;
     $aber_problem->delete;

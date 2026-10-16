@@ -67,6 +67,23 @@ describe('Regression tests', function() {
       cy.contains(/These will be sent to West Northamptonshire Council and also/);
     });
 
+    it('does not override radio inputs with incorrect values when changing category', function() {
+      cy.intercept('/report/new/ajax*').as('report-ajax');
+      cy.visit('/around?lon=-2.295894&lat=51.526877&zoom=6&js=1');
+      cy.get('#map_box').click();
+      cy.wait('@report-ajax');
+      cy.pickCategory('Licensing');
+      cy.nextPageReporting();
+      cy.pickSubcategory('Licensing', 'Skips');
+      cy.nextPageReporting();
+      cy.get('[name=urgent][value=yes]').click();
+      cy.go('back');
+      cy.pickSubcategory('Licensing', 'Dropped Kerbs');
+      cy.nextPageReporting();
+      cy.get('[name=urgent][value=aye]').should('exist');
+      cy.get('[name=urgent][value=nay]').should('exist');
+    });
+
     it('remembers extra fields when you sign in during reporting', function() {
       cy.intercept('/report/new/ajax*').as('report-ajax');
       cy.visit('/around?lon=-2.295894&lat=51.526877&zoom=6&js=1');

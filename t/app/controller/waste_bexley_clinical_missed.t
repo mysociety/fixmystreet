@@ -154,7 +154,7 @@ FixMyStreet::override_config {
         );
 
         $mech->submit_form_ok(
-            { with_fields => { submit => 'Report collection as missed' } }
+            { with_fields => { submit => 'Report collection as missed', tandc => 1 } }
         );
 
         $mech->text_contains(

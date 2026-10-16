@@ -30,6 +30,7 @@ h3, .h3,
 
 #report-cta {
   @include white-outline-btn;
+  right: 6rem;
 }
 
 a#geolocate_link {
@@ -61,7 +62,7 @@ input[type=text] {
 /* NAVBAR */
 #site-logo {
   background-image: url("/cobrands/dumfries/images/logo.svg");
-  background-size: 100% auto;
+  background-size: 80% auto;
   height: 4.6875rem;
   width: 11.75rem;
 

@@ -35,6 +35,8 @@ sub site_key { 'nationalhighways' }
 
 sub restriction { { cobrand => shift->moniker } }
 
+sub admin_show_body_stats { 0 }
+
 sub hide_areas_on_reports { 1 }
 
 sub send_questionnaires { 0 }
@@ -54,6 +56,7 @@ sub problems_restriction { FixMyStreet::Cobrand::UKCouncils::problems_restrictio
 sub problems_on_map_restriction { $_[0]->problems_restriction($_[1]) }
 sub problems_sql_restriction { FixMyStreet::Cobrand::UKCouncils::problems_sql_restriction($_[0], $_[1]) }
 sub users_restriction { FixMyStreet::Cobrand::UKCouncils::users_restriction($_[0], $_[1]) }
+sub users_restriction_in_code { FixMyStreet::Cobrand::UKCouncils::users_restriction_in_code($_[0], $_[1]) }
 sub updates_restriction { FixMyStreet::Cobrand::UKCouncils::updates_restriction($_[0], $_[1]) }
 sub base_url { FixMyStreet::Cobrand::UKCouncils::base_url($_[0]) }
 sub contact_name { FixMyStreet::Cobrand::UKCouncils::contact_name($_[0]) }
@@ -464,7 +467,10 @@ sub _report_new_is_on_he_road_not_litter {
     return scalar @$features ? 0 : 1;
 }
 
-=item * Only Admin roles can access the dashboard
+=item * Make sure only permissioned staff can access the dashboard
+
+As this cobrand lacks a council_area_id, we currently need this to
+prevent all staff access.
 
 =cut
 
@@ -474,10 +480,10 @@ sub dashboard_permission {
 
     # Default behaviour if no user, or is a superuser
     return if !$c->user_exists || $c->user->is_superuser;
-    # Otherwise, check the roles
-    my $admin = grep { $_->name eq 'Admin' } $c->user->obj->roles->all;
-    return 0 unless $admin;
-    return undef;
+    # Otherwise, check the permission
+    if ($c->user->from_body && $c->user->has_permission_to('view_dashboard', $self->body->id)) {
+        return $self->body->id;
+    }
 }
 
 sub dashboard_export_problems_add_columns {

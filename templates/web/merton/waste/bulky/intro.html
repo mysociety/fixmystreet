@@ -1,0 +1,34 @@
+[%~
+USE pounds = format('%.2f');
+SET cfg = c.cobrand.wasteworks_config;
+~%]
+
+<p>
+Booking a bulky waste collection takes around 10 minutes.
+</p>
+
+<p>
+<strong>Bookings cannot be refunded once confirmed.</strong>
+</p>
+
+<h2>Before you start</h2>
+
+<p>
+Please read the <a href="[% c.cobrand.call_hook('bulky_tandc_link') %]"> bulky waste collection</a> page on the council’s website.
+</p>
+
+<h2>How to book</h2>
+
+<p>You will need to:</p>
+
+<ol>
+  <li>Enter your name, email address and telephone number.</li>
+  <li>Choose a collection date.</li>
+  <li>Tell us what you want us to collect.
+      You can also add a description and upload photos of each item.
+  <li>Tell us where to collect the items from.</li>
+  <li>Pay online by card, if there is a charge.</li>
+</ol>
+
+
+[% INCLUDE 'waste/_intro_clear.html' %]

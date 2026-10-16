@@ -32,6 +32,31 @@ const FIELDS = {
             'yes': 'Y',
             'no': 'N'
         }
+    },
+    'greenwich': {
+        'block': true,
+        'categories': [
+            'Abandoned vehicles'
+        ],
+        'reg': 'vehicle_registration',
+        'make': 'vehicle_make',
+        'colour': 'vehicle_colour',
+    },
+    'merton': {
+        'block': function() { // Merton only blocks reporting in certain categories
+            const cat = fixmystreet.reporting.selectedCategory().category;
+            return cat === 'Abandoned Vehicles';
+        },
+        'categories': [
+            // 'Vehicle committing an offence',
+            'Abandoned Vehicles'
+        ],
+        'reg': 'vehicle_registration_number',
+        'make': 'vehicle_make_model', // DVLA doesn't give us model
+        'colour': 'vehicle_colour',
+        'motStatus': 'vehicle_mot_status',
+        'taxStatus': 'vehicle_tax_status',
+        'trailer': ' If the vehicle is parked wrongly, you may be able to <a href="https://www.merton.gov.uk/streets-parking-transport/parking/report">report it as a parking offence</a>.'
     }
 };
 
@@ -47,6 +72,12 @@ const TYPES = {
         'Van': 'V',
         'Car': 'C',
         'Other': 'O',
+    },
+    'merton': {
+        'Motorbike': 'Motorbike',
+        'Van': 'Van',
+        'Car': 'Car',
+        'Other': 'Other',
     }
 };
 
@@ -64,6 +95,19 @@ const REASONS = {
             }
             return reasons.join(' or ');
         },
+    },
+    'greenwich': {
+        fn: function (data) {
+            // There are multiple motStatuses - 'Valid', 'Not valid', 'No details held by DVLA', 'No results returned'
+            // Valid seemed the obvious one to use, but discovered new vehicles, pre-MOT have 'No details...'
+            // And possibly fully exempt vehicles (over 40 years old?) may have 'No results..'
+            // We will only consider vehicles that are specifically 'Not valid' as being reportable
+            if ( data.taxStatus == 'SORN' || (data.taxStatus == 'Taxed' && data.motStatus != 'Not valid')) {
+               return 'This vehicle has a valid tax or MOT, so it does not meet the criteria for an abandoned vehicle report.';
+            } else {
+                return '';
+            }
+        }
     }
 };
 
@@ -77,6 +121,20 @@ function esc(strings, ...params) {
         p = p.replace(/[^\w. ]/gi, c => '&#' + c.charCodeAt(0) + ';');
         return acc + p + lit;
     });
+}
+
+/* Re-enable the disabled 'Continue' button if the user changes an answer/input */
+function dvla_clear_block() {
+    const stopper = document.getElementById('js-dvla-stopper');
+    if (!stopper) {
+        return;
+    }
+    const page = stopper.closest('.js-reporting-page');
+    stopper.remove();
+    document.querySelectorAll('.js-reporting-page--next').forEach(b => b.disabled = false);
+    if (page) {
+        page.style.paddingBottom = null;
+    }
 }
 
 function dvla_lookup(e) {
@@ -136,7 +194,8 @@ function dvla_lookup(e) {
                 if (data.taxStatus == 'Taxed') {
                     reason_msgs.push('are taxed');
                 }
-                if (data.motStatus == 'Valid') {
+                // See note on greenwich above
+                if (data.motStatus != 'Not valid') {
                     reason_msgs.push('have a valid MOT');
                 }
                 if (reason_msgs.length) {
@@ -156,20 +215,30 @@ function dvla_lookup(e) {
 
         const type = data.typeApproval || '';
         const wheelplan = data.wheelplan || '';
-        let types = TYPES[fixmystreet.cobrand];
+        let types = TYPES[fixmystreet.cobrand] || '';
         let vehicle_type = '';
-        if (type.match(/L[1-7]|motorcycle/i) || wheelplan.match(/motorcycle|moped|2 wheel/i)) {
-            vehicle_type = types.Motorbike;
-        } else if (type.match(/N1|commercial/i) || wheelplan.match(/van|commercial/i)) {
-            vehicle_type = types.Van;
-        } else if (type.match(/M1/i)) {
-            vehicle_type = types.Car;
-        } else if (type.match(/M[23]|N[23]/i) || wheelplan.match(/& artic|3 axle rigid|multi-axle rigid/i)) {
-            vehicle_type = types.Other;
+        if (types) {
+            if (type.match(/L[1-7]|motorcycle/i) || wheelplan.match(/motorcycle|moped|2 wheel/i)) {
+                vehicle_type = types.Motorbike;
+            } else if (type.match(/N1|commercial/i) || wheelplan.match(/van|commercial/i)) {
+                vehicle_type = types.Van;
+            } else if (type.match(/M1/i)) {
+                vehicle_type = types.Car;
+            } else if (type.match(/M[23]|N[23]/i) || wheelplan.match(/& artic|3 axle rigid|multi-axle rigid/i)) {
+                vehicle_type = types.Other;
+            }
         }
 
         const config = FIELDS[fixmystreet.cobrand] || {};
-        if (config.block && reason != '') {
+        // cobrand config can optionally provide a callback function (returns a
+        // bool) for `block` to allow e.g. per-category blocking
+        let block = false;
+        if (typeof config.block === 'function') {
+            block = config.block();
+        } else {
+            block = config.block;
+        }
+        if (block && reason != '') {
             document.querySelectorAll('.js-reporting-page--next').forEach(b => b.disabled = true);
             const stopperId = 'js-dvla-stopper';
             const id = document.getElementById(stopperId);
@@ -177,7 +246,7 @@ function dvla_lookup(e) {
             let vehicle_desc = [data.colour, data.make, vehicle_type=='Other'?'':vehicle_type.toLowerCase()].filter(Boolean).join(' ');
             if (data.fuelType) vehicle_desc += ', ' + data.fuelType;
             if (data.yearOfManufacture) vehicle_desc += ', ' + data.yearOfManufacture;
-            const msg = esc`<div id="${stopperId}" class="js-stopper-notice box-warning" role="alert" aria-live="assertive"><strong>${vehicle_desc}</strong><br>` + reason + ( add_dvla_contact ? 'You may be able to <a href="https://contact.dvla.gov.uk/report-untaxed-vehicle">contact the DVLA</a>.' : '' ) + '</div>';
+            const msg = esc`<div id="${stopperId}" class="js-stopper-notice box-warning" role="alert" aria-live="assertive"><strong>${vehicle_desc}</strong><br>` + reason + ( add_dvla_contact ? ' You may be able to <a href="https://contact.dvla.gov.uk/report-untaxed-vehicle">contact the DVLA</a>.' : '' ) + ( config.trailer ? config.trailer : '' ) + '</div>';
             const wrapper = document.querySelector('.js-reporting-page--active .pre-button-messaging');
             if (id) {
                 id.outerHTML = msg;
@@ -185,9 +254,9 @@ function dvla_lookup(e) {
                 wrapper.insertAdjacentHTML('afterbegin', msg);
             }
             const height = wrapper.getBoundingClientRect().height;
-            document.querySelector('.js-reporting-page--active').style.paddingBottom = height;
+            document.querySelector('.js-reporting-page--active').style.paddingBottom = height + 'px';
         } else {
-            ['make', 'colour', 'reg', 'make_and_colour'].forEach(name => {
+            ['make', 'colour', 'reg', 'make_and_colour', 'motStatus', 'taxStatus'].forEach(name => {
                 if (fields[name] && data[name]) {
                     let field = document.querySelector('input[name*="' + fields[name] + '"]');
                     if (field) {
@@ -196,16 +265,21 @@ function dvla_lookup(e) {
                 }
             });
 
-            let field = document.querySelector('select[name*="' + fields.type + '"]');
+            let field = fields.type ? document.querySelector('select[name*="' + fields.type + '"]') : null;
             if (field && vehicle_type) {
                 field.value = vehicle_type;
             }
-            field = document.querySelector('select[name*="' + fields.taxed + '"]');
-            if (field) {
+
+            if (fields.taxed) {
+                let val = '';
                 if (data.taxStatus == 'Taxed') {
-                    field.value = config.tax.yes;
+                    val = config.tax.yes;
                 } else if (data.taxStatus == 'Untaxed') {
-                    field.value = config.tax.no;
+                    val = config.tax.no;
+                }
+                field = document.querySelector('[name*="' + fields.taxed + '"][value="' + val + '"]');
+                if (field) {
+                    field.checked = true;
                 }
             }
             fixmystreet.pageController.toPage('next');
@@ -257,6 +331,7 @@ function dvla_setup() {
         }
         div.innerHTML = msg;
         div.querySelector('button').addEventListener('click', dvla_lookup);
+        div.querySelectorAll('input').forEach(input => input.addEventListener('input', dvla_clear_block));
         div.querySelector('input[type=text]').addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();

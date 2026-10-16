@@ -32,6 +32,8 @@ cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel
   </p>
 
   [% IF cobrand.moniker == 'merton' %]
+    [% INCLUDE 'waste/_bulky_extra_text.html' %]
+
     <p style="[% p_style %]">
         If your collection includes both upholstered and non-upholstered items (such as a sofa and a fridge), we may collect them in two stages.
         The second collection may be up to two working days after your chosen date.
@@ -58,6 +60,8 @@ cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel
       [% IF cobrand.moniker == 'peterborough' %]
         If you wish to cancel your booking, please call 01733 74 74 74.
       [% END %]
+    [% ELSIF cobrand.moniker == 'bexley' %]
+      <strong>If you wish to cancel your booking, please visit <a href="[% cancel_url %]">this link</a>.</strong>
     [% ELSIF cobrand.moniker != 'sutton' AND cobrand.moniker != 'kingston' AND cobrand.moniker != 'peterborough' %]
       If you wish to cancel your booking, please visit <a href="[% cancel_url %]">this link</a>.
     [% END %]

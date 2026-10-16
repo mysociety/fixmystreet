@@ -89,4 +89,10 @@ sub pin_colour {
 
 sub has_aerial_maps { 'tilma.mysociety.org/mapcache/gmaps/northnorthantsaerial@{grid}' }
 
+=item * No questionnaires sent
+
+=cut
+
+sub send_questionnaires { 0 }
+
 1;

@@ -441,6 +441,10 @@ input[type="submit"].waste-service-link {
     }
   }
 
+  p:last-child {
+      margin-bottom: 0;
+  }
+
   @media (min-width: $large-screen) {
     flex-direction: row;
 
@@ -454,6 +458,11 @@ input[type="submit"].waste-service-link {
       padding-top: 0;
     }
   }
+}
+
+// for the waste report a problem page
+.govuk-warning-text + form {
+    margin-top: 1em;
 }
 
 .govuk-warning-text__assistive, .govuk-text__assistive {

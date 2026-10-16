@@ -479,7 +479,7 @@ $.extend(fixmystreet.set_up, {
     // In case we've come here by clicking back to a form that disabled a submit button
     $('input[type=submit][data-disable],button[data-disable]').prop('disabled', false);
 
-    $('[data-confirm]').on('click', function() {
+    $('body').on('click', '[data-confirm]', function() {
         return confirm(this.getAttribute('data-confirm'));
     });
   },
@@ -699,8 +699,11 @@ $.extend(fixmystreet.set_up, {
             var $new_category_meta = $('#category_meta');
             $new_category_meta.closest('.js-reporting-page').toggleClass('js-reporting-page--skip', !!data.extra_hidden);
             // Preserve any existing values
-            $category_meta.find("[name]").each(function() {
+            $category_meta.find("[name]").not(":checkbox").not(":radio").each(function() {
                 $new_category_meta.find("[name='"+this.name+"']").val(this.value);
+            });
+            $category_meta.find("[name]:checked").each(function() {
+                $new_category_meta.find("[name='"+this.name+"']").val([this.value]);
             });
         } else {
             $category_meta.closest('.js-reporting-page').addClass('js-reporting-page--skip');
@@ -744,6 +747,9 @@ $.extend(fixmystreet.set_up, {
             $.each(data.disable_form.questions, function(_, question) {
                 if (question.message && question.code) {
                     $('#form_' + question.code).on('change.category', function() {
+                        $(fixmystreet).trigger('report_new:category_change', { skip_duplicates: true } );
+                    });
+                    $('input[name="' + question.code + '"][type="radio"]').on('change.category', function() {
                         $(fixmystreet).trigger('report_new:category_change', { skip_duplicates: true } );
                     });
                 }
@@ -919,6 +925,14 @@ $.extend(fixmystreet.set_up, {
         }
     });
 
+    function fuzzy_search(uf, haystack, search) {
+        var results = uf.search(haystack, search, 1);
+        if (results) {
+            return results[0];
+        }
+        return [];
+    }
+
     /* Update when key lifted in search box */
     var filter_keyup = function() {
         var items = category_row.querySelectorAll(".govuk-radios__item");
@@ -931,11 +945,13 @@ $.extend(fixmystreet.set_up, {
                 haystack.push(txt);
             });
             var uf = new uFuzzy();
-            var results = uf.search(haystack, this.value, 1);
+            var spaceless = this.value.replace(/[^\w]+/g, '');
+            var results1 = fuzzy_search(uf, haystack, this.value);
+            var results2 = fuzzy_search(uf, haystack, spaceless);
             var subcats_to_show = {};
             for (i = 0; i<items.length; i++) {
                 var input = items[i].querySelector('input'),
-                    match = !(results[0] && results[0].indexOf(i) < 0),
+                    match = !(results1.indexOf(i) < 0 && results2.indexOf(i) < 0),
                     in_matching_subcat = subcats_to_show[input.name];
                 items[i].classList.toggle('hidden-category-filter', !(in_matching_subcat || match));
                 if (match && input.name !== 'category') {
@@ -1627,13 +1643,33 @@ $.extend(fixmystreet.set_up, {
           }
       });
 
+      function update_visibility(selector) {
+          var $showTarget = $( selector.attr('data-show') );
+          var $hideTarget = $( selector.attr('data-hide') );
+          $showTarget.removeClass('hidden-js');
+          $hideTarget.addClass('hidden-js');
+      }
+
       $('input[type="radio"][data-show], input[type="radio"][data-hide]').each(function(){
           var update = function(){
               if ( this.checked ) {
+                  update_visibility($(this));
+              }
+          };
+          // off/on to make sure event handler is only bound once.
+          $(this).off('change.togglevisibility').on('change.togglevisibility', update);
+          update.call(this); // pass DOM element as `this`
+      });
+
+      $('input[type="checkbox"][data-show], input[type="checkbox"][data-hide]').each(function(){
+          var update = function(){
+              if ( this.checked ) {
+                  update_visibility($(this));
+              } else {
                   var $showTarget = $( $(this).attr('data-show') );
                   var $hideTarget = $( $(this).attr('data-hide') );
-                  $showTarget.removeClass('hidden-js');
-                  $hideTarget.addClass('hidden-js');
+                  $hideTarget.removeClass('hidden-js');
+                  $showTarget.addClass('hidden-js');
               }
           };
           // off/on to make sure event handler is only bound once.
@@ -1645,10 +1681,7 @@ $.extend(fixmystreet.set_up, {
           var $select = $(this).parent();
           var update = function(){
               var $option = $(this).find('option:selected');
-              var $showTarget = $( $option.attr('data-show') );
-              var $hideTarget = $( $option.attr('data-hide') );
-              $showTarget.removeClass('hidden-js');
-              $hideTarget.addClass('hidden-js');
+              update_visibility($option);
           };
           // off/on to make sure event handler is only bound once.
           $select.off('change.togglevisibility').on('change.togglevisibility', update);

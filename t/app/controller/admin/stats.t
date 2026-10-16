@@ -5,8 +5,32 @@ my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super Us
 
 subtest "smoke view some stats pages" => sub {
     $mech->log_in_ok( $superuser->email );
+    $mech->get_ok('/admin/stats');
+    $mech->content_contains('live problems');
+    $mech->get_ok('/admin/stats/state');
+    $mech->content_contains('Problem breakdown by state');
     $mech->get_ok('/admin/stats/fix-rate');
     $mech->get_ok('/admin/stats/questionnaire');
+};
+
+subtest "body stats only shown where they are meaningful" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'fixmystreet' ],
+    }, sub {
+        $mech->get_ok('/admin/stats');
+        $mech->content_contains('council contacts');
+        $mech->get_ok('/status.json');
+        like $mech->content, qr/"bodies"/;
+    };
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'brent' ],
+    }, sub {
+        $mech->get_ok('/admin/stats');
+        $mech->content_lacks('council contacts');
+        $mech->get_ok('/status.json');
+        unlike $mech->content, qr/"bodies"/;
+    };
 };
 
 subtest "test refused stats page works" => sub {

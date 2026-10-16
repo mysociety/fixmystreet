@@ -92,6 +92,10 @@ subtest 'Normal update sending works' => sub {
 };
 
 subtest 'Multiple updates on same problem should send in order of confirmation' => sub {
+    # Fix the random number generator
+    my $query = FixMyStreet::DB->schema->storage->dbh->prepare('select setseed(0.5)');
+    $query->execute();
+
     my $mock = Test::MockModule->new('Open311');
     $mock->mock('post_service_request_update', sub { 456 });
 
@@ -120,7 +124,7 @@ subtest 'Multiple updates on same problem should send in order of confirmation' 
         'An update 3', 'f', 'confirmed', 'confirmed',
         { confirmed => '2024-12-11 15:32:00' } );
 
-    my $countdown = 20; # Ran test 100 times and no failure, so seems a solid number
+    my $countdown = 5; # Tested with this fixed RNG
     my %pending = map { $_->id => $_ } ( $c1_p3, $c2_p3, $c3_p3 );
     my @sent;
     while ( $countdown && _check_updates( \%pending, \@sent ) ) {

@@ -11,6 +11,7 @@ use Hash::Util qw(lock_hash);
 use Integrations::Echo;
 use BromleyParks;
 use FixMyStreet::App::Form::Waste::Request::Bromley;
+use FixMyStreet::App::Form::Waste::Enquiry::Bromley;
 use FixMyStreet::DB;
 use Moo;
 use WasteWorks::Costs;
@@ -56,6 +57,7 @@ my %EVENT_TYPE_IDS = (
     request => 2104,
     bulky => 2175,
     garden => 2106,
+    return_request => 3240,
 );
 lock_hash(%EVENT_TYPE_IDS);
 
@@ -69,8 +71,26 @@ my %ALLOW_CLOSED_EVENT_TYPE_IDS = (
     2162 => 'crew_behaviour',
     2163 => 'damage_to_property',
     2186 => 'wrongful_removal',
+    3240 => 'return_request',
 );
 lock_hash(%ALLOW_CLOSED_EVENT_TYPE_IDS);
+
+my %RESOLUTION_CODES = (
+    33 => 'contaminated', # Contaminated
+    66 => 'not-presented',
+    522 => 'contaminated', # Con - Paper & Card
+    523 => 'contaminated', # Con - Food
+    524 => 'contaminated', # Con - Textiles
+    525 => 'contaminated', # Con - Tetra Pack
+    526 => 'contaminated', # Con - Electrical Items
+    527 => 'contaminated', # Con - Nappies
+    528 => 'contaminated', # Con - Rigid Plastics
+    529 => 'contaminated', # Con - Other
+    674 => 'contaminated', # Con - Refuse
+    801 => 'not-presented', # Item not at Location specified
+    802 => 'contaminated', # Con - Clinical
+);
+lock_hash(%RESOLUTION_CODES);
 
 sub report_validation {
     my ($self, $report, $errors) = @_;
@@ -241,22 +261,27 @@ sub available_permissions {
     return $perms;
 }
 
+sub _is_contact_echo {
+    my ($self, $contact) = @_;
+    return $contact->email =~ /^\d+$/;
+}
+
 =item * open311_config
 
 Sets options for what data will be sent to the open311 integrations.
 
 Bromley require all images to be sent for Echo reports, as binaries for upload.
 
-We do not 'always_send_latlong' or 'extended_description'
+We do not 'always_send_latlong' or 'extended_description'.
 
-We do 'send_notpinpointed'
+We do 'send_notpinpointed'.
 
 =cut
 
 sub open311_config {
     my ($self, $row, $h, $params, $contact) = @_;
 
-    if ($contact->email =~ /^\d+$/) {
+    if ($self->_is_contact_echo($contact)) {
         $params->{multi_photos} = 1;
         $params->{upload_files} = 1;
         $params->{always_upload_photos} = 1; # So open311_munge_uploads always gets called
@@ -335,11 +360,17 @@ sub open311_extra_data_exclude {
 }
 
 sub open311_config_updates {
-    my ($self, $params) = @_;
-    $params->{endpoints} = {
-        service_request_updates => 'update.xml',
-        update => 'update.xml'
-    } if $params->{endpoint} =~ /bromley.gov.uk/;
+    my ($self, $params, $comment) = @_;
+    return unless $comment;
+    my $contact = FixMyStreet::DB->resultset('Contact')->find({
+        body_id => $self->body->id,
+        category => $comment->problem->category,
+    });
+    # We always send email when sending updates to the passthrough endpoint as
+    # updates are rejected without one.
+    if ($contact && !$self->_is_contact_echo($contact)) {
+        $params->{always_send_email_for_updates} = 1;
+    }
 }
 
 sub open311_pre_send {
@@ -458,6 +489,21 @@ Ingore any updates from Echo that aren't New/Completed and don't have a resoluti
 sub open311_waste_update_extra {
     my ($self, $cfg, $event) = @_;
 
+    my $esc;
+    if ($event->{EventTypeId} == $EVENT_TYPE_IDS{return_request}) {
+        # Could have got here with a full event (pull) or subset (push)
+        if (!$event->{Data}) {
+            $event = $cfg->{echo}->GetEvent($event->{Guid});
+        }
+        my $data = Integrations::Echo::force_arrayref($event->{Data}, 'ExtensibleDatum');
+        foreach (@$data) {
+            if ($_->{DatatypeName} eq 'Investigation Outcome') {
+                $esc = 'Approved' if $_->{Value} == 1;
+                $esc = 'Declined' if $_->{Value} == 2;
+            }
+        }
+    }
+
     my $override_status;
     my $event_type = $cfg->{event_types}{$event->{EventTypeId}};
     my $state_id = $event->{EventStateId};
@@ -472,6 +518,7 @@ sub open311_waste_update_extra {
 
     return (
         defined $override_status ? (status => $override_status ) : (),
+        defined $esc ? (external_status_code => $esc) : (),
     );
 }
 
@@ -957,6 +1004,62 @@ sub waste_munge_report_data {
     $self->_set_user_source;
 }
 
+
+=head2 waste_munge_enquiry_form_pages
+
+We are using an enquiry form to report a disputed missed collection.
+
+So we add an extra page to inform whether a dispute can be raised and an extra page
+for the user to confirm they would like to raise a dispute with a declaration
+their container was correctly placed, which they only reach
+if they are able to dispute the missed collection
+
+=cut
+
+sub return_request_option {
+    my $self = shift;
+    my $c = $self->{c};
+
+    my $service_id = $c->get_param('service_id');
+    my $service = $c->stash->{services}{$service_id};
+    return '' unless $service_id == $SERVICE_IDS{garden} || FixMyStreet->test_mode;
+
+    my $last = $service->{last};
+    my $next = $service->{next};
+    my $next_state = $next->{state} || '';
+
+    return 'too-late' unless $service->{report_within_time};
+
+    my $resolution_id = $last->{resolution_id} || 0;
+    return $RESOLUTION_CODES{$resolution_id} if exists $RESOLUTION_CODES{$resolution_id};
+    return '';
+}
+
+sub waste_munge_enquiry_form_pages {
+    my ($self, $pages, $fields) = @_;
+    my $c = $self->{c};
+    my $category = $c->get_param('category');
+    my $reason = $self->return_request_option;
+
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Enquiry::Bromley';
+
+    if ($category eq 'Return request') {
+        # If we have a reason, we need to start with a special page
+        if ($reason eq 'not-presented') {
+            $c->stash->{first_page} = 'missed_collection_intro_not_presented';
+        } elsif ($reason eq 'contaminated' || $reason eq 'too-late') {
+            $c->stash->{first_page} = 'missed_collection_intro';
+        }
+    } elsif ($category eq 'General Enquiry') {
+        # If we have a reason, add a notice to the start of the Other form
+        if ($reason eq 'not-presented') {
+            unshift @{$pages->[1]{fields}}, 'bromley_missed_notice_not_presented';
+        } elsif ($reason eq 'contaminated' || $reason eq 'too-late') {
+            unshift @{$pages->[1]{fields}}, 'bromley_missed_notice';
+        }
+    }
+}
+
 sub waste_munge_enquiry_data {
     my ($self, $data) = @_;
 
@@ -1013,30 +1116,51 @@ sub waste_cc_payment_sale_ref {
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
 
+    my @contacts = $csv->body->contacts->order_by('category')->all;
+    my %extra_columns;
+    foreach my $contact (@contacts) {
+        foreach (@{$contact->get_metadata_for_storage}) {
+            $extra_columns{$_->{code}} = $_->{description} || $_->{code};
+        }
+    }
+
+    my @extra_columns = sort keys %extra_columns;
+    @extra_columns = map { $_ => $extra_columns{$_} } @extra_columns;
     $csv->add_csv_columns(
         staff_user => 'Staff User',
         staff_role => 'Staff Role',
+        @extra_columns,
     );
 
-    return if $csv->dbi; # All covered already
-
-    my $user_lookup = $self->csv_staff_users;
-    my $userroles = $self->csv_staff_roles($user_lookup);
+    my ($user_lookup, $userroles);
+    if (!$csv->dbi) {
+        $user_lookup = $self->csv_staff_users;
+        $userroles = $self->csv_staff_roles($user_lookup);
+    }
 
     $csv->csv_extra_data(sub {
         my $report = shift;
+        my $data = {};
 
-        my $by = $report->get_extra_metadata('contributed_by');
-        my $staff_user = '';
-        my $staff_role = '';
-        if ($by) {
-            $staff_user = $self->csv_staff_user_lookup($by, $user_lookup);
-            $staff_role = join(',', @{$userroles->{$by} || []});
+        if (!$csv->dbi) {
+            my $by = $report->get_extra_metadata('contributed_by');
+            my $staff_user = '';
+            my $staff_role = '';
+            if ($by) {
+                $staff_user = $self->csv_staff_user_lookup($by, $user_lookup);
+                $staff_role = join(',', @{$userroles->{$by} || []});
+            }
+            $data = {
+                staff_user => $staff_user,
+                staff_role => $staff_role,
+            };
         }
-        return {
-            staff_user => $staff_user,
-            staff_role => $staff_role,
-        };
+
+        foreach (@{$csv->_extra_field($report)}) {
+            $data->{$_->{name}} = $_->{value};
+        }
+
+        return $data;
     });
 }
 
@@ -1084,22 +1208,6 @@ sub bulky_can_refund_collection {
     return 0 if !$self->bulky_booking_paid($collection);
     return 0 if !$self->within_bulky_cancel_window($collection);
     return $self->bulky_refund_amount($collection) > 0;
-}
-
-sub bulky_send_cancellation_confirmation {
-    my ($self, $collection_report) = @_;
-    my $c = $self->{c};
-    $c->send_email(
-        'waste/bulky-confirm-cancellation.txt',
-        {   to => [
-                [ $collection_report->user->email, $collection_report->name ]
-            ],
-
-            wasteworks_id => $collection_report->id,
-            refund_amount => $self->bulky_refund_amount($collection_report),
-            collection_date => $self->bulky_nice_collection_date($collection_report),
-        },
-    );
 }
 
 sub bulky_refund_collection {

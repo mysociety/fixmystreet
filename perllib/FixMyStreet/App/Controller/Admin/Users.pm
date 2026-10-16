@@ -59,7 +59,10 @@ sub index :Path : Args(0) {
     my $role = $c->get_param('role');
     my $users;
     if ($search || $role) {
-        $users = $c->cobrand->users;
+        # NOTE The below is not using $c->cobrand->users for performance reasons.
+        # The upgrade to PG15 made this query significantly slower :-(
+        #$users = $c->cobrand->users;
+        $users = FixMyStreet::DB->resultset("User");
         if ($search) {
             $search = $self->trim($search);
             $search =~ s/^<(.*)>$/$1/; # In case email wrapped in <...>
@@ -90,6 +93,10 @@ sub index :Path : Args(0) {
         order_by => [ \"me.name = ''", 'me.name' ],
     });
     my @users = $users->all;
+    # NOTE As we may have fetched more than we should above, filter out the same in code
+    if ($search || $role) {
+        $c->cobrand->call_hook(users_restriction_in_code => \@users);
+    }
     $c->stash->{users} = \@users;
     if ($search) {
         $c->forward('/admin/add_flags', [ { email => { ilike => "%$search%" } } ]);
@@ -97,11 +104,16 @@ sub index :Path : Args(0) {
 
     my $rs;
     if ($c->user->is_superuser) {
-        $rs = $c->model('DB::Role')->search_rs({}, { join => 'body', order_by => ['body.name', 'me.name'] });
-        $rs = $rs->search(undef, {
+        # On a cobrand associated with a body, only show that body's roles
+        my $body = $c->cobrand->body;
+        my $search = $body ? { 'me.body_id' => $body->id } : {};
+        $rs = $c->model('DB::Role')->search_rs($search, {
+            prefetch => 'body',
             '+columns' => { 'body.msgstr' => \'COALESCE(translation_name.msgstr, body.name)' },
             join => { body => 'translation_name' },
+            order_by => ['body.name', 'me.name'],
         });
+        $c->stash->{group_roles_by_body} = !$body;
     } elsif ($c->user->from_body) {
         $rs = $c->user->from_body->roles->search_rs({}, { order_by => 'name' });
     }
@@ -221,7 +233,7 @@ sub fetch_body_roles : Private {
 sub user : Chained('/') PathPart('admin/users') : CaptureArgs(1) {
     my ( $self, $c, $id ) = @_;
 
-    my $user = $c->cobrand->users->find( { id => $id } );
+    my $user = find_unique_user($c, { id => $id });
     $c->detach( '/page_error_404_not_found', [] ) unless $user;
     $c->stash->{user} = $user;
 
@@ -304,11 +316,11 @@ sub edit : Chained('user') : PathPart('') : Args(0) {
 
         my $email_params = { email => $email, email_verified => 1, id => { '!=', $user->id } };
         my $phone_params = { phone => $phone, phone_verified => 1, id => { '!=', $user->id } };
-        my $existing_email = $email_v && $c->model('DB::User')->search($email_params)->first;
-        my $existing_phone = $phone_v && $c->model('DB::User')->search($phone_params)->first;
+        my $existing_email = $email_v && $c->model('DB::User')->search($email_params)->single;
+        my $existing_phone = $phone_v && $c->model('DB::User')->search($phone_params)->single;
         my $existing_user = $existing_email || $existing_phone;
-        my $existing_email_cobrand = $email_v && $c->cobrand->users->search($email_params)->first;
-        my $existing_phone_cobrand = $phone_v && $c->cobrand->users->search($phone_params)->first;
+        my $existing_email_cobrand = $email_v && find_unique_user($c, $email_params);
+        my $existing_phone_cobrand = $phone_v && find_unique_user($c, $phone_params);
         my $existing_user_cobrand = $existing_email_cobrand || $existing_phone_cobrand;
 
         if ($existing_phone_cobrand && $existing_email_cobrand && $existing_email_cobrand->id != $existing_phone_cobrand->id) {
@@ -479,7 +491,7 @@ sub post_edit_redirect : Private {
 
     # User may not be visible on this cobrand, e.g. if their from_body
     # wasn't set.
-    if ( $c->cobrand->users->find( { id => $user->id } ) ) {
+    if (find_unique_user($c, { id => $user->id })) {
         return $c->res->redirect( $c->uri_for_action( 'admin/users/edit', [ $user->id ] ) );
     } else {
         return $c->res->redirect( $c->uri_for_action( 'admin/users/index' ) );
@@ -571,7 +583,12 @@ sub user_alert_details : Private {
     my $alerts = $c->stash->{user}->alerts({}, {
         prefetch => 'alert_type',
         rows => 100,
-        order_by => 'whensubscribed',
+        # The zero interval adding here is to prevent PostgreSQL from using the
+        # whensubscribed index.  If someone has a large number of alerts, the
+        # planner thinks it will be quicker to scan backwards by whensubscribed
+        # date, rather than use the user ID index, which could well be very
+        # wrong if their alerts are all old.
+        order_by => \"whensubscribed + interval '0'",
     })->page( $page );
     my @alerts = $alerts->all;
 
@@ -744,6 +761,19 @@ sub unban : Private {
     }
 }
 
+# NOTE The below is not using $c->cobrand->users for performance reasons.
+# The upgrade to PG15 made this query significantly slower :-(
+sub find_unique_user {
+    my ($c, $args, $key) = @_;
+    my $user = $c->model('DB::User')->search($args)->single;
+    if ($user) {
+        my $users = [ $user ];
+        $c->cobrand->call_hook(users_restriction_in_code => $users);
+        if (@$users) {
+            return $user;
+        }
+    }
+}
 
 sub trim {
     my $self = shift;

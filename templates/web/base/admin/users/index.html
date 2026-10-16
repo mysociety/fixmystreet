@@ -5,7 +5,7 @@
 <select name="[% label %]" id="[% label %]" class="form-control">
     <option value="">---</option>
   [% FOR role IN roles %]
-      [% IF c.user.is_superuser AND last_name != role.body.name %]
+      [% IF group_roles_by_body AND last_name != role.body.name %]
         <optgroup label="[% role.body.name %]">
         [% SET last_name = role.body.name %]
       [% END %]

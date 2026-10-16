@@ -132,8 +132,8 @@ sub updates_disallowed_for_user {
 
     return unless $from_body;
 
-    my $role = $user->obj->roles->search({ name => "Shropshire Councillor" })->count;
-    return $role;
+    # XXX if we hit 3 role names, probably worth moving to DB::Config
+    return $user->obj->roles->search({ name => [ "Shropshire Councillor", "Enquiry Handler" ] })->count > 0;
 }
 
 =head2 open311_contact_meta_override

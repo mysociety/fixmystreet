@@ -508,6 +508,7 @@ create table admin_log (
       or object_type = 'category'
       or object_type = 'role'
       or object_type = 'manifesttheme'
+      or object_type = 'property'
     ),
     object_id integer not null,
     action text not null,
@@ -636,4 +637,9 @@ CREATE TABLE manifest_theme (
     images text ARRAY,
     wasteworks_name text,
     wasteworks_short_name text
+);
+
+CREATE TABLE property (
+    uprn text not null primary key,
+    discount_date date not null
 );

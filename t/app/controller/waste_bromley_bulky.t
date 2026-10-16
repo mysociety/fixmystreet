@@ -4,6 +4,7 @@ use Test::MockTime 'set_fixed_time';
 use FixMyStreet::TestMech;
 use Path::Tiny;
 use FixMyStreet::Script::Reports;
+use FixMyStreet::Script::Alerts;
 
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
@@ -284,7 +285,7 @@ FixMyStreet::override_config {
         }
         subtest 'Summary page' => \&test_summary;
 
-        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        submit_tandc();
         # No click to confirm email.
         $mech->email_count_is(0);
 
@@ -513,7 +514,12 @@ FixMyStreet::override_config {
                 $mech->content_contains('Your booking has been cancelled');
                 $mech->content_lacks('If you need to contact us about your bulky collection cancellation please use the reference');
 
+                my $cancellation_update = $report->comments->order_by('-id')->first;
+                is $cancellation_update->get_extra_metadata('bulky_cancellation'), 1;
+                is $cancellation_update->user_id, $report->user->id, 'Cancellation update made by logged-in user';
+
                 my $report_id = $report->id;
+                FixMyStreet::Script::Alerts::send_updates();
                 my $email = $mech->get_email;
                 subtest 'Sends cancellation confirmation' => sub {
                     is $email->header('Subject'),
@@ -758,7 +764,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { chosen_date => '2023-07-01T00:00:00;reserve1==;2023-06-25T10:10:00' } });
         $mech->submit_form_ok({ with_fields => { 'item_1' => 'BBQ' } });
         $mech->submit_form_ok({ with_fields => {location => 'in the middle of the drive' } });
-        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        submit_tandc();
         $report = FixMyStreet::DB->resultset('Problem')->single();
         is $report->state, "confirmed";
         $mech->submit_form_ok({ with_fields => { payment_failed => 1 } });
@@ -769,6 +775,7 @@ FixMyStreet::override_config {
         my $cancellation_update = $report->comments->first;
         is $cancellation_update->text, "Booking cancelled";
         is $cancellation_update->get_extra_metadata('bulky_cancellation'), 1;
+        is $cancellation_update->user_id, $staff_user->id, 'Cancellation update made by logged-in staff user';
         unlike $report->detail, qr/Cancelled at user request/;
         like $report->detail, qr/Cancelled/;
 
@@ -792,6 +799,15 @@ FixMyStreet::override_config {
 };
 
 done_testing;
+
+sub submit_tandc {
+    $mech->form_with_fields('tandc');
+    $mech->current_form->find_input('tandc', undef, 1)->value(1);
+    $mech->current_form->find_input('tandc', undef, 2)->value(2);
+    $mech->current_form->find_input('tandc', undef, 3)->value(3);
+    $mech->current_form->find_input('tandc', undef, 4)->value(4);
+    $mech->submit_form_ok;
+}
 
 sub get_report_from_redirect {
     my $url = shift;

@@ -53,6 +53,12 @@ sub privacy_policy_url {
 
 sub enter_postcode_text { 'Enter a nearby UK postcode, or street name and area' }
 
+=item * We do not send questionnaires.
+
+=cut
+
+sub send_questionnaires { 0 }
+
 =head2 body_disallows_state_change
 
 Determines whether state of a report can be updated, based on user and current

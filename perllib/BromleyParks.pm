@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use FixMyStreet;
-use DBI;
+use FixMyStreet::Roles::SQLite;
 use Utils;
 
 sub database_file { FixMyStreet->path_to('../data/bromley_parks.sqlite') }
@@ -24,8 +24,7 @@ sub lookup {
 sub _db_results {
     my $search = shift;
 
-    return unless -e database_file();
-    my $db = DBI->connect("dbi:SQLite:dbname=".database_file(), undef, undef) or return;
+    my $db = FixMyStreet::Roles::SQLite::db_connect_readonly(database_file()) or return;
 
     return $db->selectall_arrayref(
         "SELECT * FROM parks where name match ?",

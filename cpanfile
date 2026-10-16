@@ -1,5 +1,5 @@
 # setenv script
-requires 'List::MoreUtils', '0.402';
+requires 'List::MoreUtils', '0.430';
 requires 'local::lib', '2.000024';
 requires 'Class::Unload';
 
@@ -76,6 +76,7 @@ requires 'DateTime::Format::Strptime';
 requires 'DateTime::Format::W3CDTF';
 requires 'DateTime::TimeZone', '2.35';
 requires 'DBD::Pg', '3.8.0';
+requires 'DBD::SQLite', '1.78';
 requires 'DBI';
 requires 'DBIx::Class', '0.082841';
 requires 'DBIx::Class::EncodedColumn', '0.00032';

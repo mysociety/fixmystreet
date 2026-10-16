@@ -824,6 +824,23 @@ subtest 'status dropdown' => sub {
 
             $mech->content_like(qr/data-all-options=.*confirmed.*investigating.*action scheduled.*in progress.*fixed.*not responsible.*duplicate.*unable to fix.*internal referral/);
         };
+
+        subtest 'staff user can filter on an individual state' => sub {
+            $mech->log_in_ok($staff_oxf->email);
+
+            my ($problem) = $mech->create_problems_for_body(1, $body->id, 'Around page', {
+                latitude => 51.754926,
+                longitude => -1.256179,
+                category => 'Pothole',
+                state => 'not responsible',
+            });
+
+            my $json = $mech->get_ok_json('/around?ajax=1&status=not%20responsible&bbox=-1.266179,51.744926,-1.246179,51.764926');
+            my @ids = map { $_->[3] } @{$json->{pins}};
+            is_deeply \@ids, [ $problem->id ], 'only the not responsible report returned';
+
+            $problem->delete;
+        };
     };
 };
 

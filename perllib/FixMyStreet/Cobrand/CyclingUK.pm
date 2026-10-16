@@ -138,7 +138,8 @@ cyclinguk cobrand.
 =cut
 
 sub users_restriction { FixMyStreet::Cobrand::UKCouncils::users_restriction($_[0], $_[1]) }
-
+sub users_restriction_in_code { FixMyStreet::Cobrand::UKCouncils::users_restriction_in_code($_[0], $_[1]) }
+sub users_staff_admin { FixMyStreet::Cobrand::UKCouncils::users_staff_admin($_[0]) }
 
 =item dashboard_extra_bodies
 

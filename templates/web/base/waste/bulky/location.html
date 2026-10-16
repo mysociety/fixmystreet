@@ -14,9 +14,18 @@
         <strong>If you live in a block of flats:</strong>
         Put your items next to the bin store area (not inside it) on the morning of your collection.
     </p>
+[% IF c.cobrand.moniker == 'merton' %]
+    <p class="govuk-body">
+        <strong>Please read the <a href="[% c.cobrand.call_hook('bulky_tandc_link') %]">bulky waste collection</a> page on the council’s website for more information.</strong>
+    </p>
+    <p class="govuk-body">
+        <strong>Items must be out for collection by [% collection_time %] on the collection day</strong>. Our crew will not enter your home or collect items from your back garden or inside a bin store.
+    </p>
+[% ELSE %]
     <p class="govuk-body">
         Items must be out for collection by [% collection_time %] on the collection day. Our crew will not enter your home or collect items from your back garden.
     </p>
+[% END %]
     <hr>
 [% END %]
 [% IF c.cobrand.moniker == 'bexley' %]

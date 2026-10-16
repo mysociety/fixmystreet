@@ -127,6 +127,12 @@ sub disambiguate_location {
     };
 }
 
+=item * We have aerial maps
+
+=cut
+
+sub has_aerial_maps { 'tilma.mysociety.org/mapcache/gmaps/lincsaerial@{grid}' }
+
 =back
 
 =cut
@@ -234,7 +240,7 @@ sub open311_get_user {
         my $domain = $self->admin_user_domain;
         last if $request->{contact_email} =~ /[@]$domain$/;
         last if FixMyStreet::DB->resultset('User')->find({
-            email => $request->{contact_email},
+            email => lc $request->{contact_email},
             email_verified => 1,
             is_superuser => 1,
         });
@@ -244,7 +250,7 @@ sub open311_get_user {
     my $user = FixMyStreet::DB->resultset('User')->find_or_create(
         {
             name => $request->{contact_name},
-            email => $request->{contact_email},
+            email => lc $request->{contact_email},
             email_verified => 1,
         },
         { key => 'users_email_verified_key' },
@@ -307,6 +313,20 @@ sub _get_notes_prefix {
         return "[Customer update]";
     }
 }
+
+=head2 Dashboard export
+
+=over 4
+
+=item * dashboard_export_include_hidden
+
+Include reports with a state of 'hidden' in CSV export
+
+=back
+
+=cut
+
+sub dashboard_export_include_hidden { 1 }
 
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
