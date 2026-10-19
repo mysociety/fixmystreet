@@ -473,7 +473,6 @@ sub determine_location : Private {
     {
 
         if ( $c->stash->{possible_location_matches} ) {
-            $c->stash->{choose_target_uri} = $c->uri_for('/alert/list');
             $c->detach('choose');
         }
 

@@ -5,7 +5,7 @@
 
 [% PROCESS 'alert/_index_text.html' %]
 
-<form method="get" action="/alert/list" class="postcode-form-box js-geolocate">
+<form method="post" action="/alert/list" class="postcode-form-box js-geolocate">
   <fieldset>
     <legend class="visuallyhidden">[% loc('Search for location of email alert or RSS feed') %]</legend>
     <label for="pc">[% loc('Postcode or street name and area') %]</label>
@@ -20,7 +20,7 @@
       [% INCLUDE 'around/_postcode_submit_button.html' %]
     </div>
   </fieldset>
-  [% INCLUDE 'around/_postcode_form_geolocation.html' url='/alert/list' %]
+  [% INCLUDE 'around/_postcode_form_geolocation.html' %]
 </form>
 
 [% IF photos.size %]

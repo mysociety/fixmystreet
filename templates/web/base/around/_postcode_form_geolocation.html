@@ -1,2 +1,7 @@
-<a href="[% url | html %]" id="geolocate_link" aria-live="polite">[% INCLUDE 'around/geolocate_link_icon.html' %]
-  [% loc('Use my current location') %]</a>
+<a href="#" id="geolocate_link" aria-live="polite">[% INCLUDE 'around/geolocate_link_icon.html' %]
+ [% IF c.cobrand.moniker == 'cyclinguk' ~%]
+  [% loc('Use my location') ~%]
+ [% ELSE ~%]
+  [% loc('Use my current location') ~%]
+ [% END ~%]
+</a>
