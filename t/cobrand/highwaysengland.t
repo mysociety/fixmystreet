@@ -241,6 +241,19 @@ subtest 'Dashboard access' => sub {
     };
 };
 
+subtest 'Heatmap access' => sub {
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'highwaysengland',
+        COBRAND_FEATURES => { heatmap => { highwaysengland => 1 } },
+    }, sub {
+        $mech->log_in_ok( $superuser->email );
+        $mech->get_ok('/dashboard/heatmap');
+        $mech->log_in_ok( $staffuser->email );
+        $mech->get_ok('/dashboard/heatmap');
+    };
+};
+
 subtest 'Dashboard CSV extra columns' => sub {
     $mech->delete_problems_for_body($highways->id);
     my ($problem1, $problem2) = $mech->create_problems_for_body(2, $highways->id, 'Title');

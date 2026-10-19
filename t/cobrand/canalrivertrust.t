@@ -186,6 +186,23 @@ FixMyStreet::override_config {
     $mech->content_contains('New problems to Canal &amp; River Trust on Canal &amp; River Trust');
 };
 
+subtest 'Heatmap access' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'canalrivertrust' ],
+        MAPIT_URL        => 'http://mapit.uk/',
+        COBRAND_FEATURES => { heatmap => { canalrivertrust => 1 } },
+    }, sub {
+        my $superuser = $mech->create_user_ok( 'super@email.com', name => 'Super User', is_superuser => 1 );
+        $mech->log_in_ok( $superuser->email );
+        $mech->get_ok('/dashboard/heatmap');
+        $mech->log_in_ok( $dash_user->email );
+        $mech->get_ok('/dashboard/heatmap');
+        $mech->log_in_ok( $staff_user->email );
+        $mech->get('/dashboard/heatmap');
+        is $mech->status, 404, 'staff user: no permission';
+    };
+};
+
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'canalrivertrust' ],
     MAPIT_URL => 'http://mapit.uk/',
