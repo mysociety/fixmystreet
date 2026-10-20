@@ -311,24 +311,38 @@ merton:
     max_resolution: 4.777314267158508
     srsName: "EPSG:27700"
     body: "Merton Council"
-- template: 'default'
-  name: 'merton parks'
-  http_wfs_url: "https://tilma.staging.mysociety.org/mapserver/merton"
-  asset_category: ["Parks"]
-  asset_item: "Merton-owned park"
-  max_resolution: 1.194328566789627
-  wfs_feature: 'all_parks'
-  non_interactive: true
-  nearest_radius: 0
-  asset_item_message: 'Please pick a location in a highlighted Merton-owned park.'
-  no_asset_msgs_class: '.js-parks-merton'
-  road: true
-  usrn:
-    - { attribute: 'UPRN', field: 'uprn'}
-    - { attribute: 'Park_Name', field: 'ParkName'}
-  actions:
+  - name: 'alloy'
+    body: 'Merton Council'
+    format_class: OpenLayers.Format.GeoJSON
+    http_options:
+      params:
+        srs: 27700
+        url: https://merton.assets
+      url: "https://tilma.staging.mysociety.org/alloy/layer.php"
+    srsName: EPSG:27700
+- actions:
     found: fixmystreet.assets.merton.park_found
     not_found: fixmystreet.assets.merton.park_not_found
+  asset_category: ["Parks"]
+  asset_item: Merton-owned park
+  asset_item_message: Please pick a location in a highlighted Merton-owned park.
+  max_resolution: 0.875
+  name: merton parks
+  nearest_radius: 0.1
+  no_asset_msgs_class: .js-parks-merton
+  non_interactive: true
+  road: true
+  template: alloy
+  usrn:
+    - attribute: ParkID
+      field: ParkID
+    - attribute: ParkName
+      field: ParkName
+    - attribute: AssetNumber
+      field: AssetNumber
+  http_options:
+    params:
+      layer: parks
 northamptonshire:
   - wfs_url: "https://tilma.staging.mysociety.org/mapserver/northamptonshire"
     geometryName: 'msGeometry'
