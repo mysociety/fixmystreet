@@ -51,14 +51,18 @@ $postcodeform-color-desktop: $primary_text !default;
 $form-hint-color-desktop: transparentize($postcodeform-color-desktop, 0.2) !default;
 $front-main-h2-color-desktop: transparentize($front-main-color-desktop, 0.1) !default;
 // This variable will be helpful for cobrands where the copy inside the postcode form is too long leaving to no space available for the image report first form.
-$postcodeform-max-width: 55% !default;
+$postcodeform-max-width: 50% !default;
 
 //This variable controls the color of .content for the front-page
 $content-background-desktop: #fff !default;
 
+// Most cobrands will use `space-between`, but some might have wider containers, hence the forms(postcode and image) will look quite apart, so they would benefit from `flex-start` instead.
+$report-forms-wrapper-flex-justify-content: space-between !default;
 // Gap between the postcode form and the dropzone form
-$report-forms-wrapper-flex-column-gap: 7rem !default;
-$report-forms-wrapper-flex-row-gap: 2rem !default;
+$report-forms-wrapper-flex-column-gap: 4em !default;
+$report-forms-wrapper-flex-row-gap: 2em !default;
+// Prevents wrapping on smaller screens.
+$report-forms-wrapper-flex-wrap: nowrap !default;
 $report-forms-wrapper-margin-top: 1rem !default;
 
 // Useful when a cobrand has a front-main container with dark background.
@@ -1028,10 +1032,11 @@ textarea.form-error {
 .report-forms-wrapper {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
   column-gap: $report-forms-wrapper-flex-column-gap;
   row-gap: $report-forms-wrapper-flex-row-gap;
-  
+  justify-content: $report-forms-wrapper-flex-justify-content;
+  flex-wrap: $report-forms-wrapper-flex-wrap;
+
   color: $postcodeform-color-desktop;
   background: $postcodeform-background-desktop;
   
@@ -1112,9 +1117,6 @@ textarea.form-error {
     margin-top: -0.25em;
     color: $form-hint-color-desktop;
   }
-  div {
-    width:20em;
-  }
 }
 
 // PhotoForm FrontPage
@@ -1128,20 +1130,27 @@ textarea.form-error {
   box-shadow: none;
 
   .dropzone-desktop {
-    display: block;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75em;
   }
   .dropzone-mobile {
     display: none;
   }
 
   .dropzone {
-    background-image: url("/cobrands/fixmystreet/images/icon-image-upload.svg");
-    background-repeat: no-repeat;
-    padding: 2em;
-    padding-left: 4rem;
-    background-position: 1em 1.25em;
-    background-size: 3rem;
+    padding: 2rem 1rem;
     border-width: 1px;
+
+    svg {
+      flex: 0 0 auto;
+      // Using lh units because we don't need to worry about each `font-family` cobrand's ascender.
+      width: 1lh;
+      height: 1lh;
+      // Using scale instead of just making the height and width larger, which would break the vertical alignment between the icon and the text next to it. Scale causes some overflow on its box, but this has been compensated for with an extra `gap: 0.75em`.
+      transform: scale(1.4);
+      transform-origin: left center;
+    }
 
     .dz-error-message  {
       padding-top: 0;
