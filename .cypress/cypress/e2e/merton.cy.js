@@ -74,6 +74,7 @@ describe('stoppers for park category', function() {
     cy.wait('@report-ajax');
     cy.pickCategory('Parks');
     cy.wait('@merton-parks');
+    cy.get('.pre-button-messaging').contains('You have selected Lavender Park');
     cy.get('.js-reporting-page--next:visible').should('not.be.disabled');
   });
 

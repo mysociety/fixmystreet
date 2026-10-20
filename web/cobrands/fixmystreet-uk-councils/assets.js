@@ -1353,11 +1353,13 @@ fixmystreet.assets.merton.park_found = function(layer) {
         layer.fixmystreet.no_asset_msg_id = '#js-not-a-park-wimbledon-common';
         fixmystreet.message_controller.road_not_found(layer, function() { return true; });
     } else {
+        layer.map_messaging.asset = 'You have selected <b>' + park_name + '</b>.';
         fixmystreet.message_controller.road_found(layer);
     }
 };
 
 fixmystreet.assets.merton.park_not_found = function(layer) {
+    delete layer.map_messaging.asset;
     fixmystreet.body_overrides.remove_only_send();
     layer.fixmystreet.no_asset_msg_id = '#js-not-a-merton-park';
     fixmystreet.message_controller.road_not_found(layer, function() { return true; });
