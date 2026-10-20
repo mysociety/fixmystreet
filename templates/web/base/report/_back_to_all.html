@@ -1,2 +1,5 @@
-<a href="[% c.uri_for( '/around', { lat => latitude, lon => longitude } ) %]"
-    class="problem-back js-back-to-report-list has-inline-svg has-inline-svg--left-align">[% INCLUDE 'icons/chevron-left.html' width='1.5em' height='1.5em' %][% loc('Back to all reports') %]</a>
+<form method="post" action="[% c.uri_for( '/around', { lat => latitude, lon => longitude } ) %]" id="form_for_back_to_all_reports">
+    <button class="problem-back js-back-to-report-list has-inline-svg has-inline-svg--left-align">
+        [% INCLUDE 'icons/chevron-left.html' width='1.5em' height='1.5em' %][% loc('Back to all reports') %]
+    </button>
+</form>

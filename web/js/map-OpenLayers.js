@@ -1161,7 +1161,7 @@ OpenLayers.Control.PermalinkFMS = OpenLayers.Class(OpenLayers.Control, {
     initialize: function(element, base, options) {
         OpenLayers.Control.prototype.initialize.apply(this, [options]);
         this.element = OpenLayers.Util.getElement(element);
-        this.base = base || document.location.href;
+        this.base = base;
     },
 
     destroy: function()  {
@@ -1192,10 +1192,7 @@ OpenLayers.Control.PermalinkFMS = OpenLayers.Class(OpenLayers.Control, {
         // updated. NB this won't change the base of the 'problems nearby'
         // permalink on /report, as this would result in it pointing at the
         // wrong page.
-        var href = this.base;
-        if (this.base !== '/around' && fixmystreet.page !== 'report') {
-            href = window.location.href;
-        }
+        var href = this.base || window.location.href;
         var params = this.createParams(href);
 
         if (href.indexOf('?') != -1) {
@@ -1207,16 +1204,16 @@ OpenLayers.Control.PermalinkFMS = OpenLayers.Class(OpenLayers.Control, {
             href += '&js=1';
         }
 
-        this.element.href = href;
-
-        if ('replaceState' in history) {
-            if (fixmystreet.page.match(/around|reports|my/)) {
-                history.replaceState(
-                    history.state,
-                    null,
-                    href
-                );
+        if (this.base) {
+            if (this.element && this.element.form) {
+                this.element.form.action = href;
             }
+        } else if ('replaceState' in history) {
+            history.replaceState(
+                history.state,
+                null,
+                href
+            );
         }
     },
 
@@ -1617,10 +1614,11 @@ fixmystreet.maps.controls = [
     new OpenLayers.Control.KeyboardDefaultsFMS(),
     new OpenLayers.Control.Navigation(),
     fixmystreet.maps.reposition_control,
-    new OpenLayers.Control.PermalinkFMS('map'),
     new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
 ];
 /* Linking back to around from report page, keeping track of map moves */
-if ( fixmystreet.page == 'report' && document.getElementById('key-tool-problems-nearby')) {
+if (fixmystreet.page === 'report') {
     fixmystreet.maps.controls.push( new OpenLayers.Control.PermalinkFMS('key-tool-problems-nearby', '/around') );
+} else {
+    fixmystreet.maps.controls.push( new OpenLayers.Control.PermalinkFMS() );
 }

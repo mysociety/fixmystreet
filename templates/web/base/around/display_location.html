@@ -8,15 +8,6 @@
         ? c.uri_for( "/rss/pc", pc )
         : c.uri_for( "/rss/l/$latitude,$longitude" );
 
-    email_url = c.uri_for(
-        '/alert/list',
-        {
-            lat  => latitude,
-            lon  => longitude,
-            feed => "local:$latitude:$longitude",
-        }
-    );
-
     PROCESS "report/photo-js.html";
     PROCESS "maps/${map.type}.html";
 
@@ -89,5 +80,10 @@
 [% IF allow_creation %]
 </form>
 [% END %]
+
+<form method="post" action="/alert/list" id="form_for_updates">
+    <input type="hidden" name="lat" value="[% latitude %]">
+    <input type="hidden" name="lon" value="[% longitude %]">
+</form>
 
 [% INCLUDE 'footer.html' %]

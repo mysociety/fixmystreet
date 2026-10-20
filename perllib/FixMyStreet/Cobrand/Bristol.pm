@@ -262,7 +262,6 @@ sub lookup_site_code_config {
             my $usrn = $feature->{properties}->{USRN};
             return $ignored{$usrn} ? 0 : 1;
         },
-        reversed_coordinates => 1,
     };
 }
 

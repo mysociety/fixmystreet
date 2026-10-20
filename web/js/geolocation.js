@@ -27,15 +27,26 @@ fixmystreet.geolocate = function(element, success_callback) {
 };
 
 (function(){
+    function make_input(k, v) {
+        var el = document.createElement("input");
+        el.type = 'hidden';
+        el.name = k;
+        el.value = v;
+        return el;
+    }
+
     var link = document.getElementById('geolocate_link');
     if (!link) { return; }
+    var form = link.parentNode;
     var https = window.location.protocol.toLowerCase() === 'https:';
     if ('geolocation' in navigator && https && window.addEventListener) {
         fixmystreet.geolocate(link, function(pos) {
             var latitude = pos.coords.latitude.toFixed(6);
             var longitude = pos.coords.longitude.toFixed(6);
-            var coords = 'lat=' + latitude + '&lon=' + longitude;
-            location.href = link.href + (link.href.indexOf('?') > -1 ? ';' : '?') + coords;
+            form.appendChild(make_input('geolocate', 1));
+            form.appendChild(make_input('lat', latitude));
+            form.appendChild(make_input('lon', longitude));
+            form.submit();
         });
     } else {
         link.style.display = 'none';

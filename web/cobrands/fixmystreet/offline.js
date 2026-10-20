@@ -342,7 +342,7 @@ fixmystreet.offline = (function() {
     function showReportOffline(url) {
         $('#map_box').html('<img src="' + url + '/map">').css({ textAlign: 'center', height: 'auto' });
         $('.moderate-display.segmented-control, .shadow-wrap, #update_form, #report-cta, .mysoc-footer, .nav-wrapper').hide();
-        $('.js-back-to-report-list').attr('href', '/my/planned');
+        $('.js-back-to-report-list')[0].form.action = '/my/planned';
 
         // On iOS we want to hide the photo fields on the offline inspector
         // form because including a photo entirely breaks the form submission.
