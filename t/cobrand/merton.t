@@ -3,6 +3,7 @@ use FixMyStreet::TestMech;
 use HTML::Selector::Element qw(find);
 use FixMyStreet::Script::Reports;
 use FixMyStreet::Script::Alerts;
+use FixMyStreet::Script::CSVExport;
 use Open311::PostServiceRequestUpdates;
 use File::Temp 'tempdir';
 
@@ -391,13 +392,37 @@ subtest 'Dashboard CSV extra columns' => sub {
         UPLOAD_DIR => $UPLOAD_DIR,
     },
   }, sub {
+    my $role = FixMyStreet::DB->resultset("Role")->create({ body => $merton, name => 'Role A' });
+    $counciluser->add_to_roles($role);
+
     $problem1->update_extra_field({ name => 'ParkName', value => 'Lavender Park' });
     $problem1->update_extra_field({ name => 'uprn', value => '48100068' });
     $problem1->update;
+
+    my ($garden) = $mech->create_problems_for_body(1, $merton->id, 'Garden Subscription', {
+        areas => ",2500,", category => 'Garden Subscription', cobrand => 'merton',
+        user => $normaluser, uprn => 1000000002,
+    });
+    $garden->set_extra_metadata(contributed_by => $counciluser->id, payment_reference => 'ref123');
+    $garden->set_extra_fields(
+        { name => 'payment_method', value => 'csc' },
+        { name => 'payment', value => 2000 },
+        { name => 'pro_rata', value => 1000 },
+        { name => 'admin_fee', value => 500 },
+        { name => 'Paid_Container_Type', value => 39 },
+        { name => 'current_containers', value => 1 },
+        { name => 'Paid_Container_Quantity', value => 2 },
+    );
+    $garden->update;
+
     $mech->log_in_ok( $superuser->email );
-    $mech->get_ok('/dashboard?export=1');
-    $mech->content_contains('"Report ID",Title,Detail,"User Name",Category,Created,Confirmed,Acknowledged,Fixed,Closed,Status,Latitude,Longitude,Query,Ward,Easting,Northing,"Report URL","Device Type","Site Used","Reported As","Park name","Park UPRN"');
-    $mech->content_contains('"Lavender Park",48100068');
+    foreach my $pregenerated (0, 1) {
+        FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh) if $pregenerated;
+        $mech->get_ok('/dashboard?export=1');
+        $mech->content_contains('"Report ID",Title,Detail,"User Name",Category,Created,Confirmed,Acknowledged,Fixed,Closed,Status,Latitude,Longitude,Query,Ward,Easting,Northing,"Report URL","Device Type","Site Used","Reported As","Park name","Park UPRN",UPRN,"User Email","User Phone","Staff User","Staff Role","Payment method","Payment reference",Payment,"Pro rata payment","Admin fee","Subscription container","Bin count declared","Subscription quantity"');
+        $mech->content_contains('"Lavender Park",48100068,,' . $normaluser->email . ',+447123456789,,,,,,,,,,');
+        $mech->content_contains(',,,1000000002,' . $normaluser->email . ',+447123456789,' . $counciluser->email . ',"Role A",csc,ref123,2000,1000,500,39,1,2');
+    }
   }
 };
 
