@@ -478,7 +478,7 @@ sub defect_wfs_query {
         TYPENAME => "WFS_DEFECTS_FOR_QUERYING",
         VERSION => "1.1.0",
         filter => $filter,
-        propertyName => 'ITEM_CATEGORY_NAME,ITEM_TYPE_NAME,REQUIRED_COMPLETION_DATE,SHAPE_GEOMETRY',
+        propertyName => 'ITEM_CATEGORY_NAME,ITEM_TYPE_NAME,REQUIRED_COMPLETION_DATE,INSTRUCTION_REFERENCE,SHAPE_GEOMETRY',
         outputformat => "application/json"
     );
 
@@ -518,7 +518,8 @@ sub pins_from_wfs {
             $category_type = "$category ($type)";
         }
         my $completion_date = DateTime::Format::W3CDTF->parse_datetime($props->{REQUIRED_COMPLETION_DATE})->strftime('%A %e %B %Y');
-        my $title = "$category_type\nEstimated completion date: $completion_date";
+        my $reference = $props->{INSTRUCTION_REFERENCE} || 'n/a';
+        my $title = "$category_type\nEstimated completion date: $completion_date\nReference: $reference";
         {
             id => $fake_id--,
             latitude => @$coords[1],

@@ -12,7 +12,7 @@ function show_defect_popup(feature) {
         "occDefects",
         feature.geometry.getBounds().getCenterLonLat(),
         null,
-        feature.attributes.title.replace("\n", "<br />"),
+        feature.attributes.title.replace(/\n/g, "<br />"),
         { size: new OpenLayers.Size(0, 0), offset: new OpenLayers.Pixel(6, -46) },
         true,
         close_defect_popup
