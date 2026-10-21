@@ -28,6 +28,7 @@ $oxfordshire_cobrand->mock('get', sub {
         "features": [
             {
                 "properties": {
+                    "INSTRUCTION_REFERENCE": "REF",
                     "APPROVAL_STATUS_NAME": "With Contractor",
                     "ITEM_CATEGORY_NAME": "Minor Carriageway",
                     "ITEM_TYPE_NAME": "Pothole",
@@ -80,7 +81,7 @@ subtest 'extra pins' => sub {
                 my $pins = $json->{pins};
                 is scalar @$pins, 2, 'no defect pins included';
                 my $pin = @$pins[0];
-                is @$pin[4], "Minor Carriageway (Pothole)\nEstimated completion date: Thursday  5 November 2020", 'pin title is correct';
+                is @$pin[4], "Minor Carriageway (Pothole)\nEstimated completion date: Thursday  5 November 2020\nReference: REF", 'pin title is correct';
             };
         }
     };
