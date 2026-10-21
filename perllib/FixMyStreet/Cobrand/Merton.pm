@@ -188,9 +188,15 @@ sub categories_restriction {
 
 =head2 check_report_is_on_cobrand_asset
 
-Merton has a park, The Commons Extension Sports Ground, which is outside
-their boundary, and Wimbledon Park is half outside the boundary.
-We'll test if it's any Merton owned park.
+Merton have a layer of parks for which they are either:
+* Responsible for and therefore accept parks reports.
+* Not responsible for but want to signpost the relevant body.
+
+Some of these parks are either fully or partially outside of their
+boundary.
+
+This method returns true if the report location is within one of
+the parks on this layer to handle the out-of-bounds locations.
 
 =cut
 
@@ -203,39 +209,19 @@ sub check_report_is_on_cobrand_asset {
     my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
 
     my $cfg = {
-        url => "https://$host/mapserver/merton",
-        srsname => "urn:ogc:def:crs:EPSG::27700",
-        typename => "merton_owned_parks",
-        filter => "<Filter><Contains><PropertyName>Geometry</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point></Contains></Filter>",
-        outputformat => 'geojson',
+        buffer => '10',
+        proxy_url => "https://$host/alloy/layer.php",
+        layer => "parks",
+        url => "https://merton.assets",
+        srs => "27700",
     };
-
-    my $features = $self->_fetch_features($cfg);
-
-    # Above is checking for our static map layers,
-    # but we need to check the alloy map layers too.
-
-    if (!$features->[0]) {
-        $cfg = {
-            buffer => '10',
-            proxy_url => "https://$host/alloy/layer.php",
-            layer => "parks",
-            url => "https://merton.assets",
-            srs => "27700",
-        };
-        $features = $self->_fetch_features($cfg, $x, $y);
-    };
+    my $features = $self->_fetch_features($cfg, $x, $y);
 
     return $features->[0];
 }
 
 sub _fetch_features_url {
     my ($self, $cfg) = @_;
-
-    # For non-Alloy we don't need to adjust the URL
-    if ($cfg->{typename}) {
-        return $self->next::method($cfg);
-    }
 
     # Merton's asset proxy is Alloy, not a standard WFS server.
     my $uri = URI->new($cfg->{proxy_url});
