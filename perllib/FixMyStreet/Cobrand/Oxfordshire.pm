@@ -485,7 +485,7 @@ sub defect_wfs_query {
         TYPENAME => "WFS_DEFECTS_FOR_QUERYING",
         VERSION => "1.1.0",
         filter => $filter,
-        propertyName => 'ITEM_CATEGORY_NAME,ITEM_TYPE_NAME,REQUIRED_COMPLETION_DATE,SHAPE_GEOMETRY',
+        propertyName => 'ITEM_CATEGORY_NAME,ITEM_TYPE_NAME,REQUIRED_COMPLETION_DATE,INSTRUCTION_REFERENCE,SHAPE_GEOMETRY',
         outputformat => "application/json"
     );
 
