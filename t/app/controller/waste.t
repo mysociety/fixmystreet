@@ -58,7 +58,7 @@ create_contact({ category => 'General enquiry', email => 'general@example.org' }
     { code => 'Notes', description => 'Notes', required => 1, datatype => 'text' },
     { code => 'Source', required => 0, automated => 'hidden_field' },
 );
-create_contact({ category => 'Assisted collection add', email => 'assisted' },
+create_contact({ category => 'Assisted collection add', email => 'assisted@example.org' },
     { code => 'Exact_Location', description => 'Exact location', required => 1, datatype => 'text' },
     { code => 'Reason', description => 'Reason for request', required => 1, datatype => 'text' },
     { code => 'staff_form', automated => 'hidden_field' },
@@ -934,6 +934,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'check subscription link present' => sub {
+        FixMyStreet::Script::Reports::send();
         set_fixed_time('2021-03-09T17:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_lacks('Subscribe to Green Garden Waste', 'Subscribe link not present for active sub');
@@ -1249,6 +1250,11 @@ FixMyStreet::override_config {
         is $new_report->get_extra_field_value('payment_method'), 'direct_debit', 'correct payment method on report';
         is $new_report->state, 'unconfirmed', 'report not confirmed';
 
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('You have a pending garden subscription');
+        $mech->content_lacks('Subscribe to Green Garden Waste'); # Nothing in DD system yet, but let the report get sent first in case of delays
+        $new_report->send_state('sent');
+        $new_report->update;
         $mech->get_ok('/waste/12345');
         $mech->content_contains('You have a pending garden subscription');
         $mech->content_contains('Subscribe to Green Garden Waste'); # Nothing in DD system yet, might have given up and want to pay by CC instead
