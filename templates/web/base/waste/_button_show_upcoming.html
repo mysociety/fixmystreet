@@ -5,10 +5,15 @@
 [% IF (c.cobrand.moniker == 'kingston' OR c.cobrand.moniker == 'sutton') %]
   [% button_text = 'Return to property details' %]
 [% ELSIF c.cobrand.moniker == 'merton' %]
-  <p class="merton-confirmation-buttons">
+  <div class="merton-confirmation-buttons">
+    <div style="max-width:375px">
+      <h3>Hear from Merton Council</h3>
+      <p>Get the latest news and information about the topics that interest you, straight to your inbox.</p>
+      <a href="https://www.merton.gov.uk/council-and-local-democracy/newsletters" class="govuk-button">Subscribe</a>
+    </div>
+
     <a href="[% bin_days_url %]" class="govuk-button">Show upcoming bin days</a>
-    <a href="https://www.merton.gov.uk/council-and-local-democracy/newsletters" class="govuk-button">Hear from Merton council</a>
-  </p>
+  </div>
 [% ELSE %]
   [% button_text = 'Show upcoming bin days' %]
 [% END %]
