@@ -1,11 +1,20 @@
+[% # sometimes we have the property on the stash, sometimes it's just the report (e.g. token confirmation)
+   property_id = property.id OR report.waste_property_id
+   bin_days_url = c.uri_for_action('waste/bin_days', [ property_id ]) %]
+
 [% IF (c.cobrand.moniker == 'kingston' OR c.cobrand.moniker == 'sutton') %]
   [% button_text = 'Return to property details' %]
+[% ELSIF c.cobrand.moniker == 'merton' %]
+  <p class="merton-confirmation-buttons">
+    <a href="[% bin_days_url %]" class="govuk-button">Show upcoming bin days</a>
+    <a href="https://www.merton.gov.uk/council-and-local-democracy/newsletters" class="govuk-button">Hear from Merton council</a>
+  </p>
 [% ELSE %]
   [% button_text = 'Show upcoming bin days' %]
 [% END %]
 
+[% UNLESS c.cobrand.moniker == 'merton' %]
 <p>
-  [% # sometimes we have the property on the stash, sometimes it's just the report (e.g. token confirmation)
-     property_id = property.id OR report.waste_property_id %]
-  <a href="[% c.uri_for_action('waste/bin_days', [ property_id ]) %]" class="govuk-button">[% button_text %]</a>
+  <a href="[% bin_days_url %]" class="govuk-button">[% button_text %]</a>
 </p>
+[% END %]
