@@ -212,10 +212,10 @@ sub dashboard_permission {
     my $self = shift;
     my $c = $self->{c};
 
-    # Default behaviour if no user, or is a superuser
-    return if !$c->user_exists || $c->user->is_superuser;
-    # Otherwise, check the permission
-    if ($c->user->from_body && $c->user->has_permission_to('view_dashboard', $self->body->id)) {
+    # Default behaviour if no user
+    return if !$c->user_exists;
+    # Superusers, or staff with permission, see this body's dashboard
+    if ($c->user->is_superuser || $c->user->from_body && $c->user->has_permission_to('view_dashboard', $self->body->id)) {
         return $self->body->id;
     }
 }
