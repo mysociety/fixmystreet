@@ -557,7 +557,7 @@ sub category_change_force_resend {
     ($old) = map { $_->email } grep { $_->category eq $old } @$contacts;
     ($new) = map { $_->email } grep { $_->category eq $new } @$contacts;
 
-    return 0 if $old =~ /^Bartec/ && $new =~ /^Bartec/;
+    return 1 if $old =~ /^Bartec/ && $new =~ /^Bartec/;
     return 0 if $old =~ /^Ezytreev/ && $new =~ /^Ezytreev/;
     return 0 if $old !~ /^(Bartec|Ezytreev)/ && $new !~ /^(Bartec|Ezytreev)/;
     return 1;
