@@ -707,7 +707,13 @@ function update_floating_button_messaging(layer, messaging) {
     var id = 'js-responsibility-message-' + uid;
     var message = messaging.zoom || (layer.fixmystreet.asset_message_when_disabled ? messaging.asset : messaging.responsibility || messaging.asset);
     var obj = $('#' + id);
-    if (message) {
+
+    // Some asset messaging (e.g. when canal not found for Canal & River Trust)
+    // requires other asset messages to be hidden
+    var excluded = $('.js-exclusive-message').length &&
+        !layer.fixmystreet.exclusive_message;
+
+    if (message && !excluded) {
         var $div = $('<div id="' + id + '" class="js-floating-button-message"></div>').html(message);
         if (obj.length) {
             obj.replaceWith($div);
@@ -720,6 +726,9 @@ function update_floating_button_messaging(layer, messaging) {
         }
         if (messaging.responsibility) {
             $div.addClass('js-not-an-asset');
+            if (layer.fixmystreet.exclusive_message) {
+                $div.addClass('js-exclusive-message');
+            }
         } else {
             $div.removeClass('js-not-an-asset');
         }
