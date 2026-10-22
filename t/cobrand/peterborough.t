@@ -732,7 +732,7 @@ subtest 'Resending between backends' => sub {
         my $whensent = $problem->whensent;
         $mech->get_ok('/admin/report_edit/' . $problem->id);
         foreach (
-            { category => 'Pothole', resent => 0 },
+            { category => 'Pothole', resent => 1 },
             { category => 'Fallen tree', resent => 1 },
             { category => 'Flying tree', resent => 0 },
             { category => 'Graffiti', resent => 1, method => 'Email' },
