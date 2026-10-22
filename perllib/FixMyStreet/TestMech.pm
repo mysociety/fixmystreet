@@ -547,15 +547,17 @@ Return all the visible form values on the page - ie not the hidden ones.
 
 sub visible_form_values {
     my $mech = shift;
-    my $name = shift || '';
+    my $form_or_name = shift;
 
     my $form;
 
-    if ($name) {
+    if (ref $form_or_name) { # Assume is a form
+        $form = $form_or_name;
+    } elsif ($form_or_name) {
         for ( $mech->forms ) {
-            $form = $_ if ( $_->attr('name') || '' ) eq $name;
+            $form = $_ if ( $_->attr('name') || '' ) eq $form_or_name;
         }
-        croak "Can't find form named $name - can't continue..."
+        croak "Can't find form named $form_or_name - can't continue..."
           unless $form;
     }
     else {

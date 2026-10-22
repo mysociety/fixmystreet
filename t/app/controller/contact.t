@@ -477,7 +477,8 @@ for my $test (
             delete $test->{fields}->{id}
               if $test->{fields}->{id} and $test->{fields}->{id} eq 'invalid';
             $test->{fields}->{'extra.phone'} = '';
-            is_deeply $mech->visible_form_values, $test->{fields}, 'form values';
+            my $form = $mech->form_number(2);
+            is_deeply $mech->visible_form_values($form), $test->{fields}, 'form values';
 
             # Ugh, but checking div not hidden; text always shown and hidden with CSS
             if ( $test->{fields}->{dest} and $test->{fields}->{dest} eq 'update' ) {
