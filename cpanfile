@@ -17,7 +17,7 @@ requires 'XML::LibXML', '2.0210';
 requires 'PkgConfig'; # If you don't have pkg-config installed, XML::LibXML won't install
 requires 'CryptX', '0.088';
 requires 'JSON::XS', '4.04';
-requires 'Cpanel::JSON::XS', '4.40';
+requires 'Cpanel::JSON::XS', '4.80';
 requires 'HTML::TreeBuilder', '5.07'; # Demanded by PDF::Builder
 # For perl 5.20/5.22 support
   requires 'Guard', '1.023';
@@ -75,9 +75,9 @@ requires 'DateTime::Format::Pg';
 requires 'DateTime::Format::Strptime';
 requires 'DateTime::Format::W3CDTF';
 requires 'DateTime::TimeZone', '2.35';
-requires 'DBD::Pg', '3.8.0';
+requires 'DBD::Pg', '3.21.2';
 requires 'DBD::SQLite', '1.78';
-requires 'DBI';
+requires 'DBI', '1.656';
 requires 'DBIx::Class', '0.082841';
 requires 'DBIx::Class::EncodedColumn', '0.00032';
 requires 'DBIx::Class::EncodedColumn::Crypt::Eksblowfish::Bcrypt';
@@ -100,6 +100,7 @@ requires 'Geo::OLC';
 requires 'Getopt::Long', '2.52';
 requires 'Getopt::Long::Descriptive', '0.105';
 requires 'HTML::Entities';
+requires 'HTML::FormHandler', '0.410002';
 requires 'HTML::FormHandler::Model::DBIC';
 requires 'HTML::Scrubber';
 requires 'HTTP::Request::Common';
@@ -120,10 +121,10 @@ requires 'Moo', '2.003004';
 requires 'MooX::Types::MooseLike';
 requires 'namespace::autoclean', '0.28';
 requires 'Net::Amazon::S3';
-requires 'Net::DNS', '1.33';
+requires 'Net::DNS', '1.57';
 requires 'Net::Domain::TLD', '1.75';
 requires 'Net::Facebook::Oauth2', '0.11';
-requires 'Net::OAuth';
+requires 'Net::OAuth', '0.33';
 requires 'Net::Twitter::Lite::WithAPIv1_1', '0.12008';
 requires 'Number::Phone', '3.7002';
 requires 'OIDC::Lite';
@@ -139,13 +140,13 @@ requires 'Storable';
 requires 'Template', '2.29';
 requires 'Template::Plugin::Number::Format';
 requires 'Text::CSV', '1.99';
-requires 'URI', '1.71';
+requires 'URI', '5.40';
 requires 'URI::Escape';
 requires 'URI::QueryParam';
 requires 'WWW::Twilio::API';
 requires 'XML::RSS';
 requires 'XML::Simple';
-requires 'YAML', '1.28';
+requires 'YAML', '1.30';
 
 feature 'uk', 'FixMyStreet.com specific requirements' => sub {
     # East Hampshire
@@ -209,7 +210,7 @@ requires 'Web::Simple';
 requires 'WWW::Mechanize', '2.20';
 
 # Default root certificates used by LWP::UserAgent
-requires 'Mozilla::CA', '20211001';
+requires 'Mozilla::CA', '20261020';
 
 #################################################################
 # [1] Params::Classify 0.13 installs XS, but 0.15 will only do so
