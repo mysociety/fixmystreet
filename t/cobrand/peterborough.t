@@ -7,6 +7,9 @@ use CGI::Simple;
 use Test::LongString;
 use Open311::PostServiceRequestUpdates;
 use t::Mock::Nominatim;
+use FixMyStreet::Script::UsersInRoleAndBoundary;
+use MIME::Base64;
+use Path::Tiny;
 
 sub mock_fetch_features {
     my ($self, $args, $x, $y) = @_;
@@ -80,6 +83,41 @@ $peterborough->update( { comment_user_id => $user->id } );
 my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $peterborough);
 $staffuser->user_body_permissions->create({ body => $peterborough, permission_type => 'report_inspect' });
 $staffuser->user_body_permissions->create({ body => $peterborough, permission_type => 'view_dashboard' });
+
+my $role = FixMyStreet::DB->resultset("Role")->create({
+    body => $peterborough,
+    name => 'Test Users',
+    permissions => ['contribute_as_body'],
+});
+my $second_role = FixMyStreet::DB->resultset("Role")->create({
+    body => $peterborough,
+    name => 'Editor',
+    permissions => ['report_edit'],
+});
+
+my $trusteduser = $mech->create_user_ok('trusteduser@example.com', name => 'Trusted User', from_body => $peterborough);
+$trusteduser->user_roles->find_or_create({ role_id => $role->id });
+my $multiple_roles_user = $mech->create_user_ok('multipleuser@example.com', name => 'Multiple User', from_body => $peterborough);
+$multiple_roles_user->user_roles->find_or_create({ role_id => $second_role->id });
+$multiple_roles_user->user_roles->find_or_create({ role_id => $role->id });
+
+
+path('web/static/temp', "geo.txt")->spew([&_geodata]);
+
+sub _trigger_sending_report {
+    $mech->clear_emails_ok;
+    FixMyStreet::Script::UsersInRoleAndBoundary::send(
+                                                        {
+                                                         dir => 'web/static/temp',
+                                                         file => 'test.csv',
+                                                         geo_file => 'geo.txt',
+                                                         council_name => 'Peterborough City Council',
+                                                         role_name => 'Test Users',
+                                                         send_to => 'test@localhost.com',
+                                                         send_from => 'me@example.com',
+                                                         subject_body => "Your Report\n\nReport attached to email"
+                                                        });
+};
 
 subtest 'open311 request handling', sub {
     FixMyStreet::override_config {
@@ -791,6 +829,61 @@ foreach my $cobrand ( "peterborough", "fixmystreet" ) {
 
         };
     };
+};
+
+FixMyStreet::override_config {
+    MAPIT_URL => 'http://mapit.uk/',
+    ALLOWED_COBRANDS => 'peterborough',
+}, sub {
+  SKIP: {
+        skip( "No postgis set in environment", 4 ) unless $ENV{WITH_POSTGIS};
+        subtest "sending report on user role within boundary" => sub {
+            my $no_data = '"Report ID",Title,Detail,"User Name",Category,Subcategory,Created,Confirmed,Acknowledged,Fixed,Closed,Status,Latitude,Longitude,Query,Ward,Easting,Northing,"Report URL","Device Type","Site Used","Reported As","Staff User",USRN,"Nearest address","External ID","External status code"' . "\n" . '$';
+            for my $test(
+                         {
+                          reporter => { user => $trusteduser, latitude => '52.574671', longitude => '-0.24259' },
+                          csv => 'REPORTID,"Title',
+                          message => 'Trusted user report made in zone is in data',
+                         },
+                         {
+                          reporter => { user => $trusteduser, latitude => '52.580865', longitude => '-0.248609' },
+                          csv => $no_data,
+                          message => 'Trusted user report made outside zone is not in data',
+                         },
+                         {
+                          reporter => { user => $staffuser, latitude => '52.574671', longitude => '-0.24259' },
+                          csv => $no_data,
+                          message => 'Another user report made in zone is not in data',
+                         },
+                         {
+                          reporter => { user => $multiple_roles_user, latitude => '52.574671', longitude => '-0.24259' },
+                          csv => 'REPORTID,"Title',
+                          message => 'User with multiple roles report made in zone is in data',
+                         },
+                        )
+              {
+
+                  my ($problem) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', { user => $test->{reporter}->{user}, category => 'Trees', latitude => $test->{reporter}->{latitude}, longitude => $test->{reporter}->{longitude}, cobrand => 'peterborough' });
+                  _trigger_sending_report;
+                  my $email = $mech->get_email;
+                  is $email->header('Subject'), 'Your Report', 'Subject set correctly';
+                  is $email->header('From'), 'me@example.com', 'Sets the from';
+                  is $email->header('To'), 'test@localhost.com', 'Sets the to';
+                  my @parts = $email->subparts;
+                  my $id = $problem ? $problem->id : undef;
+                  $test->{csv} =~ s/REPORTID/$id/ if $id;
+                  like decode_base64($parts[1]->body_raw), qr/$test->{csv}/, $test->{message};
+                  $problem->delete;
+              }
+            $mech->clear_emails_ok;
+            path("web/static/temp/geo.txt")->remove;
+        };
+    };
+};
+
+sub _geodata {
+    'POLYGON((-0.233545002405502 52.5653538382882,-0.236873036597264 52.5657508178068,-0.23876883270984 52.5660743376894,-0.24066605098008 52.5665434031864,-0.24176904659214 52.5667276140371,-0.242296763582797 52.5664091564646,-0.242748319446151 52.56626034523,-0.243423035331609 52.5661025016128,-0.243847336867412 52.5660273356078,-0.243959930306833 52.5661032338445,-0.244533785957033 52.5670880476814,-0.244888471676409 52.56761761715,-0.245561213762427 52.5686038913731,-0.246529126136361 52.5698777813042,-0.24718817263169 52.5707131792176,-0.247940815283912 52.571682541838,-0.249080328698166 52.5731216660794,-0.249948303727025 52.5729356222286,-0.249738167558888 52.5726214783266,-0.250042639812737 52.572606230235,-0.250775930404238 52.5726071920562,-0.250976204962253 52.5725632496015,-0.251188920199824 52.5725120856503,-0.251594300725226 52.5724045227321,-0.251917421827361 52.572327833428,-0.252207566184135 52.5723219147884,-0.252317859596652 52.5723630794502,-0.252432361348952 52.5724058156945,-0.252539014922174 52.5727087173095,-0.253127412457065 52.573832312335,-0.253511984628052 52.5746093842175,-0.251818170366069 52.5749158483877,-0.252121657112045 52.5754928505928,-0.250932483300328 52.5757946974362,-0.251400200024676 52.57647055292,-0.250296321692215 52.5766169632607,-0.250183679238103 52.5764646345236,-0.249647706886736 52.5764697296914,-0.249491518983581 52.5764172802502,-0.249218060480705 52.5764479501194,-0.249004803718626 52.5765566489015,-0.24837409077398 52.5766553162628,-0.246759707856042 52.576812702258,-0.246257996669507 52.5768515557581,-0.245795171877465 52.5768678424513,-0.244518422332789 52.5768142073542,-0.244100505110865 52.5768157239085,-0.243905908724532 52.5769324054059,-0.243768942768643 52.5771342824182,-0.243312654275237 52.5769486000433,-0.242660442513913 52.5766375942578,-0.242158574032959 52.5764323985,-0.24114130588084 52.5778286215615,-0.240177653531705 52.5791256817751,-0.239727291186831 52.5797785347188,-0.239541318652643 52.5796793450754,-0.239308898559107 52.5793171878874,-0.239054107303968 52.5788814152642,-0.238537718424572 52.5786538859654,-0.237888618939662 52.5782623847621,-0.237719938216041 52.5782058767336,-0.237423005376914 52.5781898857444,-0.237095208750473 52.5781541498805,-0.236719112447596 52.5780598390972,-0.236427906473173 52.5779012216403,-0.236172826438135 52.5776312891763,-0.235835818567483 52.5771942844987,-0.235621341088364 52.5768593867265,-0.235596359864661 52.5766931634575,-0.235496069397971 52.5765103904049,-0.235371999017678 52.5764468295289,-0.235168616025416 52.5763088031857,-0.235126202518237 52.5761037498035,-0.235218963197513 52.576000993249,-0.235538303662568 52.5756161955986,-0.235757778429729 52.5753533329099,-0.235999033811559 52.5748632304642,-0.236185660953522 52.5743144598607,-0.236370891165428 52.5738003802964,-0.236534646835746 52.5735058302647,-0.236796706289281 52.573127890313,-0.23692404245556 52.572794227222,-0.236992269687124 52.5725136815587,-0.237114419626373 52.5713622567943,-0.237060881648215 52.5712766059742,-0.236857813162263 52.5712890096932,-0.236040740926454 52.5714581190511,-0.234429251435352 52.5718622269243,-0.23430408944673 52.5719837843317,-0.234188328286753 52.5721864792921,-0.23408090634589 52.5723391570072,-0.233646816845637 52.5724291068792,-0.233137423941137 52.5725025039239,-0.232648095191613 52.5725491985185,-0.232230374124918 52.5725468196253,-0.231977770138586 52.5725314774494,-0.231429980650422 52.5724577272295,-0.230252005782331 52.5723128438023,-0.229058319968526 52.5720867178658,-0.228533095015589 52.5719245798986,-0.229176670497831 52.57150607947,-0.229953905301628 52.57091215122,-0.230426484560575 52.5704949447109,-0.231099083773311 52.5698261618095,-0.231528752355094 52.5693735967524,-0.231995623925859 52.5687827332904,-0.23237946754069 52.568209913112,-0.232701281590353 52.567605310696,-0.232989596739146 52.5670464909925,-0.233139638036476 52.5666206015622,-0.233329026486588 52.5661605868627,-0.233545002405502 52.5653538382882))
+'
 }
 
 done_testing;
