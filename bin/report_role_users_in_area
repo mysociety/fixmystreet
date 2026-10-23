@@ -1,0 +1,42 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+require 5.8.0;
+
+=head DESCRIPTION
+
+Generate a csv report of problems of users in a specific role
+in a specific area defined by a WKT boundary, and email
+the file to a specified email address.
+
+Currently Peterborough specific.
+
+=cut
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
+
+use FixMyStreet::Script::UsersInRoleAndBoundary;
+use Getopt::Long::Descriptive;
+
+my ($opts, $usage) = describe_options(
+    '%c %o',
+    ['council_name|c=s', "which council to run the report for", { required => 1 } ],
+    ['role_name|r=s', "which role to run the report for", { required => 1 } ],
+    ['dir|d=s', "which will be used for outputting the file and reading the geometry from", { required => 1 } ],
+    ['file|f=s', "csv file to write the data to (located in the directory - dir)", { required => 1 } ],
+    ['geo_file|g=s', "name of the WKT file defining the boundary (located in the directory - dir)", { required => 1 } ],
+    ['send_to|t=s', "email address to send the file to", { required => 1 } ],
+    ['send_from|s=s', "email address to send the file from", { required => 1 } ],
+    ['subject|j=s', 'Subject for email', { required => 1 } ],
+    ['message_body|m=s', 'Body for email', { required => 1 } ],
+    ['help|h', "print usage message and exit" ],
+);
+print($usage->text), exit if $opts->help;
+
+FixMyStreet::Script::UsersInRoleAndBoundary::send($opts);
