@@ -467,6 +467,40 @@ sub open311_filter_contacts_for_deletion {
     });
 }
 
+=head2 post_report_sent
+
+Parking categories are either set to 'in progress' or
+'internal referral'
+
+=cut
+
+sub post_report_sent {
+    my ( $self, $problem ) = @_;
+
+    my %in_progress = map { $_ => 1 } (
+        'Car Park Graffiti/Fly Tipping',
+        'Car Park Signage',
+        'Car Park Surfacing',
+        'Disabled Parking Bay Lines',
+        'Electric Vehicle Charging',
+        'Pay and Display machine',
+        'Signage',
+    );
+
+    my %internal_referral = map { $_ => 1 } (
+        'Blue Badge/Permit Misuse',
+        'Parking With Form', # Parking Charges
+        'Parking', # Parking Enforcement
+        'other',
+    );
+
+    if ( $in_progress{ $problem->category } ) {
+        $problem->update( { state => 'in progress' } );
+    } elsif ( $internal_referral{ $problem->category } ) {
+        $problem->update( { state => 'internal referral' } );
+    }
+}
+
 =head2 post_report_report_problem_link
 
 Overrides the 'post-report' report another problem here button with one linking back to the front page, rather than the report view at the same location.
