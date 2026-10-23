@@ -15,13 +15,16 @@ my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::BathNES');
 $cobrand->mock('area_types', sub { [ 'UTA' ] });
 $cobrand->mock('lookup_site_code', sub { return '12345' });
 
+my $comment_user = $mech->create_user_ok('comment@example.com');
+
 my $body = $mech->create_body_ok(2551, 'Bath and North East Somerset Council', {
     send_method => 'Open311',
     send_comments => 1,
     api_key => 'key',
     endpoint => 'endpoint',
     jurisdiction => 'bathnes',
-    cobrand => 'bathnes'
+    cobrand => 'bathnes',
+    comment_user => $comment_user,
 });
 my @cats = ('Litter', 'Other', 'Potholes', 'Traffic lights', 'Disabled');
 for my $contact ( @cats ) {
@@ -410,6 +413,61 @@ FixMyStreet::override_config {
         $req = Open311->test_req_used;
         $c = CGI::Simple->new($req->content);
         is $c->param('service_code'), $prow_contact->email, 'Report resent in new category';
+    };
+};
+
+subtest 'Parking categories automatically set to "internal referral" or "in progress"' => sub {
+    FixMyStreet::override_config {
+        STAGING_FLAGS => { send_reports => 1 },
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'bathnes',
+    }, sub {
+        my ($parking_signage) = $mech->create_contact_ok(
+            body_id => $body->id,
+            category => 'Signage',
+            group => 'Parking',
+            email => 'Passthrough-parking_feedback@bathnes.dev',
+        );
+
+        my ($parking_enforcement) = $mech->create_contact_ok(
+            body_id => $body->id,
+            category => 'Parking Enforcement',
+            group => 'Parking',
+            email => 'Passthrough-parking_feedback@bathnes.dev',
+        );
+
+        for my $contact ( $parking_signage, $parking_enforcement ) {
+            my $cat = $contact->category;
+            my $template = FixMyStreet::DB->resultset('ResponseTemplate')->create({
+                body => $body,
+                title => $cat . ' template',
+                text => 'Your ' . $cat . ' report has been sent.',
+                state => 'confirmed',
+                auto_response => 1,
+            });
+            $template->add_to_contact_response_templates({ contact => $contact });
+
+            $mech->clear_emails_ok;
+
+            my ($p) = $mech->create_problems_for_body(1, $body->id, 'Title', {
+                cobrand => 'bathnes',
+                category => $cat,
+            } );
+            $p->create_related_things(1); # The template update that gets added on creation
+
+            FixMyStreet::Script::Reports::send();
+
+            $p->discard_changes;
+            my $state = $cat eq 'Signage' ? 'in progress' : 'internal referral';
+            ok $p->whensent, 'Report marked as sent';
+            is $p->get_extra_metadata('sent_to')->[0], 'parking_feedback@bathnes.dev', 'sent_to extra metadata set';
+            is $p->state, $state, 'report state set';
+            is $p->comments->count, 1, 'comment added';
+            like $p->comments->first->text, qr/\Q$cat\E report has been sent/, 'correct comment text';
+            is $p->comments->first->problem_state, $state, 'correct problem state on comment';
+
+            $mech->email_count_is(2); # User and council
+        }
     };
 };
 
