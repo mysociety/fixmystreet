@@ -29,7 +29,7 @@ msgstr " -- Επιλογή cobrand -- "
 #: perllib/FixMyStreet/DB/Result/Problem.pm:863
 #: perllib/FixMyStreet/Queue/Item/Report.pm:229
 msgid " and "
-msgstr "και"
+msgstr " και "
 
 #. ("JS")
 #: templates/web/base/js/translation_strings.html:50
@@ -40,7 +40,7 @@ msgstr "και"
 #: templates/web/base/report/new/top_message_some.html:10
 #: templates/web/base/report/new/top_message_some.html:12
 msgid " or "
-msgstr "ή"
+msgstr " ή "
 
 #: templates/web/base/report/inspect/_extra_details_field.html:5
 msgid "%d characters maximum"
@@ -67,7 +67,7 @@ msgstr "%s - Συνοπτικές αναφορές"
 
 #: templates/web/base/status/stats.html:26
 msgid "%s bodies"
-msgstr "%s τομείς"
+msgstr "%s φορείς"
 
 #: templates/web/base/status/stats.html:24
 msgid "%s confirmed alerts, %s unconfirmed"
@@ -79,9 +79,8 @@ msgid "%s council contacts &ndash; %s confirmed, %s unconfirmed"
 msgstr "%s επαφές υπηρεσίας &ndash; %s επιβεβαιωμένες, %s ανεπιβεβαίωτες"
 
 #: templates/web/fixmystreet.com/reports/summary.html:143
-#, fuzzy
 msgid "%s currently does not accept reports from FixMyStreet."
-msgstr "Η αναφορά αφαιρέθηκε από το FixMyStreet."
+msgstr "Ο φορέας %s δεν δέχεται αυτή τη στιγμή αναφορές από το FixMyStreet."
 
 #. ("%s is the site name")
 #: templates/web/base/alert/_index_text.html:3
@@ -91,7 +90,7 @@ msgid ""
 "problems within a certain distance of a particular location."
 msgstr ""
 "Το %s έχει μία ποικιλία από πηγές RSS και ειδοποιήσεις μέσω email για τα τοπικά\n"
-"προβλήματα, καθώς και ειδοποιήσεις για έναν συγκεκριμένο τομέα ή υπηρεσία, ή για όλα\n"
+"προβλήματα, καθώς και ειδοποιήσεις για έναν συγκεκριμένο φορέα ή υπηρεσία, ή για όλα\n"
 "τα προβλήματα σε μια ορισμένη ακτίνα απόστασης από κάποια τοποθεσία."
 
 #. ("%s is the site name")
@@ -103,7 +102,7 @@ msgid ""
 msgstr ""
 "Το %s έχει μία ποικιλία από πηγές RSS και ειδοποιήσεις μέσω email για τα τοπικά\n"
 "προβλήματα, καθώς και\n"
-"ειδοποιήσεις για έναν συγκεκριμένο τομέα ή υπηρεσία, ή για όλα\n"
+"ειδοποιήσεις για έναν συγκεκριμένο φορέα ή υπηρεσία, ή για όλα\n"
 "τα προβλήματα\n"
 "σε μια ορισμένη ακτίνα απόστασης από κάποια τοποθεσία."
 
@@ -301,7 +300,7 @@ msgstr ""
 #: templates/web/base/auth/2fa/intro.html:20
 #: templates/web/base/auth/generate_token.html:65
 msgid "Activate two-factor authentication"
-msgstr "Έλεγχος ταυτότητας δύο παραγόντων"
+msgstr "Ενεργοποίηση ταυτοποίησης δύο παραγόντων"
 
 #: templates/web/base/my/my.html:44 templates/web/base/my/my.html:55
 msgid "Add"
@@ -314,8 +313,8 @@ msgid ""
 "          to which problem reports can be sent. You can add one or more contacts (for different\n"
 "          categories of problem) to each body."
 msgstr ""
-"Πρόσθεσε έναν <strong>τομέα</strong> για κάθε υπηρεσία, όπως για παράδειγμα μια υπηρεσία ή τμήμα\n"
-"στο οποίο θα μπορούν να στέλνονται οι αναφορές προβλημάτων. Μπορείς να προσθέσεις μία ή περισσότερες επαφές (για διαφορετικές κατηγορίες προβλημάτων) στον κάθε τομέα."
+"Πρόσθεσε έναν <strong>φορέα</strong> για κάθε υπηρεσία, όπως για παράδειγμα μια υπηρεσία ή τμήμα\n"
+"στο οποίο θα μπορούν να στέλνονται οι αναφορές προβλημάτων. Μπορείς να προσθέσεις μία ή περισσότερες επαφές (για διαφορετικές κατηγορίες προβλημάτων) στον κάθε φορέα."
 
 #: templates/web/base/admin/bodies/body.html:66
 msgid "Add a contact using the form below."
@@ -330,7 +329,7 @@ msgstr "Προσθήκη άλλης γονικής κατηγορίας"
 #: templates/web/base/admin/bodies/index.html:74
 #: templates/web/zurich/admin/bodies/form.html:62
 msgid "Add body"
-msgstr "Προσθήκη τομέα"
+msgstr "Προσθήκη φορέα"
 
 #: templates/web/base/auth/change_email.html:2
 #: templates/web/base/auth/change_email.html:7
@@ -515,9 +514,8 @@ msgid "All reports within %s ward, %s"
 msgstr "Όλες οι αναφορές στη δημοτική ενότητα %s, %s"
 
 #: templates/web/fixmystreet.com/reports/summary.html:65
-#, fuzzy
 msgid "All states"
-msgstr "Παλιά κατάσταση"
+msgstr "Όλες οι καταστάσεις"
 
 #: templates/web/base/reports/index.html:25
 msgid "All time"
@@ -572,7 +570,7 @@ msgstr "Άλλος χρήστης"
 #. ("JS")
 #: templates/web/base/js/translation_strings.html:77
 msgid "Are you sure you want to cancel this upload?"
-msgstr "Είστε σίγουροι πως θέλετε να ακυρώσετε αυτή την μεταφόρτωση;"
+msgstr "Σίγουρα θέλεις να ακυρώσεις αυτό το ανέβασμα;"
 
 #: templates/web/base/offline/drafts.html:20
 #: templates/web/base/offline/fallback.html:27
@@ -605,11 +603,15 @@ msgstr "Περιοχή:"
 #: templates/web/base/admin/bodies/body.html:70
 #: templates/web/base/admin/bodies/index.html:15
 msgid "As this is a staging site and %s is false, reports made on this site will be sent to the problem reporter, not the contact given for the report’s category."
-msgstr "Δεδομένου ότι αυτό είναι ένα δοκιμαστικό site και το %s είναι ψευδές, οι αναφορές που γίνονται σε αυτό το site θα σταλούν στις δοκιμαστικές αναφορές προβλημάτων και όχι στην κανονική επαφή που υπάρχει για την κατηγορία αναφοράς των προβλημάτων."
+msgstr ""
+"Δεδομένου ότι αυτό είναι ένας δοκιμαστικός ιστότοπος και το %s είναι ψευδές, "
+"οι αναφορές που γίνονται σε αυτόν τον ιστότοπο θα σταλούν σε όποιον έκανε την"
+" αναφορά, όχι στην κανονική επαφή που υπάρχει για την κατηγορία αναφοράς των "
+"προβλημάτων."
 
 #: templates/web/fixmystreet.com/report/_cobrand_ref_oxfordshire.html:8
 msgid "Asset ID:"
-msgstr ""
+msgstr "Αναγνωριστικό περιουσιακού στοιχείου:"
 
 #: templates/web/base/reports/_bulk-assign.html:12
 msgid "Assign"
@@ -629,7 +631,7 @@ msgstr "Ανάθεση σε"
 
 #: templates/web/zurich/admin/reports/edit.html:203
 msgid "Assign to competent body:"
-msgstr "Ανάθεση στον αρμόδιο τομέα:"
+msgstr "Ανάθεση στον αρμόδιο φορέα:"
 
 #: templates/web/zurich/admin/reports/edit.html:162
 #: templates/web/zurich/admin/stats/index.html:57
@@ -638,7 +640,7 @@ msgstr "Ανάθεση σε διαφορετική κατηγορία:"
 
 #: templates/web/zurich/admin/reports/edit.html:201
 msgid "Assign to external body:"
-msgstr "Ανάθεση σε εξωτερικό τομέα:"
+msgstr "Ανάθεση σε εξωτερικό φορέα:"
 
 #: templates/web/zurich/admin/reports/edit.html:180
 msgid "Assign to subdivision:"
@@ -731,7 +733,7 @@ msgstr "Αποκλεισμός χρήστη"
 
 #: templates/web/fixmystreet.com/report/new/inline-tips.html:4
 msgid "Be polite"
-msgstr ""
+msgstr "Μίλα ευγενικά"
 
 #: templates/web/base/admin/extra-metadata-item.html:35
 msgid "Behaviour"
@@ -749,7 +751,7 @@ msgstr "Κάδοι, σκουπίδια και ανακύκλωση"
 #: templates/web/base/admin/reports/_edit_main.html:33
 #: templates/web/zurich/header.html:50
 msgid "Bodies"
-msgstr "Τομείς"
+msgstr "Φορείς"
 
 #: templates/web/base/admin/flagged.html:17
 #: templates/web/base/admin/index.html:66
@@ -759,13 +761,13 @@ msgstr "Τομείς"
 #: templates/web/base/admin/users/import.html:48
 #: templates/web/base/admin/users/index.html:45
 msgid "Body"
-msgstr "Τομέας"
+msgstr "Φορέας"
 
 #: templates/web/base/admin/users/form.html:53
 #: templates/web/base/dashboard/index.html:27
 #: templates/web/zurich/admin/users/form.html:13
 msgid "Body:"
-msgstr "Τομέας:"
+msgstr "Φορέας:"
 
 #: templates/web/fixmystreet.com/footer_extra.html:67
 msgid "Built by"
@@ -897,7 +899,10 @@ msgstr "Πλαίσια επιλογής"
 msgid ""
 "Choose a <strong>category</strong> name that makes sense to the public (e.g., \"Pothole\", \"Street lighting\") but is helpful\n"
 "                  to the body too. These will appear in the drop-down menu on the report-a-problem page."
-msgstr "Επίλεξε ένα όνομα <strong>κατηγορίας</strong> που να έχει νόημα για τους πολίτες (π.χ., \"Λακκούβες\", \"Φωτισμός δρόμων\") αλλά είναι χρήσιμο και για τον τομέα. Αυτά θα φαίνονται στο μενού της σελίδας \"Ανάφερε ένα πρόβλημα\"."
+msgstr ""
+"Επίλεξε ένα όνομα <strong>κατηγορίας</strong> που να έχει νόημα για τους "
+"πολίτες (π.χ., \"Λακκούβες\", \"Φωτισμός δρόμων\") αλλά είναι χρήσιμο και για"
+" τον φορέα. Αυτά θα φαίνονται στο μενού της σελίδας \"Ανάφερε ένα πρόβλημα\"."
 
 #: templates/web/base/report/_inspect.html:46
 msgid "Choose another"
@@ -932,7 +937,9 @@ msgstr "Κάνε κλικ στον σύνδεσμο του email επιβεβα�
 
 #: templates/web/base/_email_sent_confirmation_text.html:14
 msgid "Click the link in our confirmation email to publish your update."
-msgstr "Κάνε κλικ στον σύνδεσμο του email επιβεβαίωσης για να ενεργοποιήσεις την τροποποίηση."
+msgstr ""
+"Κάνε κλικ στον σύνδεσμο του email επιβεβαίωσης για να δημοσιεύσεις την "
+"ενημέρωσή σου."
 
 #: templates/web/base/auth/token.html:23
 msgid "Click the link in our confirmation email to sign in."
@@ -985,17 +992,17 @@ msgstr "Συντεταγμένες:"
 #: templates/web/base/admin/reportextrafields/edit.html:24
 #: templates/web/base/admin/reportextrafields/index.html:7
 msgid "Cobrand"
-msgstr "Προστεθέν σήμα"
+msgstr "Επωνυμία"
 
 #: templates/web/base/admin/reports/_edit_main.html:84
 #: templates/web/base/admin/update_edit.html:57
 msgid "Cobrand data:"
-msgstr "Δεδομένα προστεθέντος σήματος:"
+msgstr "Δεδομένα επωνυμίας:"
 
 #: templates/web/base/admin/reports/_edit_main.html:83
 #: templates/web/base/admin/update_edit.html:56
 msgid "Cobrand:"
-msgstr "Προστεθέν σήμα:"
+msgstr "Επωνυμία:"
 
 #: templates/web/base/admin/extra-metadata-item.html:29
 #: templates/web/base/auth/2fa/form-add.html:11
@@ -1014,9 +1021,8 @@ msgid "Collapse map"
 msgstr "Σύμπτυξη χάρτη"
 
 #: templates/web/fixmystreet.com/report/_cobrand_ref_oxfordshire.html:11
-#, fuzzy
 msgid "Column number:"
-msgstr "Αριθμός τηλεφώνου"
+msgstr "Αριθμός στήλης:"
 
 #: perllib/FixMyStreet/App/Controller/Admin/Waste.pm:72
 msgid "Config must be a JSON object literal, not array."
@@ -1073,9 +1079,8 @@ msgstr "Επιβεβαιώθηκε:  "
 
 #: templates/web/fixmystreet.com/footer_extra.html:46
 #: templates/web/fixmystreet.com/reports/summary.html:167
-#, fuzzy
 msgid "Contact"
-msgstr "Επικοινωνία με %s"
+msgstr "Επικοινωνία"
 
 #. ("%s is the site name")
 #: templates/web/base/about/_sidebar.html:7
@@ -1090,9 +1095,8 @@ msgid "Contact Us"
 msgstr "Επικοινώνησε με εμάς"
 
 #: templates/web/fixmystreet.com/about/council-dashboard.html:21
-#, fuzzy
 msgid "Contact email"
-msgstr "Επικοινωνία με %s"
+msgstr "Email επικοινωνίας"
 
 #: templates/web/base/contact/index.html:16
 msgid "Contact the team"
@@ -1138,19 +1142,17 @@ msgid "Council contacts for %s"
 msgstr "Επαφές υπηρεσίας για &quot;%s&quot;"
 
 #: templates/web/fixmystreet.com/report/_cobrand_ref_oxfordshire.html:6
-#, fuzzy
 msgid "Council ref:"
-msgstr "Υπηρεσία:"
+msgstr "Αρ. αναφ. υπηρεσίας:"
 
 #: templates/web/base/report/_council_sent_info.html:18
 #: templates/web/base/report/_council_sent_info.html:22
 msgid "Council ref:&nbsp;%s"
-msgstr "υπηρεσία αναφ.:&nbsp;%s"
+msgstr "Αρ. αναφ. υπηρεσίας:&nbsp;%s"
 
 #: templates/web/fixmystreet.com/about/council-dashboard.html:9
-#, fuzzy
 msgid "Council stats"
-msgstr "Υπηρεσία"
+msgstr "Στατιστικά υπηρεσίας"
 
 #: templates/web/base/dashboard/index.html:65
 msgid "Council:"
@@ -1227,7 +1229,7 @@ msgstr "Δημιουργήθηκαν %d νέοι χρήστες"
 #: perllib/FixMyStreet/App/Controller/Admin/Reports.pm:238
 #: perllib/FixMyStreet/App/Controller/Admin/Reports.pm:240
 msgid "Created Body"
-msgstr "Τομέας δημιουργίας"
+msgstr "Φορέας δημιουργίας"
 
 #: perllib/FixMyStreet/App/Controller/Admin/Reports.pm:233
 msgid "Created By"
@@ -1256,7 +1258,7 @@ msgstr "Ομαδοποίηση αυτή τη στιγμή κατά %s"
 #: templates/web/base/admin/bodies/index.html:5
 #: templates/web/base/admin/index.html:8
 msgid "Currently no bodies have been created."
-msgstr "Δεν έχουν δημιουργηθεί τομείς μέχρι στιγμής."
+msgstr "Δεν έχουν δημιουργηθεί φορείς μέχρι στιγμής."
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:910
 #: templates/web/zurich/admin/report_edit-sdm.html:98
@@ -1447,9 +1449,8 @@ msgid "Don't show"
 msgstr "Να μην εμφανίζεται"
 
 #: templates/web/fixmystreet.com/footer_extra.html:56
-#, fuzzy
 msgid "Donate now"
-msgstr "Αποθήκευση αλλαγών"
+msgstr "Κάνε δωρεά τώρα"
 
 #. ("JS")
 #: templates/web/base/js/translation_strings.html:83
@@ -1509,9 +1510,9 @@ msgid ""
 "            This means you can add many categories even if you only have one contact for the body.\n"
 "    "
 msgstr ""
-"Κάθε επαφή του τομέα είναι υπεύθυνη για μία κατηγορία, που φαίνεται δημόσια.\n"
+"Κάθε επαφή του φορέα είναι υπεύθυνη για μία κατηγορία, που φαίνεται δημόσια.\n"
 "Διαφορετικές κατηγορίες <strong>μπορούν να ανήκουν στην ίδια επαφή</strong> (διεύθυνση email).\n"
-"Αυτό σημαίνει ότι μπορείς να προσθέσεις πολλές κατηγορίες ακόμη και αν έχεις μία επαφή στον τομέα."
+"Αυτό σημαίνει ότι μπορείς να προσθέσεις πολλές κατηγορίες ακόμη και αν έχεις μία επαφή στον φορέα."
 
 #: templates/web/base/report/_item.html:82
 #: templates/web/base/report/inspect/information.html:42
@@ -1535,7 +1536,7 @@ msgstr "Επεξεργασία"
 #: templates/web/base/admin/index.html:40
 #: templates/web/zurich/admin/bodies/body.html:42
 msgid "Edit body details"
-msgstr "Επεξεργασία λεπτομερειών του τομέα"
+msgstr "Επεξεργασία λεπτομερειών του φορέα"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:799
 #: perllib/FixMyStreet/Roles/Cobrand/KingstonSutton.pm:84
@@ -1717,7 +1718,7 @@ msgid ""
 "          problem must be emailed, while others can be sent over Open311."
 msgstr ""
 "Ενεργοποίησε τη ρύθμιση <strong>μπορεί να αποκεντρωθεί</strong>, αν μια ή περισσότερες επαφές έχουν ένα \n"
-"διαφορετικό τελικό σημείο - endpoint - (και μέθοδο αποστολής) από αυτό του τομέα. Για παράδειγμα, όταν οι αναφορές από κάποια κατηγορία\n"
+"διαφορετικό τελικό σημείο - endpoint - (και μέθοδο αποστολής) από αυτό του φορέα. Για παράδειγμα, όταν οι αναφορές από κάποια κατηγορία\n"
 "προβλημάτων πρέπει να σταλούν με email, ενώ κάποιες άλλες μπορούν να σταλούν με το Open311."
 
 #: templates/web/base/admin/bodies/open311-form-fields.html:54
@@ -1840,7 +1841,7 @@ msgstr "Εξωτερικός Σύνδεσμος"
 
 #: templates/web/base/admin/reports/_edit_main.html:90
 msgid "External body"
-msgstr "Εξωτερικός τομέας"
+msgstr "Εξωτερικός φορέας"
 
 #: templates/web/base/admin/reports/_edit_main.html:97
 #: templates/web/base/admin/templates/_external.html:43
@@ -1884,7 +1885,7 @@ msgstr "Επιπλέον ερώτηση που εμφανίζεται στον �
 
 #: templates/web/base/admin/problem_row.html:39
 msgid "Failed bodies:"
-msgstr "Τομείς με αποτυχία:"
+msgstr "Φορείς με αποτυχία:"
 
 #: templates/web/base/contact/submit.html:13
 msgid "Failed to send message"
@@ -1940,7 +1941,9 @@ msgstr "Οι πέντε νεότερες αναφορές"
 
 #: templates/web/base/admin/bodies/body.html:58
 msgid "Fix this by choosing an <strong>area covered</strong> in the <em>Edit body details</em> form below."
-msgstr "Διόρθωσέ το επιλέγοντας μία <strong>περιοχή αρμοδιότητας</strong> στη φόρμα <em>Επεξεργασία λεπτομερειών του σώματος</em> παρακάτω."
+msgstr ""
+"Διόρθωσέ το επιλέγοντας μία <strong>περιοχή αρμοδιότητας</strong> στη φόρμα "
+"<em>Επεξεργασία λεπτομερειών του φορέα</em> παρακάτω."
 
 #: templates/web/fixmystreet.com/footer_extra.html:20
 msgid "FixMyStreet Android app on Google Play"
@@ -2045,9 +2048,8 @@ msgid "For council staff only. Access detailed statistics on reports and perform
 msgstr ""
 
 #: templates/web/fixmystreet.com/front/footer-marketing.html:8
-#, fuzzy
 msgid "For councils"
-msgstr "υπηρεσία"
+msgstr "Για υπηρεσίες"
 
 #: templates/web/fixmystreet.com/front/footer-marketing.html:13
 msgid "For developers"
@@ -2069,11 +2071,11 @@ msgstr "Ξέχασες τον κωδικό πρόσβασής σου;"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:831
 msgid "Forwarded to external body"
-msgstr "Προωθήθηκε στον εξωτερικό τομέα"
+msgstr "Προωθήθηκε στον εξωτερικό φορέα"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:832
 msgid "Forwarded wish to external body"
-msgstr "Η επιθυμία προωθήθηκε στον εξωτερικό τομέα"
+msgstr "Η επιθυμία προωθήθηκε στον εξωτερικό φορέα"
 
 #: templates/web/fixmystreet.com/next_steps.html:28
 msgid "Free FixMyStreet goodies for you!"
@@ -2219,9 +2221,8 @@ msgstr ""
 "δημοσιευτούν."
 
 #: templates/web/fixmystreet.com/next_steps.html:21
-#, fuzzy
 msgid "Help support FixMyStreet"
-msgstr "Νέα προβλήματα στο FixMyStreet"
+msgstr "Βοήθησε να λειτουργεί το FixMyStreet"
 
 #: templates/web/base/around/on_map_list_items.html:8
 msgid "Here are some other nearby reports:"
@@ -2338,9 +2339,8 @@ msgid "I want to make a new report about a street problem"
 msgstr ""
 
 #: templates/web/fixmystreet.com/contact/who.html:48
-#, fuzzy
 msgid "I want to report a street problem"
-msgstr "Πώς να αναφέρεις ένα πρόβλημα"
+msgstr "Θέλω να αναφέρω ένα πρόβλημα"
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:86
 msgid "I'm afraid we couldn't locate your problem in the database.\n"
@@ -2363,8 +2363,8 @@ msgid ""
 "Identify a <strong>parent</strong> if this body is itself part of another body.\n"
 "          For basic installations, you don't need to join bodies in this way."
 msgstr ""
-"Κάνε ταυτοποίηση ενός <strong>γονέα</strong> αν αυτός ο τομέας είναι από μόνος του μέρος ενός άλλου τομέα.\n"
-"Για βασικές διαρθρώσεις, δεν χρειάζεται να συνδέσεις τους τομείς μεταξύ τους, με αυτόν τον τρόπο."
+"Κάνε ταυτοποίηση ενός <strong>γονέα</strong> αν αυτός ο φορέας είναι από μόνος του μέρος ενός άλλου φορέα.\n"
+"Για βασικές διαρθρώσεις, δεν χρειάζεται να συνδέσεις τους φορείς μεταξύ τους, με αυτόν τον τρόπο."
 
 #: templates/web/base/auth/token.html:19
 msgid ""
@@ -2415,7 +2415,11 @@ msgstr ""
 msgid ""
 "If two or more bodies serve the same location, FixMyStreet combines identical categories into a single entry in\n"
 "                  the menu. Make sure you use the same category name in the bodies if you want this to happen."
-msgstr "Αν δύο ή περισσότεροι τομείς υπηρετούν την ίδια περιοχή, το FixMyStreet συνδυάζει τις ίδιες κατηγορίες σε μία ενιαία καταχώριση στο μενού. Αν θες να χρησιμοποιήσεις αυτή τη δυνατότητα, βεβαιώσου ότι σε κάθε τομέα το όνομα της συγκεκριμένης κατηγορίας είναι ίδιο."
+msgstr ""
+"Αν δύο ή περισσότεροι φορείς υπηρετούν την ίδια περιοχή, το FixMyStreet "
+"συνδυάζει τις ίδιες κατηγορίες σε μία ενιαία καταχώριση στο μενού. Αν θες να "
+"χρησιμοποιήσεις αυτή τη δυνατότητα, βεβαιώσου ότι σε κάθε φορέα το όνομα της "
+"συγκεκριμένης κατηγορίας είναι ίδιο."
 
 #: templates/web/base/contact/form.html:103
 msgid ""
@@ -2426,12 +2430,10 @@ msgstr ""
 "μήνυμα τον σύνδεσμο της αναφοράς."
 
 #: templates/web/fixmystreet.com/contact/unsuitable-text.html:6
-#, fuzzy
 msgid "If you are trying to make a new report, please <a href=\"/\">go to the front page</a> and follow the instructions."
 msgstr ""
-"Παρακαλούμε <strong>μην</strong> αναφέρεις προβλήματα μέσω αυτής της φόρμας.\n"
-"Τα μηνύματα πηγαίνουν απευθείας στην ομάδα που βρίσκεται πίσω από το FixMyStreet, όχι σε κάποια υπηρεσία. Για να αναφέρεις ένα πρόβλημα,\n"
-"παρακαλούμε <a href=\"/\">πήγαινε στην αρχική σελίδα</a> και ακολούθησε τις οδηγίες."
+"Αν προσπαθείς να κάνεις μια νέα αναφορά, <a href=\"/\">πήγαινε στην αρχική "
+"σελίδα</a> και ακολούθησε τις οδηγίες."
 
 #: templates/web/base/auth/generate_token.html:80
 msgid "If you generate a new token the existing token will no longer work."
@@ -2752,7 +2754,9 @@ msgstr "Λιγότερο πρόσφατα ενημερωμένες"
 
 #: templates/web/base/admin/bodies/form.html:143
 msgid "Leave this blank if all reports to this body should be sent using the same send method (e.g., \"%s\")."
-msgstr "Άφησέ το κενό αν όλες οι αναφορές σε αυτόν τον τομέα πρέπει να στέλνονται με την ίδια μέθοδο αποστολής (π.χ., \"%s\")."
+msgstr ""
+"Άφησέ το κενό αν όλες οι αναφορές σε αυτόν τον φορέα πρέπει να στέλνονται με "
+"την ίδια μέθοδο αποστολής (π.χ., \"%s\")."
 
 #: templates/web/base/admin/bodies/body.html:30
 msgid "List all reported problems"
@@ -2882,11 +2886,11 @@ msgstr "Μήνυμα"
 
 #: templates/web/zurich/admin/reports/edit.html:275
 msgid "Message to competent body:"
-msgstr "Μήνυμα προς τον αρμόδιο τομέα:"
+msgstr "Μήνυμα προς τον αρμόδιο φορέα:"
 
 #: templates/web/zurich/admin/reports/edit.html:273
 msgid "Message to external body:"
-msgstr "Μήνυμα προς τον εξωτερικό τομέα:"
+msgstr "Μήνυμα προς τον εξωτερικό φορέα:"
 
 #: templates/web/base/admin/bodies/contact-form.html:105
 #: templates/web/base/admin/extra-metadata-option.html:21
@@ -2897,7 +2901,7 @@ msgstr ""
 
 #: templates/web/base/admin/reports/_edit_main.html:49
 msgid "Missing bodies:"
-msgstr "Τομείς που λείπουν:"
+msgstr "Φορείς που λείπουν:"
 
 #: perllib/FixMyStreet/App/Controller/Open311.pm:479
 msgid "Missing jurisdiction_id"
@@ -3052,7 +3056,7 @@ msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:110
 msgid "New body added"
-msgstr "Προστέθηκε νέος τομέας"
+msgstr "Προστέθηκε νέος φορέας"
 
 #: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:407
 msgid "New category contact added"
@@ -3115,7 +3119,7 @@ msgstr "Νέα προβλήματα για την περιοχή με id <a href
 
 #: templates/web/base/admin/users/alerts.html:37
 msgid "New problems for ward id %s in body id %s"
-msgstr "Νέα προβλήματα για τη δημοτική ενότητα με id %s στον τομέα με id %s"
+msgstr "Νέα προβλήματα για τη δημοτική ενότητα με id %s στον φορέα με id %s"
 
 #: db/alert_types.pl:38
 msgid "New problems for {{COUNCIL}} within {{WARD}} ward on FixMyStreet"
@@ -3202,7 +3206,7 @@ msgstr "Δεν έχεις λογαριασμό;"
 #: templates/web/base/admin/users/form.html:55
 #: templates/web/zurich/admin/users/form.html:15
 msgid "No body"
-msgstr "Κανένας τομέας"
+msgstr "Κανένας φορέας"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:502
 msgid "No council selected"
@@ -3287,9 +3291,9 @@ msgid ""
 "                Depending on the implementation, staff users may have access to the dashboard (summary of\n"
 "                activity across their body), the ability to hide reports or set special report statuses."
 msgstr ""
-"Οι κανονικοί (δημόσιοι) χρήστες δεν θα έπρεπε να είναι συσχετισμένοι με οποιοδήποτε <strong>τομέα</strong>.<br>\n"
-"Χρήστες εξουσιοδοτημένου προσωπικού μπορούν να συσχετιστούν με τον τομέα που αντιπροσωπεύουν.<br>\n"
-"Ανάλογα με την υλοποίηση, οι χρήστες προσωπικού ίσως έχουν πρόσβαση στον πίνακα εργαλείων (περίληψη της δραστηριότητάς τους μέσα στον τομέα), τη δυνατότητα να κρύβουν αναφορές ή να ορίζουν ειδικές αναφορές κατάστασης."
+"Οι κανονικοί (δημόσιοι) χρήστες δεν θα έπρεπε να είναι συσχετισμένοι με οποιοδήποτε <strong>φορέα</strong>.<br>\n"
+"Χρήστες εξουσιοδοτημένου προσωπικού μπορούν να συσχετιστούν με τον φορέα που αντιπροσωπεύουν.<br>\n"
+"Ανάλογα με την υλοποίηση, οι χρήστες προσωπικού ίσως έχουν πρόσβαση στον πίνακα εργαλείων (περίληψη της δραστηριότητάς τους μέσα στον φορέα), τη δυνατότητα να κρύβουν αναφορές ή να ορίζουν ειδικές αναφορές κατάστασης."
 
 #: perllib/FixMyStreet/App/Controller/Admin/Waste.pm:66
 msgid "Not a valid JSON string: %s"
@@ -3612,7 +3616,7 @@ msgstr "Φωτογραφίες/Έγγραφα"
 #: templates/web/base/reports/index.html:76
 #: templates/web/base/reports/index.html:79
 msgid "Pick your council"
-msgstr "Διάλεξε την υπηρεσία σου"
+msgstr "Διάλεξε τον δήμο σου"
 
 #: templates/web/base/reports/index.html:66
 #: templates/web/base/reports/index.html:69
@@ -3703,7 +3707,7 @@ msgstr "Παρακαλώ γράψτε ένα όνομα"
 
 #: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:540
 msgid "Please enter a name for this body"
-msgstr "Γράψε ένα όνομα για αυτόν τον τομέα"
+msgstr "Γράψε ένα όνομα για αυτόν τον φορέα"
 
 #. ("JS")
 #: templates/web/base/auth/change_password.html:25
@@ -3906,7 +3910,7 @@ msgstr ""
 
 #: templates/web/zurich/admin/reports/edit.html:198
 msgid "Please select a body."
-msgstr "Επιλέξτε ένα σώμα"
+msgstr "Επίλεξε έναν φορέα."
 
 #. ("JS")
 #: templates/web/base/js/translation_strings.html:111
@@ -3971,9 +3975,8 @@ msgid "Posted by <strong>%s</strong> at %s"
 msgstr "Δημοσιεύθηκε από <strong>%s</strong> στις %s"
 
 #: templates/web/fixmystreet.com/footer_extra.html:71
-#, fuzzy
 msgid "Powered by"
-msgstr "Αναφέρθηκε από:"
+msgstr "Βασισμένο σε"
 
 #: templates/web/base/front/footer-marketing.html:6
 msgid "Powered by <a class=\"platform-logo\" href=\"https://fixmystreet.org/\">FixMyStreet Platform</a>"
@@ -3981,7 +3984,7 @@ msgstr "Βασισμένο στην <a class=\"platform-logo\" href=\"https://fi
 
 #: templates/web/base/admin/bodies/contact-form.html:150
 msgid "Prefer this contact if multiple bodies have the same contact"
-msgstr "Προτίμηση αυτής της επαφής αν πολλοί τομείς έχουν την ίδια επαφή"
+msgstr "Προτίμηση αυτής της επαφής αν πολλοί φορείς έχουν την ίδια επαφή"
 
 #: templates/web/fixmystreet.com/about/press.html:1
 #: templates/web/fixmystreet.com/about/press.html:2
@@ -4335,7 +4338,7 @@ msgstr "Κάλυψη"
 #: templates/web/fixmystreet.com/admin/stats/refused.html:1
 #, fuzzy
 msgid "Refused bodies"
-msgstr "%s τομείς"
+msgstr "%s φορείς"
 
 #: templates/web/base/report/inspect/information.html:72
 msgid "Reject report"
@@ -4460,7 +4463,7 @@ msgstr "Κατάσταση αναφοράς"
 
 #: templates/web/base/report/new/form_heading.html:1
 msgid "Report your problem"
-msgstr "Ανάφερε το πρόβλημά σου"
+msgstr "Αναφορά προβλήματος"
 
 #: templates/web/base/header_opengraph.html:4
 msgid "Report, view, and discuss local street-related problems."
@@ -4782,9 +4785,8 @@ msgid "Say how long the issue’s been&nbsp;present"
 msgstr ""
 
 #: templates/web/fixmystreet.com/report/new/category_filter.html:5
-#, fuzzy
 msgid "Search"
-msgstr "Αναζήτηση:"
+msgstr "Αναζήτηση"
 
 #: templates/web/base/admin/index.html:18
 #: templates/web/base/admin/reports/index.html:1
@@ -4846,7 +4848,7 @@ msgstr ""
 #: templates/web/base/admin/bodies/form.html:41
 #: templates/web/zurich/admin/bodies/form.html:16
 msgid "Select a body"
-msgstr "Επίλεξε ένα σώμα"
+msgstr "Διάλεξε έναν φορέα"
 
 #: templates/web/base/admin/bodies/form.html:78
 #: templates/web/base/admin/users/form.html:95
@@ -5116,7 +5118,9 @@ msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/UK.pm:97
 msgid "Sorry, that appears to be a Crown dependency postcode, which we don't cover."
-msgstr "Συγνώμη, φαίνεται πως αυτός ο ταχυδρομικός κώδικας είναι  Crown dependency postcode, δεν καλύπτουμε τέτοιους ΤΚ,"
+msgstr ""
+"Συγνώμη, φαίνεται πως αυτός ο ταχυδρομικός κώδικας ανήκει σε Crown "
+"dependency, τα οποία δεν καλύπτουμε."
 
 #: templates/web/base/auth/smsform.html:6 templates/web/base/auth/token.html:8
 msgid "Sorry, that wasn&rsquo;t a valid link"
@@ -5458,7 +5462,7 @@ msgstr "Αποτελέσματα έρευνας"
 #: templates/web/base/report/form/private_details.html:2
 #: templates/web/base/report/form/user.html:9
 msgid "Tell us about you"
-msgstr "Πες μας για σένα"
+msgstr "Προσωπικά στοιχεία"
 
 #: templates/web/zurich/admin/templates/edit.html:7
 msgid "Template &laquo;%s&raquo;"
@@ -5563,7 +5567,9 @@ msgstr "Η τοποθεσία δεν φαίνεται να βρίσκεται σ
 
 #: perllib/FixMyStreet/App/Controller/Location.pm:192
 msgid "That location does not appear to be in the UK; please try again."
-msgstr "Η τοποθεσία δεν φαίνεται να βρίσκεται στην Ελλάδα. Παρακαλούμε προσπάθησε ξανά."
+msgstr ""
+"Η τοποθεσία δεν φαίνεται να βρίσκεται στο Ηνωμένο Βασίλειο. Παρακαλούμε "
+"προσπάθησε ξανά."
 
 #: perllib/FixMyStreet/App/Controller/Auth.pm:521
 msgid ""
@@ -5671,7 +5677,10 @@ msgstr ""
 msgid ""
 "The <strong>endpoint</strong> is the URL of the service that FixMyStreet will connect to \n"
 "            when sending reports to this body."
-msgstr "Το <strong>σημείο τερματισμού</strong> είναι η διεύθυνση URL της υπηρεσίας στην οποία συνδέεται το FixMyStreet όταν στέλνονται αναφορές σε αυτό το σώμα."
+msgstr ""
+"Το <strong>σημείο τερματισμού</strong> είναι η διεύθυνση URL της υπηρεσίας "
+"στην οποία συνδέεται το FixMyStreet όταν στέλνονται αναφορές σε αυτόν τον "
+"φορέα."
 
 #: templates/web/base/admin/manifesttheme/form.html:59
 msgid ""
@@ -5690,7 +5699,10 @@ msgstr ""
 msgid ""
 "The <strong>jurisdiction</strong> is only needed if the endpoint is serving more\n"
 "          than one. If the body is running its own endpoint, you can usually leave this blank."
-msgstr "Η <strong>αρμοδιότητα</strong> χρειάζεται μόνο αν το σημείο τερματισμού υπηρετεί παραπάνω από έναν. Αν το σώμα έχει το δικό του σημείο τερματισμού, μπορείς συνήθως να την αφήσεις κενή."
+msgstr ""
+"Η <strong>αρμοδιότητα</strong> χρειάζεται μόνο αν το σημείο τερματισμού "
+"υπηρετεί παραπάνω από έναν. Αν ο φορέας έχει το δικό του σημείο τερματισμού, "
+"μπορείς συνήθως να την αφήσεις κενή."
 
 #: templates/web/base/admin/bodies/contact-form.html:168
 #: templates/web/base/admin/bodies/contact-form.html:169
@@ -5700,7 +5712,7 @@ msgid ""
 "The <strong>send method</strong> determines how problem reports will be sent to the body.\n"
 "           If you leave this blank, <strong>send method defaults to email</strong>."
 msgstr ""
-"Η <strong>μέθοδος αποστολής</strong> αποφασίζει πώς θα στέλνονται οι αναφορές προβλημάτων στο σώμα.\n"
+"Η <strong>μέθοδος αποστολής</strong> αποφασίζει πώς θα στέλνονται οι αναφορές προβλημάτων στον φορέα.\n"
 "Αν την αφήσεις κενή, <strong>η προεπιλεγμένη μέθοδος αποστολής είναι μέσω email</strong>."
 
 #: templates/web/base/admin/manifesttheme/form.html:25
@@ -6002,9 +6014,9 @@ msgid ""
 "            Consequently, none of its categories will appear in the drop-down category menu when users report problems.\n"
 "            Currently, users <strong>cannot report problems to this body</strong>."
 msgstr ""
-"Αυτό το σώμα δεν είναι αρμόδιο για καμία περιοχή. Αυτό σημαίνει ότι δεν έχει καμία αρμοδιότητα σε προβλήματα που έχουν αναφερθεί <em>σε οποιαδήποτε περιοχή</em>.\n"
+"Αυτός ο φορέας δεν είναι αρμόδιος για καμία περιοχή. Αυτό σημαίνει ότι δεν έχει καμία αρμοδιότητα σε προβλήματα που έχουν αναφερθεί <em>σε οποιαδήποτε περιοχή</em>.\n"
 "Συνεπώς, καμία από τις κατηγορίες του δε θα εμφανιστούν στο μενού κατηγοριών όταν οι χρήστες αναφέρουν προβλήματα.\n"
-"Μέχρι στιγμής, οι χρήστες <strong>δεν μπορούν να αναφέρουν προβλήματα σε αυτό το σώμα</strong>."
+"Μέχρι στιγμής, οι χρήστες <strong>δεν μπορούν να αναφέρουν προβλήματα σε αυτόν τον φορέα</strong>."
 
 #: templates/web/base/admin/bodies/body.html:64
 msgid "This body has no contacts. This means that currently problems reported to this body <strong>will not be sent</strong>."
@@ -6022,7 +6034,7 @@ msgstr ""
 #. ($b->name)
 #: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:548
 msgid "This cobrand is already assigned to another body: "
-msgstr "Αυτό το cobrand έχει ήδη ανατεθεί σε άλλο τομέα: "
+msgstr "Αυτό το cobrand έχει ήδη ανατεθεί σε άλλο φορέα: "
 
 #: templates/web/fixmystreet.com/reports/_body_gone.html:2
 msgid "This council no longer exists."
@@ -6214,7 +6226,7 @@ msgstr "Τίτλος:"
 
 #: templates/web/base/dashboard/heatmap.html:30
 msgid "To"
-msgstr "Προς"
+msgstr "Έως"
 
 #: templates/web/base/alert/_index_text.html:15
 msgid "To find out what local alerts we have for you, please enter your %s postcode or street name and area:"
@@ -6400,7 +6412,7 @@ msgstr "Η παρακάτω ενημέρωση προστέθηκε από %s σ
 #: templates/web/base/admin/bodies/form.html:153
 #: templates/web/zurich/admin/bodies/form.html:62
 msgid "Update body"
-msgstr "Ενημέρωση σώματος"
+msgstr "Ενημέρωση φορέα"
 
 #: templates/web/base/admin/stats/state.html:21
 msgid "Update breakdown by state"
@@ -6541,9 +6553,9 @@ msgid ""
 "that have the same contacts and you want to just send reports to one, rather"
 " than multiple bodies"
 msgstr ""
-"Χρησιμοποίησέ το αν είναι πιθανό πολλοί τομείς που καλύπτουν την ίδια "
-"περιοχή να έχουν τις ίδιες επαφές και θέλεις οι αναφορές να στέλνονται μόνο "
-"σε έναν, όχι σε πολλούς"
+"Χρησιμοποίησέ το αν είναι πιθανό πολλοί φορείς που καλύπτουν την ίδια περιοχή"
+" να έχουν τις ίδιες επαφές και θέλεις οι αναφορές να στέλνονται μόνο σε έναν,"
+" όχι σε πολλούς"
 
 #: templates/web/base/admin/bodies/contact-form.html:145
 msgid ""
@@ -6630,16 +6642,16 @@ msgstr ""
 msgid ""
 "Users can perform the following actions within their assigned body or area."
 msgstr ""
-"Οι χρήστες μπορούν να κάνουν τις εξής ενέργειες στον τομέα ή στην περιοχή "
-"που τους έχει ανατεθεί."
+"Οι χρήστες μπορούν να κάνουν τις εξής ενέργειες στον φορέα ή στην περιοχή που"
+" τους έχει ανατεθεί."
 
 #: templates/web/base/admin/roles/form.html:14
 msgid ""
 "Users with this role can perform the following actions within their assigned"
 " body or area."
 msgstr ""
-"Οι χρήστες με αυτόν τον ρόλο μπορούν να κάνουν τις εξής ενέργειες στον τομέα"
-" ή στην περιοχή που τους έχει ανατεθεί."
+"Οι χρήστες με αυτόν τον ρόλο μπορούν να κάνουν τις εξής ενέργειες στον φορέα "
+"ή στην περιοχή που τους έχει ανατεθεί."
 
 #: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:137
 #: perllib/FixMyStreet/App/Controller/Admin/Bodies.pm:402
@@ -6820,7 +6832,7 @@ msgstr ""
 
 #: templates/web/fixmystreet.com/report/new/category_filter.html:2
 msgid "What would you like to report?"
-msgstr ""
+msgstr "Τι θα ήθελες να αναφέρεις;"
 
 #: templates/web/base/admin/bodies/category.html:39
 #: templates/web/zurich/admin/bodies/body.html:18
@@ -6854,7 +6866,11 @@ msgstr "Μόνο αυτό? <a href=\"/alert\">Πρόσθεσε περισσότ�
 
 #: templates/web/base/open311/index.html:72
 msgid "With request searches, it is also possible to search for agency_responsible to limit the requests to those sent to a single administration.  The search term is the administration ID provided by <a href=\"%s\">MaPit</a>."
-msgstr "Με τις αναζητήσεις αιτημάτων, είναι επίσης δυνατό να αναζητήσεις με το πεδίο agency_responsible περιορίζοντας τα αποτελέσματα στις αιτήσεις που στέλνονται σε έναν συγκεκριμένο τομέα. Ο όρος αναζήτησης είναι ο Κωδικός (ID) ενός τομέα που παρέχεται από το <a href=\"%s\">MapIt</a>."
+msgstr ""
+"Με τις αναζητήσεις αιτημάτων, είναι επίσης δυνατό να αναζητήσεις με το πεδίο "
+"agency_responsible περιορίζοντας τα αποτελέσματα στις αιτήσεις που στέλνονται"
+" σε έναν συγκεκριμένο φορέα. Ο όρος αναζήτησης είναι ο Κωδικός (ID) ενός "
+"φορέα που παρέχεται από το <a href=\"%s\">MapIt</a>."
 
 #: templates/web/base/front/footer-marketing.html:3
 msgid "Would you like to contribute to FixMyStreet? Our code is open source and <a href=\"https://fixmystreet.org\">available at fixmystreet.org</a>."
@@ -6971,7 +6987,9 @@ msgstr "Μπορείς να μας βοηθήσεις με το να βρεις 
 
 #: templates/web/base/admin/bodies/form.html:107
 msgid "You can mark a body as deleted if you do not want it to be active on the site."
-msgstr "Μπορείς να επισημάνεις έναν τομέα ως διαγεγραμμένο αν δεν θέλεις να είναι ενεργός σε αυτόν τον ιστότοπο."
+msgstr ""
+"Μπορείς να επισημάνεις έναν φορέα ως διαγεγραμμένο αν δεν θέλεις να είναι "
+"ενεργός σε αυτόν τον ιστότοπο."
 
 #: templates/web/base/maps/_map_instructions.html:3
 msgid "You can move around with your keyboard"
@@ -6998,7 +7016,10 @@ msgstr "Έχεις <a id=\"oFN\" href=\"\"><span>%s</span> αποθηκευμέ�
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:39
 msgid "You have already answered this questionnaire. If you have a question, please <a href='%s'>get in touch</a>, or <a href='%s'>view your problem</a>.\n"
-msgstr "Έχεις ήδη απαντήσεις σε αυτό το ερωτηματολόγιο. Αν έχεις κάποιος απορία, παρακαλούμε <a href='%s'>επικοινώνησε</a>, ή <a href='%s'>δες το πρόβλημά σου</a>.\n"
+msgstr ""
+"Έχεις ήδη απαντήσει σε αυτό το ερωτηματολόγιο. Αν έχεις κάποια απορία, "
+"παρακαλούμε <a href='%s'>επικοινώνησε</a>, ή <a href='%s'>δες το πρόβλημά "
+"σου</a>.\n"
 
 #: templates/web/base/contact/enquiry/index.html:58
 msgid ""
@@ -7046,7 +7067,9 @@ msgstr "Ο αριθμός τηλεφώνου σου αφαιρέθηκε."
 #: templates/web/base/report/display.html:25
 #: templates/web/base/report/new/login_success_form.html:3
 msgid "You have successfully signed in; please check and confirm your details are accurate:"
-msgstr "Έχεις με επιτυχία εγγραφεί, παρακαλούμε έλεγξε και επιβεβαίωσε αν οι λεπτομέρειες είναι σωστές:"
+msgstr ""
+"Έχεις συνδεθεί με επιτυχία, παρακαλούμε έλεγξε και επιβεβαίωσε αν τα στοιχεία"
+" σου είναι σωστά:"
 
 #: perllib/FixMyStreet/App/Controller/Auth/Profile.pm:165
 msgid "You have successfully verified your phone number."
@@ -7066,7 +7089,9 @@ msgstr ""
 
 #: templates/web/base/admin/index.html:10
 msgid "You need to <a href=\"%s\">add some bodies</a> (such as councils or departments) before any reports can be sent."
-msgstr "Θα πρέπει να <a href=\"%s\">προσθέσεις κάποιες υπηρεσίες</a> (όπως υπηρεσίες ή τομείς) πριν να είναι διαθέσιμη η αποστολή αναφορών."
+msgstr ""
+"Θα πρέπει να <a href=\"%s\">προσθέσεις κάποιες υπηρεσίες</a> (όπως υπηρεσίες "
+"ή φορείς) πριν να είναι διαθέσιμη η αποστολή αναφορών."
 
 #: templates/web/base/admin/bodies/index.html:7
 msgid ""
@@ -7074,7 +7099,7 @@ msgid ""
 "    the categories of problems they can handle (such as potholes or streetlights) and the\n"
 "    contacts (such as an email address) to which reports are sent."
 msgstr ""
-"Θα πρέπει πρώτα να προσθέσεις κάποιες υπηρεσίες (όπως πχ. υπηρεσίες ή τομείς) έτσι ώστε να μπορείς μετά να προσθέσεις\n"
+"Θα πρέπει πρώτα να προσθέσεις κάποιες υπηρεσίες (όπως πχ. υπηρεσίες ή φορείς) έτσι ώστε να μπορείς μετά να προσθέσεις\n"
 "τις κατηγορίες προβλημάτων που αυτές μπορούν να αντιμετωπίσουν (όπως πχ. λακκούβες ή φωτισμός δρόμων)\n"
 "και τις επαφές (όπως πχ. e-mail διευθύνσεις) στις οποίες μπορούν να αποσταλούν οι αναφορές."
 
@@ -7379,7 +7404,7 @@ msgstr "ή <a href=\"%s\">συνδέσου</a>"
 #: templates/web/zurich/admin/reports/edit.html:51
 #: templates/web/zurich/admin/reports/edit.html:52
 msgid "originally entered: &ldquo;%s&rdquo;"
-msgstr "αναφέρθηκε αρχικά από: &ldquo;%s&rdquo;"
+msgstr "αρχική εγγραφή: &ldquo;%s&rdquo;"
 
 #: templates/web/base/admin/reports/_edit_main.html:46
 msgid "other areas:"
@@ -7400,9 +7425,8 @@ msgstr "αρ.:&nbsp;%s"
 
 #: templates/web/fixmystreet.com/about/council-dashboard.html:17
 #: templates/web/fixmystreet.com/about/council-dashboard.html:22
-#, fuzzy
 msgid "required"
-msgstr "Απαιτείται φωτογραφία"
+msgstr "απαιτείται"
 
 #: templates/web/base/maps/_map_instructions.html:8
 msgid "right"
@@ -7414,7 +7438,7 @@ msgstr ""
 
 #: templates/web/zurich/footer.html:12
 msgid "sign out"
-msgstr "έξοδος"
+msgstr "αποσύνδεση"
 
 #: templates/web/base/maps/_map_instructions.html:15
 #: templates/web/base/maps/_map_instructions.html:21
@@ -7426,7 +7450,7 @@ msgid ""
 "the database id of the body to associate that user with, e.g. "
 "<code>2217</code> for Buckinghamshire."
 msgstr ""
-"το id του τομέα στη βάση δεδομένων με τον οποίο θα συνδεθεί ο χρήστης, π.χ. "
+"το id του φορέα στη βάση δεδομένων με τον οποίο θα συνδεθεί ο χρήστης, π.χ. "
 "<code>2217</code> για το Buckinghamshire."
 
 #: templates/web/base/report/new/form_public_councils_text.html:6
