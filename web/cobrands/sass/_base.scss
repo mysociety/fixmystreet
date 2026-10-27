@@ -1304,11 +1304,19 @@ input.final-submit {
     padding-top: 2em;
     overflow: hidden;
     z-index: 2;
+
+    @supports (height: 100dvh) {
+        bottom: auto;
+        top: 100dvh;
+        transform: translateY(-100%);
+    }
 }
 .floating-button {
     box-shadow: 0 0 2em 2em #fff;
     background-color: #fff;
     padding: 0 1em 1em;
+    // Using unquote() to avoid SCSS parsing the max() function and give an error in older versions of SCSS.
+    padding-bottom: unquote("max(1em, env(safe-area-inset-bottom))");
 }
 
 .pre-button-messaging {
