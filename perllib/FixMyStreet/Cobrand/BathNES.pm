@@ -489,9 +489,15 @@ sub post_report_sent {
 
     my %internal_referral = map { $_ => 1 } (
         'Blue Badge/Permit Misuse',
-        'Parking With Form', # Parking Charges
-        'Parking', # Parking Enforcement
-        'other',
+
+        'Parking With Form', # Staging - Parking Charges
+        'Parking Charges', # Live
+
+        'Parking', # Staging - Parking Enforcement
+        'Parking Enforcement', # Live
+
+        'other', # Staging
+        'Other', # Live
     );
 
     if ( $in_progress{ $problem->category } ) {
