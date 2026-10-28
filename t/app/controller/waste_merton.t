@@ -589,6 +589,15 @@ FixMyStreet::override_config {
 
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
+    subtest 'Staff cannot request black sacks' => sub {
+        $e->mock('GetServiceUnitsForObject', sub { $above_shop_data });
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/waste/12345/request');
+        $mech->content_like(qr/name="container-11"[^>]*disabled/);
+        $mech->content_contains('Not available - The resident should buy their own black bags.');
+        $mech->log_out_ok;
+        $e->mock('GetServiceUnitsForObject', sub { $bin_data });
+    };
 
     set_fixed_time('2022-09-13T19:00:00Z');
     subtest 'test failure to deliver' => sub {

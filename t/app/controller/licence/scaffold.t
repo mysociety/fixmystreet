@@ -128,7 +128,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
         $mech->submit_form_ok({ with_fields => {
             upload_insurance => [ $sample_pdf, encode_utf8('“insurance”.pdf'), Content_Type => 'application/pdf' ],
             insurance_validity => 'all year',
-            upload_rams => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
+            upload_rams => [ $sample_pdf, ('incredibly-long-' x 10) . 'sample.pdf', Content_Type => 'application/pdf' ],
             upload_scaffold_drawing => [ $sample_pdf, undef, Content_Type => 'application/pdf' ],
         }});
 

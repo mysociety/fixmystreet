@@ -373,4 +373,23 @@ sub include_comment_counts {
     });
 }
 
+sub unprocessed {
+    my $rs = shift;
+    $rs->search([
+        {
+            send_state => 'unprocessed',
+            send_fail_count => { '>', 0 },
+        },
+        {
+            send_state => 'processing',
+            send_fail_timestamp => { '<', \"current_timestamp - '1 hour'::interval" }
+        },
+        {
+            send_state => 'processing',
+            send_fail_timestamp => undef,
+            confirmed => { '<', \"current_timestamp - '1 hour'::interval" }
+        },
+    ]);
+}
+
 1;

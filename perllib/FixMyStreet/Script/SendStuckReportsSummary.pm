@@ -12,11 +12,9 @@ sub run {
     my $cobrand = $params->{body}->get_cobrand_handler;
 
     my $resultset = FixMyStreet::DB->resultset('Problem')->to_body($params->{body}->id);
-    my @stuck_reports = $resultset->search({
+    my @stuck_reports = $resultset->unprocessed->search({
         category => $params->{categories},
-        send_state => 'unprocessed',
         state => [ FixMyStreet::DB::Result::Problem::open_states() ],
-        send_fail_count => { '>', 0 },
     })->order_by('-confirmed')->all;
 
     foreach (@stuck_reports) {

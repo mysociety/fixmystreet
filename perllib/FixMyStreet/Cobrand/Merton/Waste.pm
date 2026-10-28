@@ -380,6 +380,12 @@ sub waste_munge_request_form_fields {
         my ($key, $value) = ($field_list->[$i], $field_list->[$i+1]);
         next unless $key =~ /^container-(\d+)/;
         my $id = $1;
+        # Staff see all containers, but Echo will not accept black sack requests
+        if ($self->_waste_containers_no_request->{$id}) {
+            $value->{disabled} = 1;
+            $value->{option_hint} = 'Not available - The resident should buy their own black bags.';
+            next;
+        }
         my $cost = $self->request_cost($id);
         if ($cost) {
             my $price = sprintf("£%.2f", $cost / 100);
