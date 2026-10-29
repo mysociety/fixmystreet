@@ -405,3 +405,10 @@ body.waste h1.govuk-heading-xl:not(:empty) {
 .govuk-grid-column-one-third > .aside li a {
     font-weight: normal;
 }
+
+.merton-confirmation-buttons {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1em;
+}
