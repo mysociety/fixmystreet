@@ -70,6 +70,10 @@ FixMyStreet::override_config {
     };
 };
 
+# The pre-generated export must produce the same output as the live one
+my $expected_headers = '"Reported As","Type of waste","How much waste",Location,"Assigned to","Assigned at"';
+my $expected_row = qr/southkesteven,,garden,small_van,highway,Staff,\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d/;
+
 subtest 'Dashboard CSV extra columns' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'southkesteven',
@@ -88,8 +92,8 @@ subtest 'Dashboard CSV extra columns' => sub {
 
         $mech->log_in_ok($staff_user->email);
         $mech->get_ok('/dashboard?export=1');
-        $mech->content_contains('"Reported As","Type of waste","How much waste",Location,"Assigned to"');
-        ok $mech->content_contains('southkesteven,,garden,small_van,highway,Staff');
+        $mech->content_contains($expected_headers);
+        $mech->content_like($expected_row);
     };
 };
 
@@ -102,8 +106,8 @@ subtest 'Dashboard CSV pre-generation' => sub {
     }, sub {
         FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
         $mech->get_ok('/dashboard?export=1');
-        $mech->content_contains('"Reported As","Type of waste","How much waste",Location,"Assigned to"');
-        ok $mech->content_contains('southkesteven,,garden,small_van,highway,Staff');
+        $mech->content_contains($expected_headers);
+        $mech->content_like($expected_row);
     };
 };
 
