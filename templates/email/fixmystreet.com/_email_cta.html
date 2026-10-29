@@ -1,0 +1,33 @@
+[%~
+
+donate_url = "https://www.mysociety.org/donate/support-fixmystreet-and-mysociety?utm_source=fixmystreet.com&utm_content=alert+email+donate+now&utm_medium=link&utm_campaign=fms_alert_email";
+newsletter_url = "https://www.fixmystreet.com/about/newsletter";
+
+cta_style = "padding: ${ column_padding }px; background-color: #fff6cc; color: $secondary_column_text_color; border-radius: 4px;";
+cta_h2_style = "$h2_style margin-bottom: 10px;";
+cta_p_style = "$secondary_p_style margin-bottom: 16px;";
+
+~%]
+
+<table [% table_reset | safe %] style="margin-top: 20px;">
+  <tr>
+    <th style="[% td_style %][% cta_style %]">
+      <h2 style="[% cta_h2_style %]">[% loc('Support FixMyStreet') %]</h2>
+      <p style="[% cta_p_style %]">[% loc('We are a charity – donate today to invest in safer, more accessible communities. Even £5 goes a long way!') %]</p>
+      <a href="[% donate_url %]" style="[% button_style %]">[% loc('Donate now') %] ♥️</a>
+    </th>
+  </tr>
+  <tr>
+    <td height="20"> </td>
+  </tr>
+  <tr>
+    <th style="[% td_style %][% cta_style %]">
+      <h2 style="[% cta_h2_style %]">[% loc('Subscribe to our newsletter') %]</h2>
+      <p style="[% cta_p_style %]">[% loc('FixMyStreet is a service from mySociety, but we do lots more too. Just like a pothole, we’ll fill you in.') %]</p>
+      <a href="[% newsletter_url %]" style="[% button_style %]">[% loc('Subscribe') %]</a>
+    </th>
+  </tr>
+  <tr>
+    <td height="20">&nbsp;</td>
+  </tr>
+</table>
