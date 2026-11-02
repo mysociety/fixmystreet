@@ -681,8 +681,8 @@ has_field terms_accepted => (
 
 sub options_terms_accepted {
     my @urls = (
-        '', # TODO
-        '', # TODO
+        'https://tfl.gov.uk/info-for/urban-planning-and-construction/our-land-and-infrastructure/roadworks-and-street-faults',
+        'https://tfl.gov.uk/info-for/urban-planning-and-construction/our-land-and-infrastructure/roadworks-and-street-faults',
     );
     my @labels = (
         'TfL Traffic Signal Switch Out Guidance and Terms & Conditions',

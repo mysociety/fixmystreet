@@ -747,7 +747,7 @@ around 'munge_sendreport_params' => sub {
         }
         if ($pdf) {
             my $filename;
-            if ($row->cobrand_data eq 'licence') { 
+            if ($row->cobrand_data eq 'licence') {
                 $filename = $type . '-licence-application-' . $row->id . '.pdf';
             } elsif ($row->cobrand_data eq 'switchout') {
                 $filename = 'switchout-application-' . $row->id . '.pdf';
@@ -764,7 +764,7 @@ around 'munge_sendreport_params' => sub {
         }
 
         my $subdir;
-        if ($row->cobrand_data eq 'licence') { 
+        if ($row->cobrand_data eq 'licence') {
             $subdir = 'tfl-licence-' . $type;
         } elsif ($row->cobrand_data eq 'switchout') {
             $subdir = 'tfl-switchout';

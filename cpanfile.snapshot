@@ -3995,13 +3995,13 @@ DISTRIBUTIONS
       IO::WrapTie::Slave 2.110
     requirements:
       ExtUtils::MakeMaker 0
-  Image-PNG-QRCode-0.10
-    pathname: B/BK/BKB/Image-PNG-QRCode-0.10.tar.gz
+  Image-PNG-QRCode-0.11
+    pathname: B/BK/BKB/Image-PNG-QRCode-0.11.tar.gz
     provides:
-      Image::PNG::QRCode 0.10
+      Image::PNG::QRCode 0.11
     requirements:
       ExtUtils::MakeMaker 0
-      perl 5.006001
+      perl 5.008001
   Image-Size-3.300
     pathname: R/RJ/RJRAY/Image-Size-3.300.tar.gz
     provides:
@@ -7658,13 +7658,13 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       Term::ProgressBar::Quiet 0
-  Term-ReadLine-Gnu-1.45
-    pathname: H/HA/HAYASHI/Term-ReadLine-Gnu-1.45.tar.gz
+  Term-ReadLine-Gnu-1.47
+    pathname: H/HA/HAYASHI/Term-ReadLine-Gnu-1.47.tar.gz
     provides:
-      Term::ReadLine::Gnu 1.45
-      Term::ReadLine::Gnu::AU 1.45
-      Term::ReadLine::Gnu::Var 1.45
-      Term::ReadLine::Gnu::XS 1.45
+      Term::ReadLine::Gnu 1.47
+      Term::ReadLine::Gnu::AU 1.47
+      Term::ReadLine::Gnu::Var 1.47
+      Term::ReadLine::Gnu::XS 1.47
     requirements:
       ExtUtils::MakeMaker 0
       perl 5.008001

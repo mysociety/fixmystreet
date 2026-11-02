@@ -437,6 +437,7 @@ FixMyStreet::override_config {
             $echo->mock( 'GetEventsForObject', sub { [ {
                 Guid => 'a-guid',
                 EventTypeId => 2175,
+                EventStateId => 15120,
                 ResolvedDate => { DateTime => '2023-07-02T00:00:00Z' },
             } ] } );
             $mech->get_ok('/waste/12345');
@@ -574,6 +575,7 @@ FixMyStreet::override_config {
 
             my $report_id = $report->id;
             my @emails = $mech->get_email;
+            $mech->clear_emails_ok;
 
             subtest 'Sends cancellation confirmation' => sub {
                 my $email = $emails[0];
@@ -751,6 +753,10 @@ FixMyStreet::override_config {
         is $cancellation_update->text, "Booking cancelled since payment was not made in time";
         is $cancellation_update->get_extra_metadata('bulky_cancellation'), 1;
         is $cancellation_update->user_id, $staff_user->id;
+
+        FixMyStreet::Script::Alerts::send_updates();
+        my $email = $mech->get_email;
+        like $email->as_string, qr/Booking cancelled since payment was not made in time/;
 
         $p->comments->delete;
         $p->delete;

@@ -284,13 +284,58 @@ sub dashboard_export_problems_add_columns {
     $csv->add_csv_columns(
         park_name => 'Park name',
         park_uprn => 'Park UPRN',
+        uprn => 'UPRN',
+        user_email => 'User Email',
+        user_phone => 'User Phone',
+        staff_user => 'Staff User',
+        staff_role => 'Staff Role',
+        payment_method => 'Payment method',
+        payment_reference => 'Payment reference',
+        payment => 'Payment',
+        pro_rata => 'Pro rata payment',
+        admin_fee => 'Admin fee',
+        container => 'Subscription container',
+        current_bins => 'Bin count declared',
+        quantity => 'Subscription quantity',
     );
+
+    my ($user_lookup, $userroles);
+    if (!$csv->dbi) {
+        $csv->objects_attrs({
+            '+columns' => ['user.email', 'user.phone'],
+            join => 'user',
+        });
+        $user_lookup = $self->csv_staff_users;
+        $userroles = $self->csv_staff_roles($user_lookup);
+    }
 
     $csv->csv_extra_data(sub {
         my $report = shift;
+
+        my $data = {};
+        if (!$csv->dbi) {
+            my $by = $report->get_extra_metadata('contributed_by');
+            $data = {
+                uprn => $report->uprn,
+                user_email => $report->user->email || '',
+                user_phone => $report->user->phone || '',
+                staff_user => $self->csv_staff_user_lookup($by, $user_lookup),
+                staff_role => $by ? join(',', @{$userroles->{$by} || []}) : '',
+            };
+        }
+
         return {
+            %$data,
             park_name => $csv->_extra_field($report, 'ParkName'),
             park_uprn => $csv->_extra_field($report, 'uprn'),
+            payment_method => $csv->_extra_field($report, 'payment_method') || '',
+            payment_reference => $csv->_extra_metadata($report, 'payment_reference') || '',
+            payment => $csv->_extra_field($report, 'payment'),
+            pro_rata => $csv->_extra_field($report, 'pro_rata'),
+            admin_fee => $csv->_extra_field($report, 'admin_fee'),
+            container => $csv->_extra_field($report, 'Paid_Container_Type'),
+            current_bins => $csv->_extra_field($report, 'current_containers'),
+            quantity => $csv->_extra_field($report, 'Paid_Container_Quantity'),
         };
     });
 }
