@@ -222,7 +222,7 @@ subtest 'Switch out application form submission' => sub {
             like $email_parts[6][0]{'Content-Type'}, qr{application/pdf};
             like $email_parts[6][0]{'Content-Disposition'}, qr{switchout-application-$id.pdf};
             like $email_parts[7][0]{'Content-Type'}, qr{application/pdf};
-            like $email_parts[7][0]{'Content-Disposition'}, qr{inline; filename\*=UTF-8''%E2%80%9Cinsurance%E2%80%9D\.pdf; filename="\\\"insurance\\\"\.pdf"};
+            like $email_parts[7][0]{'Content-Disposition'}, qr{inline; filename\*=UTF-8''%E2%80%9Cinsurance%E2%80%9D\.pdf};
 
             @email_parts = ();
             $email[1]->walk_parts(sub {

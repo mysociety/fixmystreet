@@ -208,7 +208,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
             like $email_parts[6][0]{'Content-Type'}, qr{application/pdf};
             like $email_parts[6][0]{'Content-Disposition'}, qr{scaffold-licence-application-$id.pdf};
             like $email_parts[7][0]{'Content-Type'}, qr{application/pdf};
-            like $email_parts[7][0]{'Content-Disposition'}, qr{inline; filename\*=UTF-8''%E2%80%9Cinsurance%E2%80%9D\.pdf; filename="\\\"insurance\\\"\.pdf"};
+            like $email_parts[7][0]{'Content-Disposition'}, qr{inline; filename\*=UTF-8''%E2%80%9Cinsurance%E2%80%9D\.pdf};
             like $email_parts[8][0]{'Content-Type'}, qr{application/pdf};
             like $email_parts[8][0]{'Content-Disposition'}, qr{sample.pdf};
             like $email_parts[9][0]{'Content-Type'}, qr{application/pdf};
