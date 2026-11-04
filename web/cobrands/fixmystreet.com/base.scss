@@ -105,11 +105,17 @@ body.frontpage {
 
   h2 {
     margin-top: 0;
+    // Prevents to inherit the padding and border from .sticky-sidebar--help+.content h2
+    padding-top: 0 !important;
+    border-top: none !important;
   }
 
   p {
     color: #666666;
-    margin-bottom: 0;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 }
 
@@ -119,7 +125,7 @@ body.frontpage {
 
   a {
     float: $left;
-    margin: flip(1em 0.6em 0 0, 1em 0 0 0.6em);
+    margin: flip(0 0.6em 0 0, 0 0 0 0.6em);
 
     &:last-child {
       margin-#{$right}: 0;
