@@ -35,7 +35,7 @@ Integrates with Echo and Symology for FixMyStreet
 
 Integrates with Echo for WasteWorks.
 
-Uses SCP for accepting payments.
+Uses SCP and AccessPay for accepting payments.
 
 Uses OpenUSRN for locating nearest addresses on the Highway
 
@@ -49,7 +49,8 @@ with 'FixMyStreet::Roles::Open311Multi';
 with 'FixMyStreet::Roles::Cobrand::OpenUSRN';
 with 'FixMyStreet::Roles::Cobrand::Echo';
 with 'FixMyStreet::Roles::Cobrand::SCP',
-     'FixMyStreet::Roles::Cobrand::Paye';
+     'FixMyStreet::Roles::Cobrand::Paye',
+     'FixMyStreet::Roles::Cobrand::AccessPaySuite';
 
 # Brent covers some of the areas around it so that it can handle near-boundary reports
 sub council_area_id { return [2488, 2505, 2489, 2487]; } # 2505 Camden, 2489 Barnet, 2487 Harrow
@@ -1572,11 +1573,6 @@ sub waste_munge_enquiry_data {
     $data->{detail} = $detail;
 }
 
-sub waste_cc_payment_admin_fee_line_item_ref {
-    my ($self, $p) = @_;
-    return "Brent-" . $p->id;
-}
-
 sub waste_garden_sub_params {
     my ($self, $data, $type) = @_;
     my $c = $self->{c};
@@ -1771,6 +1767,43 @@ sub _harrow_non_street {
         'Car parking',
         'Graffiti',
     ]
+}
+
+sub waste_payment_ref_council_code { "BRT" }
+sub waste_dd_has_redirect { 1 }
+sub waste_dd_get_redirect_url {
+    my ($self, $c) = @_;
+    my $property = $c->stash->{property};
+    my $p = $c->stash->{report};
+    my $amount = $p->get_extra_field_value( 'pro_rata' );
+    unless ($amount) {
+        $amount = $p->get_extra_field_value( 'payment' );
+    }
+
+    my ($first, $last) = $p->name =~ /(\S+)(?:\.?\s+(.+))?/;
+
+    my $url = URI->new($self->feature('payment_gateway')->{dd_push_url});
+    $url->query_form(
+        %{$url->query_form_hash},
+        redirectlink => '%2Fen',
+        cancelRedirectLink => '%2Fen',
+        consentMessage => 'yes',
+        debitnameparameter => 'WasteWorks',
+        firstname => $first,
+        lastname => $last,
+        emailaddress => $p->user->email,
+        telephonenumber => $p->user->phone,
+        amount => $amount,
+        houseno => $property->{first_part},
+        streetname => $property->{street},
+        area => $property->{town},
+        postcode => $property->{postcode},
+        additionalref => $c->cobrand->waste_payment_ref_council_code . '-' . $p->id . '-' . $c->stash->{property}{uprn},
+    );
+    # This form does not handle + as space
+    $url = "$url";
+    $url =~ s/\+/%20/g;
+    return $url;
 }
 
 1;

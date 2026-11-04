@@ -6,8 +6,25 @@ use DateTime;
 use FixMyStreet::WorkingDays;
 with 'FixMyStreet::Roles::Cobrand::DDProcessor';
 
+has paymentDateField => ( is => 'ro', default => 'DateOfCollection' ); # CollectionDate might be weekend
+has paymentTypeField => ( is => 'ro', default => 'Type' );
+has oneOffReferenceField => ( is => 'ro', default => 'Comment' );
+has referenceField => ( is => 'ro', default => 'DirectDebitReference' );
+has statusField => ( is => 'ro', default => 'Status' );
+has paymentTakenCode => ( is => 'ro', default => 'Paid' );
+#has cancelReferenceField => ( is => 'ro', default => 'Reference' );
+#has cancelledDateField => ( is => 'ro', default => 'CancelledDate' );
+
 sub get_config {
     return shift->feature('payment_gateway');
+}
+
+sub add_new_sub_metadata {
+    my ($self, $new_sub, $payment) = @_;
+    $new_sub->set_extra_metadata('direct_debit_contract_id', $payment->data->{ContractId})
+        unless $new_sub->get_extra_metadata('direct_debit_contract_id');
+    $new_sub->set_extra_metadata('direct_debit_customer_id', $payment->data->{CustomerId})
+        unless $new_sub->get_extra_metadata('direct_debit_customer_id');
 }
 
 sub get_dd_integration {
@@ -21,9 +38,26 @@ sub get_dd_integration {
             api_key => $config->{dd_api_key},
             client_code => $config->{dd_client_code},
             log_ident => $config->{log_ident},
-            adhoc_schedule_id => $config->{dd_adhoc_schedule_id},
         },
     });
+}
+
+sub waste_payment_type {
+    my ($self, $type, $ref) = @_;
+
+    my $category = 'Garden Subscription';
+    my $sub_type;
+    if ( $type eq 'First Time' ) {
+        $sub_type = $self->waste_subscription_types->{New};
+    } elsif ( $type eq 'Regular' ) {
+        if ( $ref ) {
+            $sub_type = $self->waste_subscription_types->{Amend};
+        } else {
+            $sub_type = $self->waste_subscription_types->{Renew};
+        }
+    }
+
+    return ($category, $sub_type);
 }
 
 sub waste_get_next_dd_day {
@@ -31,27 +65,16 @@ sub waste_get_next_dd_day {
 
     # new DD mandates must have a 10-day wait
     my $dd_delay = 10;
-    my $payment_day = 28;
 
-    my $dt = DateTime->now->set_time_zone( FixMyStreet->local_time_zone );
-    my $wd = FixMyStreet::WorkingDays->new(
-        public_holidays => $self->public_holidays()
-    );
+    # ad-hoc payments on an existing mandate only need a 5-day wait
+    if ($payment_type && ($payment_type eq 'ad-hoc')) { $dd_delay = 5; }
 
-    my $payment_date = $wd->add_days( $dt, $dd_delay );
+    my $dt = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    my $wd = FixMyStreet::WorkingDays->new(public_holidays => $self->public_holidays());
 
-    # Find the next '28th'.
-    # If date is greater than 28, we need to move into next month.
-    if ( $payment_date->day > $payment_day ) {
-        # Set day first, because if e.g. we are on the 31st of Jan,
-        # adding one month will push us into March, when we want to be in Feb.
-        $payment_date->set_day($payment_day);
-        $payment_date->add( months => 1 );
-    } else {
-        $payment_date->set_day($payment_day);
-    }
+    my $next_day = $wd->add_days( $dt, $dd_delay );
 
-    return $payment_date;
+    return $next_day;
 }
 
 sub waste_check_existing_dd {
@@ -86,6 +109,35 @@ sub waste_check_existing_dd {
             }
         }
     }
+}
+
+sub waste_report_extra_dd_data {
+    my ($self) = @_;
+    my $c = $self->{c};
+    my $orig_sub = $c->stash->{orig_sub};
+
+    if ($orig_sub && $orig_sub->get_extra_metadata('direct_debit_contract_id')) {
+        my $report = $c->stash->{report};
+        my $contract_id = $orig_sub->get_extra_metadata('direct_debit_contract_id');
+        my $customer_id = $orig_sub->get_extra_metadata('direct_debit_customer_id');
+        $report->set_extra_metadata(direct_debit_contract_id => $contract_id);
+        $report->set_extra_metadata(direct_debit_customer_id => $customer_id);
+        $report->update;
+    }
+}
+
+=head2 waste_dd_get_reference
+
+Used in garden subscription modifying, to return the contract ID to modify.
+
+=cut
+
+sub waste_dd_get_reference {
+    my ($self) = @_;
+    my $c = $self->{c};
+    my $orig_sub = $c->stash->{orig_sub};
+    my $contract_id = $orig_sub->get_extra_metadata('direct_debit_contract_id');
+    return $contract_id;
 }
 
 1;

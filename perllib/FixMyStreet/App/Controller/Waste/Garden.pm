@@ -76,6 +76,7 @@ sub modify : Chained('setup') : PathPart('garden_modify') : Args(0) {
     my $service = $c->cobrand->garden_current_subscription;
     $c->detach('/waste/property_redirect') unless $service && !$service->{garden_due};
     $c->detach('/waste/property_redirect') if $c->stash->{waste_features}->{garden_modify_disabled};
+    $c->detach('/waste/property_redirect') unless $c->cobrand->waste_show_garden_modify($service);
 
     $c->detach( '/auth/redirect' ) unless $c->user_exists;
 
@@ -228,7 +229,7 @@ sub process_garden_cancellation : Private {
 
     # Check for existing recent cancellation to prevent duplicates from concurrent requests
     # This is Bexley-specific as Bexley auto-confirms cancellations
-    if ($c->cobrand->moniker eq 'bexley') {
+    if ($c->cobrand->moniker eq 'bexley') { # XXX Needed for Brent as well?
         my $uprn = $c->stash->{property}{uprn};
         my $existing_cancel = $c->cobrand->problems->search({
             category => 'Cancel Garden Subscription',
@@ -527,11 +528,11 @@ sub process_garden_transfer : Private {
 }
 
 # staff should not be able to make payments for direct debit payments
-# Except in Bexley
+# Except in Bexley and Brent
 sub check_if_staff_can_pay : Private {
     my ($self, $c, $payment_type) = @_;
 
-    return 1 if $c->cobrand->moniker eq 'bexley';
+    return 1 if $c->cobrand->moniker eq 'bexley' || $c->cobrand->moniker eq 'brent';
 
     if ( $c->stash->{staff_payments_allowed} ) {
         if ( $payment_type && $payment_type eq 'direct_debit' ) {
@@ -549,9 +550,24 @@ sub direct_debit : Path('/waste/dd') : Args(0) {
     my ($self, $c) = @_;
 
     $c->cobrand->call_hook('waste_report_extra_dd_data');
-    $c->forward('populate_dd_details');
-    $c->stash->{template} = 'waste/dd.html';
-    $c->detach;
+    my $p = $c->stash->{report};
+    if ($c->cobrand->waste_dd_has_redirect($p)) {
+        my $redirect_url = $c->cobrand->waste_dd_get_redirect_url($c);
+        if ( $redirect_url ) {
+            $c->res->redirect( $redirect_url );
+            $c->detach;
+        } else {
+            unless ( $c->stash->{error} ) {
+                $c->stash->{error} = 'Unknown error';
+            }
+            $c->stash->{template} = 'waste/pay_error.html';
+            $c->detach;
+        }
+    } else {
+        $c->forward('populate_dd_details');
+        $c->stash->{template} = 'waste/dd.html';
+        $c->detach;
+    }
 }
 
 sub direct_debit_internal : Private {
@@ -651,7 +667,7 @@ sub direct_debit_modify : Private {
         report => $p,
     } );
 
-    if ( $c->cobrand->moniker eq 'bexley' ) {
+    if ( $c->cobrand->moniker eq 'bexley' ) { # XXX Do Brent want it to happen instantly or wait for ad-hoc payment to go through
         $p->confirm;
         $p->update;
     }
@@ -680,8 +696,8 @@ sub direct_debit_cancel_sub : Private {
         @extra_args,
     } );
 
-    # Bexley can have immediate cancellation
-    if ( $c->cobrand->moniker eq 'bexley' ) {
+    # Bexley/Brent can have immediate cancellation
+    if ( $c->cobrand->moniker eq 'bexley' || $c->cobrand->moniker eq 'brent' ) {
         $p->confirm;
         $p->update;
     }

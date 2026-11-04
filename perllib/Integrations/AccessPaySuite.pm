@@ -390,4 +390,17 @@ sub one_off_payment {
     return 1;
 }
 
+sub get_recent_payments {
+    my ($self, $args) = @_;
+
+    # PAGINATION! XXX
+
+    my $res = $self->call('POST', "payments", {
+        CreatedAfter => $args->{start}->strftime('%Y-%m-%dT%H:%M:%SZ'),
+        CreatedBefore => $args->{end}->strftime('%Y-%m-%dT%H:%M:%SZ'),
+    });
+    return $res if $res->{error};
+    return $res->{Data};
+}
+
 1;

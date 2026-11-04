@@ -46,6 +46,8 @@ sub logging_levels {
     };
 }
 
+sub waste_dd_has_redirect { 0 }
+
 sub waste_is_dd_payment {
     my ($self, $row) = @_;
 
@@ -172,6 +174,8 @@ sub waste_reconcile_direct_debits {
         $self->log( "done looking at payment " . $payment->payer );
         $self->output_log(!$handled);
     }
+
+    return unless $i->can('get_cancelled_payers');
 
     # There's two options with a cancel payment. If the user has cancelled it outside
     # of WasteWorks then we do nothing. If it's been cancelled inside WasteWorks then
@@ -310,7 +314,7 @@ sub _report_matches_payment {
     my $match = 0;
     $self->log( "one off reference field is " . $p->oneOffRef ) if $p->oneOffRef;
     $self->log( "potential match type is " . $r->get_extra_field_value($self->garden_subscription_type_field) );
-    if ( $p->oneOffRef && $r->id eq $p->oneOffRef ) {
+    if ( $p->oneOffRef && ($r->id eq $p->oneOffRef || $p->oneOffRef eq "WasteWorks: AdHoc payment for #" . $r->id) ) {
         $match = 'Ad-Hoc';
     } elsif ( !$p->oneOffRef
             && ( $r->get_extra_field_value($self->garden_subscription_type_field) eq $self->waste_subscription_types->{New} ||
@@ -366,6 +370,7 @@ sub _duplicate_waste_report {
     $renew->set_extra_fields(@extra);
     $renew->set_extra_metadata('payerReference', $payment->payer);
     $renew->set_extra_metadata('payment_reference', $payment->payer);
+    $self->add_new_sub_metadata($renew, $payment);
     $renew->set_extra_metadata('dd_date', $payment->date);
     $renew->confirm;
     $renew->insert unless $dry_run;

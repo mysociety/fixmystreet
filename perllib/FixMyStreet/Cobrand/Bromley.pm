@@ -802,6 +802,8 @@ sub garden_due_date {
     $end_date->subtract(days => 48);
 };
 
+sub waste_show_garden_modify { 1 }
+
 sub service_name_override {
     my ($self, $service) = @_;
 

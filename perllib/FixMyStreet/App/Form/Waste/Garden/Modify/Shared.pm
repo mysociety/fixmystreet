@@ -177,7 +177,7 @@ has_page summary => (
         } elsif ( $data->{payment_method} eq 'direct_debit' ) {
             $button_text = 'Amend Direct Debit';
         }
-        if ($c->stash->{is_staff} && $features->{text_for_waste_payment}) {
+        if ($c->stash->{is_staff} && $features->{text_for_waste_payment} && $data->{payment_method} ne 'direct_debit') {
             $button_text =  $features->{text_for_waste_payment};
         }
         return {

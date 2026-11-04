@@ -226,20 +226,6 @@ sub waste_cancel_form_class {
     'FixMyStreet::App::Form::Waste::Garden::Cancel::Bexley';
 }
 
-sub waste_report_extra_dd_data {
-    my ($self) = @_;
-    my $c = $self->{c};
-
-    my $orig_sub = $c->stash->{orig_sub};
-    my $report = $c->stash->{report};
-
-    if ($orig_sub && $orig_sub->get_extra_metadata('direct_debit_contract_id')) {
-        my $contract_id = $orig_sub->get_extra_metadata('direct_debit_contract_id');
-        $report->set_extra_metadata(direct_debit_contract_id => $contract_id);
-        $report->update;
-    }
-}
-
 =head2 waste_dd_get_reference
 
 Used in garden subscription modifying, to return the contract ID to modify;
@@ -560,5 +546,37 @@ sub waste_staff_choose_payment_method { 1 }
 =cut
 
 sub waste_show_garden_modify { 1 }
+
+=item * DD have a 10-day wait, and then start on the 28th of the next month
+
+=cut
+
+sub waste_get_next_dd_day {
+    my ($self, $payment_type) = @_;
+
+    # new DD mandates must have a 10-day wait
+    my $dd_delay = 10;
+    my $payment_day = 28;
+
+    my $dt = DateTime->now->set_time_zone( FixMyStreet->local_time_zone );
+    my $wd = FixMyStreet::WorkingDays->new(
+        public_holidays => $self->public_holidays()
+    );
+
+    my $payment_date = $wd->add_days( $dt, $dd_delay );
+
+    # Find the next '28th'.
+    # If date is greater than 28, we need to move into next month.
+    if ( $payment_date->day > $payment_day ) {
+        # Set day first, because if e.g. we are on the 31st of Jan,
+        # adding one month will push us into March, when we want to be in Feb.
+        $payment_date->set_day($payment_day);
+        $payment_date->add( months => 1 );
+    } else {
+        $payment_date->set_day($payment_day);
+    }
+
+    return $payment_date;
+}
 
 1;
