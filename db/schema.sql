@@ -273,6 +273,7 @@ create index problem_confirmed_idx on problem(confirmed);
 create index problem_state_latitude_longitude_idx on problem(state, latitude, longitude);
 create index problem_uprn_idx on problem(uprn) WHERE uprn IS NOT NULL;
 create index problem_user_id_idx on problem ( user_id );
+CREATE INDEX problem_contributed_by_idx ON problem((extra->>'contributed_by')) WHERE extra->>'contributed_by' IS NOT NULL;
 create index problem_external_id_idx on problem(external_id);
 create index problem_external_body_idx on problem(lower(external_body));
 create index problem_send_state_state_idx on problem(send_state, state) WHERE state NOT IN ('unconfirmed', 'hidden', 'partial');
