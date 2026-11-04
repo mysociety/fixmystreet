@@ -462,24 +462,52 @@ sub log : Chained('user') : PathPart('log') : Args(0) {
     my $after = $c->get_param('after');
 
     my %time;
-    foreach ($user->admin_logs->all) {
+    foreach ($user->admin_logs->search(undef, {
+        "+columns" => [
+            'moderation.problem_id', 'moderation.comment_id',
+            'category.body_id', 'category.category',
+            'user_object.email', 'user_object.phone',
+            'body.name', { 'body.msgstr' => \'COALESCE(translation_name.msgstr, body.name)' },
+            'role.name',
+            'comment.problem_id',
+            'template.body_id', 'template.title',
+            'manifesttheme.cobrand',
+        ],
+        join => [
+            'moderation', 'category', 'user_object',
+            { 'body' => 'translation_name' }, 'role', 'comment', 'template',
+            'manifesttheme',
+        ],
+    })->all) {
         push @{$time{$_->whenedited->epoch}}, { type => 'log', date => $_->whenedited, log => $_ };
     }
-    foreach ($c->cobrand->problems->search({ 'contributed_by.id' => $user->id }, { join => 'contributed_by' })->all) {
-        next unless $_->get_extra_metadata('contributed_by') == $user->id;
+
+    foreach ($c->cobrand->problems->search({
+        'contributed_by.id' => $user->id,
+    }, {
+        join => 'contributed_by',
+        columns => ["created", "id", "name", "title"],
+    })->all) {
         push @{$time{$_->created->epoch}}, { type => 'problemContributedBy', date => $_->created, obj => $_ };
     }
 
-    foreach ($user->user_planned_reports->all) {
+    foreach ($user->user_planned_reports->search(undef, {
+        '+columns' => ['report.id'],
+        join => 'report',
+    })->all) {
         push @{$time{$_->added->epoch}}, { type => 'shortlistAdded', date => $_->added, obj => $_->report };
         push @{$time{$_->removed->epoch}}, { type => 'shortlistRemoved', date => $_->removed, obj => $_->report } if $_->removed;
     }
 
-    foreach ($user->problems->all) {
+    foreach ($user->problems->search(undef, {
+        columns => ["id", "title", "created"],
+    })->all) {
         push @{$time{$_->created->epoch}}, { type => 'problem', date => $_->created, obj => $_ };
     }
 
-    foreach ($user->comments->all) {
+    foreach ($user->comments->search(undef, {
+        columns => ["id", "problem_id", "created", "text", "extra"],
+    })->all) {
         push @{$time{$_->created->epoch}}, { type => 'update', date => $_->created, obj => $_};
     }
 
