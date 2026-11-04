@@ -477,6 +477,8 @@ Parking categories are either set to 'in progress' or
 sub post_report_sent {
     my ( $self, $problem ) = @_;
 
+    return unless grep { $_ eq 'Parking' } @{ $problem->contact->groups };
+
     my %in_progress = map { $_ => 1 } (
         'Car Park Graffiti/Fly Tipping',
         'Car Park Signage',
@@ -489,15 +491,33 @@ sub post_report_sent {
 
     my %internal_referral = map { $_ => 1 } (
         'Blue Badge/Permit Misuse',
-        'Parking With Form', # Parking Charges
-        'Parking', # Parking Enforcement
-        'other',
+
+        'Parking With Form', # Staging - Parking Charges
+        'Parking Charges', # Live
+
+        'Parking', # Staging - Parking Enforcement
+        'Parking Enforcement', # Live
+
+        'other', # Staging
+        'Other', # Live
     );
 
-    if ( $in_progress{ $problem->category } ) {
-        $problem->update( { state => 'in progress' } );
-    } elsif ( $internal_referral{ $problem->category } ) {
-        $problem->update( { state => 'internal referral' } );
+    if (   $in_progress{ $problem->category }
+        || $internal_referral{ $problem->category } )
+    {
+        my $existing_update
+            = $problem->comments->search( { external_id => 'auto-internal' } )
+            ->first;
+
+        my $state
+            = $in_progress{ $problem->category }
+            ? 'in progress'
+            : 'internal referral';
+
+        $existing_update->update( { problem_state => $state } )
+            if $existing_update;
+
+        $problem->update( { state => $state } );
     }
 }
 
