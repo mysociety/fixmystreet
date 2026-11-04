@@ -272,7 +272,7 @@ __PACKAGE__->might_have(
   sub {
     my $args = shift;
     return
-        \[ "($args->{self_alias}.extra ->> 'contributed_by')::integer = $args->{foreign_alias}.id" ];
+        \[ "($args->{self_alias}.extra ->> 'contributed_by') = $args->{foreign_alias}.id::text" ];
   },
   {
     join_type => "LEFT",

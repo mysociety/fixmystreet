@@ -199,7 +199,7 @@ EOF
     my @sql_join = (
         '"contacts" "contact" ON CAST( "contact"."body_id" AS text ) = (regexp_split_to_array( "me"."bodies_str", \',\'))[1] AND "contact"."category" = "me"."category"',
         '"comment" "comments" ON "comments"."problem_id" = "me"."id" AND "comments"."state" = \'confirmed\'',
-        '"users" "contributed_by_user" ON "contributed_by_user"."id" = ("me"."extra"->>\'contributed_by\')::integer',
+        '"users" "contributed_by_user" ON "contributed_by_user"."id"::text = ("me"."extra"->>\'contributed_by\')',
         'staff_roles ON contributed_by_user.id = staff_roles.user_id',
         'questionnaire ON questionnaire.problem_id = me.id AND questionnaire.whenanswered IS NOT NULL',
     );

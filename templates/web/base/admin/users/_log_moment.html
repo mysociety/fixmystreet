@@ -1,0 +1,15 @@
+    [%- curdate = time.$moment.0.date.strftime('%A, %e %B %Y') -%]
+    [%- IF date != curdate %]
+        [% '</dl>' IF date %]
+        <h2>[% curdate %]</h2>
+
+        <dl class="timeline">
+        [%- date = curdate -%]
+    [%- END -%]
+    <dt><b>[% time.$moment.0.date.hms %]</b></dt>
+    <dd><ul>
+    [% FOREACH item IN time.$moment %]
+        [% PROCESS 'admin/users/_log_time.html' %]
+    [%- END %]
+    </ul></dd>
+
