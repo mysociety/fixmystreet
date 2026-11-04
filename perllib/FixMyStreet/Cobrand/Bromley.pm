@@ -796,11 +796,31 @@ sub garden_service_id { $SERVICE_IDS{garden} }
 sub garden_service_name { 'Green Garden Waste collection service' }
 sub garden_subscription_type_field { 'Subscription_Type' }
 sub garden_subscription_container_field { 'Subscription_Details_Container_Type' }
+sub garden_subscription_quantity_field { 'Subscription_Details_Quantity' }
 sub garden_echo_container_name { 'LBB - GW Container' }
 sub garden_due_date {
     my ($self, $end_date) = @_;
     $end_date->subtract(days => 48);
 };
+
+sub waste_show_garden_modify { 1 }
+
+sub garden_subscription_quantity {
+    my ($self, $service) = @_;
+
+    my $quantity = 0;
+    my $datas = Integrations::Echo::force_arrayref($service->{Data}, 'ExtensibleDatum');
+    for my $data ( @$datas ) {
+        next unless $data->{DatatypeName} eq $self->garden_echo_container_name;
+        my $kids = Integrations::Echo::force_arrayref($data->{ChildData}, 'ExtensibleDatum');
+        for my $child ( @$kids ) {
+            next unless $child->{DatatypeName} eq 'Quantity';
+            $quantity = $child->{Value};
+        }
+    }
+
+    return $quantity;
+}
 
 sub service_name_override {
     my ($self, $service) = @_;

@@ -188,10 +188,10 @@ FixMyStreet::override_config {
             paye_hmac => '1234',
             paye_hmac_id => '1234',
             paye_siteID => '1234',
+            dd_push_url => 'http://example.org/faq?query=1',
         } },
         waste_features => { brent => {
             text_for_waste_payment => 'Payment processed',
-            dd_disabled => 1,
         } },
         anonymous_account => { brent => 'anonymous.customer' },
     },
@@ -201,6 +201,7 @@ FixMyStreet::override_config {
         category => 'Garden Subscription',
         whensent => \'current_timestamp',
         send_state => 'sent',
+        uprn => 1000000002,
     });
     $p->title('Garden Subscription - New');
     $p->update_extra_field({ name => 'property_id', value => 12345});
@@ -285,6 +286,25 @@ FixMyStreet::override_config {
             }
         };
     });
+
+    my $dd_sent_params = {};
+    my $dd = Test::MockModule->new('Integrations::AccessPaySuite');
+    $dd->mock('one_off_payment', sub {
+        my ($self, $params) = @_;
+        delete $params->{report};
+        $dd_sent_params->{'one_off_payment'} = $params;
+    });
+    $dd->mock('amend_plan', sub {
+        my ($self, $params) = @_;
+        delete $params->{report};
+        $dd_sent_params->{'amend_plan'} = $params;
+    });
+    $dd->mock('cancel_plan', sub {
+        my ($self, $params) = @_;
+        delete $params->{report};
+        $dd_sent_params->{'cancel_plan'} = $params;
+    });
+    $dd->mock('get_contracts', sub { [] });
 
     my $echo = Test::MockModule->new('Integrations::Echo');
     $echo->mock('GetEventsForObject', sub { [] });
@@ -414,6 +434,7 @@ FixMyStreet::override_config {
         like $body, qr/Bins to be delivered: 1/;
         like $body, qr/Total:.*?$test->{pounds_cost}/;
         $mech->clear_emails_ok;
+        $new_report->delete;
     };
 
     set_fixed_time('2023-01-09T17:00:00Z'); # Set a date when garden service full price for most tests
@@ -447,6 +468,7 @@ FixMyStreet::override_config {
         like $body, qr/Number of bin subscriptions: 1/;
         unlike $body, qr/Bins to be delivered/;
         like $body, qr/Total:.*?50.00/;
+        $new_report->delete;
     };
 
     subtest 'check new sub credit card payment with one less bin required' => sub {
@@ -478,6 +500,44 @@ FixMyStreet::override_config {
         like $body, qr/Number of bin subscriptions: 1/;
         like $body, qr/Bins to be removed: 1/;
         like $body, qr/Total:.*?50.00/;
+        $new_report->delete;
+    };
+
+    subtest 'check new sub direct debit payment' => sub {
+        my $test = {
+            month => '01',
+            pounds_cost => '50.00',
+            pence_cost => '5000'
+        };
+        $mech->get_ok('/waste/12345/garden');
+        $mech->submit_form_ok({ form_number => 1 });
+        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+        $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
+        $mech->submit_form_ok({ with_fields => {
+            current_bins => 0,
+            bins_wanted => 1,
+            name => 'Test McTest',
+            email => 'test@example.net',
+            payment_method => 'direct_debit',
+        } });
+        $mech->content_contains('Test McTest');
+        $mech->content_contains('£' . $test->{pounds_cost});
+        $mech->content_contains('1 bin');
+        $mech->content_contains('Continue to payment', 'Waste features text_for_waste_payment not used for non-staff payment');
+
+        my $mech2 = $mech->clone;
+        $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
+
+        my $new_report = FixMyStreet::DB->resultset('Problem')->order_by('-id')->first;
+        my $id = $new_report->id;
+        check_extra_data_pre_confirm($new_report, new_bin_type => 1, new_quantity => 1, payment_method => 'direct_debit');
+
+        is $mech2->res->previous->code, 302, 'payments issues a redirect';
+        is $mech2->res->previous->header('Location'), "http://example.org/faq?query=1&redirectlink=%252Fen&cancelRedirectLink=%252Fen&consentMessage=yes&debitnameparameter=WasteWorks&firstname=Test&lastname=McTest&emailaddress=test%40example.net&telephonenumber&amount=5000&houseno=&streetname=&area&postcode&additionalref=BRT-$id-1000000002", "redirects to payment gateway";
+
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('pending garden subscription');
+        $new_report->delete;
     };
 
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
@@ -532,6 +592,8 @@ FixMyStreet::override_config {
 
         my $renew_opt_in = @{$rows[-1]}[$idx];
         is $renew_opt_in, "N", "opt-in is false on renew in CSV export";
+        $sub_report->delete;
+        $renew_report->delete;
     };
 
     # Flush emails.
@@ -572,6 +634,7 @@ FixMyStreet::override_config {
         my $body = $mech->get_text_body_from_email($emails[1]);
         like $body, qr/Garden waste sack collection: 1/;
         like $body, qr/Total:.*?50.00/;
+        $report->delete;
     };
 
     subtest 'cancel garden service' => sub {
@@ -637,6 +700,7 @@ FixMyStreet::override_config {
         like $body, qr/Your subscription will last until the end of March $expected_renewal_end_year/;
         like $body, qr/Garden waste sack collection: 1/;
         like $body, qr/Total:.*?50.00/;
+        $report->delete;
     };
 
     for my $test (
@@ -694,6 +758,112 @@ FixMyStreet::override_config {
         $mech->content_contains('only increase');
     };
 
+    $p->update_extra_field({ name => 'payment_method', value => 'direct_debit' });
+    my $dd_ref = 'BRT-' . $p->id . '-1000000002';
+    $p->set_extra_metadata('payerReference', $dd_ref);
+    $p->set_extra_metadata('direct_debit_contract_id', 'CONTRACT-GUID');
+    $p->set_extra_metadata('direct_debit_customer_id', 'CUSTOMER-GUID');
+    $p->update;
+
+    subtest 'check modifying Direct Debit Green Garden Waste' => sub {
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Change your garden waste subscription');
+        $mech->get_ok('/waste/12345/garden_modify');
+        $mech->submit_form_ok({ with_fields => { task => 'modify' }}, 'Choose modify');
+        $mech->submit_form_ok({ with_fields => {
+            bins_wanted => 3,
+            name => $user->name,
+            email => $user->email
+            } }, 'Request 3 bins when currently have 2');
+        $mech->content_contains('Amend Direct Debit');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 }}, 'Submit request');
+
+        my $report = FixMyStreet::DB->resultset('Problem')->find({category => 'Amend Garden Subscription'});
+        my %check = (
+            type => 'Amend',
+            category => 'Amend Garden Subscription',
+            quantity => 3,
+            new_quantity => 1,
+            new_bin_type => 1,
+            bin_type => undef,
+            payment_method => 'direct_debit',
+        );
+        check_extra_data_pre_confirm($report, %check);
+
+        my $ad_hoc_payment_date = '2020-12-16T17:00:00';
+        is_deeply $dd_sent_params->{one_off_payment}, {
+            dd_reference => 'CONTRACT-GUID',
+            amount => '50.00',
+            comments => '',
+            date => $ad_hoc_payment_date,
+        }, "correct direct debit ad hoc payment params sent";
+        is_deeply $dd_sent_params->{amend_plan}, {
+            dd_reference => 'CONTRACT-GUID',
+            amount => '150.00',
+        }, "correct direct debit amendment params sent";
+
+        $report->delete;
+    };
+
+    subtest 'renew direct debit sub' => sub {
+        set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
+        $dd->mock('get_contracts', sub { [ { Status => 'Active' } ] });
+
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('Renew your garden waste subscription');
+        $mech->get_ok('/waste/12345/garden_renew');
+        $mech->content_contains('This property has a direct debit subscription which will renew automatically.');
+        $mech->log_out_ok();
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('Renew your garden waste subscription');
+        $mech->get_ok('/waste/12345/garden_renew');
+        $mech->content_contains('This property has a direct debit subscription which will renew automatically.');
+
+        $p->state('hidden');
+        $p->update;
+
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Renew your garden waste subscription');
+        $mech->get_ok('/waste/12345/garden_renew');
+        $mech->content_lacks('This property has a direct debit subscription which will renew automatically.');
+
+        $p->state('confirmed');
+        $p->update;
+        $dd->mock('get_contracts', sub { [] });
+    };
+
+    subtest 'renew direct debit after expiry' => sub {
+        set_fixed_time('2021-04-09T17:00:00Z'); # After expiry
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Renew your garden waste subscription');
+        set_fixed_time('2021-03-09T17:00:00Z');
+    };
+
+    subtest 'cancel direct debit sub' => sub {
+        $mech->get_ok('/waste/12345/garden_cancel');
+        is $mech->uri->path, '/auth', 'have to be logged in to cancel subscription';
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste/12345/garden_cancel');
+        $mech->submit_form_ok({ with_fields => { confirm => 1 } });
+
+        my $new_report = FixMyStreet::DB->resultset('Problem')->search(
+            { user_id => $user->id },
+        )->order_by('-id')->first;
+
+        is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
+        is $new_report->state, 'confirmed', 'report confirmed';
+
+        is_deeply $dd_sent_params->{cancel_plan}, {
+            dd_reference => 'CONTRACT-GUID',
+        }, "correct direct debit cancellation params sent";
+    };
+
+    FixMyStreet::Script::Reports::send();
+    $mech->clear_emails_ok;
+
+    $p->update_extra_field({ name => 'payment_method', value => 'credit_card' });
+    $p->update;
+
     subtest 'check modifying Green Garden Waste not available for user' => sub {
             $mech->log_in_ok($user->email);
             set_fixed_time('2021-01-09T17:00:00Z'); # Before renewal is due so we can modify
@@ -727,7 +897,6 @@ FixMyStreet::override_config {
                         waste => { brent => 1 },
                         waste_features => { brent => {
                             ggw_discount_as_percent => 20,
-                            dd_disabled => 1,
                             text_for_waste_payment => 'Payment processed'
                             } },
                         payment_gateway => { brent => {
@@ -788,7 +957,7 @@ FixMyStreet::override_config {
                 COBRAND_FEATURES => {
                     echo => { brent => { url => 'http://example.org' } },
                     waste => { brent => 1 },
-                    waste_features => { brent => { ggw_discount_as_percent => 20, dd_disabled => 1 } },
+                    waste_features => { brent => { ggw_discount_as_percent => 20, } },
                     payment_gateway => { brent => {
                     ggw_cost => 5000,
                     cc_url => 'http://example.org/cc_submit',
@@ -856,7 +1025,6 @@ FixMyStreet::override_config {
                 } },
                 waste_features => { brent => {
                     text_for_waste_payment => 'Payment processed',
-                    dd_disabled => 1,
                 } },
                 anonymous_account => { brent => 'anonymous.customer' },
             },
@@ -912,7 +1080,7 @@ sub check_extra_data_pre_confirm {
     is $report->get_extra_field_value('Container_Quantity'), $params{new_quantity}, 'correct bin count';
     is $report->get_extra_field_value('Container_Type'), $params{new_bin_type}, 'correct bin type';
     is $report->state, $params{state}, 'report state correct';
-    if ($params{state} eq 'unconfirmed') {
+    if ($params{state} eq 'unconfirmed' && $params{payment_method} eq 'credit_card') {
         if ($params{ref_type} eq 'apn') {
             is $report->get_extra_metadata('apnReference'), '4ab5f886-de7d-4f5b-bbd8-42151a5deb82', 'correct scp reference on report';
         } else {
