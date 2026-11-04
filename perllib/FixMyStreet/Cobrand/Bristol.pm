@@ -78,19 +78,8 @@ sub disambiguate_location {
 
 =head2 pin_colour
 
-Bristol uses the following pin colours:
-
-=over 4
-
-=item * grey: closed
-
-=item * green: fixed
-
-=item * yellow: newly open
-
-=item * orange: any other open state
-
-=back
+Bristol uses the following pin colours: Open to the men at work symbol pin,
+Completed as a green tick, Closed as grey with a X
 
 =cut
 
@@ -98,8 +87,7 @@ sub pin_colour {
     my ( $self, $p, $context ) = @_;
     return 'grey-cross' if $p->is_closed;
     return 'green-tick' if $p->is_fixed;
-    return 'yellow-cone' if $p->state eq 'confirmed';
-    return 'orange-work'; # all the other `open_states` like "in progress"
+    return 'orange-work';
 }
 
 sub path_to_pin_icons { '/i/pins/whole-shadow-cone-spot/' }
