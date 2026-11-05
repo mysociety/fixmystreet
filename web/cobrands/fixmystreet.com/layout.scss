@@ -392,7 +392,9 @@ footer {
 .mysoc-team-picture {
   &-desktop {
     display: block;
-    margin-top: 1rem;
+    margin: 1rem -1rem;
+    width: calc(100% + 2rem);
+    max-width: none;
   }
 
   &-mobile {
