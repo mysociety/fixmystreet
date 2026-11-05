@@ -61,6 +61,35 @@ __PACKAGE__->belongs_to(
 # Created by DBIx::Class::Schema::Loader v0.07035 @ 2020-10-14 22:49:08
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:nJv8L2Ggpe1F11T59Bdg3A
 
+my %JOINS = (
+    problem => 'Problem',
+    update => 'Comment',
+    user_object => 'User',
+    moderation => 'ModerationOriginalData',
+    template => 'ResponseTemplate',
+    body => 'Body',
+    category => 'Contact',
+    role => 'Role',
+    manifesttheme => 'ManifestTheme',
+    property => 'Property',
+);
+foreach my $join (keys %JOINS) {
+    my $type = $join eq 'user_object' ? 'user' : $join;
+    __PACKAGE__->might_have(
+      $join => "FixMyStreet::DB::Result::$JOINS{$join}",
+      sub {
+        my $args = shift;
+        return
+            \[ "($args->{self_alias}.object_type = '$type' AND $args->{self_alias}.object_id = $args->{foreign_alias}.id)" ];
+      },
+      {
+        join_type => "LEFT",
+        on_delete => "NO ACTION",
+        on_update => "NO ACTION",
+      },
+    );
+}
+
 sub link {
     my $self = shift;
 
@@ -70,30 +99,26 @@ sub link {
     return "/admin/users/$id" if $type eq 'user';
     return "/admin/body/$id" if $type eq 'body';
     return "/admin/roles/$id" if $type eq 'role';
+    my $object = $self->object;
+    return "" unless $object;
     if ($type eq 'update') {
-        my $update = $self->object;
-        return "/report/" . $update->problem_id . "#update_$id";
+        return "/report/" . $object->problem_id . "#update_$id";
     }
     if ($type eq 'moderation') {
-        my $mod = $self->object;
-        if ($mod->comment_id) {
-            my $update = $self->result_source->schema->resultset('Comment')->find($mod->comment_id);
-            return "/report/" . $update->problem_id . "#update_" . $mod->comment_id;
+        if ($object->comment_id) {
+            return "/report/" . $object->problem_id . "#update_" . $object->comment_id;
         } else {
-            return "/report/" . $mod->problem_id;
+            return "/report/" . $object->problem_id;
         }
     }
     if ($type eq 'template') {
-        my $template = $self->object;
-        return "/admin/templates/" . $template->body_id . "/$id";
+        return "/admin/templates/" . $object->body_id . "/$id";
     }
     if ($type eq 'category') {
-        my $category = $self->object;
-        return "/admin/body/" . $category->body_id . '/' . $category->category;
+        return "/admin/body/" . $object->body_id . '/' . $object->category;
     }
     if ($type eq 'manifesttheme') {
-        my $theme = $self->object;
-        return "/admin/manifesttheme/" . $theme->cobrand;
+        return "/admin/manifesttheme/" . $object->cobrand;
     }
     return '';
 }
@@ -107,11 +132,14 @@ sub actual_object_type {
 
 sub object_summary {
     my $self = shift;
+
+    return $self->object_id if $self->object_type eq 'problem' || $self->object_type eq 'property' || $self->object_type eq 'update';
+
     my $object = $self->object;
     return unless $object;
 
     return $object->comment_id || $object->problem_id if $self->object_type eq 'moderation';
-    return $object->email || $object->phone || $object->id if $self->object_type eq 'user';
+    return $object->email || $object->phone || $self->object_id if $self->object_type eq 'user';
 
     my $type_to_thing = {
         body => 'name',
@@ -129,16 +157,17 @@ sub object {
     my $self = shift;
 
     my $type = $self->object_type;
-    my $id = $self->object_id;
-    my $type_to_object = {
-        moderation => 'ModerationOriginalData',
-        template => 'ResponseTemplate',
-        category => 'Contact',
-        update => 'Comment',
-        manifesttheme => 'ManifestTheme',
-    };
-    $type = $type_to_object->{$type} || ucfirst $type;
-    my $object = $self->result_source->schema->resultset($type)->find($id);
+    $type = 'user_object' if $type eq 'user';
+
+    my $object;
+    if (exists $self->{_relationship_data}{$type}) {
+        # Cached in relationship fetch
+        $object = $self->$type;
+    } else {
+        # Otherwise, look it up
+        my $id = $self->object_id;
+        $object = $self->result_source->schema->resultset($JOINS{$type})->find($id);
+    }
     return $object;
 }
 
