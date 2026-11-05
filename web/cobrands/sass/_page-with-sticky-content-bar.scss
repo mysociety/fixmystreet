@@ -85,6 +85,10 @@ $mobile-sticky-sidebar-button-menu-image: "menu-black" !default;
       & > :last-child {
         margin-bottom: 0;
       }
+
+      & > .next-steps:last-child {
+        margin-bottom: -1rem;
+      }
     }
 
     .sticky-sidebar {
