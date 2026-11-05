@@ -10,7 +10,8 @@
                         <div>
                             <input type="email" name="EMAIL" id="mce-EMAIL" required="" value="">
                         </div>
-                        <input type="submit" class="btn btn--primary" name="subscribe" id="mc-embedded-subscribe" value="Subscribe">
+
+                        <input type="submit" class="[% IF in_footer %]mysoc-footer__donate__button[% ELSE %]btn btn--primary[% END %]" name="subscribe" id="mc-embedded-subscribe" value="Subscribe">
                     </div>
                 </div>
                 <div hidden="">
