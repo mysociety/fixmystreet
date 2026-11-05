@@ -15,6 +15,8 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 
 use strict;
 use warnings;
+use utf8;
+
 use Moo;
 with 'FixMyStreet::Roles::Cobrand::OpenUSRN';
 
@@ -109,6 +111,22 @@ sub default_map_zoom { 5 }
 =cut
 
 sub new_report_title_field_label { "Location of the problem" }
+
+=item * Custom hint for the title field for new reports.
+
+=cut
+
+sub new_report_title_field_hint {
+    "e.g. whether it’s outside a specific property number, building or shop name, the lighting or lamp post column number it’s near, what roads are adjoining, or any other key information our inspectors can use to identify the location"
+}
+
+=item * Custom hint for the detail field for new reports.
+
+=cut
+
+sub new_report_detail_field_hint {
+    "Please give details of size of the issue, date noticed / how long, etc."
+}
 
 =item * Potholes category only at present
 
