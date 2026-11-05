@@ -167,6 +167,46 @@ subtest 'test sending photos as file uploads along with a multivalue attribute',
     ], 'Uploaded photo filenames match media_url pattern';
 };
 
+my ($token_report) = $mech->create_problems_for_body( 1, $body->id, 'Test', {
+    cobrand => 'fixmystreet',
+    category => 'Potholes',
+    user => $user,
+});
+
+subtest 'token that times out is checked on retry, not sent again', sub {
+    $body->update( { send_method => 'Open311', endpoint => 'http://endpoint.example.com', jurisdiction => 'FMS', api_key => 'test' } );
+    my $token = 'TOKEN-1';
+    FixMyStreet::override_config {
+        STAGING_FLAGS => { send_reports => 1 },
+        ALLOWED_COBRANDS => [ 'fixmystreet' ],
+        MAPIT_URL => 'http://mapit.uk/',
+        O311_POLLING_INTERVAL => 0,
+        O311_POLLING_MAX_TRIES => 1,
+    }, sub {
+        Open311->_inject_response('/requests.xml', "<?xml version='1.0' encoding='utf-8'?><service_requests><request><token>$token</token></request></service_requests>");
+        Open311->_inject_response("/tokens/$token.xml", '{"code":400,"description":"Not found"}', 400);
+        FixMyStreet::Script::Reports::send(0, 0, 1);
+        $token_report->discard_changes;
+        ok !$token_report->whensent, 'Report not marked as sent';
+        is_deeply $token_report->get_extra_metadata('open311_tokens'), { $body->id => $token }, 'Token stored';
+
+        Open311->_inject_response("/tokens/$token.xml", "<?xml version='1.0' encoding='utf-8'?><service_requests><request><service_request_id>SRQ-1</service_request_id><token>$token</token></request></service_requests>");
+        FixMyStreet::Script::Reports::send(0, 0, 1);
+        $token_report->discard_changes;
+        ok $token_report->whensent, 'Report marked as sent';
+        is $token_report->external_id, 'SRQ-1', 'Report has ID from token';
+        my $req = Open311->test_req_used;
+        is $req->uri->path, "/tokens/$token.xml", 'Token checked rather than report sent again';
+        ok !$token_report->get_extra_metadata('open311_tokens'), 'Token removed';
+    };
+};
+
+subtest 'resend clears any stored token', sub {
+    $token_report->set_extra_metadata(open311_tokens => { $body->id => 'TOKEN-2' });
+    $token_report->resend;
+    ok !$token_report->get_extra_metadata('open311_tokens'), 'Token removed';
+};
+
 my ($bad_category_report) = $mech->create_problems_for_body( 1, $body->id, 'Test', {
     cobrand => 'fixmystreet',
     category => 'Flytipping',
