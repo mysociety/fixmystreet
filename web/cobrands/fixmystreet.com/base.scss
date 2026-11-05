@@ -239,15 +239,7 @@ html.lazyload .js-lazyload {
   }
 
   .container {
-    margin: 0 auto;
-  }
-
-  .container {
-    margin-right: auto;
-    margin-left: auto;
-    padding-left: $grid-gutter / 2;
-    padding-right: $grid-gutter / 2;
-    max-width: $grid-max-width;
+    max-width: calc(#{$container-max-width} + 2rem);
   }
 
   .row {
