@@ -128,7 +128,7 @@ sub new_report_detail_field_hint {
     "Please give details of size of the issue, date noticed / how long, etc."
 }
 
-=item * Potholes category only at present
+=item * Potholes & road/footpath/kerbstone damage categories only at present
 
 =cut
 
@@ -142,7 +142,12 @@ sub problems_restriction {
     my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
     $rs = $rs->search({
         "$table.created" => { '>=', $date },
-        "$table.category" => 'Potholes',
+        "$table.category" => [
+            'Potholes',
+            'Road Damage',
+            'Footpath Damage',
+            'Kerbstone Damage',
+        ],
     });
     return $rs;
 }
@@ -150,12 +155,13 @@ sub problems_restriction {
 sub categories_restriction {
     my ($self, $rs) = @_;
     return $rs->search( {
-        'me.category' => 'Potholes',
+        'me.category' => [
+            'Potholes',
+            'Road Damage',
+            'Footpath Damage',
+            'Kerbstone Damage',
+        ],
     } );
-    # return $rs->search( { -or => [
-    #     'me.send_method' => undef, # Open311 categories, or National Highways
-    #     'me.send_method' => '', # Open311 categories that have been edited in the admin
-    # ] } );
 }
 
 sub munge_around_filter_category_list {
