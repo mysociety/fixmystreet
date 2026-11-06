@@ -213,15 +213,15 @@ Lincolnshire uses the following pin colours:
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
 
-    return 'grey'
+    return 'grey-cross'
         if $p->state eq 'not responsible' || ($context ne 'reports' && !$self->owns_problem($p));
-    return 'orange'
+    return 'orange-clipboard'
         if $p->state eq 'investigating' || $p->state eq 'for triage';
-    return 'yellow'
+    return 'yellow-work'
         if $p->state eq 'action scheduled' || $p->state eq 'in progress';
-    return 'green' if $p->is_fixed;
+    return 'green-tick' if $p->is_fixed;
     return 'blue' if $p->is_closed;
-    return 'red';
+    return 'red-magnifier';
 }
 
 =head2 open311_config
