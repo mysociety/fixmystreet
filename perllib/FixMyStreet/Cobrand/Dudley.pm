@@ -128,9 +128,17 @@ sub new_report_detail_field_hint {
     "Please give details of size of the issue, date noticed / how long, etc."
 }
 
-=item * Potholes category only at present
+=item * Potholes & road/footpath/kerbstone damage categories only at present
 
 =cut
+
+my @categories = (
+    'Potholes',
+    'Road Damage',
+    'Pavement/Footpath Damage',
+    'Kerbstone Damage',
+);
+my %categories = map { $_ => 1 } @categories;
 
 sub problems_restriction {
     my ($self, $rs) = @_;
@@ -142,7 +150,7 @@ sub problems_restriction {
     my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
     $rs = $rs->search({
         "$table.created" => { '>=', $date },
-        "$table.category" => 'Potholes',
+        "$table.category" => \@categories,
     });
     return $rs;
 }
@@ -150,23 +158,19 @@ sub problems_restriction {
 sub categories_restriction {
     my ($self, $rs) = @_;
     return $rs->search( {
-        'me.category' => 'Potholes',
+        'me.category' => \@categories,
     } );
-    # return $rs->search( { -or => [
-    #     'me.send_method' => undef, # Open311 categories, or National Highways
-    #     'me.send_method' => '', # Open311 categories that have been edited in the admin
-    # ] } );
 }
 
 sub munge_around_filter_category_list {
     my ($self) = @_;
     my $cats = $self->{c}->stash->{category_groups}[0]{categories};
-    @$cats = grep { $_->category eq 'Potholes' } @$cats;
+    @$cats = grep { $categories{$_->category} } @$cats;
 }
 
 sub munge_reports_category_list {
     my ($self, $categories) = @_;
-    @$categories = grep { $_->category eq 'Potholes' } @$categories;
+    @$categories = grep { $categories{$_->category} } @$categories;
 }
 
 =item * Fetch the nearest USRN if we don't have it already

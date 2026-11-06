@@ -29,6 +29,7 @@ my $body = $mech->create_body_ok(2522, 'Dudley Borough Council', {
     send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j', cobrand => 'dudley', send_comments => 1, blank_updates_permitted => 1, can_be_devolved => 1 });
 $mech->create_contact_ok(body_id => $body->id, category => 'Bridges', email => 'bridges@example.org', send_method => 'Email');
 $mech->create_contact_ok(body_id => $body->id, category => 'Potholes', email => "Potholes");
+$mech->create_contact_ok(body_id => $body->id, category => 'Road Damage', email => "RoadDamage");
 
 my ($report) = $mech->create_problems_for_body(1, $body->id, 'Test Report', {
     category => 'Potholes', cobrand => 'dudley',
@@ -56,15 +57,18 @@ FixMyStreet::override_config {
     subtest 'cobrand does not display email categories' => sub {
         $mech->get_ok('/reports');
         $mech->content_contains('Potholes');
+        $mech->content_contains('Road Damage');
         $mech->content_lacks('Bridges');
 
         $mech->get_ok('/around?latitude=52.5142&longitude=-2.08');
         $mech->content_contains('Show older reports');
         $mech->content_contains('Potholes');
+        $mech->content_contains('Road Damage');
         $mech->content_lacks('Bridges');
 
         $mech->get_ok('/report/new?latitude=52.5142&longitude=-2.08');
         $mech->content_contains('Potholes');
+        $mech->content_contains('Road Damage');
         $mech->content_lacks('Bridges');
     };
 
