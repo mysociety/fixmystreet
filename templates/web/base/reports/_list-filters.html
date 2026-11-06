@@ -52,7 +52,7 @@
             <div class="filter-group">
               [% PROCESS 'reports/_list-filters-sort.html' %]
 
-              [% IF page == 'around' %]
+              [% IF page == 'around' AND c.cobrand.moniker != 'hart' %]
               <div id="show_old_reports_wrapper" class="govuk-checkboxes govuk-checkboxes--small report-list-filters[% ' hidden' UNLESS num_old_reports > 0 %]">
                 <p class="govuk-checkboxes__item" style="float: none;">
                   <input class="govuk-checkboxes__input" type="checkbox" name="show_old_reports" id="show_old_reports" value="1"[% ' checked' IF show_old_reports %]>
