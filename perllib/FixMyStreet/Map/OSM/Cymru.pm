@@ -21,7 +21,7 @@ sub map_tiles {
     my $tile_url = "https://openstreetmap.cymru/osm_tiles";
     return [
         "$tile_url/$z/" . ($x - 1) . "/" . ($y - 1) . ".png",
-        "$tile_url/$z/" . ($y - 1) . ".png",
+        "$tile_url/$z/$x/" . ($y - 1) . ".png",
         "$tile_url/$z/" . ($x - 1) . "/$y.png",
         "$tile_url/$z/$x/$y.png",
     ];
