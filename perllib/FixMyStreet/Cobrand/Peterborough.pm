@@ -82,6 +82,22 @@ sub disambiguate_location {
     };
 }
 
+=head2 pin_colour
+
+Peterborough uses the following pin colours:
+Open to the men at work symbol pin
+Completed as a green tick
+Closed as grey with an X
+
+=cut
+
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+    return 'grey-cross' if $p->is_closed;
+    return 'green-tick' if $p->is_fixed;
+    return 'orange-work';
+}
+
 =head2 (around) open311_update_missing_data
 
 If we have a UPRN (a waste report), we do not need to look up the site code.
