@@ -84,7 +84,8 @@ my %CONTAINER_IDS = (
     rubbish_grey_bin => 16,
     recycling_clear_sack => 8,
     recycling_blue_bin => 6,
-    food_caddy => 11,
+    outdoor_food_caddy => 11,
+    indoor_food_caddy => 12,
     garden_green_bin => 13,
     paper_blue_sack => 46,
 );
@@ -95,7 +96,8 @@ my $BRENT_CONTAINERS = {
     $CONTAINER_IDS{rubbish_grey_bin} => 'General rubbish bin (grey bin)',
     $CONTAINER_IDS{recycling_clear_sack} => 'Clear recycling sack',
     $CONTAINER_IDS{recycling_blue_bin} => 'Recycling bin (blue bin)',
-    $CONTAINER_IDS{food_caddy} => 'Food waste caddy',
+    $CONTAINER_IDS{outdoor_food_caddy} => 'Outdoor food waste caddy',
+    $CONTAINER_IDS{indoor_food_caddy} => 'Kitchen food waste caddy',
     $CONTAINER_IDS{garden_green_bin} => 'Garden waste (green bin)',
     $CONTAINER_IDS{paper_blue_sack} => 'Paper and cardboard blue sack',
 };
@@ -1075,7 +1077,8 @@ sub waste_service_to_containers {
         $SERVICE_IDS{domestic_refuse} => { containers => [$CONTAINER_IDS{rubbish_grey_bin} ], max => 1 },
         $SERVICE_IDS{domestic_mixed} => { containers => [ $CONTAINER_IDS{recycling_blue_bin} ], max => 1 },
         $SERVICE_IDS{fas_mixed} => { containers => [ $CONTAINER_IDS{recycling_clear_sack} ], max => 1 },
-        $SERVICE_IDS{domestic_food} => { containers => [ $CONTAINER_IDS{food_caddy} ], max => 1 },
+        $SERVICE_IDS{domestic_food} => { containers => [ $CONTAINER_IDS{outdoor_food_caddy}, $CONTAINER_IDS{indoor_food_caddy} ], max => 1 },
+        $SERVICE_IDS{communal_food} => { containers => [ $CONTAINER_IDS{indoor_food_caddy} ], max => 1 },
         $SERVICE_IDS{garden} => { containers => [ $CONTAINER_IDS{garden_green_bin} ] },
         $SERVICE_IDS{domestic_paper} => { containers => [ $CONTAINER_IDS{paper_blue_sack} ], max => 1 },
     );
@@ -1302,7 +1305,7 @@ sub request_cost {
     my $costs = WasteWorks::Costs->new({ cobrand => $self });
     my $cost;
     $cost = $costs->get_cost('request_cost_blue_bin') if $id == $CONTAINER_IDS{recycling_blue_bin};
-    $cost = $costs->get_cost('request_cost_food_caddy') if $id == $CONTAINER_IDS{food_caddy};
+    $cost = $costs->get_cost('request_cost_food_caddy') if $id == $CONTAINER_IDS{outdoor_food_caddy};
     if ($cost) {
         my $price = sprintf("£%.2f", $cost / 100);
         $price =~ s/\.00$//;
@@ -1405,10 +1408,17 @@ sub waste_munge_request_data {
         $CONTAINER_IDS{rubbish_grey_bin} => $SERVICE_IDS{domestic_refuse},
         $CONTAINER_IDS{recycling_blue_bin} => $SERVICE_IDS{domestic_mixed},
         $CONTAINER_IDS{recycling_clear_sack} => $SERVICE_IDS{fas_mixed},
-        $CONTAINER_IDS{food_caddy} => $SERVICE_IDS{domestic_food},
+        $CONTAINER_IDS{outdoor_food_caddy} => $SERVICE_IDS{domestic_food},
         $CONTAINER_IDS{garden_green_bin} => $SERVICE_IDS{garden},
         $CONTAINER_IDS{paper_blue_sack} => $SERVICE_IDS{domestic_paper},
     );
+    if ($id == $CONTAINER_IDS{indoor_food_caddy}) {
+        # Find out if property has domestic or communal service
+        my $services = $c->stash->{services};
+        foreach my $s (keys %$services) {
+            $service_id{$id} = $s if $s == $SERVICE_IDS{communal_food} || $s == $SERVICE_IDS{domestic_food};
+        }
+    }
     $c->set_param('service_id', $service_id{$id});
 
     if ($data->{payment}) {
