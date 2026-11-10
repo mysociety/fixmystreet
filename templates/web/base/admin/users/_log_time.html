@@ -1,15 +1,15 @@
         <li>
         [%~ IF item.obj.problem_id %]
-            [%~ SET report_url = c.uri_for( '/report', item.obj.problem_id ) _ "#update_" _ item.obj.id %]
+            [%~ SET report_url = '/report/' _ item.obj.problem_id _ "#update_" _ item.obj.id %]
         [%~ ELSE %]
-            [%~ SET report_url = c.uri_for('/report', item.obj.id) %]
+            [%~ SET report_url = '/report/' _ item.obj.id %]
         [%~ END %]
         [%~ SET report_link = "<a href='" _ report_url _ "'>" _ item.obj.id _ "</a>" %]
         [%- SWITCH item.type -%]
             [%~ CASE 'problem' %]
-                [%- tprintf(loc('Problem %s created'), mark_safe(report_link)) %], ‘[% item.obj.title | html %]’
+                [%- tprintf(loc('Problem %s created'), mark_safe(report_link)) %], ‘[% item.obj.title %]’
             [%~ CASE 'problemContributedBy' %]
-                [%- tprintf(loc('Problem %s created on behalf of %s'), mark_safe(report_link), item.obj.name) %], ‘[% item.obj.title | html %]’
+                [%- tprintf(loc('Problem %s created on behalf of %s'), mark_safe(report_link), item.obj.name) %], ‘[% item.obj.title %]’
             [%~ CASE 'update' %]
                 [% tprintf(loc("Update %s created for problem %d"), mark_safe(report_link), item.obj.problem_id) %]
                 [% item.obj.text | staff_html_markup(item.obj.extra) %]

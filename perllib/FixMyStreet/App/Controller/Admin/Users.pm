@@ -459,8 +459,6 @@ sub log : Chained('user') : PathPart('log') : Args(0) {
 
     my $user = $c->stash->{user};
 
-    my $after = $c->get_param('after');
-
     my %time;
     foreach ($user->admin_logs->search(undef, {
         "+columns" => [
@@ -479,36 +477,96 @@ sub log : Chained('user') : PathPart('log') : Args(0) {
             'manifesttheme',
         ],
     })->all) {
-        push @{$time{$_->whenedited->epoch}}, { type => 'log', date => $_->whenedited, log => $_ };
+        push @{$time{$_->whenedited->epoch}}, {
+            type => 'log',
+            date => $_->whenedited,
+            log => $_
+        };
     }
 
     foreach ($c->cobrand->problems->search({
         'contributed_by.id' => $user->id,
     }, {
+        columns => ["id", "name", "title",
+            { created => \"extract(epoch from me.created)" },
+        ],
         join => 'contributed_by',
-        columns => ["created", "id", "name", "title"],
+        result_class => 'DBIx::Class::ResultClass::HashRefInflator',
     })->all) {
-        push @{$time{$_->created->epoch}}, { type => 'problemContributedBy', date => $_->created, obj => $_ };
+        my $date = DateTime->from_epoch( epoch => $_->{created}, time_zone => "floating" );
+        FixMyStreet->set_time_zone($date);
+        push @{$time{$date->epoch}}, {
+            type => 'problemContributedBy',
+            date => $date,
+            obj => $_,
+        };
     }
 
     foreach ($user->user_planned_reports->search(undef, {
-        '+columns' => ['report.id'],
+        'columns' => ['report.id',
+            { added => \"extract(epoch from added)" },
+            { removed => \"extract(epoch from removed)" },
+        ],
         join => 'report',
+        result_class => 'DBIx::Class::ResultClass::HashRefInflator',
     })->all) {
-        push @{$time{$_->added->epoch}}, { type => 'shortlistAdded', date => $_->added, obj => $_->report };
-        push @{$time{$_->removed->epoch}}, { type => 'shortlistRemoved', date => $_->removed, obj => $_->report } if $_->removed;
+        my $date = DateTime->from_epoch( epoch => $_->{added}, time_zone => "floating" );
+        FixMyStreet->set_time_zone($date);
+        push @{$time{$date->epoch}}, {
+            type => 'shortlistAdded',
+            date => $date,
+            obj => $_->{report},
+        };
+        if ($_->{removed}) {
+            $date = DateTime->from_epoch( epoch => $_->{removed}, time_zone => "floating" );
+            FixMyStreet->set_time_zone($date);
+            push @{$time{$date->epoch}}, {
+                type => 'shortlistRemoved',
+                date => $date,
+                obj => $_->{report},
+            };
+        }
     }
 
-    foreach ($user->problems->search(undef, {
-        columns => ["id", "title", "created"],
+    foreach ($c->cobrand->problems->search({
+        'me.user_id' => $user->id,
+    }, {
+        columns => ["id", "title",
+            { created => \"extract(epoch from created)" },
+        ],
+        result_class => 'DBIx::Class::ResultClass::HashRefInflator',
     })->all) {
-        push @{$time{$_->created->epoch}}, { type => 'problem', date => $_->created, obj => $_ };
+        my $date = DateTime->from_epoch( epoch => $_->{created}, time_zone => "floating" );
+        FixMyStreet->set_time_zone($date);
+        push @{$time{$date->epoch}}, {
+            type => 'problem',
+            date => $date,
+            obj => $_,
+        };
     }
 
-    foreach ($user->comments->search(undef, {
-        columns => ["id", "problem_id", "created", "text", "extra"],
+    foreach ($c->cobrand->updates->search({
+        'me.user_id' => $user->id,
+    }, {
+        columns => ["id", "problem_id", "text",
+            { is_superuser => \"me.extra->>'is_superuser'" },
+            { is_body_user => \"me.extra->>'is_body_user'" },
+            { created => \"extract(epoch from me.created)" },
+        ],
+        result_class => 'DBIx::Class::ResultClass::HashRefInflator',
     })->all) {
-        push @{$time{$_->created->epoch}}, { type => 'update', date => $_->created, obj => $_};
+        # So that staff comments using staff_html_markup work
+        $_->{extra} = {
+            is_superuser => $_->{is_superuser},
+            is_body_user => $_->{is_body_user},
+        };
+        my $date = DateTime->from_epoch( epoch => $_->{created}, time_zone => "floating" );
+        FixMyStreet->set_time_zone($date);
+        push @{$time{$date->epoch}}, {
+            type => 'update',
+            date => $date,
+            obj => $_,
+        };
     }
 
     $c->stash->{time} = \%time;
