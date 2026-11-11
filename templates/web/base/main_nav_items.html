@@ -32,3 +32,8 @@
 [%~ END ~%]
 
 [%~ INCLUDE navitem uri='/report/new' liattrs='class="hidden js-continue-draft"' always_url=1 label=loc('Continue draft report...') ~%]
+
+[%~ IF c.cobrand.moniker == 'fixmystreet' ~%]
+  [%~ INCLUDE navitem always_url=1 attrs='class="nav-mysoc-links"' uri='https://www.mysociety.org/donate/support-fixmystreet-and-mysociety/?utm_source=fixmystreet.com&amp;utm_content=nav+donate+now&amp;utm_medium=link&amp;utm_campaign=fms_nav' label=loc('Donate') ~%]
+  [%~ INCLUDE navitem always_url=1 attrs='class="nav-mysoc-links"' uri='/about/newsletter' label=loc('Newsletter') ~%]
+[%~ END ~%]
