@@ -227,36 +227,6 @@ DISTRIBUTIONS
       perl 5.008001
       strict 0
       warnings 0
-  CGI-4.43
-    pathname: L/LE/LEEJO/CGI-4.43.tar.gz
-    provides:
-      CGI 4.43
-      CGI::Carp 4.43
-      CGI::Cookie 4.43
-      CGI::File::Temp 4.43
-      CGI::HTML::Functions undef
-      CGI::MultipartBuffer 4.43
-      CGI::Pretty 4.43
-      CGI::Push 4.43
-      CGI::Util 4.43
-      Fh 4.43
-    requirements:
-      Carp 0
-      Config 0
-      Encode 0
-      Exporter 0
-      ExtUtils::MakeMaker 0
-      File::Spec 0.82
-      File::Temp 0.17
-      HTML::Entities 3.69
-      base 0
-      if 0
-      overload 0
-      parent 0.225
-      perl 5.008001
-      strict 0
-      utf8 0
-      warnings 0
   CGI-Simple-1.113
     pathname: A/AN/ANDYA/CGI-Simple-1.113.tar.gz
     provides:
@@ -3707,21 +3677,21 @@ DISTRIBUTIONS
       HTML::TreeBuilder 0
       List::Util 0
       XML::XPathEngine 0.12
-  HTTP-Body-1.22
-    pathname: G/GE/GETTY/HTTP-Body-1.22.tar.gz
+  HTTP-Body-1.25
+    pathname: G/GE/GETTY/HTTP-Body-1.25.tar.gz
     provides:
-      HTTP::Body 1.22
-      HTTP::Body::MultiPart 1.22
-      HTTP::Body::OctetStream 1.22
-      HTTP::Body::UrlEncoded 1.22
-      HTTP::Body::XForms 1.22
-      HTTP::Body::XFormsMultipart 1.22
+      HTTP::Body 1.25
+      HTTP::Body::MultiPart 1.25
+      HTTP::Body::OctetStream 1.25
+      HTTP::Body::UrlEncoded 1.25
+      HTTP::Body::XForms 1.25
+      HTTP::Body::XFormsMultipart 1.25
     requirements:
       Carp 0
-      Digest::MD5 0
       ExtUtils::MakeMaker 0
+      File::Spec 0
       File::Temp 0.14
-      HTTP::Headers 0
+      HTTP::Message 0
       IO::File 1.14
   HTTP-CookieJar-0.012
     pathname: D/DA/DAGOLDEN/HTTP-CookieJar-0.012.tar.gz
@@ -3877,17 +3847,6 @@ DISTRIBUTIONS
       IO::File 0
       Test::More 0
       URI::Escape 0
-  HTTP-Server-Simple-0.44
-    pathname: J/JE/JESSE/HTTP-Server-Simple-0.44.tar.gz
-    provides:
-      HTTP::Server::Simple 0.44
-      HTTP::Server::Simple::CGI undef
-      HTTP::Server::Simple::CGI::Environment undef
-    requirements:
-      CGI 0
-      ExtUtils::MakeMaker 6.42
-      Socket 0
-      Test::More 0
   HTTP-Tiny-0.090
     pathname: H/HA/HAARG/HTTP-Tiny-0.090.tar.gz
     provides:
@@ -4311,41 +4270,41 @@ DISTRIBUTIONS
       File::Spec 0
       List::Util 0
       Test::More 0.47
-  MIME-tools-5.504
-    pathname: D/DS/DSKOLL/MIME-tools-5.504.tar.gz
+  MIME-tools-5.522
+    pathname: D/DS/DSKOLL/MIME-tools-5.522.tar.gz
     provides:
-      MIME::Body 5.504
-      MIME::Body::File 5.504
-      MIME::Body::InCore 5.504
-      MIME::Body::Scalar 5.504
-      MIME::Decoder 5.504
-      MIME::Decoder::Base64 5.504
-      MIME::Decoder::BinHex 5.504
-      MIME::Decoder::Binary 5.504
-      MIME::Decoder::Gzip64 5.504
-      MIME::Decoder::NBit 5.504
-      MIME::Decoder::QuotedPrint 5.504
-      MIME::Decoder::UU 5.504
-      MIME::Entity 5.504
-      MIME::Field::ConTraEnc 5.504
-      MIME::Field::ContDisp 5.504
-      MIME::Field::ContType 5.504
-      MIME::Field::ParamVal 5.504
-      MIME::Head 5.504
-      MIME::Parser 5.504
+      MIME::Body 5.522
+      MIME::Body::File 5.522
+      MIME::Body::InCore 5.522
+      MIME::Body::Scalar 5.522
+      MIME::Decoder 5.522
+      MIME::Decoder::Base64 5.522
+      MIME::Decoder::BinHex 5.522
+      MIME::Decoder::Binary 5.522
+      MIME::Decoder::Gzip64 5.522
+      MIME::Decoder::NBit 5.522
+      MIME::Decoder::QuotedPrint 5.522
+      MIME::Decoder::UU 5.522
+      MIME::Entity 5.522
+      MIME::Field::ConTraEnc 5.522
+      MIME::Field::ContDisp 5.522
+      MIME::Field::ContType 5.522
+      MIME::Field::ParamVal 5.522
+      MIME::Head 5.522
+      MIME::Parser 5.522
       MIME::Parser::FileInto undef
       MIME::Parser::FileUnder undef
       MIME::Parser::Filer undef
       MIME::Parser::Reader undef
       MIME::Parser::Results undef
-      MIME::Tools 5.504
+      MIME::Tools 5.522
       MIME::WordDecoder undef
       MIME::WordDecoder::ISO_8859 undef
       MIME::WordDecoder::US_ASCII undef
       MIME::WordDecoder::UTF_8 undef
-      MIME::Words 5.504
+      MIME::Words 5.522
     requirements:
-      ExtUtils::MakeMaker 6.42
+      ExtUtils::MakeMaker 6.59
       File::Path 1
       File::Spec 0.6
       File::Temp 0.18
