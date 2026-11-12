@@ -390,4 +390,24 @@ sub one_off_payment {
     return 1;
 }
 
+sub get_recent_payments {
+    my ($self, $args) = @_;
+
+    my $pages;
+    my $page = 1;
+    my @out;
+    while (!$pages || $page <= $pages) {
+        my $res = $self->call('POST', "payments", {
+            CreatedAfter => $args->{start}->strftime('%Y-%m-%dT%H:%M:%SZ'),
+            CreatedBefore => $args->{end}->strftime('%Y-%m-%dT%H:%M:%SZ'),
+            PageNumber => $page,
+        });
+        return $res if $res->{error};
+        push @out, @{$res->{Data}};
+        $pages ||= $res->{Pagination}{TotalPages} || 1;
+        $page++;
+    }
+    return \@out;
+}
+
 1;

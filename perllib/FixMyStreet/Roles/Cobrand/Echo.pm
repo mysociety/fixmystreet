@@ -160,7 +160,7 @@ sub look_up_property {
         return { id => $id };
     }
     my $result = $calls->{"GetPointAddress $id"};
-    return {
+    my $data = {
         id => $result->{Id},
         uprn => $result->{SharedRef}{Value}{anyType},
         address => FixMyStreet::Template::title($result->{Description}),
@@ -169,6 +169,45 @@ sub look_up_property {
         type_id => $result->{PointAddressType}{Id},
         type_name => $result->{PointAddressType}{Name},
     };
+    if ($self->moniker eq 'brent') {
+        $data->{postcode} = $result->{Postcode};
+        $data->{town} = $result->{PostTown};
+        $data->{street} = FixMyStreet::Template::title($result->{Street}{Name} || '');
+        $data->{first_part} = join(', ', addressable_objects($result));
+    }
+    return $data;
+}
+
+# Similar code to that in FixMyStreet::Geocode::Address::OSPlaces, only need first part
+
+sub addressable_objects {
+    my ($address) = @_;
+    my @saon = addressable_object($address, 'Secondary');
+    my @paon = addressable_object($address, 'Primary');
+    my $saot = FixMyStreet::Template::title($address->{Secondary}{Name} || '');
+    my $paot = FixMyStreet::Template::title($address->{Primary}{Name} || '');
+
+    my $street = "";
+    $street = join(' ', @paon, $street);
+    $street = join(', ', @saon, $street) if !$paot;
+
+    my @parts;
+    push @parts, $saot if $saot;
+    push @parts, join(' ', @saon, $paot) if $paot;
+    push @parts, $street if $street;
+    return @parts;
+}
+
+# Returns a list - either the number/range, or empty.
+# This is so it is easy to use in a join if missing
+sub addressable_object {
+    my ($address, $type) = @_;
+    my $str = '';
+    $str .= $address->{$type}{Number} if $address->{$type}{Number};
+    $str .= $address->{$type}{Suffix} if $address->{$type}{Suffix};
+    $str .= '-' . $address->{$type}{ToNumber} if $address->{$type}{ToNumber};
+    $str .= $address->{$type}{ToSuffix} if $address->{$type}{ToSuffix};
+    return $str ? ($str) : ();
 }
 
 sub bin_services_for_address {

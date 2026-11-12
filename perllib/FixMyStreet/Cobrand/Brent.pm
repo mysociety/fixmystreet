@@ -35,7 +35,7 @@ Integrates with Echo and Symology for FixMyStreet
 
 Integrates with Echo for WasteWorks.
 
-Uses SCP for accepting payments.
+Uses SCP and AccessPay for accepting payments.
 
 Uses OpenUSRN for locating nearest addresses on the Highway
 
@@ -49,7 +49,8 @@ with 'FixMyStreet::Roles::Open311Multi';
 with 'FixMyStreet::Roles::Cobrand::OpenUSRN';
 with 'FixMyStreet::Roles::Cobrand::Echo';
 with 'FixMyStreet::Roles::Cobrand::SCP',
-     'FixMyStreet::Roles::Cobrand::Paye';
+     'FixMyStreet::Roles::Cobrand::Paye',
+     'FixMyStreet::Roles::Cobrand::AccessPaySuite';
 
 # Brent covers some of the areas around it so that it can handle near-boundary reports
 sub council_area_id { return [2488, 2505, 2489, 2487]; } # 2505 Camden, 2489 Barnet, 2487 Harrow
@@ -1105,6 +1106,19 @@ sub garden_collection_time { '6:30am' }
 
 sub garden_echo_container_name { 'BRT - Paid Collection Container Quantity' }
 
+sub garden_subscription_quantity {
+    my ($self, $service) = @_;
+
+    my $quantity = 0;
+    my $datas = Integrations::Echo::force_arrayref($service->{Data}, 'ExtensibleDatum');
+    for my $data ( @$datas ) {
+        next unless $data->{DatatypeName} eq $self->garden_echo_container_name;
+        $quantity = $data->{Value};
+    }
+
+    return $quantity;
+}
+
 sub garden_container_data_extract {
     my ($self, $data) = @_;
     my $garden_bins = $data->{Value};
@@ -1512,6 +1526,9 @@ sub garden_service_id { $SERVICE_IDS{garden} }
 use constant GARDEN_WASTE_PAID_COLLECTION_BIN => 1;
 use constant GARDEN_WASTE_PAID_COLLECTION_SACK => 2;
 sub garden_service_name { 'Garden waste collection service' }
+sub garden_subscription_type_field { 'Subscription_Type' }
+sub garden_subscription_container_field { 'Paid_Collection_Container_Type' }
+sub garden_subscription_quantity_field { 'Paid_Collection_Container_Quantity' }
 sub garden_subscription_event_id { $EVENT_TYPE_IDS{garden} }
 sub garden_due_date {
     my ($self, $end_date) = @_;
@@ -1572,17 +1589,14 @@ sub waste_munge_enquiry_data {
     $data->{detail} = $detail;
 }
 
-sub waste_cc_payment_admin_fee_line_item_ref {
-    my ($self, $p) = @_;
-    return "Brent-" . $p->id;
-}
-
 sub waste_garden_sub_params {
     my ($self, $data, $type) = @_;
     my $c = $self->{c};
 
     my $container = $data->{container_choice} || '';
     $container = $container eq 'sack' ? GARDEN_WASTE_PAID_COLLECTION_SACK : GARDEN_WASTE_PAID_COLLECTION_BIN;
+
+    $c->set_param('Subscription_Type', $type);
     $c->set_param('Paid_Collection_Container_Type', $container);
     $c->set_param('Paid_Collection_Container_Quantity', $data->{bins_wanted});
     $c->set_param('Payment_Value', $data->{cost_pa});
@@ -1771,6 +1785,43 @@ sub _harrow_non_street {
         'Car parking',
         'Graffiti',
     ]
+}
+
+sub waste_payment_ref_council_code { "BRT" }
+sub waste_dd_has_redirect { 1 }
+sub waste_dd_get_redirect_url {
+    my ($self, $c) = @_;
+    my $property = $c->stash->{property};
+    my $p = $c->stash->{report};
+    my $amount = $p->get_extra_field_value( 'pro_rata' );
+    unless ($amount) {
+        $amount = $p->get_extra_field_value( 'payment' );
+    }
+
+    my ($first, $last) = $p->name =~ /(\S+)(?:\.?\s+(.+))?/;
+
+    my $url = URI->new($self->feature('payment_gateway')->{dd_push_url});
+    $url->query_form(
+        %{$url->query_form_hash},
+        redirectlink => '%2Fen',
+        cancelRedirectLink => '%2Fen',
+        consentMessage => 'yes',
+        debitnameparameter => 'WasteWorks',
+        firstname => $first,
+        lastname => $last,
+        emailaddress => $p->user->email,
+        telephonenumber => $p->user->phone,
+        amount => $amount,
+        houseno => $property->{first_part},
+        streetname => $property->{street},
+        area => $property->{town},
+        postcode => $property->{postcode},
+        additionalref => $c->cobrand->waste_payment_ref_council_code . '-' . $p->id . '-' . $c->stash->{property}{uprn},
+    );
+    # This form does not handle + as space
+    $url = "$url";
+    $url =~ s/\+/%20/g;
+    return $url;
 }
 
 1;

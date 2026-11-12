@@ -1886,7 +1886,6 @@ subtest 'check direct debit reconcilliation' => sub {
     ok $p->id != $sub_for_renewal->id, "not the original record";
     is $p->get_extra_field_value('Subscription_Type'), 2, "renewal has correct type";
     is $p->get_extra_field_value('Subscription_Details_Quantity'), 2, "renewal has correct number of bins";
-    is $p->get_extra_field_value('Subscription_Type'), 2, "renewal has correct type";
     is $p->get_extra_field_value('Subscription_Details_Container_Type'), 44, 'renewal has correct container type';
     is $p->get_extra_field_value('service_id'), 545, 'renewal has correct service id';
     is $p->get_extra_field_value('property_id'), '54321';

@@ -46,21 +46,17 @@ sub logging_levels {
     };
 }
 
+sub waste_dd_has_redirect { 0 }
+
 sub waste_is_dd_payment {
     my ($self, $row) = @_;
 
     return $row->get_extra_field_value('payment_method') && $row->get_extra_field_value('payment_method') eq 'direct_debit';
 }
 
-sub _parse_payment_date {
-    my ($self, $date) = @_;
-    my ($day, $month, $year) = ( $date =~ m#^(\d+)/(\d+)/(\d+)$#);
-    return DateTime->new(day => $day, month => $month, year => $year);
-}
-
 sub waste_dd_paid {
     my ($self, $date) = @_;
-    my $dt = $self->_parse_payment_date($date);
+    my $dt = $self->parse_payment_date($date);
     return $self->within_working_days($dt, 3, 1);
 }
 
@@ -173,6 +169,8 @@ sub waste_reconcile_direct_debits {
         $self->output_log(!$handled);
     }
 
+    return unless $i->can('get_cancelled_payers');
+
     # There's two options with a cancel payment. If the user has cancelled it outside
     # of WasteWorks then we do nothing. If it's been cancelled inside WasteWorks then
     # we'll have an unconfirmed cancel report which we need to confirm.
@@ -279,15 +277,15 @@ sub _handle_renewal_payment {
         my $service = $self->waste_get_current_garden_sub( $p->waste_property_id );
         my $quantity;
         if ($service) {
-            $quantity = $self->waste_get_sub_quantity($service);
+            $quantity = $self->garden_subscription_quantity($service);
         } elsif ($params->{reference} && $params->{force_when_missing}) {
             $quantity = $params->{force_when_missing};
         } else {
             $self->log("no matching service to renew for " . $payment->payer);
             $self->log("trying to calculate bin quantity instead...");
             my $costs = WasteWorks::Costs->new({ cobrand => $payment->cobrand });
-            my $ggw_cost_pence = $costs->get_cost("ggw_cost", $self->_parse_payment_date($payment->date));
-            my $payment_amount_pence = $payment->amount * 100;
+            my $ggw_cost_pence = $costs->get_cost("ggw_cost", $self->parse_payment_date($payment->date));
+            my $payment_amount_pence = $self->paymentInPence ? $payment->amount : $payment->amount * 100;
             if (!$payment_amount_pence || !$ggw_cost_pence  || ($payment_amount_pence % $ggw_cost_pence != 0)) {
                 $self->log("unable to work out quantity from bin price and payment amount");
                 return 0;
@@ -310,7 +308,7 @@ sub _report_matches_payment {
     my $match = 0;
     $self->log( "one off reference field is " . $p->oneOffRef ) if $p->oneOffRef;
     $self->log( "potential match type is " . $r->get_extra_field_value($self->garden_subscription_type_field) );
-    if ( $p->oneOffRef && $r->id eq $p->oneOffRef ) {
+    if ( $p->oneOffRef && ($r->id eq $p->oneOffRef || $p->oneOffRef eq "WasteWorks: AdHoc payment for #" . $r->id) ) {
         $match = 'Ad-Hoc';
     } elsif ( !$p->oneOffRef
             && ( $r->get_extra_field_value($self->garden_subscription_type_field) eq $self->waste_subscription_types->{New} ||
@@ -329,7 +327,7 @@ sub _duplicate_waste_report {
     my $extra = {
         $self->garden_subscription_type_field => $self->waste_subscription_types->{Renew},
         uprn => $uprn,
-        Subscription_Details_Quantity => $quantity,
+        $self->garden_subscription_quantity_field => $quantity,
         payment_method => 'direct_debit',
         $self->garden_subscription_container_field => $report->get_extra_field_value($self->garden_subscription_container_field),
         service_id => $report->get_extra_field_value('service_id'),
@@ -366,6 +364,7 @@ sub _duplicate_waste_report {
     $renew->set_extra_fields(@extra);
     $renew->set_extra_metadata('payerReference', $payment->payer);
     $renew->set_extra_metadata('payment_reference', $payment->payer);
+    $self->add_new_sub_metadata($renew, $payment);
     $renew->set_extra_metadata('dd_date', $payment->date);
     $renew->confirm;
     $renew->insert unless $dry_run;
@@ -450,24 +449,6 @@ sub waste_get_current_garden_sub {
     return undef unless $services;
 
     return $self->garden_current_service_from_service_units($services);
-}
-
-sub waste_get_sub_quantity {
-    my ($self, $service) = @_;
-
-    my $quantity = 0;
-    my $tasks = Integrations::Echo::force_arrayref($service->{Data}, 'ExtensibleDatum');
-    return 0 unless scalar @$tasks;
-    for my $data ( @$tasks ) {
-        next unless $data->{DatatypeName} eq $self->garden_echo_container_name;
-        my $kids = Integrations::Echo::force_arrayref($data->{ChildData}, 'ExtensibleDatum');
-        for my $child ( @$kids ) {
-            next unless $child->{DatatypeName} eq 'Quantity';
-            $quantity = $child->{Value}
-        }
-    }
-
-    return $quantity;
 }
 
 my @current_log;
