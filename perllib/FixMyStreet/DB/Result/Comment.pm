@@ -199,11 +199,9 @@ sub check_for_errors {
     $errors{update} = _('Please enter a message')
       unless $self->text =~ m/\S/;
 
-    # Bromley Council custom character limit
-    if ( $self->text && $self->problem && $self->problem->bodies_str) {
-        if ($self->problem->to_body_named('Bromley') && length($self->text) > 1750) {
-            $errors{update} = sprintf( _('Updates are limited to %s characters in length. Please shorten your update'), 1750 );
-        }
+    # Maximum length
+    if ( $self->text && length($self->text) > 1750) {
+        $errors{update} = sprintf( _('Updates are limited to %s characters in length. Please shorten your update'), 1750 );
     }
 
     return \%errors;
