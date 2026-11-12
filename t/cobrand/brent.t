@@ -1408,6 +1408,39 @@ FixMyStreet::override_config {
         restore_time();
     };
 
+    subtest 'test an indoor food caddy' => sub {
+        set_fixed_time('2025-01-27T12:00:00Z'); # After new general bin notice text
+        $mech->log_in_ok($user1->email);
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Request a recycling container');
+        $mech->follow_link_ok({url => 'http://brent.fixmystreet.com/waste/12345/request'});
+
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 12 } }, "Choose kitchen caddy");
+        $mech->content_contains("Why do you need a replacement container?");
+        $mech->content_contains("My container is damaged", "Can report damaged container");
+        $mech->content_contains("My container is missing", "Can report missing container");
+        $mech->content_contains("I am a new resident without a container", "Can request new container as new resident");
+        $mech->content_contains("I would like an extra container", "Can not request an extra container");
+        $mech->submit_form_ok({ with_fields => { 'request_reason' => 'damaged' } });
+        $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user1->email } });
+        $mech->submit_form_ok({ with_fields => { 'process' => 'summary' } });
+        $mech->content_contains('Your container request has been sent');
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
+        is $report->uprn, 1000000002;
+        is $report->get_extra_field_value('Container_Request_Container_Type'), '12::12';
+        is $report->get_extra_field_value('Container_Request_Action'), '2::1';
+        is $report->get_extra_field_value('Container_Request_Reason'), '4::4';
+        is $report->get_extra_field_value('Container_Request_Notes'), '';
+        is $report->get_extra_field_value('Container_Request_Quantity'), '1::1';
+        is $report->get_extra_field_value('service_id'), '316';
+
+        FixMyStreet::Script::Reports::send();
+        # No sent email, only logged email
+        my $body = $mech->get_text_body_from_email;
+        like $body, qr/We aim to deliver this container/;
+        restore_time();
+    };
+
     subtest 'test general waste (refuse) container requests' => sub {
         foreach ((
             # Some extra container rejection scenarios
@@ -2099,7 +2132,7 @@ subtest 'Dashboard CSV pre-generation' => sub {
     $mech->get_ok('/dashboard?export=1');
     $mech->content_contains('"Created By",Email,USRN,UPRN,"External ID","Does the report have an image?","Extra details","Did you see the fly-tipping take place","If \'Yes\', are you willing to provide a statement?","How much waste is there","Type of waste","Container Request Action","Container Request Container Type","Container Request Reason","Email Renewal Reminders Opt-In","Service ID","Staff Role","Small Item 1","Small Item 2"', "New columns added");
     $mech->content_like(qr/Pregen problem Test 3.*?"Test User",pkg-tcobrandbrentt/, "User and email added");
-    $mech->content_like(qr/Pregen problem Test 3.*?,1234,4321,121,Y,,,,,,Collect\+Deliver,"Food waste caddy",Damaged,,1/, "Bin request values added");
+    $mech->content_like(qr/Pregen problem Test 3.*?,1234,4321,121,Y,,,,,,Collect\+Deliver,"Outdoor food waste caddy",Damaged,,1/, "Bin request values added");
     $mech->content_like(qr/Pregen problem Test 2.*?,,Y,,Yes,No,"Small van load",Appliance,/, "Flytip request values added");
     $mech->content_like(qr/Pregen problem Test 1.*?,,,"Test Park","Test User",.*?,,,,Y,,,,,,,,,,,,Sofa,Wardrobe,,,,,,,/, "Bulky items added");
     $problems[2]->set_extra_metadata('contributed_by' => $staff_user->id);
