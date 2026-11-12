@@ -10,8 +10,8 @@ requires 'ExtUtils::ParseXS', '3.30'; # [1]
 requires 'Test::Differences', '0.67'; # [3]
 
 # Minimum versions of dependencies to upgrade for bugfixes
-requires 'CGI', '4.43';
 requires 'HTTP::Tiny', '0.090';
+requires 'HTTP::Body', '1.25';
 requires 'Net::Server', '2.009';
 requires 'XML::LibXML', '2.0210';
 requires 'PkgConfig'; # If you don't have pkg-config installed, XML::LibXML won't install
@@ -114,7 +114,7 @@ requires 'LWP::Simple';
 requires 'LWP::UserAgent', '6.61';
 requires 'HTTP::CookieJar', '0.012';
 requires 'Math::Trig';
-requires 'MIME::Parser'; # HandleMail
+requires 'MIME::Parser', '5.522'; # HandleMail
 requires 'Module::Pluggable';
 requires 'Moose', '2.2011';
 requires 'Moo', '2.003004';
