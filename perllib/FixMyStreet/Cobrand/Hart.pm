@@ -102,7 +102,8 @@ sub pin_colour {
 sub dont_show_old_reports {
     my $self = shift;
 
-    return if $self->{c}->stash->{is_staff};
+    my $c = $self->{c};
+    return if $c->user && $self->admin_allow_user($c->user);
     return 1;
 }
 
