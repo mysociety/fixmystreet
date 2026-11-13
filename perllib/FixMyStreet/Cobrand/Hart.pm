@@ -99,5 +99,12 @@ sub pin_colour {
     return $self->next::method($p, $context);
 }
 
+sub dont_show_old_reports {
+    my $self = shift;
+
+    return if $self->{c}->stash->{is_staff};
+    return 1;
+}
+
 1;
 
