@@ -99,5 +99,13 @@ sub pin_colour {
     return $self->next::method($p, $context);
 }
 
+sub dont_show_old_reports {
+    my $self = shift;
+
+    my $c = $self->{c};
+    return if $c->user && $self->admin_allow_user($c->user);
+    return 1;
+}
+
 1;
 
