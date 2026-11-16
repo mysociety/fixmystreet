@@ -42,6 +42,7 @@ $contact = $mech->create_contact_ok(body => $body, group => ['Waste'],
 $contact->update;
 
 my $contact_centre_user = $mech->create_user_ok('contact@example.org', from_body => $body, email_verified => 1, name => 'Contact 1');
+$contact_centre_user->user_body_permissions->create({ body => $body, permission_type => 'user_edit' });
 $contact_centre_user->user_body_permissions->create({ body => $body, permission_type => 'report_view_private' });
 $contact_centre_user->user_body_permissions->create({ body => $body, permission_type => 'wasteworks_config' });
 
@@ -1998,6 +1999,9 @@ FixMyStreet::override_config {
         $mech->content_contains('Last discounted collection: Saturday 1 July 2023');
         $mech->submit_form_ok({ form_id => 'form_for_discount_reset' });
         $mech->content_contains('Last discounted collection: None');
+
+        $mech->get_ok('/admin/users/' . $contact_centre_user->id . '/log');
+        $mech->content_contains('Reset discount property <a href="/property/1000000002">1000000002</a>');
     };
 
     # subtest 'Bulky goods cheque payment by contact centre' => sub {
