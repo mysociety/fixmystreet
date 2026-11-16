@@ -1,0 +1,93 @@
+[% SET bodyclass = 'frontpage boituva-frontpage' %]
+[% INCLUDE 'header.html', title = '', inline_css = 1 %]
+
+[% PROCESS 'front/site-message.html' %]
+
+<div class="boituva-home" id="boituva-home">
+    <section class="boituva-hero" aria-labelledby="boituva-title">
+        <div class="boituva-hero__content">
+            <h1 id="boituva-title">Tapa Buraco Online</h1>
+            <p class="boituva-hero__slogan">Sua cidade, <strong>melhor cuidada.</strong></p>
+            <p class="boituva-hero__intro">Registre solicitações de tapa-buracos e acompanhe<br> o andamento dos serviços em Boituva.</p>
+        </div>
+    </section>
+
+    <div class="boituva-main">
+        <div class="boituva-search-panel">
+            <section class="boituva-primary-actions" aria-label="Ações principais">
+                <a class="boituva-action boituva-action--new" href="#pc">
+                    <span class="boituva-action__icon" aria-hidden="true">
+                        <svg viewBox="0 0 48 48">
+                            <path d="M24 4c-8 0-14 6.2-14 14.1 0 10.3 14 25.9 14 25.9s14-15.6 14-25.9C38 10.2 32 4 24 4Zm0 19a5 5 0 1 1 0-10 5 5 0 0 1 0 10Z"></path>
+                        </svg>
+                    </span>
+                    <span class="boituva-action__copy">
+                        <strong>Nova Solicitação</strong>
+                        <span>Registre um buraco ou outro problema<br> na via pública.</span>
+                    </span>
+                    <span class="boituva-action__arrow" aria-hidden="true">›</span>
+                </a>
+                <a class="boituva-action boituva-action--track" href="#pc">
+                    <span class="boituva-action__icon" aria-hidden="true">
+                        <svg viewBox="0 0 48 48">
+                            <path d="M17 5h14a3 3 0 0 1 3 3v3h5v32H9V11h5V8a3 3 0 0 1 3-3Zm0 6h14V8H17v3Zm-1 9v4h4v-4h-4Zm9 0v3h12v-3H25Zm-9 9v4h4v-4h-4Zm9 0v3h12v-3H25Z"></path>
+                        </svg>
+                    </span>
+                    <span class="boituva-action__copy">
+                        <strong>Acompanhar</strong>
+                        <span>Consulte o status da sua solicitação.</span>
+                    </span>
+                    <span class="boituva-action__arrow" aria-hidden="true">›</span>
+                </a>
+            </section>
+
+            <section class="boituva-postcode-search" id="boituva-search" aria-labelledby="boituva-search-title">
+                <h2 id="boituva-search-title">
+                    <svg aria-hidden="true" viewBox="0 0 24 24">
+                        <circle cx="10.8" cy="10.8" r="6.8"></circle>
+                        <path d="m16 16 5 5"></path>
+                    </svg>
+                    Buscar sua solicitação
+                </h2>
+                [% INCLUDE 'around/postcode_form.html' %]
+            </section>
+        </div>
+
+        <section class="boituva-information" aria-label="Mais informações">
+            <a class="boituva-info-card" href="[% c.uri_for('/around', { pc => 'Boituva' }) %]">
+                <span class="boituva-info-card__copy">
+                    <strong><span class="boituva-info-card__icon" aria-hidden="true">◧</span> Mapa de Ocorrências</strong>
+                    <span>Visualize os registros de tapa-buracos<br> na cidade e acompanhe os serviços.</span>
+                    <span class="boituva-info-card__link">Acessar mapa <b aria-hidden="true">→</b></span>
+                </span>
+                <span class="boituva-card-art boituva-card-art--map" aria-hidden="true"></span>
+            </a>
+            <a class="boituva-info-card" href="[% c.uri_for('/faq') %]">
+                <span class="boituva-info-card__copy">
+                    <strong><span class="boituva-info-card__icon boituva-info-card__icon--circle" aria-hidden="true">i</span> Informações Importantes</strong>
+                    <span>O serviço é realizado conforme a<br> programação das equipes.</span>
+                    <span class="boituva-info-card__link">Saiba mais <b aria-hidden="true">→</b></span>
+                </span>
+                <svg class="boituva-card-art boituva-card-art--machine" aria-hidden="true" viewBox="0 0 150 92">
+                    <path d="M12 77c24-17 42-19 63-13s40 0 63-16M20 86c20-12 39-12 55-8" fill="none" stroke="#134077" stroke-dasharray="3 5" stroke-linecap="round" stroke-width="2"></path>
+                    <path d="M49 32h33l10 14h18v23H41V43h8Zm12-17h20l9 17H60Zm-3 17 10-17m20 36h17M38 69a8 8 0 1 0 16 0m35 0a8 8 0 1 0 16 0m-48-7h43" fill="#134077" stroke="#134077" stroke-linejoin="round" stroke-width="4"></path>
+                    <circle cx="46" cy="69" r="7" fill="#f4f7fb" stroke="#134077" stroke-width="4"></circle>
+                    <circle cx="97" cy="69" r="7" fill="#f4f7fb" stroke="#134077" stroke-width="4"></circle>
+                </svg>
+            </a>
+            <a class="boituva-info-card" href="[% c.uri_for('/reports') %]">
+                <span class="boituva-info-card__copy">
+                    <strong><span class="boituva-info-card__icon boituva-info-card__icon--check" aria-hidden="true">✓</span> Transparência</strong>
+                    <span>Acompanhe os indicadores<br> e conheça o trabalho da Prefeitura.</span>
+                    <span class="boituva-info-card__link">Acessar dados <b aria-hidden="true">→</b></span>
+                </span>
+                <svg class="boituva-card-art boituva-card-art--chart" aria-hidden="true" viewBox="0 0 104 92">
+                    <path d="M10 78h87M20 75V55h13v20m8 0V43h13v32m8 0V31h13v44m8 0V18h13v57" fill="#134077"></path>
+                    <path d="m15 46 22-12 17 4 20-20 21-5m-13 0h13v13" fill="none" stroke="#134077" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"></path>
+                </svg>
+            </a>
+        </section>
+    </div>
+</div>
+
+[% INCLUDE 'footer.html' pagefooter = 'yes' %]

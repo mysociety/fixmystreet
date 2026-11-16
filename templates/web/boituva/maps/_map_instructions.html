@@ -1,0 +1,34 @@
+<div class="map-instructions" aria-live="polite">
+    <div class="keyboard-instructions-wrapper" id="keyboard-instructions-first">
+        <span>[% loc("You can move around with your keyboard") %]</span>
+        <div class="keyboard-key-group">
+            <div class="keyboard-key-icon zoom-in">[% loc("plus") %]</div>
+            <div class="keyboard-key-icon zoom-out">[% loc("minus") %]</div>
+            <div class="keyboard-key-icon left">[% loc("left") %]</div>
+            <div class="keyboard-key-icon right">[% loc("right") %]</div>
+        </div>
+    </div>
+
+    <div class="keyboard-instructions-wrapper" id="keyboard-instructions-drop-pin">
+        <span>[% loc("Drop pin on the map to start a new report") %]</span>
+        <div class="keyboard-key-group">
+            <div class="keyboard-key-icon space">[% loc("space") %]</div>
+        </div>
+    </div>
+    <div class="keyboard-instructions-wrapper" id="keyboard-instructions-remove-pin">
+        <span>[% loc("Press space again to adjust the location") %]</span>
+        <div class="keyboard-key-group">
+            <div class="keyboard-key-icon space">[% loc("space") %]</div>
+        </div>
+    </div>
+</div>
+<div class="boituva-map-touch-hint">
+    No celular, arraste o mapa até o ponto correto. Para usar o GPS, toque no ícone de localização e autorize.
+</div>
+<div class="keyboard-pin"></div>
+<div class="keyboard-pulsating-dot"></div>
+<div class="map-crosshairs"></div>
+<div class="map-mobile-report-button">
+    <span class="map-mobile-report-button__new">[% loc('Start new report here') %]</span>
+    <span class="map-mobile-report-button__reposition">[% loc('Reposition report here') %]</span>
+</div>
