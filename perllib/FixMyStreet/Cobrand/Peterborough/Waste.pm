@@ -52,6 +52,7 @@ lock_hash(%SERVICES);
 
 my %CONTAINERS = (
     black_240 => 6533,
+    black_360 => 6822,
     black_1100 => 6836,
     green_240 => 6534,
     brown_240 => 6579,
@@ -376,7 +377,7 @@ sub bin_services_for_address {
 
         my %requests_open = map { $_ => 1 } @request_service_ids_open;
 
-        if ( $container_id == $CONTAINERS{black_240} || $container_id == $CONTAINERS{black_1100} ) {    # Black bin
+        if ( $container_id == $CONTAINERS{black_240} || $container_id == $CONTAINERS{black_360} || $container_id == $CONTAINERS{black_1100} ) {    # Black bin
             $property->{has_black_bin} = 1;
         }
 
