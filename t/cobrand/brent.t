@@ -123,6 +123,8 @@ my $contact = $mech->create_contact_ok(body_id => $brent->id, category => 'Graff
 });
 my $gully = $mech->create_contact_ok(body_id => $brent->id, category => 'Gully grid missing',
     email => 'Symology-gully', group => ['Drains and gullies']);
+my $aurora_gully = $mech->create_contact_ok(body_id => $brent->id, category => 'Gully - Blocked (Flooded)',
+    email => 'Aurora-GullyBlockedFlooded', group => ['Roads & Pavements']);
 my $parks_contact = $mech->create_contact_ok(body_id => $brent->id, category => 'Overgrown grass',
     email => 'ATAK-OVERGROWN_GRASS', group => 'Parks and open spaces');
 my $parks_contact2 = $mech->create_contact_ok(body_id => $brent->id, category => 'Leaf clearance',
@@ -493,6 +495,101 @@ subtest "Open311 attribute changes" => sub {
 
         $problem->delete;
     };
+
+    subtest 'Aurora category' => sub {
+        my ($problem) = $mech->create_problems_for_body(
+            1,
+            $brent->id,
+            'Gully',
+            {   areas    => "2488",
+                category => 'Gully - Blocked (Flooded)',
+                cobrand  => 'brent',
+                geocode  => { display_name => 'Engineers Way, London Borough of Brent, London, Greater London, England, HA9 0FJ, United Kingdom' },
+            }
+        );
+        $problem->update_extra_field( { name => 'UnitID', value => '234' } );
+        $problem->update_extra_field( { name => 'NSGRef', value => 'BadUSRN' } );
+        $problem->update;
+
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'brent',
+            MAPIT_URL        => 'http://mapit.uk/',
+            STAGING_FLAGS    => { send_reports => 1 },
+            COBRAND_FEATURES => {
+                anonymous_account => { brent => 'anonymous' },
+                area_code_mapping => { brent => { BadUSRN => 'GoodUSRN' } },
+            },
+        }, sub {
+            FixMyStreet::Script::Reports::send();
+            my $req = Open311->test_req_used;
+            my $c   = CGI::Simple->new( $req->content );
+            is $c->param('service_code'), 'Aurora-GullyBlockedFlooded';
+            is $c->param('attribute[UnitID]'), '234',
+                'UnitID sent as an attribute';
+            is $c->param('attribute[NSGRef]'), 'GoodUSRN', 'USRN updated';
+            unlike $c->param('description'), qr/ukey/,
+                'UnitID not added to detail';
+            my $title = $problem->title
+                . '; Nearest calculated address = Engineers Way, London Borough of Brent, London, Greater London, HA9 0FJ';
+            is $c->param('attribute[title]'), $title,
+                'Report title and location passed as attribute for Open311';
+            is $c->param('attribute[description]'), $problem->detail,
+                'Report detail passed as attribute for Open311';
+            my $id = $problem->id;
+            like $c->param('attribute[report_url]'), qr{/report/$id$},
+                'Report URL passed as attribute for Open311';
+        };
+
+        $problem->discard_changes;
+        unlike $problem->detail, qr/ukey/, 'Report detail not changed';
+        $problem->delete;
+    };
+
+    subtest 'Aurora category looks up missing NSGRef' => sub {
+        my ($problem) = $mech->create_problems_for_body(1, $brent->id, 'Gully', {
+            areas => "2488", category => 'Gully - Blocked (Flooded)', cobrand => 'brent',
+        });
+        my $brent_mock = Test::MockModule->new('FixMyStreet::Cobrand::Brent');
+        $brent_mock->mock('lookup_site_code', sub { 'LookedUpUSRN' });
+
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'brent',
+            MAPIT_URL        => 'http://mapit.uk/',
+            STAGING_FLAGS    => { send_reports => 1 },
+        }, sub {
+            FixMyStreet::Script::Reports::send();
+            my $c = CGI::Simple->new( Open311->test_req_used->content );
+            is $c->param('attribute[NSGRef]'), 'LookedUpUSRN', 'USRN looked up';
+        };
+
+        $problem->delete;
+    };
+};
+
+subtest 'Only Aurora updates with text are sent' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'brent',
+    }, sub {
+        my $cobrand = FixMyStreet::Cobrand::Brent->new;
+        my %expected = (
+            'Gully - Blocked (Flooded)' => { 'Some text' => 0, '' => 1 }, # Aurora
+            'Gully grid missing' => { 'Some text' => 1, '' => 1 }, # Symology
+            'Overgrown grass' => { 'Some text' => 1, '' => 1 }, # ATAK
+            'Graffiti' => { 'Some text' => 0, '' => 0 }, # Email
+        );
+        foreach my $category (sort keys %expected) {
+            my ($problem) = $mech->create_problems_for_body(1, $brent->id, 'Title', {
+                areas => ",2488,", category => $category, cobrand => 'brent',
+            });
+            foreach my $text (sort keys %{ $expected{$category} }) {
+                my $update = $mech->create_comment_for_problem($problem, $problem->user, 'Name', $text, 0, 'confirmed', 'confirmed');
+                is $cobrand->should_skip_sending_update($update), $expected{$category}{$text},
+                    "$category update with" . ($text ? '' : 'out') . " text";
+            }
+            $problem->comments->delete;
+            $problem->delete;
+        }
+    };
 };
 
 FixMyStreet::override_config {
@@ -583,6 +680,7 @@ FixMyStreet::override_config {
                     is $mech->content_lacks("Dead animal"), 1, 'Camden non-street category not present';
                     is $mech->content_lacks("Abandoned vehicles"), 1, 'Barnet non-street category not present';
                     is $mech->content_lacks("Parking"), 1, 'Barnet street category not present';
+                    is $mech->content_contains("Gully - Blocked (Flooded)"), 1, 'Brent Aurora category present';
                 };
             };
 
@@ -625,6 +723,7 @@ FixMyStreet::override_config {
                     is $mech->content_lacks("Abandoned vehicles"), 1, 'Barnet non-street category not present';
                     is $mech->content_contains("Parking"), 1, 'Barnet street category present';
                     is $mech->content_lacks("Gully grid missing"), 1, 'Brent Symology category not present';
+                    is $mech->content_lacks("Gully - Blocked (Flooded)"), 1, 'Brent Aurora category not present';
                     is $mech->content_contains("Potholes"), 1, 'Brent category present';
                     is $mech->content_contains("Sweeping"), 1, 'TfL category present';
                     is $mech->content_lacks("Fly-tipping"), 1, 'Camden category not present';
