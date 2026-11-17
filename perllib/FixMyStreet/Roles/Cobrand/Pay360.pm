@@ -17,6 +17,8 @@ has paymentTypeField => (
     default => 'Type',
 );
 
+has paymentInPence => ( is => 'ro', default => 0 );
+
 has oneOffReferenceField => (
     is => 'ro',
     default => 'YourRef',
@@ -46,6 +48,12 @@ has cancelledDateField => (
     is => 'ro',
     default => 'CancelledDate',
 );
+
+sub parse_payment_date {
+    my ($self, $date) = @_;
+    my ($day, $month, $year) = ( $date =~ m#^(\d+)/(\d+)/(\d+)$#);
+    return DateTime->new(day => $day, month => $month, year => $year);
+}
 
 sub get_config {
     return shift->feature('payment_gateway');
