@@ -1,0 +1,46 @@
+<div class="boituva-utility-bar">
+    <div class="container">
+        <nav aria-label="Atalhos da página">
+            <a href="#content">Ir para o conteúdo</a>
+            <a href="#main-nav">Ir para o menu</a>
+            <a href="/#boituva-search">Ir para a busca</a>
+            <a href="#boituva-footer">Ir para o rodapé</a>
+        </nav>
+    </div>
+</div>
+
+<header id="site-header" role="banner">
+    <div class="boituva-brand-bar">
+        <div class="container">
+            [% INCLUDE 'header_logo.html' %]
+            <div class="boituva-header-actions">
+                <a class="boituva-header-search" href="/#boituva-search">
+                    <svg aria-hidden="true" viewBox="0 0 24 24">
+                        <circle cx="10.8" cy="10.8" r="6.8"></circle>
+                        <path d="m16 16 5 5"></path>
+                    </svg>
+                    Buscar solicitação
+                </a>
+                <a class="boituva-header-social" href="https://www.facebook.com/prefeituradeboituva/" target="_blank" rel="noopener noreferrer" aria-label="Facebook da Prefeitura de Boituva">
+                    <svg aria-hidden="true" viewBox="0 0 24 24">
+                        <path d="M13.5 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.5 1.6-1.5h1.7V3.9c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3V10H7.3v3h2.8v8h3.4Z"></path>
+                    </svg>
+                </a>
+                <a class="boituva-header-social" href="https://www.instagram.com/prefeituradeboituva/" target="_blank" rel="noopener noreferrer" aria-label="Instagram da Prefeitura de Boituva">
+                    <svg aria-hidden="true" viewBox="0 0 24 24">
+                        <rect x="3.5" y="3.5" width="17" height="17" rx="4"></rect>
+                        <circle cx="12" cy="12" r="4"></circle>
+                        <circle class="boituva-social-dot" cx="17.5" cy="6.8" r="1"></circle>
+                    </svg>
+                </a>
+            </div>
+            <label id="nav-link" for="main-nav-btn" aria-label="[% loc('Open main navigation') %]">[% loc('Menu') %]</label>
+        </div>
+    </div>
+</header>
+
+<div class="nav-wrapper">
+    <div class="container">
+        [% INCLUDE 'main_nav.html' %]
+    </div>
+</div>

@@ -52,7 +52,7 @@
     [% IF map.copyright %]
     <div class="olControlAttribution" style="position: absolute;">[% map.copyright | safe %]</div>
     [% END %]
-    <img id="loading-indicator" class="hidden" aria-hidden="true" src="/i/loading.svg" alt="Loading...">
+    <img id="loading-indicator" class="hidden" aria-hidden="true" src="/i/loading.svg" alt="[% loc('Loading...') %]">
 
 <div class="map-links">
     [% IF c.cobrand.has_aerial_maps %]

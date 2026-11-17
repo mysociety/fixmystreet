@@ -1105,7 +1105,7 @@ OpenLayers.Control.PanZoomFMS = OpenLayers.Class(OpenLayers.Control.PanZoom, {
     _addButton: function(id1, id2) {
         var btn = document.createElement('div'),
             id = id1 + id2;
-        btn.innerHTML = id1 + ' ' + id2;
+        btn.innerHTML = translation_strings.map_controls[id1 + '_' + id2];
         btn.id = this.id + "_" + id;
         btn.action = id;
         btn.className = "olButton";

@@ -784,9 +784,8 @@ msgstr "Não encontrou nosso e-mail? Cheque sua pasta de spam&nbsp;&ndash; esta 
 
 #: templates/web/base/around/_report_banner.html:5
 #: templates/web/base/report/new/fill_in_details_form.html:17
-#, fuzzy
 msgid "Can’t use the map to start a report? <a href=\"%s\" rel=\"nofollow\">Skip this step</a>"
-msgstr "Não consegue ver o mapa? <em>Pular este passo</em>"
+msgstr "Não consegue usar o mapa para iniciar uma solicitação? <a href=\"%s\" rel=\"nofollow\">Pular esta etapa</a>"
 
 #: perllib/FixMyStreet/Cobrand/Default.pm:713
 #: templates/web/base/admin/responsepriorities/index.html:8
@@ -900,7 +899,7 @@ msgstr "Escolher outro(a)"
 #: templates/web/base/around/display_location.html:62
 #: templates/web/base/js/translation_strings.html:42
 msgid "Choose location, pan and zoom to adjust"
-msgstr ""
+msgstr "Escolha o local, arraste o mapa e ajuste o zoom para posicionar."
 
 #: templates/web/base/auth/create.html:71
 #, fuzzy
@@ -914,7 +913,7 @@ msgstr "Limpar dados offline"
 
 #: templates/web/base/around/_report_banner.html:2
 msgid "Click map to report a problem"
-msgstr "Clique no mapa para denunciar um problema"
+msgstr "Clique no mapa para registrar uma solicitação"
 
 #: templates/web/base/_email_sent_confirmation_text.html:17
 msgid "Click the link in our confirmation email to activate your alert."
@@ -961,7 +960,7 @@ msgstr "Clique no mapa ou arraste o pino para ajustar a localização"
 #: templates/web/fixmystreet.com/report/banner.html:17
 #: templates/web/zurich/admin/stats/index.html:52
 msgid "Closed"
-msgstr "Fechado"
+msgstr "Fechada"
 
 #: templates/web/base/admin/reports/_edit_main.html:141
 msgid "Closed to updates"
@@ -1486,7 +1485,7 @@ msgstr ""
 
 #: templates/web/base/maps/_map_instructions.html:13
 msgid "Drop pin on the map to start a new report"
-msgstr ""
+msgstr "Pressione espaço para marcar o local da solicitação"
 
 #: templates/web/base/admin/extra-metadata-item.html:71
 msgid "Drop-down list"
@@ -2198,7 +2197,7 @@ msgstr "Novos problemas em AjeitaMinhaRua"
 
 #: templates/web/base/around/on_map_list_items.html:8
 msgid "Here are some other nearby reports:"
-msgstr "Aqui estão algumas das denúncias nas redondezas:"
+msgstr "Veja também outras solicitações nas proximidades:"
 
 #: templates/web/base/offline/drafts.html:5
 msgid "Here is a list of draft reports you made offline. Click Continue to finish making a report online, or Delete to remove a draft report."
@@ -2532,7 +2531,7 @@ msgstr ""
 
 #: templates/web/base/reports/_list-filter-status.html:3
 msgid "Information: Filters in use. The current view is customized based on selected filters."
-msgstr ""
+msgstr "Filtros ativos: a visualização atual considera os filtros selecionados."
 
 #: templates/web/base/admin/triage/_inspect.html:30
 #: templates/web/base/report/_inspect.html:4
@@ -2655,7 +2654,7 @@ msgstr "Listar todas os problemas denunciados"
 
 #: templates/web/base/around/on_map_list_items.html:18
 msgid "Loading reports…"
-msgstr "Carregando denúncias…"
+msgstr "Carregando solicitações…"
 
 #: templates/web/base/report/new/category_wrapper.html:10
 msgid "Loading..."
@@ -3124,7 +3123,7 @@ msgstr "Nenhum dado pessoal será guardado, e você não receberá atualizaçõe
 
 #: templates/web/base/around/on_map_list_items.html:13
 msgid "No reports to show on map, here are some nearby:"
-msgstr "Não há denúncias para mostrar no mapa, aqui estão alguns nas proximidades:"
+msgstr "Não há solicitações para mostrar no mapa; veja registros próximos:"
 
 #. ("JS")
 #: templates/web/base/js/translation_strings.html:54
@@ -3281,7 +3280,7 @@ msgstr ""
 #: templates/web/base/dashboard/index.html:145
 #: templates/web/zurich/admin/update_edit.html:18
 msgid "Open"
-msgstr "Abrir"
+msgstr "Aberta"
 
 #: templates/web/base/admin/bodies/open311-form-fields.html:47
 msgid "Open311 API Key"
@@ -3636,7 +3635,7 @@ msgstr "Por favor, digite um e-mail válido ou número de telefone"
 #: templates/web/base/around/postcode_form.html:25
 #, fuzzy
 msgid "Please enter a valid postcode or area"
-msgstr "Por favor, digite um endereço de e-mail válido"
+msgstr "Informe um endereço ou local válido"
 
 #. ("JS")
 #: perllib/FixMyStreet/DB/Result/Problem.pm:499
@@ -3877,7 +3876,7 @@ msgstr ""
 #: templates/web/base/maps/_map_instructions.html:19
 #, fuzzy
 msgid "Press space again to adjust the location"
-msgstr "Clique no mapa ou arraste o pino para ajustar a localização"
+msgstr "Pressione espaço novamente para ajustar o local da solicitação"
 
 #: templates/web/base/admin/bodies/contact-form.html:67
 msgid "Prevent new reports from using this category, <em>and</em> also remove it from map filters."
@@ -4149,9 +4148,33 @@ msgstr "Feed RSS de problemas locais recentes"
 msgid "RSS feed of updates to this problem"
 msgstr "Feed RSS de atualizações deste problema"
 
+#: templates/web/base/js/translation_strings.html
+msgid "Pan up"
+msgstr "Mover para cima"
+
+#: templates/web/base/js/translation_strings.html
+msgid "Pan down"
+msgstr "Mover para baixo"
+
+#: templates/web/base/js/translation_strings.html
+msgid "Pan left"
+msgstr "Mover para a esquerda"
+
+#: templates/web/base/js/translation_strings.html
+msgid "Pan right"
+msgstr "Mover para a direita"
+
+#: templates/web/base/js/translation_strings.html
+msgid "Zoom in"
+msgstr "Aumentar o zoom"
+
+#: templates/web/base/js/translation_strings.html
+msgid "Zoom out"
+msgstr "Diminuir o zoom"
+
 #: templates/web/base/maps/openlayers.html:77
 msgid "Re-centre map"
-msgstr ""
+msgstr "Centralizar na minha localização"
 
 #: templates/web/base/report/_item_expandable.html:57
 msgid "Read less"
@@ -4294,7 +4317,7 @@ msgstr "Denunciar um problema"
 #: templates/web/base/js/translation_strings.html:88
 #: templates/web/base/navigation/_report.html:13
 msgid "Report a problem here"
-msgstr "Denunciar um problema aqui"
+msgstr "Registrar solicitação neste local"
 
 #: templates/web/base/report/display_tools.html:11
 msgid "Report abuse"
@@ -4332,9 +4355,8 @@ msgstr "Estado da denúncia:"
 #. ("JS")
 #: templates/web/base/js/translation_strings.html:108
 #: templates/web/base/reports/_list-filters.html:39
-#, fuzzy
 msgid "Report status"
-msgstr "Estado da denúncia:"
+msgstr "Status da solicitação"
 
 #: templates/web/base/report/new/form_heading.html:1
 msgid "Report your problem"
@@ -4426,7 +4448,7 @@ msgstr "Denunciando um problema"
 #: templates/web/base/dashboard/index.html:136
 #: templates/web/base/reports/_problem-list.html:6
 msgid "Reports"
-msgstr "Denúncias"
+msgstr "Solicitações"
 
 #: templates/web/fixmystreet.com/reports/summary.html:151
 msgid "Reports are currently not being sent to %s."
@@ -4482,7 +4504,7 @@ msgstr "Reposicione se necessário e clique em Continuar"
 #: templates/web/base/maps/_map_instructions.html:30
 #, fuzzy
 msgid "Reposition report here"
-msgstr "Não denunciado antes"
+msgstr "Mova o mapa até o novo ponto e toque para reposicionar"
 
 #: templates/web/fixmystreet.com/about/council-dashboard.html:40
 msgid "Request access"
@@ -4882,7 +4904,7 @@ msgstr "Mostrar antigo"
 #: templates/web/base/admin/triage/_list-filters.html:44
 #: templates/web/base/reports/_list-filters.html:56
 msgid "Show older reports"
-msgstr "Mostrar denúncias antigas"
+msgstr "Mostrar solicitações antigas"
 
 #: templates/web/base/report/photo.html:20
 msgid "Show photo"
@@ -4944,11 +4966,11 @@ msgstr "Por favor, digite uma mensagem"
 
 #: templates/web/base/maps/openlayers.html:45
 msgid "Skip map"
-msgstr ""
+msgstr "Pular mapa"
 
 #: templates/web/base/header.html:16 templates/web/zurich/header.html:15
 msgid "Skip to main content"
-msgstr ""
+msgstr "Pular para o conteúdo principal"
 
 #: templates/web/base/admin/reports/_edit_main.html:70
 msgid "Skipped"
@@ -5080,9 +5102,8 @@ msgid "Start a new offline report"
 msgstr "Suas denúncias offline"
 
 #: templates/web/base/maps/_map_instructions.html:29
-#, fuzzy
 msgid "Start new report here"
-msgstr "Não denunciado antes"
+msgstr "Mova o mapa até o ponto correto e toque aqui para registrar"
 
 #: templates/web/base/admin/sitemessage/_ooh.html:45
 #, fuzzy
@@ -5647,7 +5668,7 @@ msgstr "Temas"
 #: templates/web/base/my/_problem-list.html:8
 #: templates/web/base/reports/_problem-list.html:14
 msgid "There are no reports to show."
-msgstr "Não há denúncias para mostrar."
+msgstr "Ainda não há solicitações para mostrar nesta região."
 
 #: templates/web/base/report/new/duplicate_suggestions.html:12
 msgid "There are similar problems nearby that we’re already aware of, is one of them yours?"
@@ -6239,7 +6260,7 @@ msgstr "ou usar minha localização"
 
 #: templates/web/base/around/_postcode_form_geolocation.html:2
 msgid "Use my current location"
-msgstr ""
+msgstr "Usar minha localização atual"
 
 #: templates/web/base/offline/fallback.html:41
 #, fuzzy
@@ -6388,7 +6409,7 @@ msgstr "Ver/Marcar denúncias privadas"
 #: templates/web/base/around/display_location.html:40
 #: templates/web/base/js/translation_strings.html:59
 msgid "Viewing a location"
-msgstr "Vendo uma localização"
+msgstr "Escolha o local da solicitação"
 
 #: templates/web/base/report/display.html:0
 #: templates/web/base/report/display.html:6
@@ -6432,7 +6453,7 @@ msgstr ""
 #: templates/web/base/alert/choose.html:7
 #: templates/web/base/around/_error_multiple.html:6
 msgid "We found more than one match for that location."
-msgstr "Encontramos mais de uma correspondência para esse local."
+msgstr "Encontramos mais de um resultado para esse endereço."
 
 #: templates/web/base/around/lookup_by_ref.html:6
 msgid "We found more than one match for that problem reference:"
@@ -6459,7 +6480,7 @@ msgstr "Enviamos ao órgão em seu nome"
 #: templates/web/base/alert/choose.html:13
 #: templates/web/base/around/_error_multiple.html:20
 msgid "We show up to ten matches, please try a different search if yours is not here."
-msgstr "Mostramos até dez resultados, tente uma pesquisa diferente se a sua não estiver aqui."
+msgstr "Exibimos até dez resultados. Se não encontrar o endereço, tente uma busca mais específica."
 
 #: templates/web/zurich/report/new/notes.html:4
 msgid "We will only use your personal information in accordance with our <a href=\"%s\">privacy policy.</a>"
@@ -6646,7 +6667,7 @@ msgstr "Você pode marcar um órgão como deletado se você não deseja mais vê
 
 #: templates/web/base/maps/_map_instructions.html:3
 msgid "You can move around with your keyboard"
-msgstr ""
+msgstr "Use as setas do teclado para mover o mapa"
 
 #: templates/web/fixmystreet.com/contact/who.html:60
 msgid "You can only contact the team behind FixMyStreet using our contact form"
@@ -6970,7 +6991,7 @@ msgstr "última atualização %s"
 
 #: templates/web/base/maps/_map_instructions.html:7
 msgid "left"
-msgstr ""
+msgstr "esquerda"
 
 #: perllib/Utils.pm:226
 msgid "less than a minute"
@@ -6978,7 +6999,7 @@ msgstr "menos de um minuto"
 
 #: templates/web/base/maps/_map_instructions.html:6
 msgid "minus"
-msgstr ""
+msgstr "menos"
 
 #: perllib/FixMyStreet/App/Controller/Admin/Stats.pm:54
 #: templates/web/base/admin/stats/questionnaire.html:15
@@ -7036,7 +7057,7 @@ msgstr ""
 
 #: templates/web/base/maps/_map_instructions.html:5
 msgid "plus"
-msgstr ""
+msgstr "mais"
 
 #: templates/web/base/report/_council_sent_info.html:29
 #, fuzzy
@@ -7051,7 +7072,7 @@ msgstr "Obrigatório"
 
 #: templates/web/base/maps/_map_instructions.html:8
 msgid "right"
-msgstr ""
+msgstr "direita"
 
 #: templates/web/zurich/admin/bodies/contact-form.html:29
 msgid "show"

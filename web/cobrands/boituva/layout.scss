@@ -1,0 +1,1139 @@
+@import "_colours";
+@import "../sass/layout";
+
+#site-logo {
+  display: flex;
+  width: auto;
+  height: auto;
+  align-items: center;
+  gap: 1.15rem;
+  background-image: none;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.15;
+  text-indent: 0;
+}
+
+#site-logo:hover,
+#site-logo:focus-visible {
+  color: #fff;
+  text-decoration: none;
+}
+
+.boituva-brand__logo {
+  display: block;
+  width: 18rem;
+  max-width: 34vw;
+  height: auto;
+  flex: 0 1 auto;
+}
+
+.boituva-brand__divider {
+  width: 1px;
+  height: 3.2rem;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.boituva-brand__service {
+  display: flex;
+  flex-direction: column;
+  color: #fff;
+  font-size: 1.12rem;
+}
+
+.boituva-brand__service small {
+  margin-top: 0.25rem;
+  font-size: 0.76em;
+  font-weight: 400;
+}
+
+footer .footer-marketing {
+  display: none;
+}
+
+body.frontpage {
+  background: #f4f7fb;
+}
+
+body.frontpage .content {
+  margin: 0;
+  padding: 0;
+  background: #f4f7fb;
+}
+
+body.frontpage #front-main .draft-info-box.hidden {
+  display: none;
+}
+
+#site-header {
+  background: #194879;
+  color: #fff;
+}
+
+.boituva-utility-bar {
+  color: #fff;
+  background: #123b66;
+  font-size: 0.76rem;
+}
+
+.boituva-utility-bar .container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 2.4rem;
+}
+
+.boituva-utility-bar nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.boituva-utility-bar a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.boituva-utility-bar a:hover,
+.boituva-utility-bar a:focus-visible {
+  text-decoration: underline;
+}
+
+.boituva-brand-bar {
+  background: #194879;
+}
+
+.boituva-brand-bar .container {
+  display: flex;
+  min-height: 7rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.boituva-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.boituva-header-search {
+  display: flex;
+  min-height: 2.8rem;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0 1.15rem;
+  border-radius: 999px;
+  color: #17314f;
+  background: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.boituva-header-search:hover,
+.boituva-header-search:focus-visible {
+  color: #134077;
+  text-decoration: none;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.35);
+}
+
+.boituva-header-search svg {
+  width: 1.2rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 2;
+}
+
+.boituva-header-social {
+  display: grid;
+  width: 2.65rem;
+  height: 2.65rem;
+  place-items: center;
+  border-radius: 50%;
+  color: #174879;
+  background: #fff;
+}
+
+.boituva-header-social:hover,
+.boituva-header-social:focus-visible {
+  color: #0878c3;
+  background: #f1f7fc;
+}
+
+.boituva-header-social svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  fill: currentColor;
+}
+
+.boituva-header-social svg rect,
+.boituva-header-social svg circle {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+.boituva-header-social svg .boituva-social-dot {
+  fill: currentColor;
+  stroke: none;
+}
+
+.nav-wrapper {
+  position: relative;
+  top: auto;
+  right: auto;
+  left: auto;
+  width: 100%;
+  color: #fff;
+  background: #0878c3;
+}
+
+.nav-wrapper > .container {
+  display: flex;
+  justify-content: center;
+}
+
+.nav-wrapper a,
+.nav-wrapper span {
+  color: #fff;
+}
+
+.nav-wrapper a:visited {
+  color: #fff;
+}
+
+.nav-menu--main a:hover,
+.nav-menu--main a:focus-visible {
+  color: #fff;
+  background: rgba(0, 0, 0, 0.14);
+}
+
+@media (min-width: 50.001rem) {
+  #main-nav {
+    height: auto;
+    min-height: 3.25rem;
+    margin: 0 auto;
+    float: none;
+  }
+
+  .nav-menu--main {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    float: none;
+  }
+
+  .nav-menu--main li {
+    float: none;
+  }
+
+  .nav-menu--main a,
+  .nav-menu--main span {
+    padding: 1rem 1.15rem;
+    font-size: 0.95rem;
+  }
+}
+
+body.frontpage #report-cta {
+  display: none;
+}
+
+.boituva-home {
+  position: relative;
+  width: calc(100% + 2rem);
+  margin-left: -1rem;
+  color: #17314f;
+  background: #f4f7fb;
+}
+
+.boituva-hero {
+  position: relative;
+  display: flex;
+  box-sizing: border-box;
+  min-height: 15.5rem;
+  align-items: center;
+  overflow: hidden;
+  padding: 2rem 3.3%;
+  color: #fff;
+  background-color: #134077;
+  background-image:
+    linear-gradient(90deg, rgba(10, 48, 89, 0.98) 0%, rgba(10, 48, 89, 0.93) 34%, rgba(10, 48, 89, 0.58) 55%, rgba(10, 48, 89, 0.08) 100%),
+    url("/cobrands/boituva/images/boituva-roadwork.jpg");
+  background-position: center, right 47%;
+  background-size: cover, auto 100%;
+}
+
+.boituva-hero__content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 76rem;
+  margin: 0 auto;
+  padding-left: 1.8rem;
+  border-left: 0.45rem solid #ffa82d;
+  text-align: left;
+}
+
+.boituva-hero h1 {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  font-weight: 700;
+  line-height: 1.05;
+}
+
+.boituva-hero__slogan strong {
+  color: #ffa82d;
+}
+
+.boituva-hero__slogan {
+  margin: 0.3rem 0 0.45rem;
+  font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+  font-weight: 600;
+}
+
+.boituva-hero__intro {
+  max-width: 33rem;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 1.02rem;
+  line-height: 1.35;
+}
+
+.boituva-main {
+  position: relative;
+  z-index: 2;
+  width: calc(100% - 4rem);
+  max-width: 76rem;
+  margin: -1.9rem auto 1.25rem;
+}
+
+.boituva-search-panel {
+  padding: 1rem 1.35rem 1.1rem;
+  border: 1px solid #e0e7f0;
+  border-radius: 0.85rem;
+  background: #fff;
+  box-shadow: 0 0.55rem 1.2rem rgba(13, 49, 90, 0.12);
+}
+
+.boituva-postcode-search > h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 0.75rem;
+  color: #134077;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.boituva-postcode-search > h2 svg {
+  width: 1.5rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 2.5;
+}
+
+.boituva-postcode-search {
+  margin-top: 1rem;
+}
+
+.boituva-search-panel #front-main,
+.boituva-search-panel #front-main-container,
+.boituva-search-panel .report-forms-wrapper {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.boituva-search-panel .report-forms-wrapper {
+  display: block;
+}
+
+.boituva-search-panel #front-main {
+  min-height: 0;
+  color: #17314f;
+}
+
+.boituva-search-panel #front-main-container > h1,
+.boituva-search-panel #front-main-container > h2 {
+  display: none;
+}
+
+.boituva-search-panel .postcode-form-box {
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  font-family: inherit;
+}
+
+.boituva-search-panel .postcode-form-box > label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.boituva-search-panel .postcode-form-box > div:not(.draft-info-box) {
+  display: flex;
+  width: 100%;
+  max-width: none;
+  gap: 0.75rem;
+}
+
+.boituva-search-panel .postcode-form-box .form-hint {
+  display: none;
+}
+
+.boituva-search-panel #pc {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  min-height: 3.25rem;
+  flex: 1 1 0;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid #b9c9dc;
+  border-radius: 0.5rem;
+  color: #17314f;
+  background: #fff;
+  font-size: 1rem;
+}
+
+.boituva-search-panel #pc:focus {
+  border-color: #134077;
+  outline: 3px solid rgba(19, 64, 119, 0.2);
+}
+
+.boituva-search-panel #sub {
+  min-height: 3.25rem;
+  padding: 0.7rem 1.4rem;
+  border: 0;
+  border-radius: 0.5rem;
+  color: #fff;
+  background: #134077;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.boituva-search-panel #sub:hover {
+  background: #0c2f59;
+}
+
+.boituva-search-panel .form-hint {
+  display: none;
+}
+
+.boituva-primary-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+  margin: 0 0 1rem;
+}
+
+.boituva-action {
+  display: flex;
+  box-sizing: border-box;
+  min-height: 6.2rem;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.6rem;
+  color: #fff;
+  box-shadow: 0 0.3rem 0.8rem rgba(13, 49, 90, 0.1);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.boituva-action:hover,
+.boituva-action:focus-visible {
+  text-decoration: none;
+  transform: translateY(-2px);
+  box-shadow: 0 0.6rem 1.2rem rgba(13, 49, 90, 0.16);
+}
+
+.boituva-action--new,
+.boituva-action--new:visited,
+.boituva-action--new:hover,
+.boituva-action--new:focus-visible,
+.boituva-action--new:active {
+  background: linear-gradient(110deg, #134077, #07518e);
+  color: #fff;
+}
+
+.boituva-action--new .boituva-action__copy,
+.boituva-action--new .boituva-action__copy strong,
+.boituva-action--new .boituva-action__copy span,
+.boituva-action--new .boituva-action__icon {
+  color: #fff;
+}
+
+.boituva-action--track:hover,
+.boituva-action--track:focus-visible {
+  color: #17283e;
+}
+
+.boituva-action--track {
+  background: linear-gradient(110deg, #ffc36c, #ffa82d);
+  color: #17283e;
+}
+
+.boituva-action__icon {
+  display: grid;
+  width: 4.2rem;
+  height: 4.2rem;
+  flex: 0 0 4.2rem;
+  place-items: center;
+  border-right: 1px solid currentColor;
+}
+
+.boituva-action__icon svg {
+  width: 2.6rem;
+  height: 2.6rem;
+  fill: currentColor;
+}
+
+.boituva-action__copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.boituva-action__copy strong {
+  font-size: 1.2rem;
+}
+
+.boituva-action__copy > span {
+  max-width: 20rem;
+  font-size: 0.85rem;
+  line-height: 1.35;
+}
+
+.boituva-action__arrow {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 2rem;
+  place-items: center;
+  border-radius: 50%;
+  color: #134077;
+  background: #fff;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.boituva-information {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin-top: 1.7rem;
+}
+
+.boituva-info-card {
+  position: relative;
+  display: flex;
+  box-sizing: border-box;
+  min-height: 7.3rem;
+  align-items: center;
+  overflow: hidden;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid #dce5ef;
+  border-radius: 0.65rem;
+  color: #17314f;
+  background: #fff;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.boituva-info-card:hover,
+.boituva-info-card:focus-visible {
+  border-color: #9eb5d0;
+  color: #17314f;
+  text-decoration: none;
+  box-shadow: 0 0.35rem 1rem rgba(19, 64, 119, 0.09);
+}
+
+.boituva-info-card__icon {
+  display: inline-grid;
+  width: 1.35rem;
+  height: 1.35rem;
+  place-items: center;
+  color: #134077;
+  vertical-align: middle;
+}
+
+.boituva-info-card__copy strong {
+  display: block;
+  position: relative;
+  z-index: 1;
+  color: #134077;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.boituva-info-card__icon--circle {
+  border-radius: 50%;
+  color: #fff;
+  background: #134077;
+  font-family: Georgia, serif;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.boituva-info-card__icon--check {
+  border-radius: 0.2rem;
+  color: #fff;
+  background: #134077;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.boituva-info-card__copy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: 72%;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.boituva-info-card__copy > span:not(.boituva-info-card__link) {
+  color: #27394e;
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.boituva-info-card__link {
+  margin-top: 0.2rem;
+  color: #134077;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.boituva-card-art {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 38%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.boituva-card-art--map {
+  background: #e6f0ed url("/cobrands/boituva/images/boituva-map.jpg") center / cover no-repeat;
+}
+
+.boituva-card-art--machine {
+  width: 40%;
+  height: 82%;
+}
+
+.boituva-card-art--chart {
+  width: 31%;
+  height: 82%;
+}
+
+.boituva-info-card__link b {
+  margin-left: 0.25rem;
+}
+
+.boituva-footer {
+  width: calc(100% + 2rem);
+  margin-left: -1rem;
+  color: #fff;
+  background: #0878c3;
+}
+
+.boituva-footer__inner {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr 1.4fr;
+  width: calc(100% - 2rem);
+  max-width: 76rem;
+  min-height: 13rem;
+  align-items: center;
+  gap: 2rem;
+  margin: 0 auto;
+  padding: 2rem 0;
+  box-sizing: border-box;
+  font-size: 0.9rem;
+}
+
+.boituva-footer__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+
+.boituva-footer__brand img {
+  display: block;
+  width: 17rem;
+  max-width: 100%;
+  height: auto;
+}
+
+.boituva-footer__brand > span {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.boituva-footer__brand small {
+  font-size: 0.82rem;
+  font-weight: 400;
+}
+
+.boituva-footer__social,
+.boituva-footer__contact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.boituva-footer__social > div {
+  display: flex;
+  gap: 0.65rem;
+}
+
+.boituva-footer__social a {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  border-radius: 50%;
+  color: #0878c3;
+  background: #fff;
+}
+
+.boituva-footer__social a:hover,
+.boituva-footer__social a:focus-visible {
+  color: #174879;
+  background: #eef6fc;
+}
+
+.boituva-footer__social svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  fill: currentColor;
+}
+
+.boituva-footer__social svg rect,
+.boituva-footer__social svg circle {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+.boituva-footer__social svg .boituva-social-dot {
+  fill: currentColor;
+  stroke: none;
+}
+
+.boituva-footer__contact p {
+  margin: 0;
+}
+
+.boituva-footer__contact a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.boituva-footer__contact a:hover,
+.boituva-footer__contact a:focus-visible {
+  text-decoration: underline;
+}
+
+.boituva-footer__bottom {
+  padding: 0.85rem 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(0, 0, 0, 0.12);
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+.footer-marketing {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+@media (max-width: 50rem) {
+  .boituva-utility-bar .container {
+    justify-content: center;
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
+  }
+
+  .boituva-utility-bar nav {
+    justify-content: center;
+    gap: 0.45rem 0.9rem;
+  }
+
+  .boituva-utility-bar a {
+    font-size: 0.65rem;
+  }
+
+  .boituva-brand-bar .container {
+    min-height: 5rem;
+    gap: 0.5rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  #site-logo {
+    gap: 0.55rem;
+    font-size: 0.72rem;
+  }
+
+  .boituva-brand__logo {
+    width: 11rem;
+    max-width: 36vw;
+  }
+
+  .boituva-brand__divider {
+    height: 2.3rem;
+  }
+
+  .boituva-brand__service {
+    max-width: 7rem;
+    font-size: 0.74rem;
+  }
+
+  .boituva-header-actions {
+    display: none;
+  }
+
+  #nav-link {
+    display: block;
+    position: relative;
+    margin: 0;
+    padding: 0.45rem 0.7rem;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 0.35rem;
+    color: #fff;
+    background: transparent;
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+
+  .nav-wrapper > .container {
+    display: block;
+  }
+
+  #main-nav {
+    height: auto;
+    min-height: 0;
+  }
+
+  .nav-menu--main {
+    display: block;
+    float: none;
+  }
+
+  .nav-menu--main li {
+    float: none;
+  }
+
+  #main-nav .nav-menu--main a,
+  #main-nav .nav-menu--main span {
+    color: #fff;
+    background: #0878c3;
+    border-bottom-color: rgba(255, 255, 255, 0.2);
+    font-size: 1rem;
+  }
+
+  #main-nav-btn:checked ~ #main-nav {
+    display: block;
+  }
+
+  .boituva-hero {
+    min-height: 14rem;
+    padding: 1.5rem 1.2rem;
+    background-position: center, 64% center;
+    background-size: cover, auto 100%;
+  }
+
+  .boituva-hero__content {
+    padding-left: 1rem;
+  }
+
+  .boituva-main {
+    width: calc(100% - 1.5rem);
+    margin-top: -1rem;
+  }
+
+  .boituva-search-panel {
+    padding: 0.9rem;
+  }
+
+  .boituva-search-panel .postcode-form-box > div:not(.draft-info-box) {
+    flex-direction: column;
+  }
+
+  .boituva-search-panel #pc {
+    height: 3.25rem;
+  }
+
+  .boituva-search-panel #sub {
+    width: 100%;
+  }
+
+  .boituva-primary-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .boituva-action {
+    min-height: 5.5rem;
+    padding: 0.75rem 0.8rem;
+  }
+
+  .boituva-action__icon {
+    width: 3rem;
+    height: 3rem;
+    flex-basis: 3rem;
+  }
+
+  .boituva-action__icon svg {
+    width: 2.3rem;
+    height: 2.3rem;
+  }
+
+  .boituva-information {
+    grid-template-columns: 1fr;
+  }
+
+  .boituva-info-card {
+    min-height: 6rem;
+  }
+
+  .boituva-card-art--map {
+    width: 35%;
+  }
+
+  .boituva-card-art--machine {
+    width: 35%;
+  }
+
+  .boituva-card-art--chart {
+    width: 29%;
+  }
+
+  .boituva-footer__inner {
+    grid-template-columns: 1fr;
+    min-height: 0;
+    align-items: start;
+    gap: 1.75rem;
+    padding: 1.5rem 1rem;
+  }
+
+  .boituva-footer__brand img {
+    width: 15rem;
+  }
+
+  .boituva-footer__bottom {
+    font-size: 0.72rem;
+  }
+}
+
+@media (max-width: 24rem) {
+  .boituva-brand__logo {
+    width: 10rem;
+    max-width: 34vw;
+  }
+
+  .boituva-brand__service {
+    max-width: 6rem;
+    font-size: 0.66rem;
+  }
+
+  #site-logo {
+    gap: 0.4rem;
+  }
+}
+
+body.mappage #map_sidebar {
+  border-right: 1px solid #dce5ef;
+  color: #17314f;
+  background-color: #fff;
+}
+
+body.mappage .boituva-utility-bar,
+body.mappage .boituva-header-actions {
+  display: none;
+}
+
+body.mappage .boituva-brand-bar .container {
+  height: 3.75em;
+  min-height: 3.75em;
+  padding: 0 0.75em;
+}
+
+body.mappage .boituva-brand__logo {
+  width: 11rem;
+  max-width: 32vw;
+}
+
+body.mappage .boituva-brand__divider {
+  height: 2.5rem;
+}
+
+body.mappage .boituva-brand__service {
+  font-size: 0.9rem;
+}
+
+body.mappage .boituva-brand__service small {
+  font-size: 0.72em;
+}
+
+body.mappage .nav-wrapper {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: auto;
+  z-index: 2;
+  width: auto;
+  background: transparent;
+}
+
+body.mappage .nav-wrapper > .container {
+  justify-content: flex-end;
+  padding-right: 0.75rem;
+}
+
+body.mappage #main-nav {
+  height: 3.75em;
+  min-height: 3.75em;
+  margin: 0;
+  padding: 0;
+  float: none;
+}
+
+body.mappage .nav-menu--main {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+body.mappage .nav-menu--main > li:not(:first-child) {
+  display: none;
+}
+
+body.mappage .nav-menu--main .report-a-problem-btn {
+  display: block;
+  padding: 0.55rem 0.8rem;
+  border-radius: 0.4rem;
+  color: #134077;
+  background: #ffa82d;
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+body.mappage .nav-menu--main .report-a-problem-btn:hover,
+body.mappage .nav-menu--main .report-a-problem-btn:focus-visible {
+  color: #134077;
+  background: #ffc36c;
+}
+
+body.mappage #map_sidebar h1,
+body.mappage #map_sidebar h2,
+body.mappage #map_sidebar h3 {
+  color: #134077;
+}
+
+body.mappage #map_sidebar .big-green-banner {
+  color: #fff;
+}
+
+body.mappage #map_sidebar a {
+  color: #134077;
+}
+
+body.mappage .big-green-banner {
+  top: auto;
+  margin: 0 0 1rem;
+  padding: 1rem;
+  border-left: 0.35rem solid #ffa82d;
+  border-radius: 0.35rem;
+  background: #134077;
+  font-size: 1rem;
+  line-height: 1.35;
+  text-align: left;
+  text-transform: none;
+}
+
+body.mappage .mobile-map-banner,
+body.mappage .sub-map-links {
+  background: rgba(19, 64, 119, 0.94);
+}
+
+body.mappage .map-mobile-report-button {
+  border: 2px solid #ffa82d;
+  background: #134077;
+}
+
+body.mappage .boituva-map-touch-hint {
+  display: none;
+}
+
+body.mappage #key-tools {
+  border-top-color: #ffa82d;
+}
+
+@media (max-width: 50rem) {
+  body.mappage .boituva-brand__logo {
+    width: 8rem;
+    max-width: 40vw;
+  }
+
+  body.mappage .boituva-brand__divider,
+  body.mappage .boituva-brand__service small,
+  body.mappage .nav-wrapper {
+    display: none;
+  }
+
+  body.mappage .boituva-brand__service {
+    font-size: 0.85rem;
+  }
+
+  body.mappage .boituva-map-touch-hint {
+    position: absolute;
+    z-index: 20;
+    top: 5.5rem;
+    right: 4rem;
+    left: 0.5rem;
+    display: block;
+    padding: 0.65rem 0.75rem;
+    border-left: 0.25rem solid #ffa82d;
+    border-radius: 0.35rem;
+    color: #17314f;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 2px 8px rgba(19, 64, 119, 0.2);
+    font-size: 0.78rem;
+    line-height: 1.35;
+    pointer-events: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boituva-action,
+  .boituva-info-card {
+    transition: none;
+  }
+}
