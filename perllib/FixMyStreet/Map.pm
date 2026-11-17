@@ -112,7 +112,9 @@ sub map_features {
     my $pager = $c->stash->{pager} = $on_map->pager;
     $on_map = [ $on_map->all ];
 
-    if ( $c->{stash}->{show_old_reports} ) {
+    if ( $c->cobrand->call_hook('dont_show_old_reports') ) {
+        $c->stash->{num_old_reports} = 0;
+    } elsif ( $c->{stash}->{show_old_reports} ) {
         # if show_old_reports is on then there must be old reports
         $c->stash->{num_old_reports} = 1;
     } else {

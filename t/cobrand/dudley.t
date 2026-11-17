@@ -59,6 +59,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('Bridges');
 
         $mech->get_ok('/around?latitude=52.5142&longitude=-2.08');
+        $mech->content_contains('Show older reports');
         $mech->content_contains('Potholes');
         $mech->content_lacks('Bridges');
 
