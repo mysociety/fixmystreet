@@ -856,6 +856,13 @@ sub setup_categories_and_bodies : Private {
 
         my $metas = $contact->get_metadata_for_input;
         if (@$metas) {
+            foreach (@$metas) {
+                if ($_->{description} && $_->{description} =~ /lite-youtube/) {
+                    # Video shortcode
+                    $_->{description} =~ s{(<lite-youtube videoid="([^"]*)">)(.*?)</lite-youtube>}{$1<a href="https://youtube.com/watch?v=$2" class="lty-playbtn" title="Play Video"><span class="lyt-visually-hidden">Play Video: $3</span></a></lite-youtube>};
+                }
+            }
+
             push @{$category_extras{$contact->category}}, @$metas;
             my $all_hidden = (grep { !$c->cobrand->category_extra_hidden($_) } @$metas) ? 0 : 1;
             if (exists($category_extras_hidden{$contact->category})) {

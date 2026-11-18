@@ -14,7 +14,9 @@ my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(2248, 'Northumberland County Council', { cobrand => 'northumberland' });
 $mech->create_contact_ok(body_id => $body->id, category => 'Flytipping', email => 'foo@northumberland', group => 'Staff Only - Out Of Hours');
-$mech->create_contact_ok(body_id => $body->id, category => 'Trees', email => 'foo@northumberland');
+$mech->create_contact_ok(body_id => $body->id, category => 'Trees', email => 'foo@northumberland', extra => {
+    _fields => [ { code => "video", description => '<lite-youtube videoid="ABC">Alt</lite-youtube>', variable => 'false' } ]
+});
 
 my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body, password => 'password');
 my $role = FixMyStreet::DB->resultset("Role")->create({ name => 'Role 1', body => $body, permissions => ['view_dashboard'], });
@@ -167,6 +169,12 @@ FixMyStreet::override_config {
         $mech->content_contains('Potholes');
         $mech->content_contains('Trees\'>');
         $mech->content_contains('value=\'H|Staff Only - Out Of Hours|Flytipping\' data-nh="1"');
+    };
+
+    subtest 'Youtube embed shown' => sub {
+        my $url = "/report/new?longitude=-1.691012&latitude=55.169081&category=Trees";
+        $mech->get_ok($url);
+        $mech->content_contains('<lite-youtube videoid="ABC"><a href="https://youtube.com/watch?v=ABC" class="lty-playbtn" title="Play Video"><span class="lyt-visually-hidden">Play Video: Alt</span></a></lite-youtube>');
     };
 };
 
