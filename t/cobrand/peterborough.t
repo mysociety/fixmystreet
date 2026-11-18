@@ -507,6 +507,50 @@ subtest "flytipping on PCC land witnessed is sent by open311 and two emails" => 
     };
 };
 
+subtest "flytipping on PCC land identifiable is sent by open311 and two emails" => sub {
+    FixMyStreet::override_config {
+        STAGING_FLAGS => { send_reports => 1 },
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'peterborough',
+        COBRAND_FEATURES => { open311_email => { peterborough => {
+            flytipping => 'flytipping@example.org',
+            flytipping_identifiable => 'identifiable@example.org',
+        } } },
+    }, sub {
+        $mech->clear_emails_ok;
+
+        my ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', {
+            category => 'General fly tipping',
+            latitude => 52.5708,
+            longitude => 0.2505,
+            cobrand => 'peterborough',
+            extra => {
+                _fields => [
+                    { name => 'site_code', value => '12345', },
+                    { name => 'pcc-identifiable', value => 'yes', },
+                ],
+            },
+        } );
+
+        FixMyStreet::Script::Reports::send();
+        $p->discard_changes;
+        is $p->send_state, 'sent', 'Report marked as sent';
+        is $p->get_extra_metadata('sent_to')->[1], 'flytipping@example.org', 'sent_to extra metadata is set';
+        is $p->get_extra_metadata('sent_to')->[0], 'identifiable@example.org', 'sent_to extra metadata is set';
+        is $p->state, 'confirmed', 'report state unchanged';
+        is $p->comments->count, 0, 'no comment added';
+        my $cgi = CGI::Simple->new(Open311->test_req_used->content);
+        is $cgi->param('service_code'), 'FLY', 'service code is correct';
+
+        $mech->email_count_is(2);
+        my @email = $mech->get_email;
+        is $email[0]->header('To'), '"Environmental Services" <flytipping@example.org>', 'email sent to correct address';
+        like $email[0]->header('Subject'), qr/\[Censorship checking only\] Problem Report: /;
+        is $email[1]->header('To'), '"Environmental Enforcement" <identifiable@example.org>', 'email sent to correct address';
+        like $email[1]->header('Subject'), qr/\[URGENT - IDENTIFIABLE EVIDENCE\] Problem Report: /;
+    };
+};
+
 subtest "flytipping/graffiti on non PCC land is not sent anywhere" => sub {
     FixMyStreet::override_config {
         STAGING_FLAGS => { send_reports => 1 },

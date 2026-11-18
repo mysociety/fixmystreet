@@ -131,6 +131,7 @@ sub open311_extra_data_exclude {
     # We need to store this as Open311 pre_send needs to check it and it will
     # have been removed due to this function.
     $self->{cache_pcc_witness} = $row->get_extra_field_value('pcc-witness');
+    $self->{cache_pcc_identifiable} = $row->get_extra_field_value('pcc-identifiable');
     [ '^PCC-', '^emergency$', '^private_land$', '^extra_detail$' ]
 }
 
@@ -343,6 +344,12 @@ sub _witnessed_general_flytipping {
     return ($row->category eq 'General fly tipping' && $witness eq 'yes');
 }
 
+sub _identifiable_general_flytipping {
+    my ($self, $row) = @_;
+    my $identifiable = $self->{cache_pcc_identifiable} || '';
+    return ($row->category eq 'General fly tipping' && $identifiable eq 'yes');
+}
+
 sub open311_pre_send {
     my ($self, $row, $open311) = @_;
 
@@ -393,6 +400,15 @@ sub open311_post_send {
                 $h,
                 dest => $dest2,
                 send_context => { flytipping_extra_witnessed => 1 },
+            );
+        }
+        if ($emails->{flytipping_identifiable} && $self->_identifiable_general_flytipping($row)) {
+            my $dest = [ [ $emails->{flytipping_identifiable}, "Environmental Enforcement" ] ];
+            $self->_send_extra_flytipping_email(
+                $row,
+                $h,
+                dest => $dest,
+                send_context => { flytipping_extra_identifiable => 1 },
             );
         }
         if ($emails->{flytipping_cctv} && $self->_report_is_in_cctv_zone($row)) {
