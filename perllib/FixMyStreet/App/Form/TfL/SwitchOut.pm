@@ -243,7 +243,7 @@ sub when_page_fields {
     );
 }
 
-my @time_options = ({ label => "-", value => "" });
+my @time_options = ({ label => "-", value => "" }, { label => "00:01", value => "00:01" });
 for my $h (0..23) {
     for my $m (0, 30) {
         next if !$h && !$m;
@@ -251,6 +251,7 @@ for my $h (0..23) {
         push @time_options, { label => $time, value => $time };
     }
 }
+push @time_options, { label => "23:59", value => "23:59" };
 
 for my $page (1..$MAX_DATES) {
     has_page "when_$page" => when_page_fields({
@@ -283,9 +284,6 @@ for my $page (1..$MAX_DATES) {
     has_field "restore_time_$page" => (
         type => 'Select',
         label => 'Restore time',
-        required_when => { "restore_date_$page" => sub {
-            $_[0] && ($_[0]->{day} || $_[0]->{month} || $_[0]->{year})
-        } },
         options => \@time_options,
     );
 }
