@@ -186,7 +186,7 @@ $(function(){
             }
             var description = $(this).find('textarea[name$=".description"]').val();
             if ( description && (behaviour.val() == 'question' || behaviour.val() == 'notice') ) {
-                html += ' / ' + description.substring(0, 50);
+                html += ' / ' + new Option(description.substring(0, 50)).innerHTML;
             }
         }
         $title.html(html);
