@@ -420,19 +420,15 @@ FixMyStreet::override_config {
         $mech->log_in_ok( $hackney_user->email );
         $mech->get_ok('/admin/report_edit/' . $problem->id);
         foreach (
-            { category => 'Potholes & stuff', resent => 1 }, # Email to email
-            { category => 'Flytipping', resent => 1 }, # Email to non-email
-            { category => 'Graffiti', resent => 0, }, # Non-email to non-email
-            { category => 'Roads', resent => 1 }, # Non-email to email
+            { category => 'Potholes & stuff' }, # Email to email
+            { category => 'Flytipping' }, # Email to non-email
+            { category => 'Graffiti', }, # Non-email to non-email
+            { category => 'Roads' }, # Non-email to email
         ) {
             $mech->submit_form_ok({ with_fields => { category => $_->{category} } }, "Switch to $_->{category}");
             $problem->discard_changes;
-            if ($_->{resent}) {
-                is $problem->send_state, 'unprocessed', "Marked for resending";
-                $problem->update({ whensent => $whensent, send_method_used => 'Open311', send_state => 'sent' }); # reset as sent
-            } else {
-                is $problem->send_state, 'sent', "Not marked for resending";
-            }
+            is $problem->send_state, 'unprocessed', "Marked for resending";
+            $problem->update({ whensent => $whensent, send_method_used => 'Open311', send_state => 'sent' }); # reset as sent
         }
     };
 
