@@ -959,9 +959,13 @@ sub dashboard_export_problems_add_columns {
         my %detail;
         if ($sutton) {
             my ($reason) = $detail =~ /^Reason: (.*)$/m;
+            my $address = $csv->_extra_metadata($report, 'property_address') || '';
+            # Address is in detail a few different ways
+            $detail =~ s/(?:Address: )?$address\s*//;
+            $detail =~ s/\s+$//;
             %detail = (
                 detail => $detail,
-                address => $csv->_extra_metadata($report, 'property_address') || '',
+                address => $address,
                 reason => $reason || '',
             );
         } else {

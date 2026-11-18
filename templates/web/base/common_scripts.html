@@ -84,6 +84,7 @@ IF bodyclass.match('mappage');
         version('/vendor/fancybox/jquery.fancybox-1.3.4.pack.js'),
         version('/vendor/uFuzzy.iife.min.js'),
         version('/js/fancybox.js'),
+        [ version('/vendor/lite-youtube-embed/lite-yt-embed.min.js'), { type = 'module' } ],
     );
 ELSE;
     scripts.push(
