@@ -200,7 +200,8 @@ sub check_for_errors {
       unless $self->text =~ m/\S/;
 
     # Maximum length
-    if ( $self->text && length($self->text) > 1750) {
+    my $staff = $self->get_extra_metadata('is_body_user') || $self->get_extra_metadata('is_superuser');
+    if ( !$staff && $self->text && length($self->text) > 1750) {
         $errors{update} = sprintf( _('Updates are limited to %s characters in length. Please shorten your update'), 1750 );
     }
 
