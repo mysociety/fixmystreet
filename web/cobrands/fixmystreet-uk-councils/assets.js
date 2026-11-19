@@ -1338,7 +1338,11 @@ fixmystreet.assets.merton.recyling_stylemap = new OpenLayers.StyleMap({
 fixmystreet.assets.merton.park_found = function(layer) {
     fixmystreet.body_overrides.only_send(layer.fixmystreet.body);
 
-    var asset = layer.selected_feature;
+    var combined = layer.fixmystreet.combined;
+    layer = fixmystreet.map.getLayersByName(combined[0])[0];
+    var secondary_layer = fixmystreet.map.getLayersByName(combined[1])[0];
+
+    var asset = secondary_layer.selected_feature || layer.selected_feature;
     var park_name = asset.attributes.ParkName;
     if (park_name == 'Morden Hall Park') {
         layer.fixmystreet.no_asset_msg_id = '#js-not-a-park-morden-hall';
@@ -1359,10 +1363,12 @@ fixmystreet.assets.merton.park_found = function(layer) {
 };
 
 fixmystreet.assets.merton.park_not_found = function(layer) {
-    delete layer.map_messaging.asset;
-    fixmystreet.body_overrides.remove_only_send();
-    layer.fixmystreet.no_asset_msg_id = '#js-not-a-merton-park';
-    fixmystreet.message_controller.road_not_found(layer, function() { return true; });
+    var outcome = fixmystreet.assets.cobranduk.combined_road_not_found(layer);
+    if (outcome === 'no') {
+        delete layer.map_messaging.asset;
+        fixmystreet.body_overrides.remove_only_send();
+        layer.fixmystreet.no_asset_msg_id = '#js-not-a-merton-park';
+    }
 };
 
 /* Northamptonshire */
