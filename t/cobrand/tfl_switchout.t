@@ -211,7 +211,7 @@ subtest 'Switch out application form submission' => sub {
             });
             like $email_parts[0][0]{'Content-Type'}, qr{multipart/mixed};
             my $date = join('/', $start_date->day, $start_date->month, $start_date->year);
-            is $email_parts[0][0]{'Subject'}, "Switch out application - 123/456 $date Neither";
+            is $email_parts[0][0]{'Subject'}, "Switch out application - 123/456 $date";
             is $email_parts[0][0]{'To'}, 'TfL <switchout@tfl.gov.uk.example.org>';
             like $email_parts[1][0]{'Content-Type'}, qr{multipart/related};
             like $email_parts[2][0]{'Content-Type'}, qr{multipart/alternative};
@@ -309,7 +309,6 @@ subtest 'Switch out application form submission' => sub {
                 'restore_date_1.day' => $start_date->day,
                 'restore_date_1.month' => $start_date->month,
                 'restore_date_1.year' => $start_date->year,
-                'restore_time_1' => '01:30',
             }});
 
             $mech->submit_form_ok({ with_fields => {
@@ -371,7 +370,7 @@ subtest 'Switch out application form submission' => sub {
                 });
                 like $email_parts[0][0]{'Content-Type'}, qr{multipart/mixed};
                 my $date = join('/', $start_date->day, $start_date->month, $start_date->year);
-                is $email_parts[0][0]{'Subject'}, "Switch out application - 123/456 $date Not provided";
+                is $email_parts[0][0]{'Subject'}, "Switch out application - 123/456 $date";
                 is $email_parts[0][0]{'Importance'}, "High";
                 is $email_parts[0][0]{'To'}, 'TfL <switchout@tfl.gov.uk.example.org>';
             };

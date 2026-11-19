@@ -243,7 +243,7 @@ sub when_page_fields {
     );
 }
 
-my @time_options = ({ label => "-", value => "" });
+my @time_options = ({ label => "-", value => "" }, { label => "00:01", value => "00:01" });
 for my $h (0..23) {
     for my $m (0, 30) {
         next if !$h && !$m;
@@ -251,6 +251,7 @@ for my $h (0..23) {
         push @time_options, { label => $time, value => $time };
     }
 }
+push @time_options, { label => "23:59", value => "23:59" };
 
 for my $page (1..$MAX_DATES) {
     has_page "when_$page" => when_page_fields({
@@ -283,9 +284,6 @@ for my $page (1..$MAX_DATES) {
     has_field "restore_time_$page" => (
         type => 'Select',
         label => 'Restore time',
-        required_when => { "restore_date_$page" => sub {
-            $_[0] && ($_[0]->{day} || $_[0]->{month} || $_[0]->{year})
-        } },
         options => \@time_options,
     );
 }
@@ -786,7 +784,8 @@ sub construct_datetime {
     my $field = $self->field($d);
     return unless checkable($field);
     my $date = $field->value;
-    my ($h, $m) = split /:/, $self->field($t)->value or return;
+    my $time = $self->field($t)->value || "23:59"; # If no time, assume is end of day (so someone can restore later same day without a time)
+    my ($h, $m) = split /:/, $time;
     return $date->set_hour($h)->set_minute($m);
 }
 
