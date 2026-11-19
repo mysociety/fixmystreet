@@ -528,16 +528,6 @@ function bucks_inspection_layer_loadend() {
     layer[0].checkSelected();
 }
 
-function bucks_format_date(date_field) {
-    var regExDate = /([0-9]{4})-([0-9]{2})-([0-9]{2})/;
-    var myMatch = regExDate.exec(date_field);
-    if (myMatch) {
-        return myMatch[3] + '/' + myMatch[2] + '/' + myMatch[1];
-    } else {
-        return '';
-    }
-}
-
 if (fixmystreet.cobrand == 'buckinghamshire' || fixmystreet.cobrand == 'fixmystreet') {
     $(function(){
         var layer = fixmystreet.map.getLayersByName('Bucks Junction Inspections')[0];
@@ -548,10 +538,10 @@ if (fixmystreet.cobrand == 'buckinghamshire' || fixmystreet.cobrand == 'fixmystr
 }
 
 fixmystreet.assets.buckinghamshire.drains_construct_selected_asset_message = function(asset) {
-    if (!asset.attributes.last_cleaned_date) {
+    if (!asset.attributes.next_cleaned_date) {
         return '';
     }
-    return 'This gulley was last cleaned on ' + bucks_format_date(asset.attributes.last_cleaned_date);
+    return 'This gulley will next be cleaned: ' + asset.attributes.next_cleaned_date;
 };
 
 fixmystreet.assets.buckinghamshire.verge_found = function(layer, feature) {
