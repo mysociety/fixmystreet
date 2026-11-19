@@ -544,7 +544,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345');
         $mech->follow_link_ok({ text => 'Report a problem with a food waste collection' });
         $mech->content_like(
-            qr/food waste.*reported as missed.*on Wednesday, 14 September/s);
+            qr/food waste.*reported as missed.*on Wednesday, 14 September.*we cannot return/s);
         $mech->content_like(qr/redirect-missed[^>]*disabled>/, 'Cannot report as missed');
 
         set_fixed_time('2022-09-13T19:00:00Z');

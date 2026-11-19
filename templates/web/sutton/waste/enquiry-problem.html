@@ -113,9 +113,14 @@ END;
                 by yourself, a neighbour, or your Managing Agent
             [% END %]
             on [% date.format(report_date, '%A, %-d %B') %].
-            [% SET resolve_date = service.target OR service.report_open.target %]
-            We aim to resolve this by the end of the day on [% date.format(resolve_date, '%A, %-d %B') %].
-            If it has still not been collected, you will be able to come back to this page to escalate the reported missed collection.
+            [% IF service.report_open_non_actionable %]
+                This was reported more than 2 working days after the scheduled collection, so we cannot return to collect your waste.
+                We're sorry we missed your collection, your report will help us improve our service.
+            [% ELSE %]
+                [% SET resolve_date = service.target OR service.report_open.target %]
+                We aim to resolve this by the end of the day on [% date.format(resolve_date, '%A, %-d %B') %].
+                If it has still not been collected, you will be able to come back to this page to escalate the reported missed collection.
+            [% END %]
             </p>
           [% END %]
         </div>

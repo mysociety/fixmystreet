@@ -292,11 +292,13 @@ subtest 'Dashboard CSV export includes extra staff columns' => sub {
         STAGING_SITE => 0,
         PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     }, sub {
+        my $email = 'csvstaff@lincolnshire.gov.uk';
         my $csv_staff = $mech->create_user_ok(
-            'csvstaff@lincolnshire.gov.uk',
+            $email,
             name => 'CSV Staff',
             from_body => $body,
         );
+        $email = $csv_staff->email; # As scoped now
         my $csv_role = FixMyStreet::DB->resultset("Role")->create({
             body => $body,
             name => 'CSV Role',
@@ -320,7 +322,7 @@ subtest 'Dashboard CSV export includes extra staff columns' => sub {
         $mech->content_contains('"Staff Role"', "Staff Role column header before export");
         $mech->content_like(qr/CSV Role/, "CSV export includes staff role before export");
         $mech->content_contains('"User Id"', "User Id column header before export");
-        $mech->content_like(qr/,$user_id,$/, "User Id data before export");
+        $mech->content_like(qr/,$user_id,$email,$/, "User Id data before export");
 
         $report->confirmed(DateTime->now->subtract( days => 5 ));
         $report->external_id('4321');
@@ -331,7 +333,7 @@ subtest 'Dashboard CSV export includes extra staff columns' => sub {
         $mech->content_contains('"Staff Role"', "Staff Role column header after export");
         $mech->content_like(qr/CSV Role/, "CSV export includes staff role after export");
         $mech->content_contains('"User Id"', "User Id column header after export");
-        $mech->content_like(qr/,$user_id,4321$/, "User Id data after export");
+        $mech->content_like(qr/,$user_id,$email,4321$/, "User Id data after export");
 
         subtest 'Also includes hidden reports' => sub {
             $report->update( { state => 'hidden' } );
