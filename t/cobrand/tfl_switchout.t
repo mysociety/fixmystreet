@@ -309,7 +309,6 @@ subtest 'Switch out application form submission' => sub {
                 'restore_date_1.day' => $start_date->day,
                 'restore_date_1.month' => $start_date->month,
                 'restore_date_1.year' => $start_date->year,
-                'restore_time_1' => '01:30',
             }});
 
             $mech->submit_form_ok({ with_fields => {
