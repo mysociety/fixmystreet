@@ -114,20 +114,11 @@ sub social_auth_enabled {
     return $self->feature('oidc_login') ? 1 : 0;
 }
 
-=item * A category change to or from an Email category is auto-resent
+=item * A category change is auto-resent
 
 =cut
 
-sub category_change_force_resend {
-    my ($self, $old, $new) = @_;
-
-    # Get the Open311 identifiers
-    my $contacts = $self->{c}->stash->{contacts};
-    ($old) = map { $_->send_method || '' } grep { $_->category eq $old } @$contacts;
-    ($new) = map { $_->send_method || '' } grep { $_->category eq $new } @$contacts;
-    return 1 if $new eq 'Email' || $old eq 'Email';
-    return 0;
-}
+sub category_change_force_resend { 1 }
 
 sub user_from_oidc {
     my ($self, $payload) = @_;

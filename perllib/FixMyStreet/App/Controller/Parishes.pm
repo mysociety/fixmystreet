@@ -33,7 +33,6 @@ sub auto : Private {
             config => ($c->cobrand->feature('stripe') || {}),
         )
     );
-    $self->next::method($c);
 }
 
 sub existing :Local {

@@ -1,3 +1,13 @@
+=head1 NAME
+
+FixMyStreet::Cobrand::Hampshire - code specific to the Hampshire Cobrand
+
+=head1 SYNOPSIS
+
+Hampshire is a .com integration with Confirm.
+
+=cut
+
 package FixMyStreet::Cobrand::Hampshire;
 use parent 'FixMyStreet::Cobrand::Whitelabel';
 
@@ -34,5 +44,27 @@ sub lookup_site_code_config { {
     property => "SITE_CODE",
     accept_feature => sub { 1 }
 } }
+
+=over 4
+
+=item * Hampshire includes an update note if update marked report fixed
+
+=cut
+
+sub open311_munge_update_params {
+    my ($self, $params, $comment) = @_;
+
+    if ($comment->mark_fixed) {
+        $params->{description} .= "\n\nReport marked as fixed by an FMS user";
+    }
+}
+
+=item * Hampshire does not send questionnaires
+
+=back
+
+=cut
+
+sub send_questionnaires { 0 }
 
 1;

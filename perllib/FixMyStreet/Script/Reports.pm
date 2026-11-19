@@ -115,11 +115,9 @@ sub end_summary_failures {
     my $self = shift;
 
     my $sending_errors = '';
-    my $unsent = FixMyStreet::DB->resultset('Problem')->search( {
-        send_state => 'unprocessed',
+    my $unsent = FixMyStreet::DB->resultset('Problem')->unprocessed->search( {
         state => [ FixMyStreet::DB::Result::Problem::open_states() ],
         bodies_str => { '!=', undef },
-        send_fail_count => { '>', 0 },
        # Bexley are emailed about garden issues
        -not => {
            cobrand => 'bexley',
@@ -133,9 +131,13 @@ sub end_summary_failures {
         $bodies{$key} ||= [];
         my $base_url = get_base($self, $row);
         push @{ $bodies{$key} }, $base_url . "/admin/report_edit/" . $row->id;
-        $sending_errors .= "\n" . '=' x 80 . "\n\n" . "* " . $base_url . "/report/" . $row->id . ", failed "
-            . $row->send_fail_count . " times, last at " . $row->send_fail_timestamp
-            . ", reason " . $row->send_fail_reason . "\n";
+        $sending_errors .= "\n" . '=' x 80 . "\n\n" . "* " . $base_url . "/report/" . $row->id . ", ";
+        if ($row->send_state eq 'processing') {
+            $sending_errors .= "stuck in processing send_state!\n";
+        } else {
+            $sending_errors .= "failed " . $row->send_fail_count . " times, last at " . $row->send_fail_timestamp
+                . ", reason " . $row->send_fail_reason . "\n";
+        }
     }
     if ($sending_errors) {
         my $count = $unsent->count;

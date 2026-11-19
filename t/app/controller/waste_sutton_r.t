@@ -964,7 +964,7 @@ FixMyStreet::override_config {
         } ] });
 
         subtest 'Raising a dispute only available within window' => sub {
-            set_fixed_time('2022-09-09T15:30:00Z');
+            set_fixed_time('2022-09-08T22:59:00Z');
             $mech->get_ok($problem_url);
             $mech->content_lacks($dispute_label, 'not allowed before window opens');
 
@@ -1772,10 +1772,10 @@ FixMyStreet::override_config {
             FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh) if $pregenerated;
             $mech->get_ok('/dashboard?export=1');
             $mech->content_contains('Title,Detail,Address,Reason,"User Name"');
-            $mech->content_contains(qq{"$address\n\nReason: Damaged\n\n1x Paper and Cardboard Green Wheelie Bin (240L) to deliver\n\n1x Paper and Cardboard Green Wheelie Bin (240L) to collect","$address",Damaged,});
+            $mech->content_contains(qq{"Reason: Damaged\n\n1x Paper and Cardboard Green Wheelie Bin (240L) to deliver\n\n1x Paper and Cardboard Green Wheelie Bin (240L) to collect","$address",Damaged,});
             $mech->content_contains(qq{1x Mixed Recycling Blue Striped Bag to deliver","$address","Additional bag required",});
             $mech->content_contains(qq{(140L) to collect","$address",,});
-            $mech->content_contains(qq{"Report missed Food Waste\n\n$address","$address",,});
+            $mech->content_contains(qq{"Report missed Food Waste","$address",,});
         }
     };
 

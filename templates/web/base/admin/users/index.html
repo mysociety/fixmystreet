@@ -34,7 +34,9 @@
 </div>
 </form>
 
-[% IF users.size %]
+[% IF users.size;
+    SET show_flagged = (c.cobrand.moniker != 'zurich' AND (searched OR role_selected));
+%]
 
 <form method="post">
 <table cellspacing="0" cellpadding="2" border="1">
@@ -43,30 +45,13 @@
         <th>[% loc('Name') %]</th>
         <th>[% loc('Email') %]</th>
         <th>[% loc('Body') %]</th>
-      [% IF c.cobrand.moniker != 'zurich' AND (searched OR role_selected) %]
+      [% IF show_flagged %]
         <th>[% loc('Flagged') %]</th>
       [% END %]
         <th colspan="2">*</th>
     </tr>
 [%- FOREACH user IN users %]
-    <tr>
-        <td align="center">[% IF user.from_body %]
-            <input type="checkbox" name="uid" value="[% user.id %]" id="uid[% user.id %]">
-            [% END %]</td>
-        <td>[% IF user.from_body %]<label class="inline" for="uid[% user.id %]">[% END %]
-            [% PROCESS value_or_nbsp value=user.name %]
-            [% IF user.from_body %]</label>[% END %]
-        </td>
-        <td><a href="[% c.uri_for_action( 'admin/reports/index', search => user.email ) %]">[% PROCESS value_or_nbsp value=user.email %]</a></td>
-        <td>[% PROCESS value_or_nbsp value=user.from_body.name %]
-            [% IF user.is_superuser %] * [% END %]
-        </td>
-      [% IF c.cobrand.moniker != 'zurich' AND (searched OR role_selected) %]
-        <td>[% user.flagged == 2 ? loc('User in abuse table') : user.flagged ? loc('Yes') : '&nbsp;' %]</td>
-      [% END %]
-        <td>[% IF user.id %]<a href="[% c.uri_for_action( 'admin/users/edit', [ user.id ] ) %]">[% loc('Edit') %]</a>[% END %]</td>
-        <td>[% IF user.id %]<a href="[% c.uri_for_action( 'admin/users/log', [ user.id ] ) %]">[% loc('Timeline') %]</a>[% END %]</td>
-    </tr>
+[% PROCESS 'admin/users/_index_row.html' %]
 [%- END -%]
 </table>
 

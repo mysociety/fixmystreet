@@ -137,4 +137,47 @@ describe('National Highways tests', function() {
         cy.get('#form_category_fieldset input[value="Flyposting"]').parent()
             .should('not.have.class', 'hidden-highways-choice');
     });
+    it('does not lose reporting functionality when duplicates question asked', function() {
+        cy.intercept('**/mapserver/highways*', {fixture: 'highways.xml'}).as('highways-tilma');
+        cy.intercept('**/report/new/ajax*', {fixture: 'highways-ajax.json'}).as('report-ajax');
+        cy.intercept('**/around/nearby*', {fixture: 'around-nearby.json'}).as('around-nearby');
+        cy.intercept('**mapserver/borsetshire*Streetlights*', {fixture: 'borchester-lights.xml'}).as('lights');
+        cy.visit('/');
+        cy.contains('Go');
+        cy.get('[name=pc]').type(Cypress.expose('postcode'));
+        cy.get('[name=pc]').parents('form').submit();
+        cy.url().should('include', '/around');
+        cy.get('#map_box').click(272, 249);
+        cy.wait('@report-ajax');
+        cy.wait('@highways-tilma');
+
+        cy.get('#highways').should('contain', 'M6');
+        cy.get('#js-not-highways').click();
+        cy.get('#single_body_only').should('have.value', '');
+        cy.nextPageReporting();
+        cy.pickCategory('Street lighting');
+        cy.wait('@lights');
+        cy.wait('@around-nearby');
+        cy.nextPageReporting(); // Move on from category selection view
+        cy.nextPageReporting(); // Move on from duplicates view
+        cy.contains('You can pick a'); // Moved forward and streetlights reloaded
+        cy.nextPageReporting(); // Move on from photo view
+        cy.get('[name=title]').type('Title');
+        cy.get('[name=detail]').type('Detail');
+        cy.nextPageReporting();
+
+        cy.get('.js-new-report-show-sign-in').should('be.visible').click();
+        cy.get('#form_username_sign_in').type('user@example.org');
+        cy.get('[name=password_sign_in]').type('password');
+        cy.get('[name=password_sign_in]').parents('form').submit();
+        cy.get('#map_sidebar').should('contain', 'check and confirm your details');
+        cy.get('#form_category_fieldset input[value="Incorrect sign (NH)"]').should('exist');
+
+        // The report should still not be routed to National Highways
+        cy.get('#single_body_only').should('have.value', '');
+        // The category the user picked should still be selected and shown
+        cy.get('#form_category_fieldset input[value="Street lighting"]').should('be.checked');
+        cy.get('#form_category_fieldset input[value="Street lighting"]').parent()
+            .should('not.have.class', 'hidden-highways-choice');
+    });
 });

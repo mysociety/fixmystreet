@@ -469,7 +469,8 @@ sub defect_wfs_query {
     </ogc:Filter>";
     $filter =~ s/\n\s+//g;
 
-    my $uri = URI->new("https://tilma.mysociety.org/proxy/occ/nsg/");
+    my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
+    my $uri = URI->new("https://$host/proxy/occ/nsg/");
     $uri->query_form(
         REQUEST => "GetFeature",
         SERVICE => "WFS",
@@ -477,7 +478,7 @@ sub defect_wfs_query {
         TYPENAME => "WFS_DEFECTS_FOR_QUERYING",
         VERSION => "1.1.0",
         filter => $filter,
-        propertyName => 'ITEM_CATEGORY_NAME,ITEM_TYPE_NAME,REQUIRED_COMPLETION_DATE,SHAPE_GEOMETRY',
+        propertyName => 'ITEM_CATEGORY_NAME,ITEM_TYPE_NAME,REQUIRED_COMPLETION_DATE,INSTRUCTION_REFERENCE,SHAPE_GEOMETRY',
         outputformat => "application/json"
     );
 
@@ -494,6 +495,10 @@ sub defect_wfs_query {
 # Get defects from WDM feed and display them on /around page.
 sub pins_from_wfs {
     my ($self, $bbox) = @_;
+
+    # Staff only
+    my $c = $self->{c};
+    return [] unless $c->user_exists && ($c->user->from_body || $c->user->is_superuser);
 
     my $wfs = $self->defect_wfs_query($bbox);
 
@@ -513,7 +518,8 @@ sub pins_from_wfs {
             $category_type = "$category ($type)";
         }
         my $completion_date = DateTime::Format::W3CDTF->parse_datetime($props->{REQUIRED_COMPLETION_DATE})->strftime('%A %e %B %Y');
-        my $title = "$category_type\nEstimated completion date: $completion_date";
+        my $reference = $props->{INSTRUCTION_REFERENCE} || 'n/a';
+        my $title = "$category_type\nEstimated completion date: $completion_date\nReference: $reference";
         {
             id => $fake_id--,
             latitude => @$coords[1],
@@ -567,7 +573,7 @@ sub extra_reports_pins {
     }
 
     # Only show pins at certain zoom levels
-    if (!defined($zoom) || int($zoom) < 15) {
+    if (!defined($zoom) || int($zoom) < 8) {
         return [];
     }
 

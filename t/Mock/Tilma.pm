@@ -84,6 +84,8 @@ sub dispatch_request {
                     }
                 }
             ];
+        } elsif ($args->{url} eq 'https://merton.assets') {
+            $features = [{}];
         }
         my $json = $self->as_json($features);
         return [ 200, [ 'Content-Type' => 'application/json' ], [ $json ] ];

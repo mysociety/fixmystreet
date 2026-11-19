@@ -7,7 +7,11 @@
     <p>[% loc('We found more than one match for that location.') %]</p>
     <ul class="pc_alternatives">
         [% FOREACH match IN possible_location_matches %]
-        <li><a href="[% choose_target_uri %]?latitude=[% match.latitude | uri %];longitude=[% match.longitude | uri %]">[% match.address | html %]</a></li>
+        <li><form method="post">
+                <input type="hidden" name="lat" value="[% match.latitude %]">
+                <input type="hidden" name="lon" value="[% match.longitude %]">
+                <button class="fake-link">[% match.address %]</button>
+            </form></li>
         [% END %]
     </ul>
     <p>[% loc('We show up to ten matches, please try a different search if yours is not here.') %]</p>

@@ -74,6 +74,15 @@ my ($p_bromley) = $mech->create_problems_for_body(1, $bromley->id, 'Test', {
     send_fail_count => 1
 } );
 
+my ($processing) = $mech->create_problems_for_body(1, $bromley->id, 'Test', {
+    cobrand => 'bromley',
+    user => $user,
+    bodies_str => $bromley->id,
+    category => 'category',
+    send_state => 'processing',
+    confirmed => \"current_timestamp - '1 day'::interval",
+} );
+
 
 FixMyStreet::override_config {
     COBRAND_FEATURES => { base_url => { 'tfl' => 'http://tfl.example.org', 'bromley' => 'http://bromley.example.org' } },
@@ -83,8 +92,8 @@ FixMyStreet::override_config {
     subtest "check sendreport failure messages" => sub {
         my $e = FixMyStreet::Script::Reports->new;
         my $base = FixMyStreet->config('BASE_URL');
-        my ($id1, $id2, $id3, $id4) = ( $p1->id, $p2->id, $p_bromley->id, $p_tfl->id );
-        stdout_like { $e->end_summary_failures } qr%The following 4 reports had problems sending:\nBromley Council \(1\): http://bromley.example.org/admin/report_edit/$id3\nCouncil of the Thousand \(2\): http://www.example.org/admin/report_edit/$id2, http://www.example.org/admin/report_edit/$id1\nTfL \(1\): http://tfl.example.org/admin/report_edit/$id4%s, "includes count of reports and reports in fixed order";
+        my ($id1, $id2, $id3, $id4, $id5) = ( $p1->id, $p2->id, $p_bromley->id, $p_tfl->id, $processing->id );
+        stdout_like { $e->end_summary_failures } qr%The following 5 reports had problems sending:\nBromley Council \(2\): http://bromley.example.org/admin/report_edit/$id3, http://www.example.org/admin/report_edit/$id5\nCouncil of the Thousand \(2\): http://www.example.org/admin/report_edit/$id2, http://www.example.org/admin/report_edit/$id1\nTfL \(1\): http://tfl.example.org/admin/report_edit/$id4%s, "includes count of reports and reports in fixed order";
     }
 };
 

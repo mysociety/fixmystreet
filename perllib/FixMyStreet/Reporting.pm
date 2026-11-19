@@ -216,52 +216,8 @@ sub _csv_parameters_problems {
         cursor_page_size => 1000,
     });
     $self->_set_objects_rs($rs);
-    $self->_set_csv_headers([
-        'Report ID',
-        'Title',
-        'Detail',
-        'User Name',
-        'Category',
-        $groups ? ('Subcategory') : (),
-        'Created',
-        'Confirmed',
-        'Acknowledged',
-        'Fixed',
-        'Closed',
-        'Status',
-        'Latitude', 'Longitude',
-        'Query',
-        'Ward',
-        'Easting',
-        'Northing',
-        'Report URL',
-        'Device Type',
-        'Site Used',
-        'Reported As',
-    ]);
-    $self->_set_csv_columns([
-        'id',
-        'title',
-        'detail',
-        'user_name_display',
-        'category',
-        $groups ? ('subcategory') : (),
-        'created',
-        'confirmed',
-        'acknowledged',
-        'fixed',
-        'closed',
-        'state',
-        'latitude', 'longitude',
-        'postcode',
-        'wards',
-        'local_coords_x',
-        'local_coords_y',
-        'url',
-        'device_type',
-        'cobrand',
-        'reported_as',
-    ]);
+    $self->_set_csv_headers($self->_default_headers($groups));
+    $self->_set_csv_columns($self->_default_columns($groups));
     $self->cobrand->call_hook(dashboard_export_problems_add_columns => $self);
 }
 
@@ -566,6 +522,60 @@ sub _extra_metadata {
     } else {
         return $report->get_extra_metadata($key);
     }
+}
+
+sub _default_headers {
+    my ($self, $groups) = @_;
+    [
+        'Report ID',
+        'Title',
+        'Detail',
+        'User Name',
+        'Category',
+        $groups ? ('Subcategory') : (),
+        'Created',
+        'Confirmed',
+        'Acknowledged',
+        'Fixed',
+        'Closed',
+        'Status',
+        'Latitude', 'Longitude',
+        'Query',
+        'Ward',
+        'Easting',
+        'Northing',
+        'Report URL',
+        'Device Type',
+        'Site Used',
+        'Reported As',
+    ]
+}
+
+sub _default_columns {
+    my ($self, $groups) = @_;
+    [
+        'id',
+        'title',
+        'detail',
+        'user_name_display',
+        'category',
+        $groups ? ('subcategory') : (),
+        'created',
+        'confirmed',
+        'acknowledged',
+        'fixed',
+        'closed',
+        'state',
+        'latitude', 'longitude',
+        'postcode',
+        'wards',
+        'local_coords_x',
+        'local_coords_y',
+        'url',
+        'device_type',
+        'cobrand',
+        'reported_as',
+    ]
 }
 
 1;

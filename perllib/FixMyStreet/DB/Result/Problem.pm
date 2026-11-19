@@ -272,7 +272,7 @@ __PACKAGE__->might_have(
   sub {
     my $args = shift;
     return
-        \[ "($args->{self_alias}.extra ->> 'contributed_by')::integer = $args->{foreign_alias}.id" ];
+        \[ "($args->{self_alias}.extra ->> 'contributed_by') = $args->{foreign_alias}.id::text" ];
   },
   {
     join_type => "LEFT",
@@ -539,7 +539,7 @@ sub send_logged_email {
     my ($self, $h, $nomail, $cobrand) = @_;
 
     my $to = { To => $self->user->email };
-    if ($h->{report}->cobrand_data eq 'licence') {
+    if ($h->{report}->cobrand_data eq 'licence' || $h->{report}->cobrand_data eq 'switchout') {
         my $email = $h->{report}->get_extra_metadata('sent_to');
         $to->{Cc} = join(',', @$email) if $email && @$email;
     }

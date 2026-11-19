@@ -5,7 +5,9 @@
 <h2>[% ward_text %]</h2>
     <p class="[% show_wards_hidden_class %]">[% ward_link_text %]</p>
     <p class="[% show_wards_shown_class %]">[% ward_link_instruction %]</p>
-    <p class="[% show_wards_hidden_class %]"><a href="?show_wards=1" class="js-ward-select-multiple">[% ward_link_multiple %]</a></p>
+    <form method="post">
+    <p class="[% show_wards_hidden_class %]"><input type="submit" name="show_wards" class="btn js-ward-select-multiple" value="[% ward_link_multiple %]"></p>
+    </form>
     <form method="get" action="">
     <section class="full-width">
     <ul class="item-list item-list--wards govuk-checkboxes govuk-checkboxes--small">

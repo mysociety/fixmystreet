@@ -96,10 +96,11 @@ my @PLACES = (
     [ 'The Circus', 51.386269, -2.364050, 2551, 'Bath and North East Somerset Council', 'UTA' ],
     [ 'SM1 1AA', 51.359723, -0.193146, 2498, 'Sutton Council', 'LBO' ],
     [ 'SM4 5DX', 51.400975, -0.19655, 2500, 'Merton Council', 'LBO' ],
-    [ '?', 51.411907, -0.170620, 2500, 'Merton Council', 'LBO' ], # Lavendar Park
+    [ '?', 51.411907, -0.170620, 2500, 'Merton Council', 'LBO' ], # Lavender Park
     [ '?', 51.429054, -0.253360, 2500, 'Merton Council', 'LBO' ], # Wimbledon Common
     [ '?', 51.393623, -0.137502, 2500, 'Merton Council', 'LBO' ], # Mitcham Common
     [ '?', 51.403673, -0.186162, 2500, 'Merton Council', 'LBO' ], # Morden Hall Park
+    [ '?', 51.393630, -0.169311, 2500, 'Merton Council', 'LBO' ], # Watermeads Nature Reserve
     [ 'SY4 5DL', 52.855684, -2.723877, 2238, 'Shropshire Council', 'UTA' ],
     # Norway
     [ '3290', 59, 10, 709, 'Larvik', 'NKO', 7, 'Vestfold', 'NFY' ],

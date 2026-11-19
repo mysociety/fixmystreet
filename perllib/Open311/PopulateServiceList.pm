@@ -30,6 +30,9 @@ sub process_bodies {
 
 sub process_body {
     my $self = shift;
+
+    return if $self->_current_body_cobrand && $self->_current_body_cobrand->call_hook('open311_skip_service_list');
+
     my $open311 = Open311->new(
         fixmystreet_body => $self->_current_body,
         endpoint => $self->_current_body->endpoint,

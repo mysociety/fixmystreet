@@ -8,7 +8,7 @@ with 'FixMyStreet::Roles::Cobrand::OpenUSRN';
 with 'FixMyStreet::Cobrand::Merton::Waste';
 with 'FixMyStreet::Roles::Open311Multi';
 
-sub council_area_id { [2500, 2480, 2501] }
+sub council_area_id { [2500, 2480, 2501, 2498] }
 sub council_area { 'Merton' }
 sub council_name { 'Merton Council' }
 sub council_url { 'merton' }
@@ -188,9 +188,15 @@ sub categories_restriction {
 
 =head2 check_report_is_on_cobrand_asset
 
-Merton has a park, The Commons Extension Sports Ground, which is outside
-their boundary, and Wimbledon Park is half outside the boundary.
-We'll test if it's any Merton owned park.
+Merton have a layer of parks for which they are either:
+* Responsible for and therefore accept parks reports.
+* Not responsible for but want to signpost the relevant body.
+
+Some of these parks are either fully or partially outside of their
+boundary.
+
+This method returns true if the report location is within one of
+the parks on this layer to handle the out-of-bounds locations.
 
 =cut
 
@@ -203,15 +209,30 @@ sub check_report_is_on_cobrand_asset {
     my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
 
     my $cfg = {
-        url => "https://$host/mapserver/merton",
-        srsname => "urn:ogc:def:crs:EPSG::27700",
-        typename => "merton_owned_parks",
-        filter => "<Filter><Contains><PropertyName>Geometry</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point></Contains></Filter>",
-        outputformat => 'geojson',
+        buffer => '10',
+        proxy_url => "https://$host/alloy/layer.php",
+        layer => "parks",
+        url => "https://merton.assets",
+        srs => "27700",
     };
+    my $features = $self->_fetch_features($cfg, $x, $y);
 
-    my $features = $self->_fetch_features($cfg);
     return $features->[0];
+}
+
+sub _fetch_features_url {
+    my ($self, $cfg) = @_;
+
+    # Merton's asset proxy is Alloy, not a standard WFS server.
+    my $uri = URI->new($cfg->{proxy_url});
+    $uri->query_form(
+        layer => $cfg->{layer},
+        url => $cfg->{url},
+        bbox => $cfg->{bbox},
+        srs => $cfg->{srs},
+    );
+
+    return $uri;
 }
 
 sub munge_overlapping_asset_bodies {
@@ -263,13 +284,58 @@ sub dashboard_export_problems_add_columns {
     $csv->add_csv_columns(
         park_name => 'Park name',
         park_uprn => 'Park UPRN',
+        uprn => 'UPRN',
+        user_email => 'User Email',
+        user_phone => 'User Phone',
+        staff_user => 'Staff User',
+        staff_role => 'Staff Role',
+        payment_method => 'Payment method',
+        payment_reference => 'Payment reference',
+        payment => 'Payment',
+        pro_rata => 'Pro rata payment',
+        admin_fee => 'Admin fee',
+        container => 'Subscription container',
+        current_bins => 'Bin count declared',
+        quantity => 'Subscription quantity',
     );
+
+    my ($user_lookup, $userroles);
+    if (!$csv->dbi) {
+        $csv->objects_attrs({
+            '+columns' => ['user.email', 'user.phone'],
+            join => 'user',
+        });
+        $user_lookup = $self->csv_staff_users;
+        $userroles = $self->csv_staff_roles($user_lookup);
+    }
 
     $csv->csv_extra_data(sub {
         my $report = shift;
+
+        my $data = {};
+        if (!$csv->dbi) {
+            my $by = $report->get_extra_metadata('contributed_by');
+            $data = {
+                uprn => $report->uprn,
+                user_email => $report->user->email || '',
+                user_phone => $report->user->phone || '',
+                staff_user => $self->csv_staff_user_lookup($by, $user_lookup),
+                staff_role => $by ? join(',', @{$userroles->{$by} || []}) : '',
+            };
+        }
+
         return {
+            %$data,
             park_name => $csv->_extra_field($report, 'ParkName'),
             park_uprn => $csv->_extra_field($report, 'uprn'),
+            payment_method => $csv->_extra_field($report, 'payment_method') || '',
+            payment_reference => $csv->_extra_metadata($report, 'payment_reference') || '',
+            payment => $csv->_extra_field($report, 'payment'),
+            pro_rata => $csv->_extra_field($report, 'pro_rata'),
+            admin_fee => $csv->_extra_field($report, 'admin_fee'),
+            container => $csv->_extra_field($report, 'Paid_Container_Type'),
+            current_bins => $csv->_extra_field($report, 'current_containers'),
+            quantity => $csv->_extra_field($report, 'Paid_Container_Quantity'),
         };
     });
 }

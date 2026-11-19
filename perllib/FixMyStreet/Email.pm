@@ -23,6 +23,7 @@ use FixMyStreet::DB;
 use FixMyStreet::Email::Sender;
 
 $Email::MIME::MAX_PARTS = 10000;
+$Email::MIME::ContentType::PRE_2231_FORM = 0; # Hopefully everyone supports this by now.
 
 sub test_dmarc {
     my $email = shift;

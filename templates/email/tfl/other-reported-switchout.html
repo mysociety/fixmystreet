@@ -1,0 +1,21 @@
+[%
+PROCESS '_email_settings.html';
+email_columns = 1;
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% only_column_style %]">
+    <h1 style="[% h1_style %]">New switch out application received</h1>
+
+    <p style="[% p_style %]">
+    Please allow up to 24 hours for an update. We will contact you sooner if we require any further information.
+
+    <h2 style="[% h2_style %]">Application details</h2>
+
+    [% detail = report.detail | html_para_email(p_style) %]
+    [% cobrand.licence_detail(detail) %]
+
+</th>
+
+[% INCLUDE '_email_bottom.html' %]

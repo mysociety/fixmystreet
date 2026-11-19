@@ -35,11 +35,7 @@ sub validate {
 
     return if $self->tag_exists('required') && !$self->get_tag('required');
 
-    my $key = ( defined $self->value && defined $self->value->{files}
-                && $self->value->{files} )
-            || ( defined $self->form->saved_data->{$self->name}->{files}
-                && $self->form->saved_data->{$self->name}->{files} )
-            || $self->form->params->{$self->name . '_fileid'};
+    my $key = $self->_file_key;
 
     return $self->add_error($self->get_message('upload_file_not_found'))
         unless $key;
@@ -48,6 +44,17 @@ sub validate {
     unless ($out->size) {
         return $self->add_error($self->get_message('upload_file_too_small'));
     }
+}
+
+sub _file_key {
+    my $self = shift;
+    my $key = ( defined $self->value && defined $self->value->{files}
+                && $self->value->{files} )
+            || ( defined $self->form->saved_data->{$self->name}
+                && defined $self->form->saved_data->{$self->name}->{files}
+                && $self->form->saved_data->{$self->name}->{files} )
+            || $self->form->params->{$self->name . '_fileid'};
+    return $key;
 }
 
 __PACKAGE__->meta->make_immutable;

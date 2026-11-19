@@ -189,7 +189,16 @@ sub bin_services_for_address {
 
     # If there is an open Garden subscription event, assume
     # that means a bin is being delivered and so a pending subscription
-    if ($events->filter({ event_type => $self->garden_subscription_event_id, closed => 0 })) {
+    # Also check there is not already an unsent garden subscription in case of delays sending to Echo
+    if (
+        $events->filter({ event_type => $self->garden_subscription_event_id, closed => 0 })
+        || $self->{c}->cobrand->problems->search({
+                uprn => $property->{uprn},
+                title => 'Garden Subscription - New',
+                send_state => ['unprocessed', 'processing'],
+                state => { -not_in => [ FixMyStreet::DB::Result::Problem::hidden_states ] },
+            })->first
+       ) {
         $self->{c}->stash->{pending_subscription} = { title => 'Garden Subscription - New' };
         $self->{c}->stash->{open_garden_event} = 1;
     }
@@ -603,7 +612,7 @@ sub waste_task_resolutions {
 
         # Special handling if last instance is today e.g. if it's before a
         # particular hour and outstanding, show it as in progress
-        if ($row->{last}{date}->ymd eq $now->ymd) {
+        if ($row->{last}{date} && $row->{last}{date}->ymd eq $now->ymd) {
             $self->waste_on_the_day_criteria($completed, $state, $now, $row);
         }
 

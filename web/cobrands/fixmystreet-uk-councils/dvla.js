@@ -21,7 +21,8 @@ const FIELDS = {
         'categories': [
             'A vehicle left on public road for over two months',
             'A vehicle abandoned on your property',
-            'A badly damaged or burnt out vehicle on a public road',
+            'A badly damaged or burnt out vehicle on a public road', // This is renaming the category but keeps
+            'A vehicle badly damaged or burnt out on a public road', // it working during transition
         ],
         'reg': 'NE02',
         'taxed': 'NE01',

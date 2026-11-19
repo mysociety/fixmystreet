@@ -20,6 +20,10 @@
             <input type="hidden" name="prefill_category" id="prefill_category" value="[% prefill_category %]">
             [% END %]
 
+            [% IF NOT disable_form_message %]
+              [% PROCESS "report/new/category_extras.html" %]
+            [% END %]
+
             [% PROCESS 'report/form/photo_upload.html' %]
             [% PROCESS 'report/new/after_photo.html' %]
 

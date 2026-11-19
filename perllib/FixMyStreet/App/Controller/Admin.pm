@@ -101,16 +101,8 @@ sub timeline : Path( 'timeline' ) : Args(0) {
     my $probs = $c->cobrand->problems->timeline;
 
     foreach ($probs->all) {
-        push @{$time{$_->created->epoch}}, { type => 'problemCreated', date => $_->created, obj => $_ };
         push @{$time{$_->confirmed->epoch}}, { type => 'problemConfirmed', date => $_->confirmed, obj => $_ } if $_->confirmed;
         push @{$time{$_->whensent->epoch}}, { type => 'problemSent', date => $_->whensent, obj => $_ } if $_->whensent;
-    }
-
-    my $questionnaires = $c->model('DB::Questionnaire')->timeline( $c->cobrand->restriction );
-
-    foreach ($questionnaires->all) {
-        push @{$time{$_->whensent->epoch}}, { type => 'quesSent', date => $_->whensent, obj => $_ };
-        push @{$time{$_->whenanswered->epoch}}, { type => 'quesAnswered', date => $_->whenanswered, obj => $_ } if $_->whenanswered;
     }
 
     my $updates = $c->cobrand->updates->timeline;

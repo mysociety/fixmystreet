@@ -63,17 +63,7 @@
                     <input type="hidden" name="prefill_category" value="[% c.get_param('prefill_category') %]">
                     <input type="hidden" name="prefill_description" value="[% c.get_param('prefill_description') %]">
                 [% END %]
-                [%~ SET link_params = {
-                        geolocate = 1
-                    };
-                    IF c.get_param('filter_category'); link_params.filter_category = c.get_param('filter_category'); END;
-                    IF c.get_param('filter_group'); link_params.filter_group = c.get_param('filter_group'); END;
-                    IF c.cobrand.moniker == 'zurich';
-                        IF c.get_param('prefill_category'); link_params.prefill_category = c.get_param('prefill_category'); END;
-                        IF c.get_param('prefill_description'); link_params.prefill_description = c.get_param('prefill_description'); END;
-                    END;
-                %]
-                [% INCLUDE 'around/_postcode_form_geolocation.html' url=c.uri_for('/around', link_params) %]
+                [% INCLUDE 'around/_postcode_form_geolocation.html' %]
 
                 [% UNLESS possible_location_matches OR location_error_pc_lookup %]
                     [% INCLUDE 'around/_postcode_form_post.html' %]

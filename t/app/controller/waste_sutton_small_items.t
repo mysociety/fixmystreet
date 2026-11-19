@@ -742,17 +742,13 @@ FixMyStreet::override_config {
         my $dispute_label = 'Dispute collection closure reason';
 
         subtest 'Check small items dispute window' => sub {
-            set_fixed_time('2025-04-07T19:00:00Z');
+            set_fixed_time('2025-04-07T22:59:00Z');
             $mech->get_ok($problem_url);
-            $mech->content_lacks($dispute_label, 'cannot report before collection happened');
+            $mech->content_lacks($dispute_label, 'cannot report just before window opens');
 
             set_fixed_time('2025-04-11T19:00:00Z');
             $mech->get_ok($problem_url);
             $mech->content_lacks($dispute_label, 'cannot report after window closed');
-
-            set_fixed_time('2025-04-08T16:29:00Z');
-            $mech->get_ok($problem_url);
-            $mech->content_lacks($dispute_label, 'cannot report just before window opens');
 
             set_fixed_time('2025-04-11T00:01:00Z');
             $mech->get_ok($problem_url);

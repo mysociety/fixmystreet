@@ -127,6 +127,12 @@ sub disambiguate_location {
     };
 }
 
+=item * We have aerial maps
+
+=cut
+
+sub has_aerial_maps { 'tilma.mysociety.org/mapcache/gmaps/lincsaerial@{grid}' }
+
 =back
 
 =cut
@@ -196,15 +202,15 @@ Lincolnshire uses the following pin colours:
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
 
-    return 'grey'
+    return 'grey-cross'
         if $p->state eq 'not responsible' || ($context ne 'reports' && !$self->owns_problem($p));
-    return 'orange'
+    return 'orange-clipboard'
         if $p->state eq 'investigating' || $p->state eq 'for triage';
-    return 'yellow'
+    return 'yellow-work'
         if $p->state eq 'action scheduled' || $p->state eq 'in progress';
-    return 'green' if $p->is_fixed;
+    return 'green-tick' if $p->is_fixed;
     return 'blue' if $p->is_closed;
-    return 'red';
+    return 'red-magnifier';
 }
 
 =head2 open311_config
@@ -328,8 +334,14 @@ sub dashboard_export_problems_add_columns {
     $csv->add_csv_columns(
         staff_role => 'Staff Role',
         user_id => 'User Id',
+        user_email => 'User Email',
         external_id => 'Confirm ID',
     );
+
+    $csv->objects_attrs({
+        '+columns' => ['user.email'],
+        join => 'user',
+    });
 
     return if $csv->dbi; # All covered already
 
@@ -347,6 +359,7 @@ sub dashboard_export_problems_add_columns {
         return {
             staff_role => $staff_role,
             user_id => $report->user_id,
+            user_email => $report->user->email,
             external_id => $report->external_id,
         };
     });
