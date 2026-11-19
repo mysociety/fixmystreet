@@ -326,6 +326,7 @@ merton:
   asset_category: ["Parks"]
   asset_item: Merton-owned park
   asset_item_message: Please pick a location in a highlighted Merton-owned park.
+  combined: ["merton parks", "merton parks"]
   max_resolution: 0.875
   name: merton parks
   nearest_radius: 0.1
@@ -333,13 +334,6 @@ merton:
   non_interactive: true
   road: true
   template: alloy
-  usrn:
-    - attribute: ParkID
-      field: ParkID
-    - attribute: ParkName
-      field: ParkName
-    - attribute: AssetNumber
-      field: AssetNumber
   http_options:
     params:
       layer: parks
