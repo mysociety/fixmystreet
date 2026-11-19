@@ -1460,6 +1460,13 @@ fixmystreet.assets.merton.park_found = function(layer) {
 
     var asset = secondary_layer.selected_feature || layer.selected_feature;
     var park_name = asset.attributes.ParkName;
+
+    // Have to handle attribute setting behaviour here so that one layer
+    // doesn't overwrite the data from the other usrn:
+    $("input[name=ParkID]").val(asset.attributes.ParkID);
+    $("input[name=ParkName]").val(park_name);
+    $("input[name=AssetNumber]").val(asset.attributes.AssetNumber);
+
     if (park_name == 'Morden Hall Park') {
         layer.fixmystreet.no_asset_msg_id = '#js-not-a-park-morden-hall';
         fixmystreet.message_controller.road_not_found(layer, function() { return true; });
