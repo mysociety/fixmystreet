@@ -332,7 +332,7 @@ sub munge_cobrand_asset_categories {
         my $other_body = $bodies{$area . " Borough Council"};
 
         # Remove the non-street contacts of Brent
-        @$contacts = grep { !($_->email !~ /^Symology/ && $_->body_id == $brent_body) } @$contacts;
+        @$contacts = grep { !($_->email !~ /^(Symology|Aurora)/ && $_->body_id == $brent_body) } @$contacts;
         # Remove the street contacts of the other
         @$contacts = grep { !(!$non_street{$area}{$_->category} && $_->body_id == $other_body->id) } @$contacts
             if $other_body;
@@ -343,7 +343,7 @@ sub munge_cobrand_asset_categories {
         # Inside the area of Brent, but not Brent's responsibility
         my $other_body = $bodies{$cobrand . " Borough Council"};
         # Remove the street contacts of Brent
-        @$contacts = grep { !($_->email =~ /^Symology/ && $_->body_id == $brent_body) } @$contacts;
+        @$contacts = grep { !($_->email =~ /^(Symology|Aurora)/ && $_->body_id == $brent_body) } @$contacts;
         # Remove the non-street contacts of the other
         @$contacts = grep { !($non_street{$cobrand}{$_->category} && $_->body_id == $other_body->id) } @$contacts
             if $other_body;
@@ -679,7 +679,8 @@ sub open311_munge_update_params {
 
 =head2 should_skip_sending_update
 
-Do not try and send updates to the ATAK or Symology backends.
+Do not try and send updates to the ATAK or Symology backends, or updates
+with no text (e.g. only a state change) to Aurora.
 
 =cut
 
@@ -690,6 +691,7 @@ sub should_skip_sending_update {
     return 1 unless $code; # No category found
     $code = $code->email;
     return 1 if $code =~ /^(ATAK|Symology)/;
+    return 1 if $code =~ /^Aurora/ && !$update->text;
     return 0;
 }
 
@@ -712,7 +714,7 @@ We also might need to map one value to another.
 
 =cut
 
-    if ($contact->email =~ /^Symology/) {
+    if ($contact->email =~ /^(Symology|Aurora)/) {
         if (!$row->get_extra_field_value('NSGRef')) {
             if (my $ref = $self->lookup_site_code($row, 'usrn')) {
                 $row->update_extra_field({ name => 'NSGRef', description => 'NSG Ref', value => $ref });
@@ -783,6 +785,13 @@ sub open311_extra_data_include {
         }
         push @$open311_only, { name => 'report_url', value => $h->{url} };
 
+=item * Aurora has the UnitID added to the description on the open311 side.
+
+=cut
+
+    } elsif ($contact->email =~ /^Aurora/) {
+        push @$open311_only, { name => 'report_url', value => $h->{url} };
+
 =item * Adds information for constructing the description on the open311 side.
 
 =cut
@@ -800,7 +809,7 @@ We use {closest_address}->summary as this is geocoder-agnostic.
 
 =cut
 
-    if ($contact->email =~ /^Echo/ || $contact->email =~ /^Symology/) {
+    if ($contact->email =~ /^(Echo|Symology|Aurora)/) {
         my $title = $row->title;
         if ( $h->{closest_address} ) {
             my $addr = $h->{closest_address}->summary;
@@ -830,13 +839,15 @@ We use {closest_address}->summary as this is geocoder-agnostic.
 
 Doesn't send UnitID for Drains and gullies category as an extra
 field in open311 data. It has been transferred to the details
-field by open311_extra_data_include
+field by open311_extra_data_include. Aurora categories always
+send it, as it is dealt with on the open311 side.
 
 =cut
 
 sub open311_extra_data_exclude {
     my ($self, $row, $h, $contact) = @_;
 
+    return [] if $contact->email =~ /^Aurora/;
     return ['UnitID'] if $contact->groups->[0] eq 'Drains and gullies';
     return [];
 }
