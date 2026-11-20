@@ -47,6 +47,7 @@
         - Strip EXIF metadata from photos imported via media_url. #5841
         - Photos can be included as base64-encoded data: URIs when fetching updates/reports. #5785
         - Add --report-ids flag to bin/fetch to import specific Open311 service requests.
+        - Check stored token on retry rather than resending a report whose token lookup timed out. #6197
     - Performance improvements:
         - Use on-disk cache for front page stats rather than memcache. #5763
         - Add an index on problem(confirmed).

@@ -42,6 +42,8 @@ has use_customer_reference => ( is => 'ro', isa => Bool, default => 0 );
 has mark_reopen => ( is => 'ro', isa => Bool, default => 0 );
 has fixmystreet_body => ( is => 'ro', isa => InstanceOf['FixMyStreet::DB::Result::Body'] );
 has service_code => ( is => 'ro', 'isa' => Str, default => '' );
+# Set if a request was accepted with a token we couldn't turn into an ID
+has token => ( is => 'rw', isa => Str );
 
 before [
     qw/get_service_list get_service_meta_info get_service_requests get_service_request_updates
@@ -108,19 +110,12 @@ sub send_service_request {
             if ( my $request_id = $obj->{request}->[0]->{service_request_id} ) {
                 return $request_id unless ref $request_id;
             } elsif ( my $token = $obj->{request}->[0]->{token} ) {
-
-                my $service_request_id;
-                my $polling_interval = FixMyStreet->config('O311_POLLING_INTERVAL') // 2;
-                my $polling_max_tries = FixMyStreet->config('O311_POLLING_MAX_TRIES') || 5;
-
-                for (1..$polling_max_tries) {
-                    sleep $polling_interval;
-                    $service_request_id = $self->get_service_request_id_from_token( $token );
-                    last if $service_request_id;
-                }
-                if ($service_request_id) {
+                if (my $service_request_id = $self->poll_service_request_id_from_token($token)) {
                     return $service_request_id;
                 } else {
+                    # The request was accepted, so keep the token for the
+                    # caller to check later rather than sending it again
+                    $self->token($token);
                     my $timeout_warning = "Timed out while trying to fetch service_request_id for token $token"
                         . " and create remote case for FMS problem ID " . $problem->id;
                     $self->error($self->error . $timeout_warning);
@@ -334,6 +329,20 @@ sub get_service_requests {
     my $service_request_xml = $self->_get( $self->endpoints->{requests}, $params || undef );
     my $requests = $self->_get_xml_object( $service_request_xml );
     return $requests->{request};
+}
+
+sub poll_service_request_id_from_token {
+    my ($self, $token) = @_;
+
+    my $polling_interval = FixMyStreet->config('O311_POLLING_INTERVAL') // 2;
+    my $polling_max_tries = FixMyStreet->config('O311_POLLING_MAX_TRIES') || 5;
+
+    for (1..$polling_max_tries) {
+        sleep $polling_interval;
+        my $service_request_id = $self->get_service_request_id_from_token( $token );
+        return $service_request_id if $service_request_id;
+    }
+    return 0;
 }
 
 sub get_service_request_id_from_token {

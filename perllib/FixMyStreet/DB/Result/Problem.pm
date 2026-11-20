@@ -1194,6 +1194,8 @@ sub resend {
     $self->send_method_used(undef);
     $self->send_fail_body_ids([]);
     $self->send_state('unprocessed');
+    # A resend should create a new request, not wait on an earlier one
+    $self->unset_extra_metadata('open311_tokens');
 }
 
 sub as_hashref {

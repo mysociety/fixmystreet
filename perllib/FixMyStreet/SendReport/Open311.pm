@@ -83,8 +83,17 @@ sub send {
         return;
     }
 
+    # If an earlier attempt timed out waiting for the backend to give its
+    # token an ID, check that token again rather than sending a duplicate.
+    # Tokens are stored per body, as a report can be sent to more than one.
+    my $tokens = $row->get_extra_metadata('open311_tokens', {});
+    my $token = $tokens->{$body->id};
+
     my $resp;
-    if (!$skip) {
+    if (!$skip && $token) {
+        $resp = $open311->poll_service_request_id_from_token($token);
+        $open311->error($open311->error . "Still waiting for service_request_id for token $token") unless $resp;
+    } elsif (!$skip) {
         $resp = $open311->send_service_request( $row, $h, $contact->email );
     }
 
@@ -93,9 +102,20 @@ sub send {
 
     if ( $skip || $resp ) {
         $row->unset_extra_metadata('open311_category_override'); # If we were overridden, we don't want to keep that for future
+        delete $tokens->{$body->id};
+        if (%$tokens) {
+            $row->set_extra_metadata(open311_tokens => $tokens);
+        } else {
+            $row->unset_extra_metadata('open311_tokens');
+        }
         $row->update({ external_id => $resp });
         $self->success( 1 );
     } else {
+        if ($open311->token) {
+            $tokens->{$body->id} = $open311->token;
+            $row->set_extra_metadata(open311_tokens => $tokens);
+            $row->update;
+        }
         $self->error( "Failed to send over Open311\n" ) unless $self->error;
         $self->error( $self->error . "\n" . $open311->error );
     }
