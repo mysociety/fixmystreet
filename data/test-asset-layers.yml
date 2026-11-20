@@ -467,7 +467,7 @@ peterborough:
     asset_item: 'tree'
   - template: 'lights'
     class: OpenLayers.Layer.VectorAssetMove
-    stylemap: fixmystreet.assets.peterborough.streetlight_stylemap
+    label_template: "${UNITNO}"
     feature_code: 'UNITNO'
     attributes:
       asset_details: fixmystreet.assets.peterborough.lighting_asset_details

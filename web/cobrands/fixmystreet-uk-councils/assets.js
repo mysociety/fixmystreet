@@ -169,15 +169,6 @@ fixmystreet.assets.banes.rightsofway_stylemap = new OpenLayers.StyleMap({
     })
 });
 
-/* Bexley */
-
-fixmystreet.assets.bexley = {};
-fixmystreet.assets.bexley.streetlight_stylemap = new OpenLayers.StyleMap({
-  'default': fixmystreet.assets.style_default,
-  'hover': fixmystreet.assets.style_default_hover,
-  'select': fixmystreet.assets.construct_named_select_style("${Unit_No}")
-});
-
 /* Brent */
 
 fixmystreet.assets.brent = {};
@@ -406,12 +397,6 @@ fixmystreet.assets.buckinghamshire.prow_road_not_found = function(layer) {
 
     fixmystreet.assets.named_select_action_not_found.call(layer);
 };
-
-fixmystreet.assets.buckinghamshire.streetlight_stylemap = new OpenLayers.StyleMap({
-  'default': fixmystreet.assets.style_default,
-  'hover': fixmystreet.assets.style_default_hover,
-  'select': fixmystreet.assets.construct_named_select_style("${title}")
-});
 
 // The "whole street asset" layer indicates who is responsible for maintaining
 // a road via the 'feature_ty' attribute on features.
@@ -687,11 +672,6 @@ fixmystreet.assets.camden.filter_column = new OpenLayers.Filter.Comparison({
 /* Central Bedfordshire */
 
 fixmystreet.assets.centralbedfordshire = {};
-fixmystreet.assets.centralbedfordshire.streetlight_stylemap = new OpenLayers.StyleMap({
-    'default': fixmystreet.assets.style_default,
-    'hover': fixmystreet.assets.style_default_hover,
-    'select': fixmystreet.assets.construct_named_select_style("${label}")
-});
 
 fixmystreet.assets.centralbedfordshire.style_default_green = new OpenLayers.Style({
     fillColor: "#55BB00",
@@ -764,15 +744,6 @@ fixmystreet.assets.centralbedfordshire.not_found = function(layer) {
         fixmystreet.message_controller.road_not_found(layer);
     }
 };
-
-/* Cheshire East */
-
-fixmystreet.assets.cheshireeast = {};
-fixmystreet.assets.cheshireeast.streetlight_stylemap = new OpenLayers.StyleMap({
-  'default': fixmystreet.assets.style_default,
-  'hover': fixmystreet.assets.style_default_hover,
-  'select': fixmystreet.assets.construct_named_select_style("${asset_id}")
-});
 
 /* East Sussex */
 
@@ -1292,11 +1263,6 @@ fixmystreet.assets.lincolnshire.light_not_found = function() {
 /* Merton */
 
 fixmystreet.assets.merton = {};
-fixmystreet.assets.merton.streetlight_stylemap = new OpenLayers.StyleMap({
-  'default': fixmystreet.assets.style_default,
-  'hover': fixmystreet.assets.style_default_hover,
-  'select': fixmystreet.assets.construct_named_select_style("${UnitNumber}")
-});
 
 fixmystreet.assets.merton.streetlight_asset_found = function(asset) {
     fixmystreet.message_controller.asset_found.call(this, asset);
@@ -1739,12 +1705,6 @@ fixmystreet.assets.peterborough = {};
 fixmystreet.assets.peterborough.trees_relevant = function(options) {
     return options.group === 'Trees' && options.category !== pboro_NEW_TREE_CATEGORY_NAME;
 };
-
-fixmystreet.assets.peterborough.streetlight_stylemap = new OpenLayers.StyleMap({
-  'default': fixmystreet.assets.style_default,
-  'hover': fixmystreet.assets.style_default_hover,
-  'select': fixmystreet.assets.construct_named_select_style("${UNITNO}")
-});
 
 fixmystreet.assets.peterborough.lighting_asset_details = function() {
     var a = this.attributes;
@@ -2196,15 +2156,5 @@ fixmystreet.assets.tfl.construct_bus_station_selected_asset_message = function(a
     var message = ['You have selected', this.fixmystreet.asset_item, '<b>' + name + '</b>'];
     return message.join(' ');
 };
-
-
-/* Thamesmead */
-
-fixmystreet.assets.thamesmead = {};
-fixmystreet.assets.thamesmead.streetlight_stylemap = new OpenLayers.StyleMap({
-  'default': fixmystreet.assets.style_default,
-  'hover': fixmystreet.assets.style_default_hover,
-  'select': fixmystreet.assets.construct_named_select_style("${feature_id}")
-});
 
 })();

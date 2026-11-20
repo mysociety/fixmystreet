@@ -633,6 +633,14 @@ function construct_layer_options(options, protocol) {
         max_resolution = parseFloat(max_resolution);
     }
 
+    if (options.label_template) {
+        options.stylemap = new OpenLayers.StyleMap({
+            'default': fixmystreet.assets.style_default,
+            'hover': fixmystreet.assets.style_default_hover,
+            'select': fixmystreet.assets.construct_named_select_style(options.label_template)
+        });
+    }
+
     var layer_options = {
         fixmystreet: options,
         strategies: [new StrategyClass()],
@@ -947,6 +955,8 @@ max_resolution - either a number, or a hash mapping cobrand to number. This
 stylemap - defaults to the default OpenLayers.StyleMap of yellow dots that turn
     green when hovered, and have a 'selected pin' if selected
     You can use fixmystreet.assets.stylemap_invisible for a transparent layer.
+label_template - if present, will set a stylemap that places a label, using
+    the provided template,above the pin when selected
 srsName - also used here to set the projection of the layer
 filter_key/filter_value - filter the data on a particular attribute and
     value/values (filter_value can be a scalar, array, or function). If
