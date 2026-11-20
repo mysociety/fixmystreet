@@ -1385,6 +1385,9 @@ In all the below, the message matched/used is as follows:
   not found will disable the report form, hide matching messages, and,
   if no stopper message, then show the relevant message ID.
 
+.named_asset_found / .named_asset_not_found - combines the
+  asset_found/asset_not_found above with the named_select_action_found/not_found
+
 .road_found / .road_not_found - used with VectorNearest actions;
   road_found(layer, feature, [criterion], [msg_id]): If an asset is
   selected, hide messages/enable form as above. If no criterion function
@@ -1590,6 +1593,15 @@ fixmystreet.message_controller = (function() {
             } else {
                 responsibility_on(this, 'asset');
             }
+        },
+
+        named_asset_found: function(asset) {
+            fixmystreet.message_controller.asset_found.call(this, asset);
+            fixmystreet.assets.named_select_action_found.call(this, asset);
+        },
+        named_asset_not_found: function() {
+            fixmystreet.message_controller.asset_not_found.call(this);
+            fixmystreet.assets.named_select_action_not_found.call(this);
         },
 
         // A road was found; if some roads should still cause disabling/message,

@@ -493,14 +493,6 @@ fixmystreet.assets.buckinghamshire.streetlight_construct_selected_asset_message 
     extra = extra.replace(/ITEM/g, data.name);
     return 'You have selected ' + data.name + ' <b>' + data.id + '</b>' + extra;
 };
-fixmystreet.assets.buckinghamshire.streetlight_asset_found = function(asset) {
-    fixmystreet.message_controller.asset_found.call(this, asset);
-    fixmystreet.assets.named_select_action_found.call(this, asset);
-};
-fixmystreet.assets.buckinghamshire.streetlight_asset_not_found = function() {
-    fixmystreet.message_controller.asset_not_found.call(this);
-    fixmystreet.assets.named_select_action_not_found.call(this);
-};
 
 // When the auto-asset selection of a layer occurs, the data for inspections
 // may not have loaded. So make sure we poke for a check when the data comes
@@ -1264,15 +1256,6 @@ fixmystreet.assets.lincolnshire.light_not_found = function() {
 
 fixmystreet.assets.merton = {};
 
-fixmystreet.assets.merton.streetlight_asset_found = function(asset) {
-    fixmystreet.message_controller.asset_found.call(this, asset);
-    fixmystreet.assets.named_select_action_found.call(this, asset);
-};
-fixmystreet.assets.merton.streetlight_asset_not_found = function() {
-    fixmystreet.message_controller.asset_not_found.call(this);
-    fixmystreet.assets.named_select_action_not_found.call(this);
-};
-
 fixmystreet.assets.merton.light_selected_message = function(asset) {
     var id = asset.attributes[this.fixmystreet.feature_code] || '';
     var message = [
@@ -1691,8 +1674,7 @@ fixmystreet.assets.oxfordshire.light_asset_found = function(asset) {
 
 fixmystreet.assets.oxfordshire.light_asset_not_found = function() {
     $("#overlapping_features_msg").addClass('hidden');
-    fixmystreet.message_controller.asset_not_found.call(this);
-    fixmystreet.assets.named_select_action_not_found.call(this);
+    fixmystreet.message_controller.named_asset_not_found.call(this);
 };
 
 /* Peterborough */
@@ -1718,14 +1700,6 @@ fixmystreet.assets.peterborough.lighting_relevant = function(options) {
     return  ( options.group === 'Street lighting' &&
               options.category !== pboro_UNKNOWN_LIGHT_CATEGORY_NAME
             ) || options.category === "Lighting enquiry";
-};
-fixmystreet.assets.peterborough.lighting_asset_found = function(asset) {
-    fixmystreet.message_controller.asset_found.call(this, asset);
-    fixmystreet.assets.named_select_action_found.call(this, asset);
-};
-fixmystreet.assets.peterborough.lighting_asset_not_found = function() {
-    fixmystreet.message_controller.asset_not_found.call(this);
-    fixmystreet.assets.named_select_action_not_found.call(this);
 };
 
 fixmystreet.assets.peterborough.bin_asset_details = function() {
@@ -1925,12 +1899,7 @@ fixmystreet.assets.tfl.asset_found = function(asset) {
             $page.removeClass('js-reporting-page--skip');
         }
     }
-    fixmystreet.message_controller.asset_found.call(this, asset);
-    fixmystreet.assets.named_select_action_found.call(this, asset);
-};
-fixmystreet.assets.tfl.asset_not_found = function() {
-    fixmystreet.message_controller.asset_not_found.call(this);
-    fixmystreet.assets.named_select_action_not_found.call(this);
+    fixmystreet.message_controller.named_asset_found.call(this, asset);
 };
 
 fixmystreet.assets.tfl.construct_selected_asset_message = function(asset) {
