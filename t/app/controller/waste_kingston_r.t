@@ -31,6 +31,7 @@ my $kingston = $mech->create_body_ok(2480, 'Kingston Council', $params, {
         wasteworks_config => { request_timeframe_raw => 20, request_timeframe => '20 working days' }
     });
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
+$user->update({ phone => '01234 567890' });
 my $body_user = $mech->create_user_ok('systemuser@example.org');
 
 sub create_contact {
@@ -113,6 +114,7 @@ my ($sent_params, $sent_data);
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'kingston',
     MAPIT_URL => 'http://mapit.uk/',
+    PHONE_COUNTRY => 'GB',
     COBRAND_FEATURES => {
         echo => { kingston => {
             url => 'http://example.org/',
@@ -268,7 +270,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'container-3' => 1, 'container-27' => 1, 'container-12' => 1, 'quantity-12' => 2, 'quantity-46' => 2, 'container-46' => 1, 'quantity-27' => 1 }});
         $mech->submit_form_ok({ with_fields => { 'removal-3' => 0, 'removal-27' => 1, 'removal-12' => 1, 'removal-15' => 1, 'removal-46' => 0 } });
         $mech->submit_form_ok({ with_fields => { 'how_many' => '5more' }});
-        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', phone => $user->phone }});
         $mech->content_contains('Continue to payment');
 
         $mech->content_like(qr/Food waste bin \(outdoor\)<\/dt>\s*<dd[^>]*>\s*2 to deliver\s*<\/dd>/);

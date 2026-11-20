@@ -140,6 +140,8 @@ sub waste_check_staff_payment_permissions {
 
 =item * Garden subscriptions are 5 bins maximum
 
+=item * Even staff must provide an email address for garden subscriptions
+
 =back
 
 =cut
@@ -151,6 +153,8 @@ sub garden_collection_time { '6am' }
 sub waste_garden_allow_cancellation { 'staff' }
 
 sub waste_garden_maximum { 5 }
+
+sub garden_staff_provide_email { 1 }
 
 =head2 garden_subscription_start_days
 
