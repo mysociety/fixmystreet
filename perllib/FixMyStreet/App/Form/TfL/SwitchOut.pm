@@ -783,7 +783,7 @@ sub construct_datetime {
     my ($self, $d, $t) = @_;
     my $field = $self->field($d);
     return unless checkable($field);
-    my $date = $field->value;
+    my $date = $field->value or return;
     my $time = $self->field($t)->value || "23:59"; # If no time, assume is end of day (so someone can restore later same day without a time)
     my ($h, $m) = split /:/, $time;
     return $date->set_hour($h)->set_minute($m);

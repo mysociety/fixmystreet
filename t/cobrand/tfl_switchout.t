@@ -51,6 +51,15 @@ subtest 'Switch out application form submission' => sub {
                 'switch_out_date_1.month' => $start_date->month,
                 'switch_out_date_1.year' => $start_date->year,
                 'switch_out_time_1' => '01:30',
+            }});
+            $mech->content_contains('temporary_signals_used');
+            $mech->back;
+
+            $mech->submit_form_ok({ with_fields => {
+                'switch_out_date_1.day' => $start_date->day,
+                'switch_out_date_1.month' => $start_date->month,
+                'switch_out_date_1.year' => $start_date->year,
+                'switch_out_time_1' => '01:30',
                 'restore_date_1.day' => $start_date->day,
                 'restore_date_1.month' => $start_date->month,
                 'restore_date_1.year' => $start_date->year,
