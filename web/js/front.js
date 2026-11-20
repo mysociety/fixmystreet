@@ -50,12 +50,32 @@ document.getElementById('pc').focus();
                 });
 
                 this.on("success", function(file, xhrResponse) {
-                    if (!xhrResponse.lat || !xhrResponse.lon) {
-                        // Photo without GPS - go to /around
-                        location.href = '/around?photo_id=' + xhrResponse.id;
-                    } else {
+                    var around_url = '/around?photo_id=' + xhrResponse.id;
+                    // was the photo taken in the last 2 minutes?
+                    var justTaken = file.lastModified && Date.now() - file.lastModified < 2 * 60 * 1000;
+                    if (xhrResponse.lat && xhrResponse.lon) {
                         // Photo with GPS - go to /report/new with photo_first flag
                         location.href = '/report/new?lat=' + xhrResponse.lat + '&lon=' + xhrResponse.lon + '&photo_id=' + xhrResponse.id + '&photo_first=1';
+                    } else if (justTaken && 'geolocation' in navigator) {
+                        // if the photo was just taken but it didn't have a
+                        // geotag (e.g. iOS only gives geotags for photos
+                        // selected from photo picker, not taken with camera)
+                        // then ask the device for the current location as it's
+                        // probably still valid for this report.
+                        navigator.geolocation.getCurrentPosition(function(pos) {
+                            var lat = pos.coords.latitude.toFixed(6);
+                            var lon = pos.coords.longitude.toFixed(6);
+                            location.href = '/report/new?lat=' + lat + '&lon=' + lon + '&photo_id=' + xhrResponse.id + '&photo_first=1';
+                        }, function() {
+                            // geolocation failed, just go to /around
+                            location.href = around_url;
+                        }, {
+                            enableHighAccuracy: true,
+                            timeout: 4000
+                        });
+                    } else {
+                        // Photo without GPS - go to /around
+                        location.href = around_url;
                     }
                 });
             }
