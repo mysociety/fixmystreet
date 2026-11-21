@@ -187,6 +187,7 @@ sub sanitize {
         h1 => 1,
         h2 => 1,
         h3 => 1,
+        'lite-youtube' => { videoid => 1 },
     );
     my $scrubber = HTML::Scrubber->new(
         rules => [
