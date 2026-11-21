@@ -467,7 +467,7 @@ peterborough:
     asset_item: 'tree'
   - template: 'lights'
     class: OpenLayers.Layer.VectorAssetMove
-    stylemap: fixmystreet.assets.peterborough.streetlight_stylemap
+    label_template: "${UNITNO}"
     feature_code: 'UNITNO'
     attributes:
       asset_details: fixmystreet.assets.peterborough.lighting_asset_details
@@ -475,8 +475,8 @@ peterborough:
     asset_category: 'Lighting enquiry'
     relevant: fixmystreet.assets.peterborough.lighting_relevant
     actions:
-      asset_found: fixmystreet.assets.peterborough.lighting_asset_found
-      asset_not_found: fixmystreet.assets.peterborough.lighting_asset_not_found
+      asset_found: fixmystreet.message_controller.named_asset_found
+      asset_not_found: fixmystreet.message_controller.named_asset_not_found
 
   - asset_category: ['General fly tipping', 'Hazardous fly tipping' ]
     template: 'pcc_property_combined'
@@ -599,7 +599,7 @@ tfl:
       body: 'TfL'
       actions:
         asset_found: fixmystreet.assets.tfl.asset_found
-        asset_not_found: fixmystreet.assets.tfl.asset_not_found
+        asset_not_found: fixmystreet.message_controller.named_asset_not_found
   - template: 'assets'
     wfs_feature: "trafficsignals"
     asset_id_field: 'Site'
