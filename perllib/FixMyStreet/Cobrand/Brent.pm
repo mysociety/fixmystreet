@@ -573,13 +573,21 @@ sub dashboard_export_problems_add_columns {
             $staff_role = join(',', @{$userroles->{$by} || []}) if $by;
         }
 
+        my $address = $csv->_extra_metadata($report, 'property_address');
+        if (!$address) {
+            if ($csv->dbi) {
+                $address = FixMyStreet::Geocode::Address->new($report->{geocode})->parts->{street};
+            } else {
+                $address = $report->nearest_address_parts->{street};
+            }
+        }
+
         my $data = {
             extra_details => $csv->_extra_metadata($report, 'detailed_information') || '',
+            street_name => $address,
             $csv->dbi ? (
-                street_name => FixMyStreet::Geocode::Address->new($report->{geocode})->parts->{street},
                 image_included => $report->{photo} ? 'Y' : 'N',
             ) : (
-                street_name => $report->nearest_address_parts->{street},
                 name => $report->name || '',
                 user_email => $report->user->email || '',
                 image_included => $report->photo ? 'Y' : 'N',

@@ -2033,11 +2033,12 @@ subtest 'Dashboard CSV extra columns' => sub {
         {name => 'service_id', value => 1},
         {name => 'usrn', value => 1234},
     );
+    $flexible_problem->set_extra_metadata(property_address => '123 Example Street');
     $flexible_problem->uprn(4321);
     $flexible_problem->external_id('121');
     $flexible_problem->update;
     $mech->get_ok('/dashboard?export=1');
-    ok $mech->content_like(qr/Flexible problem.*?,1234,4321,121,Y,,,,,,Deliver,"Blue rubbish sack",Missing,,1/, "Bin request values added");
+    ok $mech->content_like(qr/Flexible problem.*?,"123 Example Street",.*?,1234,4321,121,Y,,,,,,Deliver,"Blue rubbish sack",Missing,,1/, "Bin request values added");
     $flexible_problem->category('Fly-tipping');
     $flexible_problem->set_extra_fields(
         {name => 'Did_you_see_the_Flytip_take_place?_', value => 1},
@@ -2053,15 +2054,15 @@ subtest 'Dashboard CSV extra columns' => sub {
     );
     $flexible_problem->update;
     $mech->get_ok('/dashboard?export=1');
-    ok $mech->content_like(qr/Flexible problem.*?,,,"Test Park","Test User",.*?,,4321,121,Y,,,,,,,,,,,/, "Location name added") or diag $mech->content;
+    ok $mech->content_like(qr/Flexible problem.*?,,"123 Example Street","Test Park","Test User",.*?,,4321,121,Y,,,,,,,,,,,/, "Location name added") or diag $mech->content;
     $flexible_problem->set_extra_metadata('item_1' => 'Sofa', 'item_2' => 'Wardrobe');
     $flexible_problem->update;
     $mech->get_ok('/dashboard?export=1');
-    ok $mech->content_like(qr/Flexible problem.*?,,,"Test Park","Test User",.*?,,4321,121,Y,,,,,,,,,,,,Sofa,Wardrobe,,,,,,,/, "Bulky items added") or diag $mech->content;
+    ok $mech->content_like(qr/Flexible problem.*?,,"123 Example Street","Test Park","Test User",.*?,,4321,121,Y,,,,,,,,,,,,Sofa,Wardrobe,,,,,,,/, "Bulky items added") or diag $mech->content;
     $flexible_problem->set_extra_metadata('contributed_by' => $staff_user->id);
     $flexible_problem->update;
     $mech->get_ok('/dashboard?export=1');
-    ok $mech->content_like(qr/Flexible problem.*?,,,"Test Park","Test User",.*?,,4321,121,Y,,,,,,,,,,,Role,Sofa,Wardrobe,,,,,,,/, "Role added") or diag $mech->content;
+    ok $mech->content_like(qr/Flexible problem.*?,,"123 Example Street","Test Park","Test User",.*?,,4321,121,Y,,,,,,,,,,,Role,Sofa,Wardrobe,,,,,,,/, "Role added") or diag $mech->content;
   }
 };
 
