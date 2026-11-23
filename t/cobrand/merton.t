@@ -31,6 +31,7 @@ for my $contact ( @cats ) {
     $mech->create_contact_ok(body_id => $merton->id, category => $contact, email => "\L$contact\@merton.example.org",
         extra => { anonymous_allowed => 1 });
 }
+$mech->create_contact_ok(body_id => $merton->id, category => 'Trees', email => 'Ezytreev-Trees');
 
 my $hackney = $mech->create_body_ok(2508, 'Hackney Council', { cobrand => 'hackney' });
 for my $contact ( @cats ) {
@@ -135,7 +136,7 @@ FixMyStreet::override_config {
 
         my $json = $mech->get_ok_json('/report/new/ajax?latitude=51.400975&longitude=-0.19655');
         my $categories = [sort keys %{$json->{by_category}}];
-        is_deeply $categories, ['Litter', 'Other', 'Potholes', 'Traffic lights'], "Merton doesn't have any River Piers categories";
+        is_deeply $categories, ['Litter', 'Other', 'Potholes', 'Traffic lights', 'Trees'], "Merton doesn't have any River Piers categories";
     };
 };
 
@@ -316,7 +317,6 @@ FixMyStreet::override_config {
     };
 
     subtest 'Ezytreev categories send extra attributes but not contributed_by' => sub {
-        $mech->create_contact_ok(body_id => $merton->id, category => 'Trees', email => 'Ezytreev-Trees');
         foreach my $test (
             { category => 'Trees', ezytreev => 1 },
             { category => 'Litter', ezytreev => 0 },
@@ -394,6 +394,27 @@ subtest 'Does not send updates on now-email categories' => sub {
         whensent => \'current_timestamp',
         send_method_used => 'Open311',
         external_id => 'EXT',
+    });
+    my $comment = $mech->create_comment_for_problem($p, $p->user, 'Name', 'Text', 't', 'confirmed');
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'merton',
+    }, sub {
+        my $updates = Open311::PostServiceRequestUpdates->new();
+        $updates->send;
+    };
+
+    $comment->discard_changes;
+    is $comment->send_fail_count, 0, "comment sending not attempted";
+    is $comment->send_state, 'skipped', "skipped sending comment";
+};
+
+subtest 'Does not send updates on Ezytreev categories' => sub {
+    my ($p) = $mech->create_problems_for_body(1, $merton->id, 'Title', {
+        whensent => \'current_timestamp',
+        send_method_used => 'Open311',
+        external_id => 'ezytreev-123',
+        category => 'Trees'
     });
     my $comment = $mech->create_comment_for_problem($p, $p->user, 'Name', 'Text', 't', 'confirmed');
 
