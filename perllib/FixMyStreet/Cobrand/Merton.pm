@@ -153,17 +153,19 @@ sub open311_munge_update_params {
 
 =head2 should_skip_sending_update
 
-Do not try and send updates on Open311 reports that are now sent by email.
+Do not try and send updates on Open311 reports that are now sent by email,
+or on Ezytreev reports as the integration is not configured to accept updates.
 
 =cut
 
 sub should_skip_sending_update {
     my ($self, $update) = @_;
 
-    my $code = $update->problem->contact;
-    return 1 unless $code; # No category found
-    $code = $code->email;
+    my $contact = $update->problem->contact;
+    return 1 unless $contact; # No category found
+    my $code = $contact->email;
     return 1 if $code =~ /@/; # Is now an email category
+    return 1 if $code =~ /^Ezytreev/; # Is an Ezytreev report.
     return 0;
 }
 
