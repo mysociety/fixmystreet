@@ -89,13 +89,15 @@ sub open311_update_missing_data {
 }
 
 sub open311_extra_data_include {
-    my ($self, $row, $h) = @_;
+    my ($self, $row, $h, $contact) = @_;
 
     my $open311_only = [];
 
+    my $ezytreev = $contact->email =~ /^Ezytreev/;
+
     my $contributed_by = $row->get_extra_metadata('contributed_by');
     my $contributing_user = FixMyStreet::DB->resultset('User')->find({ id => $contributed_by });
-    if ($contributing_user) {
+    if ($contributing_user && !$ezytreev) {
         push @$open311_only, {
             name => 'contributed_by',
             value => $contributing_user->email,
@@ -126,6 +128,21 @@ sub open311_extra_data_include {
                 $row->update_extra_field({ name => $_, value => $var });
             }
         }
+    }
+
+    if ($ezytreev) {
+        push @$open311_only, {
+            name => 'title',
+            value => $row->title,
+        };
+        push @$open311_only, {
+            name => 'description',
+            value => $row->detail,
+        };
+        push @$open311_only, {
+            name => 'report_url',
+            value => $h->{url},
+        };
     }
 
     return $open311_only;

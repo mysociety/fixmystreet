@@ -1,3 +1,4 @@
+use CGI::Simple;
 use Test::MockModule;
 use FixMyStreet::TestMech;
 use HTML::Selector::Element qw(find);
@@ -312,6 +313,31 @@ FixMyStreet::override_config {
 
         ok $report->whensent, 'report was sent';
         is $report->get_extra_field_value('usrn'), 'USRN1234', 'correct USRN recorded in extra data';
+    };
+
+    subtest 'Ezytreev categories send extra attributes but not contributed_by' => sub {
+        $mech->create_contact_ok(body_id => $merton->id, category => 'Trees', email => 'Ezytreev-Trees');
+        foreach my $test (
+            { category => 'Trees', ezytreev => 1 },
+            { category => 'Litter', ezytreev => 0 },
+        ) {
+            my ($report) = $mech->create_problems_for_body(1, $merton->id, 'Test report', {
+                category => $test->{category}, cobrand => 'merton',
+                latitude => 51.400975, longitude => -0.19655, areas => '2500',
+                extra => { contributed_by => $counciluser->id },
+            });
+            FixMyStreet::Script::Reports::send();
+            my $c = CGI::Simple->new(Open311->test_req_used->content);
+            if ($test->{ezytreev}) {
+                is $c->param('attribute[title]'), $report->title, 'title included';
+                is $c->param('attribute[description]'), $report->detail, 'description included';
+                like $c->param('attribute[report_url]'), qr{/report/@{[ $report->id ]}$}, 'report_url included';
+                is $c->param('attribute[contributed_by]'), undef, 'contributed_by not included';
+            } else {
+                is $c->param('attribute[title]'), undef, 'title not included';
+                is $c->param('attribute[contributed_by]'), $counciluser->email, 'contributed_by included';
+            }
+        }
     };
 };
 
