@@ -132,22 +132,6 @@ sub new_report_detail_field_hint {
 
 =cut
 
-sub new_report_title_field_hint {
-    "e.g. whether it’s outside a specific property number, building or shop name, the lighting or lamp post column number it’s near, what roads are adjoining, or any other key information our inspectors can use to identify the location"
-}
-
-=item * Custom hint for the detail field for new reports.
-
-=cut
-
-sub new_report_detail_field_hint {
-    "Please give details of size of the issue, date noticed / how long, etc."
-}
-
-=item * Potholes & road/footpath/kerbstone damage categories only at present
-
-=cut
-
 my @categories = (
     'Potholes',
     'Road Damage',
@@ -166,12 +150,7 @@ sub problems_restriction {
     my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
     $rs = $rs->search({
         "$table.created" => { '>=', $date },
-        "$table.category" => [
-            'Potholes',
-            'Road Damage',
-            'Footpath Damage',
-            'Kerbstone Damage',
-        ],
+        "$table.category" => \@categories,
     });
     return $rs;
 }
@@ -179,12 +158,7 @@ sub problems_restriction {
 sub categories_restriction {
     my ($self, $rs) = @_;
     return $rs->search( {
-        'me.category' => [
-            'Potholes',
-            'Road Damage',
-            'Footpath Damage',
-            'Kerbstone Damage',
-        ],
+        'me.category' => \@categories,
     } );
 }
 
