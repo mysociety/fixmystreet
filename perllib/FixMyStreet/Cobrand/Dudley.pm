@@ -132,6 +132,30 @@ sub new_report_detail_field_hint {
 
 =cut
 
+sub new_report_title_field_hint {
+    "e.g. whether it’s outside a specific property number, building or shop name, the lighting or lamp post column number it’s near, what roads are adjoining, or any other key information our inspectors can use to identify the location"
+}
+
+=item * Custom hint for the detail field for new reports.
+
+=cut
+
+sub new_report_detail_field_hint {
+    "Please give details of size of the issue, date noticed / how long, etc."
+}
+
+=item * Potholes & road/footpath/kerbstone damage categories only at present
+
+=cut
+
+my @categories = (
+    'Potholes',
+    'Road Damage',
+    'Pavement/Footpath Damage',
+    'Kerbstone Damage',
+);
+my %categories = map { $_ => 1 } @categories;
+
 sub problems_restriction {
     my ($self, $rs) = @_;
     return $rs if FixMyStreet->staging_flag('skip_checks');
@@ -167,12 +191,12 @@ sub categories_restriction {
 sub munge_around_filter_category_list {
     my ($self) = @_;
     my $cats = $self->{c}->stash->{category_groups}[0]{categories};
-    @$cats = grep { $_->category eq 'Potholes' } @$cats;
+    @$cats = grep { $categories{$_->category} } @$cats;
 }
 
 sub munge_reports_category_list {
     my ($self, $categories) = @_;
-    @$categories = grep { $_->category eq 'Potholes' } @$categories;
+    @$categories = grep { $categories{$_->category} } @$categories;
 }
 
 =item * Fetch the nearest USRN if we don't have it already

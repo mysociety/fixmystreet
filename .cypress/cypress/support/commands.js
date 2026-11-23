@@ -12,10 +12,13 @@ Cypress.Commands.add('nextPageReporting', function() {
     cy.get('.js-reporting-page--active:visible .js-reporting-page--next').click();
 });
 
-Cypress.Commands.add('uploadPhoto', function(filename, selector) {
+Cypress.Commands.add('uploadPhoto', function(filename, selector, lastModified) {
     var dropEvent = { dataTransfer: { files: [] } };
     cy.fixture('../fixtures/' + filename).then(function(picture) {
-      const blob = Cypress.Blob.base64StringToBlob(picture, 'image/jpeg');
+      let blob = Cypress.Blob.base64StringToBlob(picture, 'image/jpeg');
+      if (lastModified) {
+          blob = new File([blob], filename, { type: 'image/jpeg', lastModified: lastModified });
+      }
       dropEvent.dataTransfer.files.push(blob);
     });
     cy.get(selector).trigger('drop', dropEvent);
