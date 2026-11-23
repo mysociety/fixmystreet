@@ -1812,9 +1812,7 @@ sub waste_dd_redirect_url {
         lastname => $last,
         emailaddress => $p->user->email,
         telephonenumber => $p->user->phone,
-        # TODO Unknown which is correct at present
-        amount => $amount,
-        payamount => $amount,
+        payAmount => $amount,
         houseno => $property->{first_part},
         streetname => $property->{street},
         area => $property->{town},

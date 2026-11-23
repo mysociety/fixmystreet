@@ -533,7 +533,7 @@ FixMyStreet::override_config {
         check_extra_data_pre_confirm($new_report, new_bin_type => 1, new_quantity => 1, payment_method => 'direct_debit');
 
         is $mech2->res->previous->code, 302, 'payments issues a redirect';
-        is $mech2->res->previous->header('Location'), "http://example.org/faq?query=1&redirectlink=%2Fen&cancelRedirectLink=%2Fen&consentMessage=yes&debitnameparameter=WasteWorks&firstname=Test&lastname=McTest&emailaddress=test%40example.net&telephonenumber&amount=50.00&payamount=50.00&houseno=&streetname=&area&postcode&additionalref=BRT-$id-1000000002", "redirects to payment gateway";
+        is $mech2->res->previous->header('Location'), "http://example.org/faq?query=1&redirectlink=%2Fen&cancelRedirectLink=%2Fen&consentMessage=yes&debitnameparameter=WasteWorks&firstname=Test&lastname=McTest&emailaddress=test%40example.net&telephonenumber&payAmount=50.00&houseno=&streetname=&area&postcode&additionalref=BRT-$id-1000000002", "redirects to payment gateway";
 
         $mech->get_ok('/waste/12345');
         $mech->content_contains('pending garden subscription');
