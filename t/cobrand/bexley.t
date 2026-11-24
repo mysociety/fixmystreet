@@ -251,6 +251,17 @@ FixMyStreet::override_config {
         is $c->param('service_code'), 'StreetLightingLAMP', 'Report resent';
     };
 
+    $mech->create_problems_for_body(1, $body->id, 'Test', {
+        category => 'Garden Subscription', cobrand => 'bexley',
+        latitude => 51.408484, longitude => 0.074653, areas => '2494',
+        extra => { _fields => [
+            { name => 'current_containers', value => 1 },
+            { name => 'new_containers', value => 1 },
+            { name => 'total_containers', value => 2 },
+            { name => 'reason', value => 'Cancel reason' }, # not normally with containers
+        ] }
+    });
+
     subtest 'extra CSV columns present, and questionnaire answers work' => sub {
         my $fly = FixMyStreet::DB->resultset("Problem")->search({ category => 'Flytipping' })->single;
         $fly->uprn('10000001');
@@ -269,8 +280,10 @@ FixMyStreet::override_config {
         $mech->content_contains(',Category,Subcategory,');
         $mech->content_contains('"Danger things","Something dangerous"');
         $mech->content_contains(',"User Email",UPRN,"Payment method"');
+        $mech->content_contains(',"Garden cancellation reason","Current containers",');
         $mech->content_contains(',' . $fly->user->email . ',10000001,credit_card');
         $mech->content_like(qr/Flytipping,,[^,]*,2019-10-14T17:00:00,,2019-10-14T18:00:00,,"fixed - user"/);
+        $mech->content_like(qr/,"Garden Subscription",.*?,"Cancel reason",1,1,2/);
 
         FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
 
@@ -278,8 +291,10 @@ FixMyStreet::override_config {
         $mech->content_contains(',Category,Subcategory,');
         $mech->content_contains('"Danger things","Something dangerous"');
         $mech->content_contains(',"User Email",UPRN,"Payment method"');
+        $mech->content_contains(',"Garden cancellation reason","Current containers",');
         $mech->content_contains(',' . $fly->user->email . ',10000001,credit_card');
         $mech->content_like(qr/Flytipping,,[^,]*,2019-10-14T17:00:00,,2019-10-14T18:00:00,,"fixed - user"/);
+        $mech->content_like(qr/,"Garden Subscription",.*?,"Cancel reason",1,1,2/);
     };
 
     subtest 'testing special Open311 behaviour', sub {
