@@ -47,7 +47,7 @@ foreach my $cobrand_info (@cobrands) {
         print "done.\n" if $verbose;
     };
     if ($@) {
-        warn "Error generating stats for $moniker: $@\n";
+        die "Error generating stats for $moniker: $@\n";
     }
 }
 
