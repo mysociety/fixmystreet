@@ -127,60 +127,33 @@ sub garden_waste_two_bins {
     return [ $refuse_bin->[0], $garden_bins->[0] ];
 }
 
-sub garden_waste_only_refuse_sacks {
+sub garden_waste_service_with_sacks {
     return [ {
-        Id => 1001,
-        ServiceId => 941,
-        ServiceName => 'Refuse collection',
-        Data => { ExtensibleDatum => [ {
-            DatatypeName => 'Container Details',
-            ChildData => { ExtensibleDatum => [ {
-                DatatypeName => 'Container Quantity',
-                Value => 1,
-            }, {
-                DatatypeName => 'Container Type',
-                Value => 1,
-            } ] },
-        } ] },
-        ServiceTasks => { ServiceTask => {
-            Id => 400,
-            TaskTypeId => 4395,
-            ServiceTaskSchedules => { ServiceTaskSchedule => [ {
-                StartDate => { DateTime => '2020-01-01T00:00:00Z' },
-                EndDate => { DateTime => '2050-01-01T00:00:00Z' },
-                NextInstance => {
-                    CurrentScheduledDate => { DateTime => '2020-06-02T00:00:00Z' },
-                    OriginalScheduledDate => { DateTime => '2020-06-01T00:00:00Z' },
-                },
-                LastInstance => {
-                    OriginalScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
-                    CurrentScheduledDate => { DateTime => '2020-05-18T00:00:00Z' },
-                    Ref => { Value => { anyType => [ 456, 789 ] } },
-                },
-            } ] },
-        } },
-    }, {
-        # Eligibility for garden waste, but no task
         Id => 1002,
         ServiceId => 953,
         ServiceName => 'Garden waste collection',
-        ServiceTasks => ''
-    } ];
+        ServiceTasks => { ServiceTask => {
+            Id => 405,
+            TaskTypeId => 4410,
+            ServiceTaskLines => { ServiceTaskLine => [ {
+                ScheduledAssetQuantity => 1,
+                AssetTypeId => 1910,
+                StartDate => { DateTime => '2020-03-30T00:00:00Z' },
+                EndDate => { DateTime => '2021-03-30T00:00:00Z' },
+            } ] },
+        } } } ];
 }
 
-# Have a subscription with both refuse and garden sacks in it;
-# Currently these are in separate Echos but tests have the same mock,
-# and this will be like this when they are in the same Echo
 sub garden_waste_with_sacks {
     my $garden_sacks = _garden_waste_service_units(1, 'sack');
-    my $refuse_sacks = garden_waste_only_refuse_sacks();
-    return [ $refuse_sacks->[0], $garden_sacks->[0] ];
+    return $garden_sacks;
 }
 
-sub garden_waste_bin_with_refuse_sacks {
-    my $garden_sacks = _garden_waste_service_units(1, 'bin');
-    my $refuse_sacks = garden_waste_only_refuse_sacks();
-    return [ $refuse_sacks->[0], $garden_sacks->[0] ];
+# Have a subscription with both garden bin and sacks in it
+sub garden_waste_bin_with_sacks {
+    my $garden_bin = _garden_waste_service_units(1, 'bin');
+    my $garden_sacks = garden_waste_service_with_sacks();
+    return [ $garden_sacks->[0], $garden_bin->[0] ];
 }
 
 
@@ -752,7 +725,7 @@ FixMyStreet::override_config {
         extra => { '@>' => encode_json({ "_fields" => [ { name => "property_id", value => '12345' } ] }) },
     })->order_by('-id')->first;
 
-    $echo->mock('GetServiceUnitsForObject', \&garden_waste_only_refuse_sacks);
+    $echo->mock('GetServiceUnitsForObject', \&garden_waste_service_with_sacks);
 
     subtest 'sacks, subscribing to a bin' => sub {
         $mech->log_out_ok;
@@ -853,7 +826,7 @@ FixMyStreet::override_config {
         like $body, qr/Total:.*?41.00/;
     };
 
-    $echo->mock('GetServiceUnitsForObject', \&garden_waste_bin_with_refuse_sacks);
+    $echo->mock('GetServiceUnitsForObject', \&garden_waste_bin_with_sacks);
 
     subtest 'refuse sacks, garden bin, still asks for choice' => sub {
         $mech->get_ok('/waste/12345/garden_renew');
@@ -1182,7 +1155,7 @@ FixMyStreet::override_config {
         restore_time;
     };
 
-    $echo->mock('GetServiceUnitsForObject', \&garden_waste_only_refuse_sacks);
+    $echo->mock('GetServiceUnitsForObject', \&garden_waste_service_with_sacks);
 
     subtest 'sacks, subscription price changes at fixed time' => sub {
         set_fixed_time('2023-01-05T23:59:59Z');
