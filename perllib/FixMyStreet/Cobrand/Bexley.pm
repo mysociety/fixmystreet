@@ -483,6 +483,9 @@ sub dashboard_export_problems_add_columns {
         uprn => 'UPRN',
         payment_method => 'Payment method',
         garden_cancel_reason => 'Garden cancellation reason',
+        current_containers => 'Current containers',
+        new_containers => 'New containers',
+        total_containers => 'Total containers',
     );
 
     $csv->objects_attrs({
@@ -497,6 +500,9 @@ sub dashboard_export_problems_add_columns {
         return {
             payment_method => $payment_method,
             garden_cancel_reason => $csv->_extra_field($report, 'reason') || '',
+            current_containers => $csv->_extra_field($report, 'current_containers'),
+            new_containers => $csv->_extra_field($report, 'new_containers'),
+            total_containers => $csv->_extra_field($report, 'total_containers'),
             $csv->dbi ? (
                 # user_email already covered
             ) : (

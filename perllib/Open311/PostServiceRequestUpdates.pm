@@ -233,6 +233,13 @@ sub process_update {
 
     $cobrand->call_hook(open311_post_send_updates => $comment, $id);
 
+    if (my $skip = $cobrand->call_hook(open311_post_send_skip_update => $comment, $id, $o)) {
+        $comment->send_state('skipped');
+        $comment->update;
+        $self->log($comment, 'Skipping');
+        return;
+    }
+
     if ( $id ) {
         $comment->update( {
             external_id => $id,

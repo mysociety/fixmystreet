@@ -146,7 +146,7 @@ $existing_missed_collection_report2->add_to_comments(
     {
         external_id   => $existing_missed_collection_report2->external_id,
         problem_state => $existing_missed_collection_report2->state,
-        text          => 'Preexisting comment',
+        text          => 'Preexisting <strong>bold</strong> comment',
         user          => $comment_user,
     }
 );
@@ -226,7 +226,7 @@ FixMyStreet::override_config {
             'A green recycling box collection has already been reported as missed');
         $mech->content_contains('Reported on: Sunday 31 March 2024');
         $mech->content_contains('Will be completed by: Tuesday 2 April 2024');
-        $mech->content_contains('Action: Preexisting comment');
+        $mech->content_contains('Preexisting <strong>bold</strong> comment');
 
         subtest 'service_sort sorts correctly' => sub {
             my $cobrand = FixMyStreet::Cobrand::Bexley->new;
@@ -314,7 +314,7 @@ FixMyStreet::override_config {
                         open              => 1,
                         reported          => DateTime->new(year => 2024, month => 3, day => 31, hour => 1),
                         will_be_completed => DateTime->new(year => 2024, month => 4, day => 2, hour => 1),
-                        latest_comment    => 'Preexisting comment',
+                        latest_comment    => 'Preexisting <strong>bold</strong> comment',
                     },
                     report_locked_out => 0,
                     report_locked_out_reason => '',

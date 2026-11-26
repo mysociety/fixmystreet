@@ -77,6 +77,16 @@ a#geolocate_link {
     h1 {
       font-size: 1.75rem;
     }
+
+    p {
+      margin-bottom: 0.5em;
+    }
+    ul {
+      margin-bottom: 0;
+    }
+    li:last-child {
+      margin-bottom: 0;
+    }
   }
 }
 

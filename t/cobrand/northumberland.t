@@ -6,6 +6,7 @@ use JSON::MaybeXS;
 use Text::CSV;
 use Test::MockModule;
 use File::Temp 'tempdir';
+use Open311::PostServiceRequestUpdates;
 
 # disable info logs for this test run
 FixMyStreet::App->log->disable('info');
@@ -13,7 +14,9 @@ END { FixMyStreet::App->log->enable('info'); }
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $body = $mech->create_body_ok(2248, 'Northumberland County Council', { cobrand => 'northumberland' });
+my $body = $mech->create_body_ok(2248, 'Northumberland County Council', {
+    send_method => 'Open311', api_key => 'key', endpoint => '', jurisdiction => 'fms',
+    send_comments => 1, cobrand => 'northumberland' });
 $mech->create_contact_ok(body_id => $body->id, category => 'Flytipping', email => 'foo@northumberland', group => 'Staff Only - Out Of Hours');
 $mech->create_contact_ok(body_id => $body->id, category => 'Trees', email => 'foo@northumberland', extra => {
     _fields => [ { code => "video", description => '<lite-youtube videoid="ABC">Alt</lite-youtube>', variable => 'false' } ]
@@ -208,6 +211,18 @@ FixMyStreet::override_config {
         phone_verified => 1,
     );
     $mech->log_in_ok( $superuser->email );
+
+    subtest 'skipping updates on entries removed from Alloy' => sub {
+        my $updates = Open311::PostServiceRequestUpdates->new();
+        $updates->send;
+
+        my ($problem) = $mech->create_problems_for_body(1, $body->id, 'Test', { external_id => 123, whensent => \'current_timestamp', send_method_used => 'Open311' });
+        my $comment = $mech->create_comment_for_problem($problem, $problem->user, 'Name', 'Text', 0, 'confirmed', 'confirmed');
+        Open311->_inject_response('servicerequestupdates.xml', '<?xml version="1.0" encoding="utf-8"?><errors><error><code>500</code><description>{"category":"ItemNotFound","errorCode":"E1524600811","errorData":{"requestTime":100},"httpStatusCode":404,"message":"Item with id 123456789012345678901234 not found"} at /data/vhost/open311-adapter.mysociety.org/open311-adapter-2026-11-23T09-31-42/web/../perllib/Integrations/AlloyV2.pm line 78.</description></error></errors>', 500);
+        $updates->send;
+        $comment->discard_changes;
+        is $comment->send_state, 'skipped';
+    };
 
     for my $host ( 'northumberland', 'fixmystreet' ) {
         ok $mech->host($host), "change host to $host";

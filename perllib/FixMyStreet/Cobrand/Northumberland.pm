@@ -287,9 +287,21 @@ sub should_skip_sending_update {
     return $self->is_defect($p);
 }
 
-=back
+=item * Mark updates as skipped if the item is no longer present at the back end
 
 =cut
+
+sub open311_post_send_skip_update {
+    my ($self, $comment, $external_id, $open311) = @_;
+
+    if (!$external_id && $open311->error =~ /Item with id .*? not found/) {
+        return 1;
+    }
+
+    return 0;
+}
+
+=back
 
 =head2 record_update_extra_fields
 
