@@ -30,6 +30,32 @@ describe('Clicking the map', function() {
         });
     });
 
+    it('displays password error correctly on report form', function() {
+        cy.get('#map_box').click(200, 200);
+        cy.wait('@report-ajax');
+        cy.pickCategory('Flyposting');
+        cy.nextPageReporting();
+        cy.nextPageReporting(); // Ignore duplicate message
+        cy.nextPageReporting(); // No photo
+        cy.get('[name=title]').type('Title');
+        cy.get('[name=detail]').type('Detail');
+        cy.nextPageReporting();
+        cy.get('.js-new-report-show-sign-in').click();
+        cy.get('[name=username]').type('user@example.org');
+        cy.get('[name=password_sign_in]').type('badpassword');
+        cy.get('[name=password_sign_in]').parents('form').submit();
+        cy.get('#form-error-password-js').should('be.visible');
+
+        cy.get('[name=password_sign_in]').type('password');
+        cy.get('[name=password_sign_in]').parents('form').submit();
+
+        // Form will ask for user to double-check details after sign-in
+        cy.get('.form-success').should('be.visible');
+        cy.get('.form-success').should('contain', 'please check and confirm your details are accurate');
+        cy.get('[name=submit_register]').first().click();
+        cy.get('body').should('contain', 'Thank you for reporting this issue');
+    });
+
     it('map pins toggle okay', function() {
         cy.get('.map-pins-toggle').click();
         cy.get('.map-pins-toggle').should('contain', 'Show pins');

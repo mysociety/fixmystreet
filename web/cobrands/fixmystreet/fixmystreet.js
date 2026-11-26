@@ -1609,7 +1609,10 @@ $.extend(fixmystreet.set_up, {
     // XXX Is this still needed, should it be better done server side? Will need to spot multiple pages too
     var err = $('.form-error');
     if (err.length) {
-        $('.js-sign-in-password-btn').trigger('click');
+        // Make sure report form is on 'user' page, so field with error is
+        // visible
+        fixmystreet.pageController.toPage('user');
+
         if (err.closest(".js-new-report-sign-in-shown").length) {
             $('.js-new-report-user-shown').removeClass('hidden-js');
             $('.js-new-report-user-hidden').addClass('hidden-js');
