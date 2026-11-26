@@ -989,7 +989,7 @@ $.extend(fixmystreet.set_up, {
 
         function disable_on_empty() {
             // If there are no items found, give a message and disable the Continue button
-            if (items.length && items.length === document.querySelectorAll(".hidden-category-filter").length) {
+            if ($('#category-filter').is(':visible') && items.length && items.length === document.querySelectorAll(".hidden-category-filter").length) {
                 $('#js-top-message').html('<p class="form-error" id="filter-category-error">Please try another search or delete your search and choose from the categories</p>');
                 $('.js-reporting-page--next').prop("disabled",true);
                 category_row.style.paddingBottom = null;
@@ -1609,7 +1609,10 @@ $.extend(fixmystreet.set_up, {
     // XXX Is this still needed, should it be better done server side? Will need to spot multiple pages too
     var err = $('.form-error');
     if (err.length) {
-        $('.js-sign-in-password-btn').trigger('click');
+        // Make sure report form is on 'user' page, so field with error is
+        // visible
+        fixmystreet.pageController.toPage('user');
+
         if (err.closest(".js-new-report-sign-in-shown").length) {
             $('.js-new-report-user-shown').removeClass('hidden-js');
             $('.js-new-report-user-hidden').addClass('hidden-js');
