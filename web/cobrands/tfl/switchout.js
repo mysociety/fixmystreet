@@ -99,7 +99,11 @@ $(function() {
 
     var layer = fixmystreet.map.getLayersByName("TfL Traffic Lights")[0];
     // Ignore OTU entries
-    layer.fixmystreet.http_options.params.where = "ABBREVIATED_ID NOT LIKE '__/5__'";
+    layer.fixmystreet.http_options.params.where = [
+        "ABBREVIATED_ID NOT LIKE '__/5__'",
+        "CONTROLLER_DESC != 'Parallel Stage Stream Site'",
+        "CONTROLLER_DESC NOT LIKE '%2nd Half%'",
+    ].join(" AND ");
     layer.events.register('featureselected', layer, light_selected);
     layer.events.register('featureunselected', layer, light_unselected);
     layer.setVisibility(true);
