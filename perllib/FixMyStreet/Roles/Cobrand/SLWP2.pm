@@ -102,6 +102,7 @@ my %SERVICE_IDS = (
         fas_paper => 1076, # 4402
         domestic_food => 1084, # 4389
         communal_food => 1087, # 4403
+        fas_food => 1085,
         garden => 1082, # 4410
         bulky => 1089,
         small_items => 1080,
@@ -273,7 +274,7 @@ sub waste_relevant_serviceunits {
 
     # Merton have asked for a specific ordering
     if ($self->moniker eq 'merton') {
-        my @order = qw(garden domestic_food communal_food domestic_mixed communal_mixed fas_mixed
+        my @order = qw(garden domestic_food communal_food fas_food domestic_mixed communal_mixed fas_mixed
             domestic_paper communal_paper fas_paper domestic_refuse communal_refuse fas_refuse);
         my $c = 0;
         my %order = map { $service_ids->{$_} => $c++ } @order;
