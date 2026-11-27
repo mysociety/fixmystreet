@@ -368,7 +368,7 @@ sub waste_service_containers {
     # FAS cannot request containers - FD-5401
     return if ($self->moniker eq 'kingston' || $self->moniker eq 'sutton') && $self->{c}->stash->{fas_property};
 
-    my $waste_containers_no_request = $self->_waste_containers_no_request;
+    my $waste_containers_no_request = $self->waste_containers_no_request;
 
     my $unit = $service->{Service};
     my $service_name = $self->service_name_override($service);

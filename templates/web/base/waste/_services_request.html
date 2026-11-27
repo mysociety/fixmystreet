@@ -5,7 +5,9 @@
 
   [% IF c.cobrand.waste_request_single_radio_list %]
     <input type="hidden" name="container-choice" value="[% unit.request_containers.0 %]">
-  [% ELSE %]
+  [% ELSIF c.cobrand.moniker == 'merton' AND c.cobrand.waste_containers_no_request.${unit.request_containers.0};
+    # We do not want to allow black bag selection as it is disabled so could not then turn it off
+  ELSE %]
     <input type="hidden" name="container-[% unit.request_containers.0 %]" value="1">
   [% END %]
 
