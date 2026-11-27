@@ -133,12 +133,6 @@ sub garden_due_date {
     return $end_date->subtract(days => 30);
 };
 
-=item * Even staff must provide an email address for garden subscriptions
-
-=cut
-
-sub garden_staff_provide_email { 1 }
-
 =item * Do not offer people to set a password
 
 =cut

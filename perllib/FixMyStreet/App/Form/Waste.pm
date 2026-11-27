@@ -48,7 +48,7 @@ sub validate {
     my $staff_provide_email = (ref $self) =~ /Garden/ && $c->cobrand->call_hook('garden_staff_provide_email');
 
     $email->add_error('Please provide an email address')
-        unless $email->is_inactive || $email->value || ($is_staff_user && !$staff_provide_email);
+        unless $email->is_inactive || $email->value || ($is_staff_user && !$staff_provide_email) || $cobrand eq 'kingston';
 
     $phone->add_error('Please provide a phone number')
         if $cobrand eq 'peterborough' && (ref $self) =~ /Bulky/ && !$phone->is_inactive && !$phone->value && !$is_staff_user;

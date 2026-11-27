@@ -1076,7 +1076,7 @@ sub process_user : Private {
 
     my $parsed = FixMyStreet::SMS->parse_username($params{username});
     my $type = $parsed->{type} || 'email';
-    $type = 'email' unless $c->cobrand->sms_authentication || $c->stash->{contributing_as_another_user};
+    $type = 'email' unless $c->cobrand->sms_authentication || $c->stash->{contributing_as_another_user} || $c->cobrand->moniker eq 'kingston';
     $report->user( $c->model('DB::User')->find_or_new( { $type => $parsed->{username} } ) );
 
     $c->stash->{phone_may_be_mobile} = $type eq 'phone' && $parsed->{may_be_mobile};
@@ -1493,7 +1493,7 @@ sub check_for_errors : Private {
     }
 
     # if we're contributing as someone else then allow landline numbers
-    if ( $field_errors{phone} && $c->stash->{contributing_as_another_user} && !$c->stash->{phone_may_be_mobile}) {
+    if ( $field_errors{phone} && ($c->stash->{contributing_as_another_user} || $c->cobrand->moniker eq 'kingston') && !$c->stash->{phone_may_be_mobile}) {
         delete $field_errors{username};
         delete $field_errors{phone};
     }
