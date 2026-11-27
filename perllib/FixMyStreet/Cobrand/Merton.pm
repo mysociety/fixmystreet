@@ -89,13 +89,15 @@ sub open311_update_missing_data {
 }
 
 sub open311_extra_data_include {
-    my ($self, $row, $h) = @_;
+    my ($self, $row, $h, $contact) = @_;
 
     my $open311_only = [];
 
+    my $ezytreev = $contact->email =~ /^Ezytreev/;
+
     my $contributed_by = $row->get_extra_metadata('contributed_by');
     my $contributing_user = FixMyStreet::DB->resultset('User')->find({ id => $contributed_by });
-    if ($contributing_user) {
+    if ($contributing_user && !$ezytreev) {
         push @$open311_only, {
             name => 'contributed_by',
             value => $contributing_user->email,
@@ -128,6 +130,21 @@ sub open311_extra_data_include {
         }
     }
 
+    if ($ezytreev) {
+        push @$open311_only, {
+            name => 'title',
+            value => $row->title,
+        };
+        push @$open311_only, {
+            name => 'description',
+            value => $row->detail,
+        };
+        push @$open311_only, {
+            name => 'report_url',
+            value => $h->{url},
+        };
+    }
+
     return $open311_only;
 };
 
@@ -136,17 +153,19 @@ sub open311_munge_update_params {
 
 =head2 should_skip_sending_update
 
-Do not try and send updates on Open311 reports that are now sent by email.
+Do not try and send updates on Open311 reports that are now sent by email,
+or on Ezytreev reports as the integration is not configured to accept updates.
 
 =cut
 
 sub should_skip_sending_update {
     my ($self, $update) = @_;
 
-    my $code = $update->problem->contact;
-    return 1 unless $code; # No category found
-    $code = $code->email;
+    my $contact = $update->problem->contact;
+    return 1 unless $contact; # No category found
+    my $code = $contact->email;
     return 1 if $code =~ /@/; # Is now an email category
+    return 1 if $code =~ /^Ezytreev/; # Is an Ezytreev report.
     return 0;
 }
 

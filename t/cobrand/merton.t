@@ -1,3 +1,4 @@
+use CGI::Simple;
 use Test::MockModule;
 use FixMyStreet::TestMech;
 use HTML::Selector::Element qw(find);
@@ -30,6 +31,7 @@ for my $contact ( @cats ) {
     $mech->create_contact_ok(body_id => $merton->id, category => $contact, email => "\L$contact\@merton.example.org",
         extra => { anonymous_allowed => 1 });
 }
+$mech->create_contact_ok(body_id => $merton->id, category => 'Trees', email => 'Ezytreev-Trees');
 
 my $hackney = $mech->create_body_ok(2508, 'Hackney Council', { cobrand => 'hackney' });
 for my $contact ( @cats ) {
@@ -134,7 +136,7 @@ FixMyStreet::override_config {
 
         my $json = $mech->get_ok_json('/report/new/ajax?latitude=51.400975&longitude=-0.19655');
         my $categories = [sort keys %{$json->{by_category}}];
-        is_deeply $categories, ['Litter', 'Other', 'Potholes', 'Traffic lights'], "Merton doesn't have any River Piers categories";
+        is_deeply $categories, ['Litter', 'Other', 'Potholes', 'Traffic lights', 'Trees'], "Merton doesn't have any River Piers categories";
     };
 };
 
@@ -313,6 +315,30 @@ FixMyStreet::override_config {
         ok $report->whensent, 'report was sent';
         is $report->get_extra_field_value('usrn'), 'USRN1234', 'correct USRN recorded in extra data';
     };
+
+    subtest 'Ezytreev categories send extra attributes but not contributed_by' => sub {
+        foreach my $test (
+            { category => 'Trees', ezytreev => 1 },
+            { category => 'Litter', ezytreev => 0 },
+        ) {
+            my ($report) = $mech->create_problems_for_body(1, $merton->id, 'Test report', {
+                category => $test->{category}, cobrand => 'merton',
+                latitude => 51.400975, longitude => -0.19655, areas => '2500',
+                extra => { contributed_by => $counciluser->id },
+            });
+            FixMyStreet::Script::Reports::send();
+            my $c = CGI::Simple->new(Open311->test_req_used->content);
+            if ($test->{ezytreev}) {
+                is $c->param('attribute[title]'), $report->title, 'title included';
+                is $c->param('attribute[description]'), $report->detail, 'description included';
+                like $c->param('attribute[report_url]'), qr{/report/@{[ $report->id ]}$}, 'report_url included';
+                is $c->param('attribute[contributed_by]'), undef, 'contributed_by not included';
+            } else {
+                is $c->param('attribute[title]'), undef, 'title not included';
+                is $c->param('attribute[contributed_by]'), $counciluser->email, 'contributed_by included';
+            }
+        }
+    };
 };
 
 subtest "hides duplicate updates from endpoint" => sub {
@@ -368,6 +394,27 @@ subtest 'Does not send updates on now-email categories' => sub {
         whensent => \'current_timestamp',
         send_method_used => 'Open311',
         external_id => 'EXT',
+    });
+    my $comment = $mech->create_comment_for_problem($p, $p->user, 'Name', 'Text', 't', 'confirmed');
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'merton',
+    }, sub {
+        my $updates = Open311::PostServiceRequestUpdates->new();
+        $updates->send;
+    };
+
+    $comment->discard_changes;
+    is $comment->send_fail_count, 0, "comment sending not attempted";
+    is $comment->send_state, 'skipped', "skipped sending comment";
+};
+
+subtest 'Does not send updates on Ezytreev categories' => sub {
+    my ($p) = $mech->create_problems_for_body(1, $merton->id, 'Title', {
+        whensent => \'current_timestamp',
+        send_method_used => 'Open311',
+        external_id => 'ezytreev-123',
+        category => 'Trees'
     });
     my $comment = $mech->create_comment_for_problem($p, $p->user, 'Name', 'Text', 't', 'confirmed');
 
