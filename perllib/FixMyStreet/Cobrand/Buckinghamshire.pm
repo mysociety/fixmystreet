@@ -443,12 +443,10 @@ sub filter_report_description {
 
 sub default_map_zoom { 4 }
 
-sub _dashboard_export_add_columns {
+sub dashboard_export_updates_add_columns {
     my ($self, $csv) = @_;
 
     $csv->add_csv_columns( staff_user => 'Staff User' );
-
-    return if $csv->dbi; # staff_user included by default
 
     my $user_lookup = $self->csv_staff_users;
 
@@ -461,12 +459,34 @@ sub _dashboard_export_add_columns {
     });
 }
 
-sub dashboard_export_updates_add_columns {
-    shift->_dashboard_export_add_columns(@_);
-}
-
 sub dashboard_export_problems_add_columns {
-    shift->_dashboard_export_add_columns(@_);
+    my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        staff_user => 'Staff User',
+        alerts_count => "Subscribers",
+    );
+
+    my ($alerts_lookup, $user_lookup);
+    if (!$csv->dbi) {
+        $alerts_lookup = $self->csv_update_alerts;
+        $user_lookup = $self->csv_staff_users;
+    }
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+        if ($csv->dbi) {
+            return {
+                alerts_count => ($report->{alerts_count} || 0),
+            };
+        } else {
+            my $staff_user = $self->csv_staff_user_lookup($report->get_extra_metadata('contributed_by'), $user_lookup);
+            return {
+                alerts_count => ($alerts_lookup->{$report->id} || 0),
+                staff_user => $staff_user,
+            };
+        }
+    });
 }
 
 sub dashboard_extra_bodies {
