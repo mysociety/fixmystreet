@@ -6,6 +6,9 @@ use File::Temp 'tempdir';
 use Test::MockTime qw(:all);
 use Test::MockModule;
 use Test::Output;
+use FixMyStreet::Script::CommentsOnReports;
+use MIME::Base64;
+use DateTime;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -2116,6 +2119,47 @@ subtest 'Dashboard CSV pre-generation' => sub {
   }
 };
 
+subtest 'Email csv file of comments on reports' => sub {
+    my ($problem, $problem2) = $mech->create_problems_for_body(2, $brent->id, 'Title', {
+        areas => "2488", category => 'Graffiti', cobrand => 'brent', user => $user1
+    });
+    my $id1 = $problem->id;
+    my $id2 = $problem2->id;
+    my $date;
+    my ($comment) = $mech->create_comment_for_problem($problem, $user1, 'User Name', 'Never mind', 'f', 'confirmed');
+    $comment->discard_changes;
+
+    like &_trigger_sending_report, qr/^URL,Category,"Current report state","Commenter name","Comment Confirmed","Comment text"$/, "Comment confirmed today doesn't show";
+
+    $date = &_csv_reporting_update_date(1, $comment);
+    like &_trigger_sending_report, qr/^URL,Category,"Current report state","Commenter name","Comment Confirmed","Comment text"
+https:\/\/report.brent.gov.uk\/report\/$id1,Graffiti,confirmed,"User Name",$date,"Never mind"$/, "Comment confirmed yesterday shows";
+
+    $date = &_csv_reporting_update_date(8, $comment);
+    like &_trigger_sending_report, qr/^URL,Category,"Current report state","Commenter name","Comment Confirmed","Comment text"$/, "Comment confirmed 8 days ago doesn't show";
+
+    $date = &_csv_reporting_update_date(7, $comment);
+    like &_trigger_sending_report, qr/^URL,Category,"Current report state","Commenter name","Comment Confirmed","Comment text"
+https:\/\/report.brent.gov.uk\/report\/$id1,Graffiti,confirmed,"User Name",$date,"Never mind"$/, "Comment confirmed 7 days ago shows";
+
+    $comment->set_extra_metadata(is_body_user => $comment_user->id);
+    $comment->update;
+    like &_trigger_sending_report, qr/^URL,Category,"Current report state","Commenter name","Comment Confirmed","Comment text"$/, "Body user comment doesn't show";
+
+    $date = &_csv_reporting_update_date(1, $comment);
+    my ($comment2) = $mech->create_comment_for_problem($problem, $user1, 'User Name', 'Comment 2', 'f', 'confirmed', undef, { confirmed => $date });
+    my ($comment3) = $mech->create_comment_for_problem($problem, $user1, 'User Name', 'Comment 3', 'f', 'confirmed', undef, { confirmed => $date });
+    my ($comment4) = $mech->create_comment_for_problem($problem2, $user1, 'User Name', 'Comment 4', 'f', 'confirmed', undef, { confirmed => $date });
+    my ($comment5) = $mech->create_comment_for_problem($problem2, $user1, 'User Name', 'Comment 5', 'f', 'confirmed', undef, { confirmed => $date });
+    $comment2->discard_changes; $comment3->discard_changes; $comment4->discard_changes; $comment5->discard_changes;
+
+    like &_trigger_sending_report, qr/^URL,Category,"Current report state","Commenter name","Comment Confirmed","Comment text"
+https:\/\/report.brent.gov.uk\/report\/$id1,Graffiti,confirmed,"User Name",$date,"Comment 2"
+https:\/\/report.brent.gov.uk\/report\/$id1,Graffiti,confirmed,"User Name",$date,"Comment 3"
+https:\/\/report.brent.gov.uk\/report\/$id2,Graffiti,confirmed,"User Name",$date,"Comment 4"
+https:\/\/report.brent.gov.uk\/report\/$id2,Graffiti,confirmed,"User Name",$date,"Comment 5"$/, 'Multiple reports have multiple comments, still no body user comment';
+};
+
 sub get_report_from_redirect {
     my $url = shift;
 
@@ -2143,6 +2187,35 @@ sub shared_echo_mocks {
     $e->mock('GetEventsForObject', sub { [] });
     $e->mock('GetTasks', sub { [] });
     return $e;
+}
+
+sub _trigger_sending_report {
+    my $dir = tempdir( CLEANUP => 1 );
+    $mech->clear_emails_ok;
+    FixMyStreet::Script::CommentsOnReports::send({
+       dir => $dir,
+       file => 'test.csv',
+       council_name => 'Brent Council',
+       send_to => 'test@localhost.com',
+       send_from => 'me@example.com',
+       subject => 'Your Report',
+       message_body => "Report attached to email"
+    });
+    my $email = $mech->get_email;
+    is $email->header('Subject'), 'Your Report', 'Subject set correctly';
+    is $email->header('From'), 'me@example.com', 'Sets the from';
+    is $email->header('To'), 'test@localhost.com', 'Sets the to';
+    my @parts = $email->subparts;
+    return decode_base64($parts[1]->body_raw);
+};
+
+sub _csv_reporting_update_date {
+    my ($subtraction, $comment) = @_;
+
+    my $date = DateTime->today->subtract( days => $subtraction );
+    $comment->confirmed($date);
+    $comment->update;
+    return $date;
 }
 
 done_testing();
