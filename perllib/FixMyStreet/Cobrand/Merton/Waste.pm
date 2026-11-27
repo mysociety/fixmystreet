@@ -23,6 +23,7 @@ my %SERVICE_IDS = (
     fas_paper => 1076, # 4402
     domestic_food => 1084, # 4389
     communal_food => 1087, # 4403
+    fas_food => 1085,
     garden => 1082, # 4410
     schedule2_refuse => 1069, # 4409
     schedule2_mixed => 1073, # 4398
@@ -152,6 +153,7 @@ sub service_name_override {
         $SERVICE_IDS{communal_paper} => 'Paper and card',
         $SERVICE_IDS{communal_mixed} => 'Mixed recycling',
         $SERVICE_IDS{fas_paper} => 'Paper and card',
+        $SERVICE_IDS{fas_food} => 'Food waste',
         $SERVICE_IDS{deliver_bags} => '',
     );
 
@@ -227,6 +229,7 @@ sub image_for_unit {
         $SERVICE_IDS{garden} => svg_container_bin('Brown wheelie bin', 'wheelie', '#8B5E3D'),
         $SERVICE_IDS{communal_food} => svg_container_bin('Brown wheelie bin', 'wheelie', '#8B5E3D'),
         $SERVICE_IDS{communal_mixed} => svg_container_bin('Green communal bin', 'communal', '#41B28A'),
+        $SERVICE_IDS{fas_food} => { src => "$base/caddy-brown-small", alt => 'Small brown caddy' },
         bulky => "$base/bulky-black",
     };
     return $images->{$container} || $images->{$service_id};
