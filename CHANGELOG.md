@@ -11,6 +11,7 @@
         - Add photo first reporting flow. #15
         - Disable anonymous reporting button when submitted.
         - Add WEBP support to photo uploads.
+        - Fix the “Report a problem here” link on zoomed-in area maps. #6221
     - Accessibility improvements:
         - Improved accessibility of small drawer. #5354
         - Added skip report tools to Around page. #5354

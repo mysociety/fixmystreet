@@ -1922,6 +1922,9 @@ fixmystreet.back_to_reports_list = function(e, report_list_url, map_state, set_m
 
 fixmystreet.update_report_a_problem_btn = function() {
     var zoom = fixmystreet.map.getZoom();
+    // Web Mercator zoom 13 is about 19 metres per pixel. Other tile grids
+    // reach a similar resolution at a different zoom level.
+    var max_report_resolution = 20;
     var center = fixmystreet.map.getCenterWGS84();
     var new_report_url = '/report/new?longitude=' + center.lon.toFixed(6) + '&latitude=' + center.lat.toFixed(6);
 
@@ -1940,7 +1943,7 @@ fixmystreet.update_report_a_problem_btn = function() {
         text = translation_strings.report_a_problem_btn.here;
         href = new_report_url;
 
-    } else if (fixmystreet.page === 'reports' && zoom > 12) {
+    } else if (fixmystreet.page === 'reports' && fixmystreet.map.getResolution() < max_report_resolution) {
         text = translation_strings.report_a_problem_btn.here;
         href = new_report_url;
     }
