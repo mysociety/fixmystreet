@@ -200,7 +200,7 @@ sub waste_containers {
     };
 }
 
-sub _waste_containers_no_request { return {
+sub waste_containers_no_request { return {
     $CONTAINERS{refuse_black_bag} => 1,
 } }
 
@@ -381,7 +381,7 @@ sub waste_munge_request_form_fields {
         next unless $key =~ /^container-(\d+)/;
         my $id = $1;
         # Staff see all containers, but Echo will not accept black sack requests
-        if ($self->_waste_containers_no_request->{$id}) {
+        if ($self->waste_containers_no_request->{$id}) {
             $value->{disabled} = 1;
             $value->{option_hint} = 'Not available - The resident should buy their own black bags.';
             next;

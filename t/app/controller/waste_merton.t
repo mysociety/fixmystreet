@@ -592,8 +592,10 @@ FixMyStreet::override_config {
     subtest 'Staff cannot request black sacks' => sub {
         $e->mock('GetServiceUnitsForObject', sub { $above_shop_data });
         $mech->log_in_ok($staff_user->email);
-        $mech->get_ok('/waste/12345/request');
+        $mech->get_ok('/waste/12345');
+        $mech->submit_form_ok({ form_number => 2 }); # First is request mixed, second request refuse
         $mech->content_like(qr/name="container-11"[^>]*disabled/);
+        $mech->content_unlike(qr/name="container-11"[^>]*checked/);
         $mech->content_contains('Not available - The resident should buy their own black bags.');
         $mech->log_out_ok;
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });

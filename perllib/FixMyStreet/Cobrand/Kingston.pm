@@ -259,7 +259,7 @@ sub service_name_override {
     return $service_name_override{$service->{ServiceId}} // '';
 }
 
-sub _waste_containers_no_request { return {
+sub waste_containers_no_request { return {
     $CONTAINERS{refuse_bag} => 1,
     $CONTAINERS{recycling_blue_bag} => 1,
     $CONTAINERS{paper_bag} => 1,
