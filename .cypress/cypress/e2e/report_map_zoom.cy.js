@@ -13,20 +13,23 @@ describe('Reporting from the area map', function() {
             });
             map.addLayer(layer);
             map.setBaseLayer(layer);
-            map.zoomTo(0, null, false);
+            map.setCenter(map.getCenter(), 0);
         });
         cy.get('.report-a-problem-btn').first().should('have.attr', 'href', '/');
 
         cy.window().then(function(win) {
             var map = win.fixmystreet.map;
-            map.zoomTo(1, null, false);
+            map.setCenter(map.getCenter(), 1);
             var center = map.getCenterWGS84();
             var href = '/report/new?longitude=' + center.lon.toFixed(6) + '&latitude=' + center.lat.toFixed(6);
             cy.get('.report-a-problem-btn').first().should('have.text', 'Report a problem here')
                 .and('have.attr', 'href', href);
         });
 
-        cy.window().then(function(win) { win.fixmystreet.map.zoomTo(0, null, false); });
+        cy.window().then(function(win) {
+            var map = win.fixmystreet.map;
+            map.setCenter(map.getCenter(), 0);
+        });
         cy.get('.report-a-problem-btn').first().should('have.attr', 'href', '/');
     });
 });
