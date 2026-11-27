@@ -198,7 +198,7 @@ FixMyStreet::override_config {
 
         my @rows = $mech->content_as_csv;
         is scalar @rows, 2, '1 (header) + 1 (report) = 2 lines';
-        is scalar @{$rows[0]}, 22, '22 columns present';
+        is scalar @{$rows[0]}, 23, '23 columns present';
 
         is_deeply $rows[0],
             [
@@ -206,12 +206,13 @@ FixMyStreet::override_config {
                 'Created', 'Confirmed', 'Acknowledged', 'Fixed', 'Closed',
                 'Status', 'Latitude', 'Longitude', 'Query', 'Ward',
                 'Easting', 'Northing', 'Report URL', 'Device Type', 'Site Used',
-                'Reported As', 'Staff User',
+                'Reported As', 'Staff User', 'Photo',
             ],
             'Column headers look correct';
 
         is $rows[1]->[0], $report->id;
         is $rows[1]->[21], $counciluser->email;
+        is $rows[1]->[22], 'N';
     };
 };
 

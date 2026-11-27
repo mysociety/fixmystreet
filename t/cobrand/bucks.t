@@ -383,6 +383,12 @@ for my $test (
     };
 }
 
+FixMyStreet::DB->resultset("Alert")->create({
+    parameter => $report->id,
+    alert_type => 'new_updates',
+    user => $publicuser,
+})->confirm;
+
 subtest 'extra CSV columns are present' => sub {
     $mech->log_in_ok( $counciluser->email );
 
@@ -390,7 +396,7 @@ subtest 'extra CSV columns are present' => sub {
 
     my @rows = $mech->content_as_csv;
     is scalar @rows, 6, '1 (header) + 4 (reports) = 6 lines';
-    is scalar @{$rows[0]}, 22, '22 columns present';
+    is scalar @{$rows[0]}, 23, '23 columns present';
 
     is_deeply $rows[0],
         [
@@ -398,13 +404,14 @@ subtest 'extra CSV columns are present' => sub {
             'Created', 'Confirmed', 'Acknowledged', 'Fixed', 'Closed',
             'Status', 'Latitude', 'Longitude', 'Query', 'Ward',
             'Easting', 'Northing', 'Report URL', 'Device Type', 'Site Used',
-            'Reported As', 'Staff User',
+            'Reported As', 'Staff User', 'Subscribers',
         ],
         'Column headers look correct';
 
     is $rows[1]->[21], '', 'Staff User is empty if not made on behalf of another user';
     is $rows[2]->[21], $counciluser->email, 'Staff User is correct if made on behalf of another user';
     is $rows[3]->[21], '', 'Staff User is empty if not made on behalf of another user';
+    is $rows[5]->[22], '2', 'Reporter alert and another alert';
 
     $mech->create_comment_for_problem($report, $counciluser, 'Staff User', 'Some update text', 'f', 'confirmed', undef, {
         extra => { contributed_as => 'body', contributed_by => $counciluser->id }});

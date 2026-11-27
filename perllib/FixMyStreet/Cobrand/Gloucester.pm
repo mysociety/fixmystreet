@@ -304,18 +304,27 @@ sub dashboard_export_problems_add_columns {
 
     $csv->add_csv_columns(
         staff_user => 'Staff User',
+        photo => "Photo",
     );
 
-    return if $csv->dbi; # Already covered
-
-    my $user_lookup = $self->csv_staff_users;
+    my $user_lookup;
+    if (!$csv->dbi) {
+        $user_lookup = $self->csv_staff_users;
+    }
 
     $csv->csv_extra_data(sub {
         my $report = shift;
-        my $by = $report->get_extra_metadata('contributed_by');
-        return {
-            staff_user => $self->csv_staff_user_lookup($by, $user_lookup),
-        };
+        if ($csv->dbi) {
+            return {
+                photo => $report->{photo} ? 'Y' : 'N',
+            };
+        } else {
+            my $by = $report->get_extra_metadata('contributed_by');
+            return {
+                staff_user => $self->csv_staff_user_lookup($by, $user_lookup),
+                photo => $report->photo ? 'Y' : 'N',
+            };
+        }
     });
 }
 
