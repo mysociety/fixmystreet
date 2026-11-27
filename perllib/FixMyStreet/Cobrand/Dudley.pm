@@ -137,6 +137,7 @@ my @categories = (
     'Road Damage',
     'Pavement/Footpath Damage',
     'Kerbstone Damage',
+    'Grit Bin Refill Request',
 );
 my %categories = map { $_ => 1 } @categories;
 
