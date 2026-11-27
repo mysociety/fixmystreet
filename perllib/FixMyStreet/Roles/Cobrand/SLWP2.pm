@@ -319,22 +319,43 @@ sub waste_extra_service_info_all_results {
 
     $property->{has_no_services} = scalar @$result == 0;
     $self->{c}->stash->{assisted_collection} = _is_assisted($result, $service_ids);
-}
-
-sub waste_extra_service_info {
-    my ($self, $property, @rows) = @_;
-    my $service_ids = $SERVICE_IDS{$self->moniker};
 
     if ($self->moniker eq 'merton') {
         # Merton lets everyone pick between bins and sacks
         $self->{c}->stash->{slwp_garden_sacks} = 1;
     }
 
+    # Check for latest garden task line to see if most recent subscription was for sacks
+    foreach (@$result) {
+        my $service_id = $_->{ServiceId};
+        next unless $service_id == $service_ids->{garden};
+        my $servicetasks = Integrations::Echo::force_arrayref($_->{ServiceTasks}, 'ServiceTask');
+        my ($latest, $garden_sacks);
+        foreach (@$servicetasks) {
+            my $data = Integrations::Echo::force_arrayref($_->{ServiceTaskLines}, 'ServiceTaskLine');
+            foreach (@$data) {
+                my $start_date = construct_bin_date($_->{StartDate})->strftime("%F");
+                my $end_date = construct_bin_date($_->{EndDate})->strftime("%F");
+                next unless $_->{AssetTypeId} == $GARDEN_CONTAINER_IDS{sack};
+                next unless !$latest || $end_date gt $latest;
+                $latest = $end_date;
+                $garden_sacks = 1;
+            }
+        }
+        if ($garden_sacks) {
+            $self->{c}->stash->{slwp_garden_sacks} = 1;
+        }
+    }
+
+}
+
+sub waste_extra_service_info {
+    my ($self, $property, @rows) = @_;
+    my $service_ids = $SERVICE_IDS{$self->moniker};
+
     foreach (@rows) {
         my $service_id = $_->{ServiceId};
-        if ($service_id == $service_ids->{fas_refuse}) {
-            $self->{c}->stash->{slwp_garden_sacks} = 1;
-        } elsif ($service_id == $service_ids->{domestic_refuse}) {
+        if ($service_id == $service_ids->{domestic_refuse}) {
             $property->{domestic_refuse_bin} = 1;
         }
         $self->{c}->stash->{communal_property} = 1 if $service_id == $service_ids->{communal_refuse} || $service_id == $service_ids->{communal_food} || $service_id == $service_ids->{communal_paper} || $service_id == $service_ids->{communal_mixed};
