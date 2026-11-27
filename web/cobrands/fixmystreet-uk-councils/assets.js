@@ -1494,6 +1494,35 @@ fixmystreet.assets.merton.park_not_found = function(layer) {
     }
 };
 
+fixmystreet.assets.merton.tree_asset_found = function(asset) {
+    fixmystreet.message_controller.asset_found.call(this, asset);
+    fixmystreet.assets.named_select_action_found.call(this, asset);
+};
+
+fixmystreet.assets.merton.tree_asset_not_found = function() {
+    fixmystreet.message_controller.asset_not_found.call(this);
+    fixmystreet.assets.named_select_action_not_found.call(this);
+};
+
+// We have a single message construction function for both
+// the groups and points layers because asset_found and asset_not_found
+// fire for all visible layers when any feature is selected so,
+// even if we had separate functions for each layer, both would fire
+// and the last one would always win.
+fixmystreet.assets.merton.tree_selected_message = function(asset) {
+    var site_name = asset.attributes.SITENAME;
+    if (!site_name) {
+        return;
+    }
+    var descriptor = 'a tree';
+    if (asset.layer.fixmystreet.wfs_feature == "tree_groups") {
+        descriptor = 'trees';
+    }
+    return [
+        'You have selected', descriptor, 'in', site_name + '.'
+    ].join(' ');
+};
+
 /* Northamptonshire */
 
 fixmystreet.assets.northamptonshire = {};
