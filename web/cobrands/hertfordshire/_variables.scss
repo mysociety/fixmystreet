@@ -1,0 +1,203 @@
+/* This styling is based on https://www.hertfordshire.gov.uk/home.aspx
+*/
+
+/* COLOURS */
+$cobrand_teal: #0B5258; // Primary and Hover for blue button
+$cobrand_purple: #9d3f97; // Buttons
+$cobrand_purple_600: #692a65; // Button Hover
+$cobrand_blue: #01619b; // Buttons
+$cobrand_yellow: #fd0; // Focus
+$cobrand_black: #333; // Body font and heading
+$cobrand_red: #dc3545; // Here: https://hcsportal.hertfordshire.gov.uk/web/portal/pages/pubsoc#hBeforeyoustart
+$cobrand_white: #fff;
+$cobrand_grey: #efefe9; // Body bg colour
+$cobrand_fuccia: #ea5197; // Site message left border
+
+$primary: $cobrand_teal;
+$yellow: $cobrand_yellow;
+$error_color: $cobrand_red;
+
+$primary_b: $cobrand_black;
+$primary_text: $cobrand_white;
+
+$container-max-width: 70rem;
+
+/* FRONTPAGE */
+$base_bg: $cobrand_grey;
+$base_fg: $cobrand_black;
+$front_stats_bg: $cobrand_white;
+$layout_front_stats_color: $primary;
+$col_click_map: $primary;
+
+/* FRONTMAIN MOBILE */
+$front-main-color: $primary_b;
+// $front-main-background: none !default;
+// $postcodeform-background: $primary !default;
+// $postcodeform-color: $primary_text !default;
+// $front-main-h2-color: transparentize($front-main-color, 0.1) !default;
+// $form-hint-color: transparentize($postcodeform-color, 0.2) !default;
+
+/*  FRONTMAIN DESKTOP */ 
+$front-main-color-desktop: $primary_b;
+$front-main-background-desktop: no-repeat center/cover url("/cobrands/hertfordshire/images/hertfordshire-bg.jpg");
+$front-main-container-background-desktop: #fff;
+// $postcodeform-background-desktop: transparent !default;
+$postcodeform-color-desktop: $primary_b;
+// $form-hint-color-desktop: transparentize($postcodeform-color-desktop, 0.2) !default;
+// $front-main-h2-color-desktop: transparentize($front-main-color-desktop, 0.1) !default;
+// $postcodeform-max-width: 55% !default;
+// $content-background-desktop: #fff !default;
+
+// $dropzone-frontpage-white-background-mobile: true !default;
+// $dropzone-frontpage-border-radius: 4px !default;
+// $dropzone-frontpage-color: $primary_b !default;
+
+// $report-forms-wrapper-flex-column-gap: 7rem !default;
+// $report-forms-wrapper-flex-row-gap: 2rem !default;
+// $report-forms-wrapper-margin-top: 1rem !default;
+
+// $dropzone-frontpage-white-background-desktop: false !default;
+
+/* LINKS */
+$primary_link_color: #005EA5; // Example here: https://www.hertfordshire.gov.uk/about-the-council/legal/terms-and-conditions/terms-and-conditions.aspx
+$primary_link_hover_color: $primary_link_color;
+$primary_link_decoration: underline;
+$primary_link_hover_decoration: underline;
+
+$link-color: $primary_link_color;
+$link-hover-color: $primary_link_color;
+$link-visited-color: $primary;
+$link-text-decoration: underline;
+$link-hover-text-decoration: underline;
+
+/* BUTTONS */
+// hertfordshire has other button styles, like blue. But for now I'll just use the puple one, because is more present in their frontpage. However in their website the blue button is probably the most used one.
+$button-padding-top: 0.9375rem;
+$button-padding-bottom: 0.9375rem;
+$button-padding-left: 1.25rem;
+$button-padding-right: 1.25rem;
+$button-border-radius: 0;
+
+// Usage 
+/*
+a#geolocate_link {
+    @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
+    @include focus-state;
+}
+*/
+$button-primary-bg-top: $cobrand_blue;
+$button-primary-bg-bottom: $cobrand_blue;
+$button-primary-border: $cobrand_blue;
+$button-primary-text: $primary_text;
+$button-primary-hover-bg-bottom: $cobrand_teal;
+$button-primary-hover-bg-top: $cobrand_teal;
+$button-primary-hover-border: $cobrand_teal;
+$button-primary-hover-text: $primary_text;
+
+$geolocation-link: $cobrand_purple;
+$geolocation-link-border: $cobrand_purple;
+$geolocation-link-background-color: #fff;
+
+/* FONTS */
+
+$heading-font: "Open Sans", Helvetica, Arial, sans-serif;
+$body-font: "Open Sans", Helvetica, Arial, sans-serif;
+$meta-font: "Open Sans", Helvetica, Arial, sans-serif;
+
+/* NAVBAR */
+
+$nav_colour: $cobrand_white;
+$nav_background_colour: $primary;
+$nav_hover_background_colour: $cobrand_white;
+
+$mappage-header-height: 5rem;
+$header-top-border: false;
+// $header-top-border-width: 0.25em;
+// $header-top-border: $header-top-border-width solid $primary;
+$menu-image: "menu-white";
+// $close-menu-image: "close-#{$menu-image}";
+
+
+/* DROPZONE */
+// $dropzone-border-colour: $primary !default;
+// $dropzone-button-text: $primary_text !default;
+// $dropzone-button-background: $primary !default;
+// $dropzone-button-border: $primary !default;
+
+// $dropzone-link-color--awakened: $link-hover-color !default;
+// $dropzone-border-color--awakened: $dropzone-link-color--awakened !default;
+// $dropzone-border-color--full: #bf002a !default;
+// $dropzone-background-color: transparentize($dropzone-button-background, 0.85) !default;
+// $dropzone-background-color--awakened: mix($dropzone-button-background, $dropzone-background-color, 10%) !default;
+// $dropzone-background-color--full: mix($dropzone-border-color--full, $dropzone-background-color, 10%) !default;
+
+// $dropzone-background-color-frontpage: transparentize(#fff, 0.85) !default;
+// $dropzone-background-color-frontpage--awakened: mix($dropzone-button-background, $dropzone-background-color-frontpage, 10%) !default;
+// $dropzone-background-color-frontpage--full: mix($dropzone-border-color--full, $dropzone-background-color-frontpage, 10%) !default;
+
+
+/* STICKY SIDEBAR */
+$mobile-sticky-sidebar-button-menu-image: "menu-white";
+// $sticky-sidebar-bg-color: mix($primary, #fff, 20%) !default;
+// $sticky-sidebar-link-color: mix($primary, #000, 40%) !default;
+// $mobile-sticky-sidebar-button-bg: $primary !default;
+
+
+/* LIST / PAGINATION / MISCELLANEOUS */
+// $pagination_background: #f6f6f6 !default;
+// $itemlist_item_background: #f6f6f6 !default;
+// $itemlist_item_background_hover: #e6e6e6 !default;
+// $col_big_numbers: #666 !default;
+// $col_fixed_label: #00bd08 !default;
+// $col_fixed_label_light: mix($col_fixed_label, #fff, 10%) !default;
+$form-control-border-color: #aaaaaa;
+$search-help-background: #fff3f3;
+$search-help-header-font-size-desktop: 1.25em;
+
+
+/* FOOTER */
+
+$footer-main-nav-font-size: 1rem !default;
+$footer-main-nav-padding: 2em 0 !default;
+$footer-main-nav-background: #2E3033 !default;
+$footer-main-nav-color: #fff !default;
+
+
+/* SITE MESSAGE */
+
+$site-message-border: 1px solid #525252 !default;
+
+
+/* PANZOOM */
+
+// $panzoom-button-height: 44px;
+// $panzoom-gutter: 10px;
+// $maplink-button-height: 36px;
+
+
+/* MAPPAGE DIMENSIONS */
+
+// Map page — sidebar widths
+// $mappage-sidebar-padding: 1em;
+// $mappage-sidebar-width: 25em !default;
+// $mappage-sidebar-width--medium:  27em !default;
+// $mappage-sidebar-width--large:  29em !default;
+// $mappage-sidebar-width--xlarge: 30em !default;
+
+// Map page — notes widths
+// $mappage-notes-width: 15em !default;
+// $mappage-notes-width--medium: 17em !default;
+// $mappage-notes-width--large: 19em !default;
+// $mappage-notes-width--xlarge: 21em !default;
+
+// Map page — actions widths
+// $mappage-actions-width: 18em !default;
+// $mappage-actions-width--medium:  20em !default;
+// $mappage-actions-width--large:  25em !default;
+// $mappage-actions-width--xlarge: 27em !default;
+
+// Map page — actions sidebar widths
+// $mappage-actions-sidebar-width: 23em !default;
+// $mappage-actions-sidebar-width--medium: 25em !default;
+// $mappage-actions-sidebar-width--large: $mappage-sidebar-width--large !default;
+// $mappage-actions-sidebar-width--xlarge: $mappage-sidebar-width--xlarge !default;
