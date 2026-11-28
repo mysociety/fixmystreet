@@ -1,0 +1,5 @@
+Subject: You have been assigned to a report (ref [% report.id %])
+
+You have been assigned to a report: [% cobrand.base_url_for_report(report) %][% report.url %].
+
+This email was sent automatically, from an unmonitored email account. Please do not reply to it.
