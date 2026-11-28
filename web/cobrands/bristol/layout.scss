@@ -6,25 +6,15 @@
   border-bottom: none;
 }
 
-#main-nav {
-  float: none;
-  margin-top: 7em; // Put the main FMS navigation below the Bristol header
-
-  .ie9 & > * {
-    #{$right}: auto;
-    #{$left}: 0;
-  }
-}
-
 body:not(.mappage) {
   // Display the BCC logo and header correctly
   #site-logo {
     background: url(/cobrands/bristol/img/bcclogo.svg) 0 14px no-repeat;
     background-size: 81px 81px;
     text-indent: 97px; // 16px distance between logo and title
-    height: 111px;
+    height: $header-height-desktop;
     width: 11em;
-    line-height: 111px;
+    line-height: $header-height-desktop;
     font-size: 30px;
     padding: 0;
   }

@@ -1,12 +1,11 @@
-<header id="site-header" role="banner">
+<header id="site-header">
     <div class="container">
         [% INCLUDE 'header_logo.html' %]
-        <label id="nav-link" for="main-nav-btn" aria-label="[% loc('Open main navigation') %]">[% IF c.cobrand.moniker != 'fixmystreet' AND c.cobrand.moniker != 'cyclinguk' %][% loc('Menu') %][% END %]</label>
+
+        <label id="nav-link" for="main-nav-btn" aria-controls="main-nav" aria-label="[% loc('Open main navigation') %]">[% IF c.cobrand.moniker != 'fixmystreet' AND c.cobrand.moniker != 'cyclinguk' %][% loc('Menu') %][% END %]</label>
+
+        <div class="nav-wrapper">
+            [% INCLUDE 'main_nav.html' %]
+        </div>
     </div>
 </header>
-
-<div class="nav-wrapper">
-    <div class="container">
-        [% INCLUDE 'main_nav.html' %]
-    </div>
-</div>
