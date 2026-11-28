@@ -1,0 +1,96 @@
+@import "_colours";
+@import "../sass/base";
+
+@media screen and (max-width: 48em) {
+  body.mappage #site-header,
+  body.mappage .boituva-brand-bar {
+    color: #fff;
+    background: #134077;
+  }
+
+  body.mappage .boituva-utility-bar,
+  body.mappage .boituva-header-actions,
+  body.mappage #report-cta,
+  body.mappage #nav-link,
+  body.mappage .nav-wrapper {
+    display: none;
+  }
+
+  body.mappage .boituva-brand-bar .container {
+    display: flex;
+    height: 60px;
+    min-height: 60px;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.55rem;
+    padding: 0 0.75rem;
+  }
+
+  body.mappage #site-logo {
+    display: flex;
+    width: auto;
+    height: auto;
+    align-items: center;
+    gap: 0.55rem;
+    background: none;
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 700;
+    line-height: 1.15;
+    text-indent: 0;
+  }
+
+  body.mappage .boituva-brand__logo {
+    display: block;
+    width: 8rem;
+    max-width: 40vw;
+    height: auto;
+    flex: 0 1 auto;
+  }
+
+  body.mappage .boituva-brand__divider,
+  body.mappage .boituva-brand__service small {
+    display: none;
+  }
+
+  body.mappage .boituva-brand__service {
+    display: flex;
+    max-width: 7rem;
+    flex-direction: column;
+    color: #fff;
+    font-size: 0.82rem;
+  }
+
+  body.mappage .boituva-map-touch-hint {
+    position: absolute;
+    z-index: 20;
+    top: 5.5rem;
+    right: 4rem;
+    left: 0.5rem;
+    display: block;
+    padding: 0.65rem 0.75rem;
+    border-left: 0.25rem solid #ffa82d;
+    border-radius: 0.35rem;
+    color: #17314f;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 2px 8px rgba(19, 64, 119, 0.2);
+    font-size: 0.78rem;
+    line-height: 1.35;
+    pointer-events: none;
+  }
+
+  body.mappage .mobile-map-banner,
+  body.mappage .sub-map-links {
+    background: rgba(19, 64, 119, 0.94);
+  }
+
+  body.mappage #map_sidebar .big-green-banner {
+    color: #fff;
+    background: #134077;
+  }
+
+  body.mappage .map-mobile-report-button {
+    border: 2px solid #ffa82d;
+    background: #134077;
+  }
+}
