@@ -1,5 +1,7 @@
 use FixMyStreet::TestMech;
 use Test::Deep;
+use Open311::PostServiceRequestUpdates;
+use CGI::Simple;
 
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
@@ -10,6 +12,7 @@ my $body    = $mech->create_body_ok(
     2226,
     'Gloucestershire County Council',
     {   send_method  => 'Open311',
+        send_comments => 1,
         api_key      => 'key',
         endpoint     => 'endpoint',
         jurisdiction => 'jurisdiction',
@@ -447,6 +450,29 @@ FixMyStreet::override_config {
         };
 
     }
+
+    subtest 'Does not send updates on now-email categories' => sub {
+        # Create a report that had been sent via Open311
+        my ($p) = $mech->create_problems_for_body(1, $body->id, 'Title', {
+            whensent => \'current_timestamp',
+            send_method_used => 'Open311',
+            external_id => 'EXT',
+        });
+        my $updates = Open311::PostServiceRequestUpdates->new();
+
+        $mech->create_comment_for_problem($p, $p->user, 'Name', 'Text', 't', 'confirmed');
+        $updates->send;
+        my $req = Open311->test_req_used;
+        my $cgi = CGI::Simple->new($req->content);
+        is $cgi->param('attribute[by_reporter]'), 1;
+
+        $mech->create_comment_for_problem($p, $staff_user, 'Name', 'Staff text', 't', 'confirmed');
+        $updates->send;
+        $req = Open311->test_req_used;
+        $cgi = CGI::Simple->new($req->content);
+        is $cgi->param('attribute[by_reporter]'), undef;
+    };
+
 };
 
 done_testing();
