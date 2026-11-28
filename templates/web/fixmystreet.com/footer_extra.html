@@ -3,7 +3,7 @@
     <div class="container">
         <div class="row">
 
-            <div class="col-sm-5">
+            <div class="col-sm-4">
                 <h2 class="mysoc-footer__site-name">FixMyStreet</h2>
                 <div class="mysoc-footer__site-description">
                     <p>[% loc('Mapping and reporting street problems to the councils responsible for fixing them &ndash; anywhere in the UK.') %]</p>
@@ -23,7 +23,26 @@
             </div>
 
             <div class="col-sm-4">
-                <nav class="mysoc-footer__links">
+                <div class="mysoc-footer__donate">
+                    <p>[% loc('Subscribe to hear from FixMyStreet, and <a href="https://www.mysociety.org/">mySociety</a>.') %]</p>
+
+                    [% INCLUDE 'about/_newsletter-form.html' in_footer = 1 %]
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="mysoc-footer__donate">
+                    <p>[% loc('We are a charity – donate today to invest in safer, more accessible communities.') %]</p>
+                    <a href="https://www.mysociety.org/donate/support-fixmystreet-and-mysociety?utm_source=fixmystreet.com&amp;utm_content=footer+donate+now&amp;utm_medium=link&amp;utm_campaign=mysoc_footer" class="mysoc-footer__donate__button" style="margin-top:12px">[% loc('Donate now') %] 💛</a>
+                </div>
+            </div>
+
+        </div>
+        <hr class="mysoc-footer__divider" role="presentation">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <nav class="mysoc-footer__links mysoc-footer__links--horizontal">
                     <ul>
                         <li><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"
                             >[% loc("Report a problem") %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>
@@ -35,8 +54,6 @@
                             %]>[% loc("Local alerts") %]</[% c.req.uri.path == '/alert' ? 'span' : 'a' %]></li>
                         <li><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
                             %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
-                    </ul>
-                    <ul>
                         <li><a href="https://www.societyworks.org/services/highways/">FixMyStreet Pro</a></li>
                         <li><[% IF c.req.uri.path == '/about/posters' %]span[% ELSE %]a href="/about/posters"[% END
                             %]>[% loc("Promotional material") %]</[% c.req.uri.path == '/posters' ? 'span' : 'a' %]></li>
@@ -49,16 +66,10 @@
                     </ul>
                 </nav>
             </div>
-
-            <div class="col-sm-3">
-                <div class="mysoc-footer__donate">
-                    <p>[% loc('We are a charity – donate today to invest in safer, more accessible communities') %]</p>
-                    <a href="https://www.mysociety.org/donate/support-fixmystreet-and-mysociety?utm_source=fixmystreet.com&amp;utm_content=footer+donate+now&amp;utm_medium=link&amp;utm_campaign=mysoc_footer" class="mysoc-footer__donate__button">[% loc('Donate now') %] 💛</a>
-                </div>
-            </div>
-
         </div>
+
         <hr class="mysoc-footer__divider" role="presentation">
+
         <div class="row">
 
             <div class="col-sm-6">

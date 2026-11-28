@@ -58,24 +58,29 @@ svg|g.site-logo__svg {
   }
 }
 
-// Similar to #report-cta for now
-#lang-switcher {
-  display: block;
+.top-menu-wrapper {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  #{$right}: 9em;
+  #{$right}: 7em;
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 1rem;
 
-  font-size: 0.8em;
-  line-height: 1em;
-  color: $nav_colour;
-  padding: 0.4em;
-  border-radius: 0.3em;
-
-  &:hover,
-  &:focus {
-    text-decoration: none;
-    background-color: $nav_hover_background_colour;
+  a {
+    display: block;
+    
+    font-size: 0.8em;
+    line-height: 1em;
+    color: $nav_colour;
+    padding: 0.4em;
+    border-radius: 0.3em;
+    
+    &:hover,
+    &:focus {
+      text-decoration: none;
+      background-color: $nav_hover_background_colour;
+    }
   }
 }
 
@@ -100,11 +105,17 @@ body.frontpage {
 
   h2 {
     margin-top: 0;
+    // Prevents to inherit the padding and border from .sticky-sidebar--help+.content h2
+    padding-top: 0 !important;
+    border-top: none !important;
   }
 
   p {
     color: #666666;
-    margin-bottom: 0;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 }
 
@@ -114,32 +125,16 @@ body.frontpage {
 
   a {
     float: $left;
-    margin: flip(1em 0.6em 0 0, 1em 0 0 0.6em);
+    margin: flip(0 0.6em 0 0, 0 0 0 0.6em);
 
     &:last-child {
       margin-#{$right}: 0;
     }
   }
-
-  .next-steps__step--goodies & {
-    min-height: 37px; // stop absolutely positioned img overlapping bottom of parent element
-
-    img {
-      // absolute positioning to overlap floated goodies image to the right
-      position: absolute;
-      max-width: none;
-    }
-  }
 }
 
-.next-steps__step--goodies {
+.next-steps__step--newsletter {
   @include clearfix;
-
-  .goodies-preview {
-    float: $right;
-    margin-#{$left}: 1em;
-    margin-#{$right}: -0.5em;
-  }
 }
 
 .unresponsive-council__header {
@@ -244,15 +239,7 @@ html.lazyload .js-lazyload {
   }
 
   .container {
-    margin: 0 auto;
-  }
-
-  .container {
-    margin-right: auto;
-    margin-left: auto;
-    padding-left: $grid-gutter / 2;
-    padding-right: $grid-gutter / 2;
-    max-width: $grid-max-width;
+    max-width: calc(#{$container-max-width} + 2rem);
   }
 
   .row {
@@ -526,4 +513,51 @@ html.lazyload .js-lazyload {
             display: block;
         }
     }
+}
+
+// NEWSLETTER PAGE
+
+.mysoc-team-picture {
+  &-desktop {
+    display: none;
+  }
+
+  &-mobile {
+    margin: 1.5rem 0;
+  }
+}
+
+.mc-field-group {
+  .inline-subscription-fields {
+    display:flex;
+    flex-direction: row;
+    align-items: end; // for the error handling
+    width: fit-content;
+    gap: 0.5rem;
+
+    input {
+      min-height: 2.5rem;
+    }
+
+    input[type="email"] {
+      border: 1px solid transparentize($color: $primary_text, $amount: 0.6);
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      border-radius: 4px;
+    }
+
+    input[type="submit"] {
+    }
+  }
+}
+
+// STICKY SIDEBAR
+.container--sidebar .sticky-sidebar {
+  &--cta-wrapper { 
+    display: none;
+
+    .btn {
+      width: fit-content;
+    }
+  }
 }
