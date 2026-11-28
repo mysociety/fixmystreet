@@ -5,6 +5,8 @@
 
     IF cobrand == 'fixmystreet';
         SET img_dir = 'fixmystreet.com';
+    ELSIF cobrand == 'arun' OR cobrand == 'melton';
+        SET img_dir = 'biffa';
     ELSE;
         SET img_dir = cobrand;
     END -%]
