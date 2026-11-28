@@ -138,6 +138,10 @@ sub index : Path : Args(0) {
         $c->stash->{contacts} = [ $c->stash->{contacts}->all ];
         $c->forward('/report/stash_category_groups', [ $c->stash->{contacts} ]);
 
+        $c->stash->{category_display_names} = {
+            map { $_->category => $_->category_display } @{$c->stash->{contacts}}
+        };
+
         foreach (@{$c->stash->{category_groups}}) {
             $_->{group_id} = "group-" . $_->{name};
         }
