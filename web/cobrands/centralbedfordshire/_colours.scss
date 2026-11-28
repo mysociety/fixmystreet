@@ -43,8 +43,6 @@ $dropzone-button-border: $central-beds-purple;
 
 $front-main-background: $central-beds-cream;
 
-$postcodeform-max-width: 44%;
-$report-forms-wrapper-flex-column-gap: 5rem;
 $report-forms-wrapper-margin-top: 2rem;
 
 // Style taken from: https://www.centralbedfordshire.gov.uk/info/55/transport_roads_and_parking/588/report_or_track_roads_and_highways_problems_-_potholes_street_lights
@@ -57,3 +55,7 @@ $button-primary-hover-bg-top: $central-beds-fuschia;
 $button-primary-hover-bg-bottom: $central-beds-fuschia;
 $button-primary-hover-border: $central-beds-fuschia;
 $button-primary-hover-text: #fff;
+
+$report-forms-wrapper-flex-wrap: wrap;
+$report-forms-wrapper-flex-justify-content: flex-start;
+$report-forms-wrapper-flex-column-gap: 6rem;
